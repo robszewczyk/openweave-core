@@ -231,6 +231,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
+JAVA = @JAVA@
 JAVAC = @JAVAC@
 JAVA_HOME = @JAVA_HOME@
 JNI_CPPFLAGS = @JNI_CPPFLAGS@
@@ -437,12 +438,11 @@ EXTRA_DIST = \
 @WEAVE_WITH_JAVA_TRUE@    ApplicationKeySupportTest.java                   \
 @WEAVE_WITH_JAVA_TRUE@    HKDFTest.java                                    \
 @WEAVE_WITH_JAVA_TRUE@    PairingCodeSupportTest.java                      \
-@WEAVE_WITH_JAVA_TRUE@    SimpleTest.java                                  \
 @WEAVE_WITH_JAVA_TRUE@    WeaveKeyExportClientTest.java                    \
 @WEAVE_WITH_JAVA_TRUE@    WeaveSecuritySupportTest.java                    \
 @WEAVE_WITH_JAVA_TRUE@    $(NULL)
 
-@WEAVE_WITH_JAVA_TRUE@WeaveJNIWrapperTests_jar_JAVA_CLASSPATHS = $(top_builddir)/src/wrappers/jni/security-support/WeaveSecuritySupport.jar
+@WEAVE_WITH_JAVA_TRUE@WeaveJNIWrapperTests_jar_JAVA_CLASSPATHS = $(top_builddir)/src/wrappers/jni/security-support/WeaveSecuritySupport.jar:$(abs_top_srcdir)/third_party/android/platform-libcore/android-platform-libcore/support/src/test/java/tests/resources/junit4-4.3.1.jar
 @WEAVE_WITH_JAVA_TRUE@WeaveJNIWrapperTests_jar_JFLAGS = -source 6 -target 6
 all: all-am
 
@@ -555,9 +555,9 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@WEAVE_WITH_JAVA_FALSE@mostlyclean-local:
 @WEAVE_WITH_JAVA_FALSE@uninstall-local:
 @WEAVE_WITH_JAVA_FALSE@install-data-local:
-@WEAVE_WITH_JAVA_FALSE@mostlyclean-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -649,6 +649,9 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 @WEAVE_WITH_JAVA_TRUE@install-data-local: install-data-JARS
 @WEAVE_WITH_JAVA_TRUE@uninstall-local: uninstall-JARS
 @WEAVE_WITH_JAVA_TRUE@mostlyclean-local: mostlyclean-local-JARS
+
+@WEAVE_WITH_JAVA_TRUE@check:
+@WEAVE_WITH_JAVA_TRUE@	java -cp :$(WeaveJNIWrapperTests_jar_JAVA_CLASSPATHS):$(JARS) org.junit.runner.JUnitCore $(WeaveJNIWrapperTests_jar_JAVA_SRCS:.java=)
 
 include $(abs_top_nlbuild_autotools_dir)/automake/post.am
 

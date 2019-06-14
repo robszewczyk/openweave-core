@@ -42,12 +42,12 @@ WeaveJNIWrapperTests_jar_JAVA_SRCS                 = \
     ApplicationKeySupportTest.java                   \
     HKDFTest.java                                    \
     PairingCodeSupportTest.java                      \
-    SimpleTest.java                                  \
     WeaveKeyExportClientTest.java                    \
     WeaveSecuritySupportTest.java                    \
     $(NULL)
 
-WeaveJNIWrapperTests_jar_JAVA_CLASSPATHS           = $(top_builddir)/src/wrappers/jni/security-support/WeaveSecuritySupport.jar
+WeaveJNIWrapperTests_jar_JAVA_CLASSPATHS           = $(top_builddir)/src/wrappers/jni/security-support/WeaveSecuritySupport.jar:$(abs_top_srcdir)/third_party/android/platform-libcore/android-platform-libcore/support/src/test/java/tests/resources/junit4-4.3.1.jar
+
 
 WeaveJNIWrapperTests_jar_JFLAGS                    = -source 6 -target 6
 
@@ -57,6 +57,9 @@ all-local: all-JARS
 install-data-local: install-data-JARS
 uninstall-local: uninstall-JARS
 mostlyclean-local: mostlyclean-local-JARS
+
+check:
+	java -cp :$(WeaveJNIWrapperTests_jar_JAVA_CLASSPATHS):$(JARS) org.junit.runner.JUnitCore $(WeaveJNIWrapperTests_jar_JAVA_SRCS:.java=)
 
 endif # WEAVE_WITH_JAVA
 

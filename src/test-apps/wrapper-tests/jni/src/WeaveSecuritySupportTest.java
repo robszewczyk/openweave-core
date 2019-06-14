@@ -16,32 +16,25 @@
  *    limitations under the License.
  */
 
+import static org.junit.Assert.*;
+import org.junit.*;
+
 import com.nestlabs.weave.security.WeaveCertificateSupport;
 
 public class WeaveSecuritySupportTest extends SimpleTest
 {
-    public static void main(String[] args)
-    {
-        WeaveSecuritySupportTest testObj = new WeaveSecuritySupportTest();
-        
-        int res = testObj.runTests(new String[] {
-            "testWeaveCertificateToX509",
-            "testX509CertificateToWeave",
-        });
-        
-        System.exit(res);
-    }
-    
+    @Test
     public void testWeaveCertificateToX509() throws Exception
     {
         byte[] convertedCert = WeaveCertificateSupport.weaveCertificateToX509(weaveCert);
-        assertEqual(convertedCert, x509Cert, "X.509 converted cert");
+        assertArrayEquals("X.509 converted cert", convertedCert, x509Cert);
     }
 
+    @Test
     public void testX509CertificateToWeave() throws Exception
     {
         byte[] convertedCert = WeaveCertificateSupport.x509CertificateToWeave(x509Cert);
-        assertEqual(convertedCert, weaveCert, "Weave converted cert");
+        assertArrayEquals("Weave converted cert", convertedCert, weaveCert);
     }
 
     private static final byte[] weaveCert = toByteArray(new int[] {
@@ -60,7 +53,7 @@ public class WeaveSecuritySupportTest extends SimpleTest
         0x29, 0xdc, 0x30, 0x02, 0x19, 0x00, 0x8b, 0xe7, 0xee, 0x2e, 0x11, 0x17, 0x14, 0xae, 0x92, 0xda,
         0x2b, 0x3b, 0x6d, 0x2f, 0xd7, 0x5d, 0x9e, 0x5f, 0xcd, 0xb8, 0xba, 0x2f, 0x65, 0x76, 0x18, 0x18
     });
-    
+
     private static final byte[] x509Cert = toByteArray(new int[] {
         0x30, 0x82, 0x01, 0x65, 0x30, 0x82, 0x01, 0x1b, 0xa0, 0x03, 0x02, 0x01, 0x02, 0x02, 0x09, 0x00,
         0xa8, 0x34, 0x22, 0xe9, 0xd9, 0x75, 0xe4, 0x55, 0x30, 0x09, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce,
