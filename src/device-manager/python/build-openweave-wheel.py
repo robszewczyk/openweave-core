@@ -39,7 +39,7 @@ deviceManagerShellInstalledName = os.path.splitext(deviceManagerShellName)[0]
 curDir = os.curdir
 
 # Expect to find the source files for the python modules in the same directory
-# as the build script. 
+# as the build script.
 srcDir = os.path.dirname(os.path.abspath(__file__))
 
 # Presume that the current directory is the build directory.
@@ -71,23 +71,23 @@ try:
         shutil.rmtree(owPackageDir)
     shutil.copytree(os.path.join(srcDir, 'openweave'), owPackageDir)
     os.chmod(owPackageDir, os.stat(owPackageDir).st_mode|stat.S_IWUSR)
-    
+
     # Copy the openweave wrapper DLL from where libtool places it (.libs) into
     # the root of the openweave package directory.  This is necessary because
     # setuptools will only add package data files that are relative to the
     # associated package source root.
     shutil.copy2(os.path.join(buildDir, '.libs', owDLLName),
                  os.path.join(owPackageDir, owDLLName))
-    
+
     # Make a copy of the Weave Device Manager Shell script in the tmp directory,
     # but without the .py suffix. This is how we want it to appear when installed
     # by the wheel.
     shutil.copy2(os.path.join(srcDir, deviceManagerShellName),
                  os.path.join(tmpDir, deviceManagerShellInstalledName))
-    
+
     # Search for the OpenWeave LICENSE file in the parents of the source
     # directory and make a copy of the file called LICENSE.txt in the tmp
-    # directory.  
+    # directory.
     def _AllDirsToRoot(dir):
         dir = os.path.abspath(dir)
         while True:
@@ -104,14 +104,14 @@ try:
             break
     else:
         raise FileNotFoundError('Unable to find OpenWeave LICENSE file')
-    
+
     # Define a custom version of the bdist_wheel command that configures the
-    # resultant wheel as platform-specific (i.e. not "pure"). 
+    # resultant wheel as platform-specific (i.e. not "pure").
     class bdist_wheel_override(bdist_wheel):
         def finalize_options(self):
             bdist_wheel.finalize_options(self)
             self.root_is_pure = False
-    
+
     # Construct the package version string.  If building under Travis use the Travis
     # build number as the package version.  Otherwise use a dummy version of '0.0'.
     # (See PEP-440 for the syntax rules for python package versions).
@@ -119,9 +119,9 @@ try:
         owPackageVer = os.environ['TRAVIS_BUILD_NUMBER']
     else:
         owPackageVer = os.environ.get('OPENWEAVE_PYTHON_VERSION', '0.0')
-    
+
     # Generate a description string with information on how/when the package
-    # was built. 
+    # was built.
     if 'TRAVIS_BUILD_NUMBER' in os.environ:
         buildDescription = 'Built by Travis CI on %s\n- Build: %s/#%s\n- Build URL: %s\n- Branch: %s\n- Commit: %s\n' % (
                                 datetime.now().strftime('%Y/%m/%d %H:%M:%S'),
@@ -134,20 +134,23 @@ try:
         buildDescription = 'Build by %s on %s\n' % (
                                 getpass.getuser(),
                                 datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
-    
+
     # Select required packages based on the target system.
     if platform.system() == 'Linux':
         requiredPackages = [
             'dbus-python',
-            'pgi'
+            'pgi',
+            'future',
+            'six',
+            'pycryptodomex'
         ]
     else:
         requiredPackages = []
-    
+
     #
     # Build the openweave package...
     #
-     
+
     # Invoke the setuptools 'bdist_wheel' command to generate a wheel containing
     # the OpenWeave python packages, shared libraries and scripts.
     setup(
@@ -196,7 +199,7 @@ try:
     )
 
 finally:
-    
+
     # Switch back to the initial current directory.
     os.chdir(curDir)
 
