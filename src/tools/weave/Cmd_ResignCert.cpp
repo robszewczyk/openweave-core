@@ -41,21 +41,14 @@ using namespace nl::Weave::ASN1;
 
 #define CMD_NAME "weave resign-cert"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "cert",       kArgumentRequired, 'c' },
-    { "out",        kArgumentRequired, 'o' },
-    { "ca-cert",    kArgumentRequired, 'C' },
-    { "ca-key",     kArgumentRequired, 'K' },
-    { "self",       kNoArgument,       's' },
-    { "sha1",       kNoArgument,       '1' },
-    { "sha256",     kNoArgument,       '2' },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "cert", kArgumentRequired, 'c' },    { "out", kArgumentRequired, 'o' },
+                                      { "ca-cert", kArgumentRequired, 'C' }, { "ca-key", kArgumentRequired, 'K' },
+                                      { "self", kNoArgument, 's' },          { "sha1", kNoArgument, '1' },
+                                      { "sha256", kNoArgument, '2' },        { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "  -c, --cert <file>\n"
     "\n"
     "       File containing the certificate to be re-signed.\n"
@@ -85,45 +78,29 @@ static const char *const gCmdOptionHelp =
     "  -2, --sha256\n"
     "\n"
     "       Re-sign the certificate using a SHA-256 hash.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
+
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ]\n", WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Resign a weave certificate using a new CA certificate/key.");
+
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
+
+static const char * gInCertFileName  = NULL;
+static const char * gOutCertFileName = NULL;
+static const char * gCACertFileName  = NULL;
+static const char * gCAKeyFileName   = NULL;
+static const EVP_MD * gSigHashAlgo   = NULL;
+static bool gSelfSign                = false;
+
+bool Cmd_ResignCert(int argc, char * argv[])
 {
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
-
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ]\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Resign a weave certificate using a new CA certificate/key."
-);
-
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
-
-static const char *gInCertFileName = NULL;
-static const char *gOutCertFileName = NULL;
-static const char *gCACertFileName = NULL;
-static const char *gCAKeyFileName = NULL;
-static const EVP_MD *gSigHashAlgo = NULL;
-static bool gSelfSign = false;
-
-bool Cmd_ResignCert(int argc, char *argv[])
-{
-    bool res = true;
-    FILE *outCertFile = NULL;
-    X509 *caCert = NULL;
-    X509 *cert = NULL;
-    EVP_PKEY *caKey = NULL;
+    bool res           = true;
+    FILE * outCertFile = NULL;
+    X509 * caCert      = NULL;
+    X509 * cert        = NULL;
+    EVP_PKEY * caKey   = NULL;
     CertFormat inCertFmt;
     bool outCertFileCreated = false;
 
@@ -152,8 +129,9 @@ bool Cmd_ResignCert(int argc, char *argv[])
 
     if (gCACertFileName == NULL && !gSelfSign)
     {
-        fprintf(stderr, "Please specify a CA certificate to be used to sign the new certificate (using\n"
-                        "the --ca-cert option) or --self to generate a self-signed certificate.\n");
+        fprintf(stderr,
+                "Please specify a CA certificate to be used to sign the new certificate (using\n"
+                "the --ca-cert option) or --self to generate a self-signed certificate.\n");
         ExitNow(res = false);
     }
 
@@ -177,19 +155,20 @@ bool Cmd_ResignCert(int argc, char *argv[])
 
     if (access(gOutCertFileName, R_OK) == 0)
     {
-        fprintf(stderr, "weave: ERROR: Output certificate file already exists (%s)\n"
-                        "To replace the file, please remove it and re-run the command.\n",
-                        gOutCertFileName);
+        fprintf(stderr,
+                "weave: ERROR: Output certificate file already exists (%s)\n"
+                "To replace the file, please remove it and re-run the command.\n",
+                gOutCertFileName);
         ExitNow(res = false);
     }
 
     outCertFile = fopen(gOutCertFileName, "w+");
     if (outCertFile == NULL)
     {
-        fprintf(stderr, "weave: ERROR: Unable to create output certificate file (%s)\n"
-                        "%s.\n",
-                        gOutCertFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to create output certificate file (%s)\n"
+                "%s.\n",
+                gOutCertFileName, strerror(errno));
         ExitNow(res = false);
     }
     outCertFileCreated = true;
@@ -217,14 +196,14 @@ bool Cmd_ResignCert(int argc, char *argv[])
     if (!WriteCert(cert, outCertFile, gOutCertFileName, inCertFmt))
         ExitNow(res = false);
 
-    res = (fclose(outCertFile) != EOF);
+    res         = (fclose(outCertFile) != EOF);
     outCertFile = NULL;
     if (!res)
     {
-        fprintf(stderr, "weave: ERROR: Unable to write output certificate file (%s)\n"
-                        "%s.\n",
-                        gOutCertFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to write output certificate file (%s)\n"
+                "%s.\n",
+                gOutCertFileName, strerror(errno));
         ExitNow();
     }
 
@@ -242,34 +221,18 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'c':
-        gInCertFileName = arg;
-        break;
-    case 'o':
-        gOutCertFileName = arg;
-        break;
-    case 'C':
-        gCACertFileName = arg;
-        break;
-    case 'K':
-        gCAKeyFileName = arg;
-        break;
-    case 's':
-        gSelfSign = true;
-        break;
-    case '1':
-        gSigHashAlgo = EVP_sha1();
-        break;
-    case '2':
-        gSigHashAlgo = EVP_sha256();
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'c': gInCertFileName = arg; break;
+    case 'o': gOutCertFileName = arg; break;
+    case 'C': gCACertFileName = arg; break;
+    case 'K': gCAKeyFileName = arg; break;
+    case 's': gSelfSign = true; break;
+    case '1': gSigHashAlgo = EVP_sha1(); break;
+    case '2': gSigHashAlgo = EVP_sha256(); break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

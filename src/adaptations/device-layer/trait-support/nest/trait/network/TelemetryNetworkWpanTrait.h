@@ -29,8 +29,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Nest {
 namespace Trait {
@@ -39,8 +37,9 @@ namespace TelemetryNetworkWpanTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0x603U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0x603U
 };
 
 //
@@ -53,12 +52,12 @@ struct ChannelUtilization
     uint16_t percentBusy;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct ChannelUtilization_array {
+struct ChannelUtilization_array
+{
     uint32_t num;
-    ChannelUtilization *buf;
+    ChannelUtilization * buf;
 };
 
 struct PerAntennaStats
@@ -68,12 +67,12 @@ struct PerAntennaStats
     int8_t avgAckRssi;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct PerAntennaStats_array {
+struct PerAntennaStats_array
+{
     uint32_t num;
-    PerAntennaStats *buf;
+    PerAntennaStats * buf;
 };
 
 struct TopoEntry
@@ -90,12 +89,12 @@ struct TopoEntry
     int8_t lastRssi;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct TopoEntry_array {
+struct TopoEntry_array
+{
     uint32_t num;
-    TopoEntry *buf;
+    TopoEntry * buf;
 };
 
 struct ChildTableEntry
@@ -105,12 +104,12 @@ struct ChildTableEntry
     uint8_t networkDataVersion;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct ChildTableEntry_array {
+struct ChildTableEntry_array
+{
     uint32_t num;
-    ChildTableEntry *buf;
+    ChildTableEntry * buf;
 };
 
 struct NeighborTableEntry
@@ -121,12 +120,12 @@ struct NeighborTableEntry
     bool isChild;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct NeighborTableEntry_array {
+struct NeighborTableEntry_array
+{
     uint32_t num;
-    NeighborTableEntry *buf;
+    NeighborTableEntry * buf;
 };
 
 //
@@ -141,19 +140,20 @@ struct WpanParentLinkEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct WpanParentLinkEvent_array {
+struct WpanParentLinkEvent_array
+{
     uint32_t num;
-    WpanParentLinkEvent *buf;
+    WpanParentLinkEvent * buf;
 };
-
 
 struct NetworkWpanStatsEvent
 {
@@ -201,19 +201,20 @@ struct NetworkWpanStatsEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x2U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x2U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWpanStatsEvent_array {
+struct NetworkWpanStatsEvent_array
+{
     uint32_t num;
-    NetworkWpanStatsEvent *buf;
+    NetworkWpanStatsEvent * buf;
 };
-
 
 struct NetworkWpanTopoMinimalEvent
 {
@@ -229,19 +230,20 @@ struct NetworkWpanTopoMinimalEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x3U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x3U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWpanTopoMinimalEvent_array {
+struct NetworkWpanTopoMinimalEvent_array
+{
     uint32_t num;
-    NetworkWpanTopoMinimalEvent *buf;
+    NetworkWpanTopoMinimalEvent * buf;
 };
-
 
 struct NetworkWpanTopoFullEvent
 {
@@ -267,19 +269,20 @@ struct NetworkWpanTopoFullEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x4U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x4U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWpanTopoFullEvent_array {
+struct NetworkWpanTopoFullEvent_array
+{
     uint32_t num;
-    NetworkWpanTopoFullEvent *buf;
+    NetworkWpanTopoFullEvent * buf;
 };
-
 
 struct TopoEntryEvent
 {
@@ -310,22 +313,24 @@ struct TopoEntryEvent
 #endif
     uint16_t macFrameErrorRate;
     uint16_t ipMessageErrorRate;
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x5U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x5U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TopoEntryEvent_array {
+struct TopoEntryEvent_array
+{
     uint32_t num;
-    TopoEntryEvent *buf;
+    TopoEntryEvent * buf;
 };
 
 inline void TopoEntryEvent::SetTimeoutNull(void)
@@ -369,19 +374,20 @@ struct WpanChannelmonStatsEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x6U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x6U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct WpanChannelmonStatsEvent_array {
+struct WpanChannelmonStatsEvent_array
+{
     uint32_t num;
-    WpanChannelmonStatsEvent *buf;
+    WpanChannelmonStatsEvent * buf;
 };
-
 
 struct WpanAntennaStatsEvent
 {
@@ -391,19 +397,20 @@ struct WpanAntennaStatsEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x7U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x7U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct WpanAntennaStatsEvent_array {
+struct WpanAntennaStatsEvent_array
+{
     uint32_t num;
-    WpanAntennaStatsEvent *buf;
+    WpanAntennaStatsEvent * buf;
 };
-
 
 struct NetworkWpanTopoParentRespEvent
 {
@@ -418,39 +425,42 @@ struct NetworkWpanTopoParentRespEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x603U,
-        kEventTypeId = 0x8U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x603U,
+        kEventTypeId    = 0x8U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWpanTopoParentRespEvent_array {
+struct NetworkWpanTopoParentRespEvent_array
+{
     uint32_t num;
-    NetworkWpanTopoParentRespEvent *buf;
+    NetworkWpanTopoParentRespEvent * buf;
 };
-
 
 //
 // Enums
 //
 
-enum NodeType {
-    NODE_TYPE_ROUTER = 1,
-    NODE_TYPE_END = 2,
-    NODE_TYPE_SLEEPY_END = 3,
-    NODE_TYPE_MINIMAL_END = 4,
-    NODE_TYPE_OFFLINE = 5,
-    NODE_TYPE_DISABLED = 6,
-    NODE_TYPE_DETACHED = 7,
-    NODE_TYPE_NL_LURKER = 16,
+enum NodeType
+{
+    NODE_TYPE_ROUTER       = 1,
+    NODE_TYPE_END          = 2,
+    NODE_TYPE_SLEEPY_END   = 3,
+    NODE_TYPE_MINIMAL_END  = 4,
+    NODE_TYPE_OFFLINE      = 5,
+    NODE_TYPE_DISABLED     = 6,
+    NODE_TYPE_DETACHED     = 7,
+    NODE_TYPE_NL_LURKER    = 16,
     NODE_TYPE_COMMISSIONER = 32,
-    NODE_TYPE_LEADER = 64,
+    NODE_TYPE_LEADER       = 64,
 };
 
-enum ThreadType {
-    THREAD_TYPE_SILABS = 1,
+enum ThreadType
+{
+    THREAD_TYPE_SILABS     = 1,
     THREAD_TYPE_OPENTHREAD = 2,
 };
 

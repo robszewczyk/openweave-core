@@ -30,15 +30,15 @@
 
 // ==================== Platform Adaptations ====================
 
-#define BLE_CONNECTION_OBJECT uint16_t
-#define BLE_CONNECTION_UNINITIALIZED ((uint16_t)BLE_CONN_HANDLE_INVALID)
-#define BLE_MAX_RECEIVE_WINDOW_SIZE 5
+#define BLE_CONNECTION_OBJECT        uint16_t
+#define BLE_CONNECTION_UNINITIALIZED ((uint16_t) BLE_CONN_HANDLE_INVALID)
+#define BLE_MAX_RECEIVE_WINDOW_SIZE  5
 
 #define BLE_CONFIG_ERROR_TYPE ret_code_t
-#define BLE_CONFIG_NO_ERROR NRF_SUCCESS
-#define BLE_CONFIG_ERROR_MIN 6000000
-#define BLE_CONFIG_ERROR_MAX 6000999
-#define _BLE_CONFIG_ERROR(e) (BLE_CONFIG_ERROR_MIN + (e))
+#define BLE_CONFIG_NO_ERROR   NRF_SUCCESS
+#define BLE_CONFIG_ERROR_MIN  6000000
+#define BLE_CONFIG_ERROR_MAX  6000999
+#define _BLE_CONFIG_ERROR(e)  (BLE_CONFIG_ERROR_MIN + (e))
 
 // ========== Platform-specific Configuration Overrides =========
 

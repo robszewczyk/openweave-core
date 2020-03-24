@@ -32,7 +32,8 @@ namespace Weave {
 namespace DeviceManager {
 using namespace ::nl::Weave::Profiles::DataManagement_Current;
 
-class TraitSchemaDirectory {
+class TraitSchemaDirectory
+{
 public:
     static const nl::Weave::Profiles::DataManagement::TraitSchemaEngine * GetTraitSchemaEngine(uint32_t aProfileId);
 };

@@ -59,7 +59,7 @@ namespace nl {
 using namespace nl::Weave::Profiles;
 
 #if !WEAVE_CONFIG_SHORT_ERROR_STR
-static const char *FindStatusReportStr(uint32_t inProfileId, uint16_t inStatusCode);
+static const char * FindStatusReportStr(uint32_t inProfileId, uint16_t inStatusCode);
 #endif // #if !WEAVE_CONFIG_SHORT_ERROR_STR
 
 /**
@@ -88,9 +88,9 @@ static const char *FindStatusReportStr(uint32_t inProfileId, uint16_t inStatusCo
  */
 static char sErrorStr[2 + 8 + 1 + 2 + 4 + 1];
 
-NL_DLL_EXPORT const char *StatusReportStr(uint32_t profileId, uint16_t statusCode)
+NL_DLL_EXPORT const char * StatusReportStr(uint32_t profileId, uint16_t statusCode)
 {
-    (void)snprintf(sErrorStr, sizeof(sErrorStr), "0x%" PRIx32 " 0x%" PRIx16, profileId, statusCode);
+    (void) snprintf(sErrorStr, sizeof(sErrorStr), "0x%" PRIx32 " 0x%" PRIx16, profileId, statusCode);
 
     return sErrorStr;
 }
@@ -99,9 +99,9 @@ NL_DLL_EXPORT const char *StatusReportStr(uint32_t profileId, uint16_t statusCod
 
 static char sErrorStr[1024];
 
-NL_DLL_EXPORT const char *StatusReportStr(uint32_t profileId, uint16_t statusCode)
+NL_DLL_EXPORT const char * StatusReportStr(uint32_t profileId, uint16_t statusCode)
 {
-    const char *fmt = NULL;
+    const char * fmt = NULL;
 
     // clang-format off
     switch (profileId)
@@ -354,10 +354,10 @@ NL_DLL_EXPORT const char *StatusReportStr(uint32_t profileId, uint16_t statusCod
 #endif // #if WEAVE_CONFIG_SHORT_ERROR_STR
 
 #if !WEAVE_CONFIG_SHORT_ERROR_STR
-static const char *FindStatusReportStr(uint32_t inProfileId, uint16_t inStatusCode)
+static const char * FindStatusReportStr(uint32_t inProfileId, uint16_t inStatusCode)
 {
-    const Weave::Support::ProfileStringInfo *info;
-    const char *result = NULL;
+    const Weave::Support::ProfileStringInfo * info;
+    const char * result = NULL;
 
     info = Weave::Support::FindProfileStringInfo(inProfileId);
 

@@ -31,37 +31,35 @@ namespace Weave {
 namespace Trait {
 namespace Security {
 namespace BoltLockSettingTrait {
-    TraitSchemaEngine::PropertyInfo gSchemaMap[] = {
-        /*  ParentHandle                ContextTag */
-        { kRootPropertyPathHandle,         1 },
-        { kRootPropertyPathHandle,         2 },
-    };
+TraitSchemaEngine::PropertyInfo gSchemaMap[] = {
+    /*  ParentHandle                ContextTag */
+    { kRootPropertyPathHandle, 1 },
+    { kRootPropertyPathHandle, 2 },
+};
 
-    TraitSchemaEngine TraitSchema = {
-        {
-            kWeaveProfileId,
-            gSchemaMap,
-            sizeof(gSchemaMap) / sizeof(gSchemaMap[0]),
-            1,
+TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    gSchemaMap,
+    sizeof(gSchemaMap) / sizeof(gSchemaMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-            2,
+    2,
 #endif
 #if (TDM_DICTIONARY_SUPPORT)
-            NULL,
+    NULL,
 #endif
-            NULL,
-            NULL,
-            NULL,
-            NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-            NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-            NULL,
+    NULL,
 #endif
-        }
-    };
-}; // BoltLockSettingTrait
-} // Security
-} // Trait
-} // Weave
+} };
+}; // namespace BoltLockSettingTrait
+} // namespace Security
+} // namespace Trait
+} // namespace Weave

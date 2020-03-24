@@ -27,8 +27,8 @@
 #include "BluezBlePlatformDelegate.h"
 
 #define WEAVE_ID_INFO_PAIRING_STATUS_NOT_PAIRED (0)
-#define WEAVE_ID_INFO_PAIRING_STATUS_PAIRED (1)
-#define WEAVE_ID_INFO_PAIRING_STATUS_UNKNOWN (2)
+#define WEAVE_ID_INFO_PAIRING_STATUS_PAIRED     (1)
+#define WEAVE_ID_INFO_PAIRING_STATUS_UNKNOWN    (2)
 
 namespace nl {
 namespace Ble {

@@ -59,21 +59,19 @@ using namespace nl::Weave::Profiles::DataManagement;
 
 #define TOOL_NAME "TestWdmSubscriptionlessNotificationReceiver"
 
-
 static TestWdmSubscriptionlessNotificationReceiver gTestWdmSubscriptionlessNotificationReceiver;
 
-TestWdmSubscriptionlessNotificationReceiver * TestWdmSubscriptionlessNotificationReceiver::GetInstance ()
+TestWdmSubscriptionlessNotificationReceiver * TestWdmSubscriptionlessNotificationReceiver::GetInstance()
 {
     return &gTestWdmSubscriptionlessNotificationReceiver;
 }
 
 TestWdmSubscriptionlessNotificationReceiver::TestWdmSubscriptionlessNotificationReceiver() :
-    mExchangeMgr(NULL),
-    mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore, sizeof(mSinkCatalogStore) / sizeof(mSinkCatalogStore[0]))
-{
-}
+    mExchangeMgr(NULL), mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore,
+                                     sizeof(mSinkCatalogStore) / sizeof(mSinkCatalogStore[0]))
+{ }
 
-WEAVE_ERROR TestWdmSubscriptionlessNotificationReceiver::Init(WeaveExchangeManager *aExchangeMgr)
+WEAVE_ERROR TestWdmSubscriptionlessNotificationReceiver::Init(WeaveExchangeManager * aExchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -106,43 +104,40 @@ exit:
     return err;
 }
 
-void TestWdmSubscriptionlessNotificationReceiver::EngineEventCallback (void * const aAppState,
-    SubscriptionEngine::EventID aEvent,
-    const SubscriptionEngine::InEventParam & aInParam, SubscriptionEngine::OutEventParam & aOutParam)
+void TestWdmSubscriptionlessNotificationReceiver::EngineEventCallback(void * const aAppState, SubscriptionEngine::EventID aEvent,
+                                                                      const SubscriptionEngine::InEventParam & aInParam,
+                                                                      SubscriptionEngine::OutEventParam & aOutParam)
 {
-    TestWdmSubscriptionlessNotificationReceiver *sublessNotifyReceiver =
-        static_cast<TestWdmSubscriptionlessNotificationReceiver*>(aAppState);
+    TestWdmSubscriptionlessNotificationReceiver * sublessNotifyReceiver =
+        static_cast<TestWdmSubscriptionlessNotificationReceiver *>(aAppState);
 
     switch (aEvent)
     {
-        case SubscriptionEngine::kEvent_OnIncomingSubscriptionlessNotification:
-            WeaveLogDetail(DataManagement, "Received Subscriptionless Notification from Node: %016" PRIX64 "\n",
-                           aInParam.mIncomingSubscriptionlessNotification.mMsgInfo->SourceNodeId);
-            aOutParam.mIncomingSubscriptionlessNotification.mShouldContinueProcessing = true;
+    case SubscriptionEngine::kEvent_OnIncomingSubscriptionlessNotification:
+        WeaveLogDetail(DataManagement, "Received Subscriptionless Notification from Node: %016" PRIX64 "\n",
+                       aInParam.mIncomingSubscriptionlessNotification.mMsgInfo->SourceNodeId);
+        aOutParam.mIncomingSubscriptionlessNotification.mShouldContinueProcessing = true;
         break;
-        case SubscriptionEngine::kEvent_DataElementAccessControlCheck:
-            aOutParam.mDataElementAccessControlForNotification.mRejectNotification = false;
-            aOutParam.mDataElementAccessControlForNotification.mReason = WEAVE_NO_ERROR;
+    case SubscriptionEngine::kEvent_DataElementAccessControlCheck:
+        aOutParam.mDataElementAccessControlForNotification.mRejectNotification = false;
+        aOutParam.mDataElementAccessControlForNotification.mReason             = WEAVE_NO_ERROR;
         break;
-        case SubscriptionEngine::kEvent_SubscriptionlessNotificationProcessingComplete:
-            WeaveLogDetail(DataManagement, "Subscriptionless Notification Processing complete\n");
-            if (aInParam.mIncomingSubscriptionlessNotification.processingError ==
-                WEAVE_ERROR_WDM_SUBSCRIPTIONLESS_NOTIFY_PARTIAL)
-            {
-                sublessNotifyReceiver->OnError();
-                WeaveLogDetail(DataManagement, "Subscriptionless Notification Processing Failure\n");
-            }
-            else
-            {
-                WeaveLogDetail(DataManagement, "kEvent_SubscriptionlessNotificationProcessingComplete");
+    case SubscriptionEngine::kEvent_SubscriptionlessNotificationProcessingComplete:
+        WeaveLogDetail(DataManagement, "Subscriptionless Notification Processing complete\n");
+        if (aInParam.mIncomingSubscriptionlessNotification.processingError == WEAVE_ERROR_WDM_SUBSCRIPTIONLESS_NOTIFY_PARTIAL)
+        {
+            sublessNotifyReceiver->OnError();
+            WeaveLogDetail(DataManagement, "Subscriptionless Notification Processing Failure\n");
+        }
+        else
+        {
+            WeaveLogDetail(DataManagement, "kEvent_SubscriptionlessNotificationProcessingComplete");
 
-                WeaveLogDetail(DataManagement, "Subscriptionless Notification Processing Success\n");
-                sublessNotifyReceiver->OnTestComplete();
-            }
+            WeaveLogDetail(DataManagement, "Subscriptionless Notification Processing Success\n");
+            sublessNotifyReceiver->OnTestComplete();
+        }
         break;
-        default:
-            SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 }
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION

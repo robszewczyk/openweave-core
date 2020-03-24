@@ -41,64 +41,66 @@ using namespace nl::TestCerts;
 
 #define DEBUG_PRINT_ENABLE 0
 
-#define VerifyOrFail(TST, MSG, ...) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fprintf(stderr, MSG, ## __VA_ARGS__); \
-        fputs("\n", stderr); \
-        exit(-1); \
-    } \
-} while (0)
+#define VerifyOrFail(TST, MSG, ...)                                                                                                \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fprintf(stderr, MSG, ##__VA_ARGS__);                                                                                   \
+            fputs("\n", stderr);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
+#define SuccessOrFail(ERR, MSG, ...)                                                                                               \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fprintf(stderr, MSG, ##__VA_ARGS__);                                                                                   \
+            fputs(": ", stderr);                                                                                                   \
+            fputs(ErrorStr(ERR), stderr);                                                                                          \
+            fputs("\n", stderr);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrFail(ERR, MSG, ...) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fprintf(stderr, MSG, ## __VA_ARGS__); \
-        fputs(": ", stderr); \
-        fputs(ErrorStr(ERR), stderr); \
-        fputs("\n", stderr); \
-        exit(-1); \
-    } \
-} while (0)
-
-
-enum {
+enum
+{
     kStandardCertsCount = 3
 };
 
-static void LoadStandardCerts(WeaveCertificateSet& certSet)
+static void LoadStandardCerts(WeaveCertificateSet & certSet)
 {
     LoadTestCert(certSet, kTestCert_Root | kDecodeFlag_IsTrusted);
-    LoadTestCert(certSet, kTestCert_CA   | kDecodeFlag_GenerateTBSHash);
+    LoadTestCert(certSet, kTestCert_CA | kDecodeFlag_GenerateTBSHash);
     LoadTestCert(certSet, kTestCert_Dev | kDecodeFlag_GenerateTBSHash);
 }
 
-void SetEffectiveTime(ValidationContext& validContext, uint16_t year, uint8_t mon, uint8_t day, uint8_t hour = 0, uint8_t min = 0, uint8_t sec = 0)
+void SetEffectiveTime(ValidationContext & validContext, uint16_t year, uint8_t mon, uint8_t day, uint8_t hour = 0, uint8_t min = 0,
+                      uint8_t sec = 0)
 {
     WEAVE_ERROR err;
     ASN1UniversalTime effectiveTime;
 
-    effectiveTime.Year = year;
-    effectiveTime.Month = mon;
-    effectiveTime.Day = day;
-    effectiveTime.Hour = hour;
+    effectiveTime.Year   = year;
+    effectiveTime.Month  = mon;
+    effectiveTime.Day    = day;
+    effectiveTime.Hour   = hour;
     effectiveTime.Minute = min;
     effectiveTime.Second = sec;
-    err = PackCertTime(effectiveTime, validContext.EffectiveTime);
+    err                  = PackCertTime(effectiveTime, validContext.EffectiveTime);
     SuccessOrFail(err, "PackCertTime() returned error");
 }
 
 void WeaveCertTest_WeaveToX509()
 {
     WEAVE_ERROR err;
-    const uint8_t *inCert;
+    const uint8_t * inCert;
     size_t inCertLen;
-    const uint8_t *expectedOutCert;
+    const uint8_t * expectedOutCert;
     size_t expectedOutCertLen;
     uint8_t outCertBuf[kTestCertBufSize];
     uint32_t outCertLen;
@@ -112,8 +114,11 @@ void WeaveCertTest_WeaveToX509()
 
         err = ConvertWeaveCertToX509Cert(inCert, inCertLen, outCertBuf, sizeof(outCertBuf), outCertLen);
         SuccessOrFail(err, "%s Certificate: ConvertWeaveCertToX509Cert() returned error", GetTestCertName(certSelector));
-        VerifyOrFail(outCertLen == expectedOutCertLen, "%s Certificate: ConvertWeaveCertToX509Cert() returned incorrect length", GetTestCertName(certSelector));
-        VerifyOrFail(memcmp(outCertBuf, expectedOutCert, outCertLen) == 0, "%s Certificate: ConvertWeaveCertToX509Cert() returned incorrect certificate data", GetTestCertName(certSelector));
+        VerifyOrFail(outCertLen == expectedOutCertLen, "%s Certificate: ConvertWeaveCertToX509Cert() returned incorrect length",
+                     GetTestCertName(certSelector));
+        VerifyOrFail(memcmp(outCertBuf, expectedOutCert, outCertLen) == 0,
+                     "%s Certificate: ConvertWeaveCertToX509Cert() returned incorrect certificate data",
+                     GetTestCertName(certSelector));
     }
 
     printf("%s passed\n", __FUNCTION__);
@@ -122,9 +127,9 @@ void WeaveCertTest_WeaveToX509()
 void WeaveCertTest_X509ToWeave()
 {
     WEAVE_ERROR err;
-    const uint8_t *inCert;
+    const uint8_t * inCert;
     size_t inCertLen;
-    const uint8_t *expectedOutCert;
+    const uint8_t * expectedOutCert;
     size_t expectedOutCertLen;
     uint8_t outCertBuf[kTestCertBufSize];
     uint32_t outCertLen;
@@ -138,8 +143,10 @@ void WeaveCertTest_X509ToWeave()
 
         err = ConvertX509CertToWeaveCert(inCert, inCertLen, outCertBuf, sizeof(outCertBuf), outCertLen);
         SuccessOrFail(err, "Certificate Type %d: ConvertX509CertToWeaveCert() returned error", certSelector);
-        VerifyOrFail(outCertLen == expectedOutCertLen, "Certificate Type %d: ConvertX509CertToWeaveCert() returned incorrect length", certSelector);
-        VerifyOrFail(memcmp(outCertBuf, expectedOutCert, outCertLen) == 0, "Certificate Type %d: ConvertX509CertToWeaveCert() returned incorrect certificate data", certSelector);
+        VerifyOrFail(outCertLen == expectedOutCertLen,
+                     "Certificate Type %d: ConvertX509CertToWeaveCert() returned incorrect length", certSelector);
+        VerifyOrFail(memcmp(outCertBuf, expectedOutCert, outCertLen) == 0,
+                     "Certificate Type %d: ConvertX509CertToWeaveCert() returned incorrect certificate data", certSelector);
     }
 
     printf("%s passed\n", __FUNCTION__);
@@ -150,7 +157,10 @@ void WeaveCertTest_CertValidation()
     WEAVE_ERROR err;
     WeaveCertificateSet certSet;
     ValidationContext validContext;
-    enum { kMaxCertsPerTestCase = 10 };
+    enum
+    {
+        kMaxCertsPerTestCase = 10
+    };
 
     struct ValidationTestCase
     {
@@ -192,202 +202,174 @@ void WeaveCertTest_CertValidation()
         CTAD                  = kCertType_AppDefinedBase,
     };
 
-    static const ValidationTestCase sValidationTestCases[] =
-    {
+    static const ValidationTestCase sValidationTestCases[] = {
         //                       Reqd
         // Subject   Valid       Cert                                    Expected    Expected                  Input
         // Index     Flags       Type    Expected Result                 Cert Index  TA Index   Input Certs    Cert Flags
         // ==============================================================================================================
 
         // Basic validation of leaf certificate with different load orders.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          0,       { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 1,          0,       { Root          | IsTrusted,
-                                                                                                Dev           | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
-        {  0,        0,          CTNS,   WEAVE_NO_ERROR,                 0,          2,       { Dev           | GenTBSHash,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Root          | IsTrusted } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 0, { Root | IsTrusted, CA | GenTBSHash, Dev | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_NO_ERROR, 1, 0, { Root | IsTrusted, Dev | GenTBSHash, CA | GenTBSHash } },
+        { 0, 0, CTNS, WEAVE_NO_ERROR, 0, 2, { Dev | GenTBSHash, CA | GenTBSHash, Root | IsTrusted } },
 
         // Validation of leaf certificate with root key only.
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 1,          0,       { RootKey,
-                                                                                                Dev           | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_NO_ERROR, 1, 0, { RootKey, Dev | GenTBSHash, CA | GenTBSHash } },
 
         // Validation of trusted self-signed certificate.
-        {  0,        0,          CTNS,   WEAVE_NO_ERROR,                 0,          0,       { SelfSigned    | IsTrusted | GenTBSHash } },
+        { 0, 0, CTNS, WEAVE_NO_ERROR, 0, 0, { SelfSigned | IsTrusted | GenTBSHash } },
 
         // Validation of trusted self-signed certificate in presence of trusted root and CA.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          2,       { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                SelfSigned    | IsTrusted | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 2, { Root | IsTrusted, CA | GenTBSHash, SelfSigned | IsTrusted | GenTBSHash } },
 
         // Validation of self-signed certificate in presence of trusted copy of same certificate and
         // an unrelated trusted root certificate.
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          2,       { Root          | IsTrusted,
-                                                                                                SelfSigned    | GenTBSHash,
-                                                                                                SelfSigned    | IsTrusted | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_NO_ERROR, 2, 2, { Root | IsTrusted, SelfSigned | GenTBSHash, SelfSigned | IsTrusted | GenTBSHash } },
 
         // Validation with two copies of root certificate, one trusted, one untrusted.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          1,       { Root,
-                                                                                                Root          | IsTrusted,
-                                                                                                Dev           | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 1, { Root, Root | IsTrusted, Dev | GenTBSHash, CA | GenTBSHash } },
 
         // Validation with trusted root key and trusted root certificate.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          0,       { RootKey,
-                                                                                                Root          | IsTrusted,
-                                                                                                Dev           | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 0, { RootKey, Root | IsTrusted, Dev | GenTBSHash, CA | GenTBSHash } },
 
         // Validation with trusted root key and untrusted root certificate.
-        {  3,        0,          CTNS,   WEAVE_NO_ERROR,                 3,          1,       { Root,
-                                                                                                RootKey,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 3, 0, CTNS, WEAVE_NO_ERROR, 3, 1, { Root, RootKey, CA | GenTBSHash, Dev | GenTBSHash } },
 
         // Failure due to missing CA certificate.
-        {  1,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted,
-                                                                                                Dev           | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_ERROR_CA_CERT_NOT_FOUND, -1, -1, { Root | IsTrusted, Dev | GenTBSHash } },
 
         // Failure due to missing root certificate.
-        {  1,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_ERROR_CA_CERT_NOT_FOUND, -1, -1, { CA | GenTBSHash, Dev | GenTBSHash } },
 
         // Failure due to lack of TBS hash.
-        {  1,        0,          CTNS,   WEAVE_ERROR_INVALID_ARGUMENT,   -1,         -1,      { Root          | IsTrusted,
-                                                                                                Dev,
-                                                                                                CA            | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_ERROR_INVALID_ARGUMENT, -1, -1, { Root | IsTrusted, Dev, CA | GenTBSHash } },
 
         // Failure due to untrusted root.
-        {  1,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root,
-                                                                                                Dev           | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_ERROR_CA_CERT_NOT_FOUND, -1, -1, { Root, Dev | GenTBSHash, CA | GenTBSHash } },
 
         // Failure of untrusted self-signed certificate.
-        {  0,        0,          CTNS,   WEAVE_ERROR_CERT_NOT_TRUSTED,   -1,         -1,      { SelfSigned    | GenTBSHash } },
+        { 0, 0, CTNS, WEAVE_ERROR_CERT_NOT_TRUSTED, -1, -1, { SelfSigned | GenTBSHash } },
 
         // Failure of untrusted self-signed certificate in presence of trusted root and CA.
-        {  2,        0,          CTNS,   WEAVE_ERROR_CERT_NOT_TRUSTED,   -1,         -1,      { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                SelfSigned    | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_ERROR_CERT_NOT_TRUSTED, -1, -1, { Root | IsTrusted, CA | GenTBSHash, SelfSigned | GenTBSHash } },
 
         // Failure due to intermediate cert with isCA flag = false
-        {  2,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash | SupIsCA,
-                                                                                                Dev           | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_ERROR_CA_CERT_NOT_FOUND, -1, -1, { Root | IsTrusted, CA | GenTBSHash | SupIsCA, Dev | GenTBSHash } },
 
         // Failure due to CA cert with no key usage.
-        {  2,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash | SupKeyUsage,
-                                                                                                Dev           | GenTBSHash } },
+        { 2,
+          0,
+          CTNS,
+          WEAVE_ERROR_CA_CERT_NOT_FOUND,
+          -1,
+          -1,
+          { Root | IsTrusted, CA | GenTBSHash | SupKeyUsage, Dev | GenTBSHash } },
 
         // Failure due to CA cert with no cert sign key usage.
-        {  2,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash | SupKeyCertSign,
-                                                                                                Dev           | GenTBSHash } },
+        { 2,
+          0,
+          CTNS,
+          WEAVE_ERROR_CA_CERT_NOT_FOUND,
+          -1,
+          -1,
+          { Root | IsTrusted, CA | GenTBSHash | SupKeyCertSign, Dev | GenTBSHash } },
 
         // Failure due to 3-level deep cert chain and root cert with path constraint == 0
-        {  2,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted | SetPathLenZero,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 2,
+          0,
+          CTNS,
+          WEAVE_ERROR_CA_CERT_NOT_FOUND,
+          -1,
+          -1,
+          { Root | IsTrusted | SetPathLenZero, CA | GenTBSHash, Dev | GenTBSHash } },
 
         // Basic validation of SHA-256 certificates.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          0,       { RootSHA256    | IsTrusted,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                DevSHA256     | GenTBSHash } },
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 1,          0,       { RootSHA256    | IsTrusted,
-                                                                                                DevSHA256     | GenTBSHash,
-                                                                                                CASHA256      | GenTBSHash } },
-        {  0,        0,          CTNS,   WEAVE_NO_ERROR,                 0,          2,       { DevSHA256     | GenTBSHash,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                RootSHA256    | IsTrusted } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 0, { RootSHA256 | IsTrusted, CASHA256 | GenTBSHash, DevSHA256 | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_NO_ERROR, 1, 0, { RootSHA256 | IsTrusted, DevSHA256 | GenTBSHash, CASHA256 | GenTBSHash } },
+        { 0, 0, CTNS, WEAVE_NO_ERROR, 0, 2, { DevSHA256 | GenTBSHash, CASHA256 | GenTBSHash, RootSHA256 | IsTrusted } },
 
         // Validation of trusted self-signed SHA-256 certificate.
-        {  0,        0,          CTNS,   WEAVE_NO_ERROR,                 0,          0,       { SelfSigned256 | IsTrusted | GenTBSHash } },
+        { 0, 0, CTNS, WEAVE_NO_ERROR, 0, 0, { SelfSigned256 | IsTrusted | GenTBSHash } },
 
         // Validation of SHA-256 certificates with root key only.
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 1,          0,       { RootKey,
-                                                                                                DevSHA256     | GenTBSHash,
-                                                                                                CASHA256      | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_NO_ERROR, 1, 0, { RootKey, DevSHA256 | GenTBSHash, CASHA256 | GenTBSHash } },
 
         // Validation of SHA-256 CA and leaf certificates with SHA-1 root.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          0,       { Root          | IsTrusted,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                DevSHA256     | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 0, { Root | IsTrusted, CASHA256 | GenTBSHash, DevSHA256 | GenTBSHash } },
 
         // Validation of SHA-1 leaf certificate with SHA-256 CA and root.
-        {  2,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          0,       { RootSHA256    | IsTrusted,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_NO_ERROR, 2, 0, { RootSHA256 | IsTrusted, CASHA256 | GenTBSHash, Dev | GenTBSHash } },
 
         // Failure due to lack of SHA-256 CA certificate with SHA-256 leaf certificate.
-        {  2,        0,          CTNS,   WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { RootSHA256    | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                DevSHA256     | GenTBSHash } },
+        { 2, 0, CTNS, WEAVE_ERROR_CA_CERT_NOT_FOUND, -1, -1, { RootSHA256 | IsTrusted, CA | GenTBSHash, DevSHA256 | GenTBSHash } },
 
         // Validation of SHA-256 leaf certificate in presence of SHA-1 and SHA-256 CA certificates.
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 1,          0,       { RootSHA256    | IsTrusted,
-                                                                                                DevSHA256     | GenTBSHash,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
+        { 1,
+          0,
+          CTNS,
+          WEAVE_NO_ERROR,
+          1,
+          0,
+          { RootSHA256 | IsTrusted, DevSHA256 | GenTBSHash, CASHA256 | GenTBSHash, CA | GenTBSHash } },
 
         // Validation of SHA-1 leaf certificate in presence of SHA-1 and SHA-256 CA certificates.
-        {  0,        0,          CTNS,   WEAVE_NO_ERROR,                 0,          1,       { Dev           | GenTBSHash,
-                                                                                                RootSHA256    | IsTrusted,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                CA            | GenTBSHash } },
+        { 0, 0, CTNS, WEAVE_NO_ERROR, 0, 1, { Dev | GenTBSHash, RootSHA256 | IsTrusted, CASHA256 | GenTBSHash, CA | GenTBSHash } },
 
         // Validation of self-signed SHA-256 certificate in presence of trusted copy of SHA-1 version of
         // the same certificate and an unrelated trusted root certificate.
-        {  1,        0,          CTNS,   WEAVE_NO_ERROR,                 2,          2,       { Root          | IsTrusted,
-                                                                                                SelfSigned256 | GenTBSHash,
-                                                                                                SelfSigned    | IsTrusted | GenTBSHash } },
+        { 1, 0, CTNS, WEAVE_NO_ERROR, 2, 2, { Root | IsTrusted, SelfSigned256 | GenTBSHash, SelfSigned | IsTrusted | GenTBSHash } },
 
         // Failure due to RequireSHA256 flag set and only SHA-1 leaf certificate present.
-        {  2,        ReqSHA256,  CTNS,   WEAVE_ERROR_WRONG_CERT_SIGNATURE_ALGORITHM,
-                                                                         -1,         -1,      { RootSHA256    | IsTrusted,
-                                                                                                CASHA256      | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 2,
+          ReqSHA256,
+          CTNS,
+          WEAVE_ERROR_WRONG_CERT_SIGNATURE_ALGORITHM,
+          -1,
+          -1,
+          { RootSHA256 | IsTrusted, CASHA256 | GenTBSHash, Dev | GenTBSHash } },
 
         // Require a specific certificate type.
-        {  2,        0,          CTDev,  WEAVE_NO_ERROR,                 2,          0,       { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 2, 0, CTDev, WEAVE_NO_ERROR, 2, 0, { Root | IsTrusted, CA | GenTBSHash, Dev | GenTBSHash } },
 
         // Require a certificate with an application-defined type.
-        {  2,        0,          CTAD,   WEAVE_NO_ERROR,                 2,          0,       { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash | SetAppDefinedCertType } },
+        { 2, 0, CTAD, WEAVE_NO_ERROR, 2, 0, { Root | IsTrusted, CA | GenTBSHash, Dev | GenTBSHash | SetAppDefinedCertType } },
 
         // Select between two identical certificates with different types.
-        {  2,        0,          CTAD,   WEAVE_NO_ERROR,                 3,          0,       { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash,
-                                                                                                Dev           | GenTBSHash | SetAppDefinedCertType } },
+        { 2,
+          0,
+          CTAD,
+          WEAVE_NO_ERROR,
+          3,
+          0,
+          { Root | IsTrusted, CA | GenTBSHash, Dev | GenTBSHash, Dev | GenTBSHash | SetAppDefinedCertType } },
 
         // Failure due to required certificate type not found.
-        {  2,        0,          CTSE,   WEAVE_ERROR_WRONG_CERT_TYPE,    -1,         -1,      { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 2, 0, CTSE, WEAVE_ERROR_WRONG_CERT_TYPE, -1, -1, { Root | IsTrusted, CA | GenTBSHash, Dev | GenTBSHash } },
 
         // Failure due to CA certificate having wrong type.
-        {  2,        0,          CTDev,  WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted,
-                                                                                                CA            | GenTBSHash | SetAppDefinedCertType,
-                                                                                                Dev           | GenTBSHash } },
+        { 2,
+          0,
+          CTDev,
+          WEAVE_ERROR_CA_CERT_NOT_FOUND,
+          -1,
+          -1,
+          { Root | IsTrusted, CA | GenTBSHash | SetAppDefinedCertType, Dev | GenTBSHash } },
 
         // Failure due to root certificate having wrong type.
-        {  2,        0,          CTDev,  WEAVE_ERROR_CA_CERT_NOT_FOUND,  -1,         -1,      { Root          | IsTrusted | SetAppDefinedCertType,
-                                                                                                CA            | GenTBSHash,
-                                                                                                Dev           | GenTBSHash } },
+        { 2,
+          0,
+          CTDev,
+          WEAVE_ERROR_CA_CERT_NOT_FOUND,
+          -1,
+          -1,
+          { Root | IsTrusted | SetAppDefinedCertType, CA | GenTBSHash, Dev | GenTBSHash } },
     };
     static const size_t sNumValidationTestCases = sizeof(sValidationTestCases) / sizeof(sValidationTestCases[0]);
 
     for (unsigned i = 0; i < sNumValidationTestCases; i++)
     {
-        WeaveCertificateData *resultCert = NULL;
-        const ValidationTestCase& testCase = sValidationTestCases[i];
+        WeaveCertificateData * resultCert   = NULL;
+        const ValidationTestCase & testCase = sValidationTestCases[i];
 
         // Initialize the certificate set and load the specified test certificates.
         certSet.Init(kMaxCertsPerTestCase, kTestCertBufSize);
@@ -409,27 +391,30 @@ void WeaveCertTest_CertValidation()
         // Initialize the validation context.
         memset(&validContext, 0, sizeof(validContext));
         SetEffectiveTime(validContext, 2016, 5, 3);
-        validContext.ValidateFlags = testCase.ValidateFlags;
-        validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+        validContext.ValidateFlags       = testCase.ValidateFlags;
+        validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
         validContext.RequiredKeyPurposes = kKeyPurposeFlag_ServerAuth;
-        validContext.RequiredCertType = testCase.RequiredCertType;
+        validContext.RequiredCertType    = testCase.RequiredCertType;
 
         // Locate the subject DN and key id that will be used as input the FindValidCert() method.
-        const WeaveDN& subjectDN = certSet.Certs[testCase.SubjectCertIndex].SubjectDN;
-        const CertificateKeyId& subjectKeyId = certSet.Certs[testCase.SubjectCertIndex].SubjectKeyId;
+        const WeaveDN & subjectDN             = certSet.Certs[testCase.SubjectCertIndex].SubjectDN;
+        const CertificateKeyId & subjectKeyId = certSet.Certs[testCase.SubjectCertIndex].SubjectKeyId;
 
         // Invoke the FindValidCert() method (the method being tested).
         err = certSet.FindValidCert(subjectDN, subjectKeyId, validContext, resultCert);
-        VerifyOrFail(err == testCase.ExpectedResult, "Test Case %u: Unexpected return value from FindValidCert(): err = %d", i, err);
+        VerifyOrFail(err == testCase.ExpectedResult, "Test Case %u: Unexpected return value from FindValidCert(): err = %d", i,
+                     err);
 
         // If the test case is expected to be successful...
         if (err == WEAVE_NO_ERROR)
         {
             // Verify that the method found the correct certificate.
-            VerifyOrFail(resultCert == &certSet.Certs[testCase.ExpectedCertIndex], "Test Case %u: Unexpected certificate returned from FindValidCert()", i);
+            VerifyOrFail(resultCert == &certSet.Certs[testCase.ExpectedCertIndex],
+                         "Test Case %u: Unexpected certificate returned from FindValidCert()", i);
 
             // Verify that the method selected the correct trust anchor.
-            VerifyOrFail(validContext.TrustAnchor == &certSet.Certs[testCase.ExpectedTrustAnchorIndex], "Test Case %u: Unexpected TrustAnchor returned from FindValidCert()", i);
+            VerifyOrFail(validContext.TrustAnchor == &certSet.Certs[testCase.ExpectedTrustAnchorIndex],
+                         "Test Case %u: Unexpected TrustAnchor returned from FindValidCert()", i);
         }
 
         // Clear the certificate set.
@@ -450,7 +435,7 @@ void WeaveCertTest_CertValidTime()
     LoadStandardCerts(certSet);
 
     memset(&validContext, 0, sizeof(validContext));
-    validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+    validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
     validContext.RequiredKeyPurposes = kKeyPurposeFlag_ServerAuth;
 
     // Before certificate validity period.
@@ -537,75 +522,74 @@ void WeaveCertTest_CertUsage()
         DO = kKeyUsageFlag_DecipherOnly,
     };
 
-    static UsageTestCase sUsageTestCases[] =
-    {
+    static UsageTestCase sUsageTestCases[] = {
         // CertIndex    KeyUsages   KeyPurposes     ExpectedResult
         // =================================================================================
 
         // ----- Key Usages for leaf Certificate -----
-        {  2,           DS,         0,              WEAVE_NO_ERROR                        },
-        {  2,           NR,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           KE,         0,              WEAVE_NO_ERROR                        },
-        {  2,           DE,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           KA,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           KC,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           CR,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           EO,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DO,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|NR,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|KE,      0,              WEAVE_NO_ERROR                        },
-        {  2,           DS|DE,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|KA,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|KC,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|CR,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|EO,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|DO,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
+        { 2, DS, 0, WEAVE_NO_ERROR },
+        { 2, NR, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, KE, 0, WEAVE_NO_ERROR },
+        { 2, DE, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, KA, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, KC, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, CR, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, EO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | NR, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | KE, 0, WEAVE_NO_ERROR },
+        { 2, DS | DE, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | KA, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | KC, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | CR, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | EO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | DO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
 
         // ----- Key Usages for CA Certificate -----
-        {  1,           DS,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           NR,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KE,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           DE,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KA,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC,         0,              WEAVE_NO_ERROR                        },
-        {  1,           CR,         0,              WEAVE_NO_ERROR                        },
-        {  1,           EO,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           DO,         0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|DS,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|NR,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|KE,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|DE,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|KA,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|CR,      0,              WEAVE_NO_ERROR                        },
-        {  1,           KC|EO,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           KC|DO,      0,              WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
+        { 1, DS, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, NR, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KE, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, DE, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KA, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC, 0, WEAVE_NO_ERROR },
+        { 1, CR, 0, WEAVE_NO_ERROR },
+        { 1, EO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, DO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | DS, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | NR, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | KE, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | DE, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | KA, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | CR, 0, WEAVE_NO_ERROR },
+        { 1, KC | EO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, KC | DO, 0, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
 
         // ----- Key Purposes for leaf Certificate -----
-        {  2,           0,          SA,             WEAVE_NO_ERROR                        },
-        {  2,           0,          CA,             WEAVE_NO_ERROR                        },
-        {  2,           0,          CS,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           0,          EP,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           0,          TS,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           0,          SA|CA,          WEAVE_NO_ERROR                        },
-        {  2,           0,          SA|CS,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           0,          SA|EP,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           0,          SA|TS,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
+        { 2, 0, SA, WEAVE_NO_ERROR },
+        { 2, 0, CA, WEAVE_NO_ERROR },
+        { 2, 0, CS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, 0, EP, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, 0, TS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, 0, SA | CA, WEAVE_NO_ERROR },
+        { 2, 0, SA | CS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, 0, SA | EP, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, 0, SA | TS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
 
         // ----- Key Purposes for CA Certificate -----
-        {  1,           0,          SA,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          CA,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          CS,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          EP,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          TS,             WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          SA|CA,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          SA|CS,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          SA|EP,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  1,           0,          SA|TS,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
+        { 1, 0, SA, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, CA, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, CS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, EP, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, TS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, SA | CA, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, SA | CS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, SA | EP, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 1, 0, SA | TS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
 
         // ----- Combinations -----
-        {  2,           DS|NR,      SA|CA,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|KE,      SA|CS,          WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED    },
-        {  2,           DS|KE,      SA|CA,          WEAVE_NO_ERROR                        },
+        { 2, DS | NR, SA | CA, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | KE, SA | CS, WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED },
+        { 2, DS | KE, SA | CA, WEAVE_NO_ERROR },
     };
     size_t sNumUsageTestCases = sizeof(sUsageTestCases) / sizeof(sUsageTestCases[0]);
 
@@ -617,11 +601,11 @@ void WeaveCertTest_CertUsage()
     {
         memset(&validContext, 0, sizeof(validContext));
         SetEffectiveTime(validContext, 2016, 5, 4);
-        validContext.RequiredKeyUsages = sUsageTestCases[i].RequiredKeyUsages;
+        validContext.RequiredKeyUsages   = sUsageTestCases[i].RequiredKeyUsages;
         validContext.RequiredKeyPurposes = sUsageTestCases[i].RequiredKeyPurposes;
-        err = certSet.ValidateCert(certSet.Certs[sUsageTestCases[i].CertIndex], validContext);
+        err                              = certSet.ValidateCert(certSet.Certs[sUsageTestCases[i].CertIndex], validContext);
         if (err != sUsageTestCases[i].ExpectedResult)
-            printf("i = %d, err = %d\n", (int)i, err);
+            printf("i = %d, err = %d\n", (int) i, err);
         VerifyOrFail(err == sUsageTestCases[i].ExpectedResult, "Unexpected result from ValidateCert()");
     }
 
@@ -658,29 +642,28 @@ void WeaveCertTest_CertType()
         FirmwareSigning256 = kTestCert_FirmwareSigning_SHA256,
     };
 
-    static TestCase sTestCases[] =
-    {
+    static TestCase sTestCases[] = {
         // Cert                ExpectedCertType
         // ================================================
-        {  Root,               kCertType_CA               },
-        {  RootKey,            kCertType_CA               },
-        {  Root256,            kCertType_CA               },
-        {  CA,                 kCertType_CA               },
-        {  CA256,              kCertType_CA               },
-        {  Dev,                kCertType_Device           },
-        {  Dev256,             kCertType_Device           },
-        {  SelfSigned,         kCertType_General          },
-        {  SelfSigned256,      kCertType_General          },
-        {  ServiceEndpoint,    kCertType_ServiceEndpoint  },
-        {  ServiceEndpoint256, kCertType_ServiceEndpoint  },
-        {  FirmwareSigning,    kCertType_FirmwareSigning  },
-        {  FirmwareSigning256, kCertType_FirmwareSigning  },
+        { Root, kCertType_CA },
+        { RootKey, kCertType_CA },
+        { Root256, kCertType_CA },
+        { CA, kCertType_CA },
+        { CA256, kCertType_CA },
+        { Dev, kCertType_Device },
+        { Dev256, kCertType_Device },
+        { SelfSigned, kCertType_General },
+        { SelfSigned256, kCertType_General },
+        { ServiceEndpoint, kCertType_ServiceEndpoint },
+        { ServiceEndpoint256, kCertType_ServiceEndpoint },
+        { FirmwareSigning, kCertType_FirmwareSigning },
+        { FirmwareSigning256, kCertType_FirmwareSigning },
     };
     static const size_t sNumTestCases = sizeof(sTestCases) / sizeof(sTestCases[0]);
 
     for (unsigned i = 0; i < sNumTestCases; i++)
     {
-        const TestCase& testCase = sTestCases[i];
+        const TestCase & testCase = sTestCases[i];
 
         // Initialize the certificate set and load the test certificate.
         certSet.Init(1, kTestCertBufSize);
@@ -694,10 +677,10 @@ void WeaveCertTest_CertType()
 
 static EncodedECPrivateKey sDevicePrivKey;
 
-static WEAVE_ERROR sGenerateCertSignature(const uint8_t *hash, uint8_t hashLen, EncodedECDSASignature& ecdsaSig)
+static WEAVE_ERROR sGenerateCertSignature(const uint8_t * hash, uint8_t hashLen, EncodedECDSASignature & ecdsaSig)
 {
-    return nl::Weave::Crypto::GenerateECDSASignature(WeaveCurveIdToOID(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID),
-                                                     hash, hashLen, sDevicePrivKey, ecdsaSig);
+    return nl::Weave::Crypto::GenerateECDSASignature(WeaveCurveIdToOID(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID), hash,
+                                                     hashLen, sDevicePrivKey, ecdsaSig);
 }
 
 void WeaveCertTest_GenerateOperationalDeviceCert()
@@ -710,13 +693,13 @@ void WeaveCertTest_GenerateOperationalDeviceCert()
     uint8_t devicePubKeyBuf[EncodedECPublicKey::kMaxValueLength];
     EncodedECPublicKey devicePubKey;
     WeaveCertificateSet certSet;
-    WeaveCertificateData* certData;
+    WeaveCertificateData * certData;
     ValidationContext validContext;
 
-    sDevicePrivKey.PrivKey = devicePrivKeyBuf;
+    sDevicePrivKey.PrivKey    = devicePrivKeyBuf;
     sDevicePrivKey.PrivKeyLen = sizeof(devicePrivKeyBuf);
 
-    devicePubKey.ECPoint = devicePubKeyBuf;
+    devicePubKey.ECPoint    = devicePubKeyBuf;
     devicePubKey.ECPointLen = sizeof(devicePubKeyBuf);
 
     err = GenerateWeaveNodeId(deviceId);
@@ -737,61 +720,61 @@ void WeaveCertTest_GenerateOperationalDeviceCert()
 
     // Verify that loaded certificate data is as expected.
     {
-        VerifyOrFail(certData->SubjectDN.AttrOID           == ASN1::kOID_AttributeType_WeaveDeviceId,            "LoadCert() returned incorrect certData->SubjectDN.AttrOID parameter");
-        VerifyOrFail(certData->SubjectDN.AttrValue.WeaveId == deviceId,                                          "LoadCert() returned incorrect certData->SubjectDN.AttrValue.WeaveId parameter");
-        VerifyOrFail(certData->IssuerDN.AttrOID            == ASN1::kOID_AttributeType_WeaveDeviceId,            "LoadCert() returned incorrect certData->SubjectDN.AttrOID parameter");
-        VerifyOrFail(certData->IssuerDN.AttrValue.WeaveId  == deviceId,                                          "LoadCert() returned incorrect certData->SubjectDN.AttrValue.WeaveId parameter");
-        VerifyOrFail(certData->SubjectKeyId.Len            == 8,                                                 "LoadCert() returned incorrect certData->SubjectKeyId.Len parameter");
-        VerifyOrFail((certData->SubjectKeyId.Id[0] & 0xF0) == 0x40,                                              "LoadCert() returned incorrect certData->SubjectKeyId.Id parameter");
-        VerifyOrFail(certData->AuthKeyId.Len               == 8,                                                 "LoadCert() returned incorrect certData->AuthKeyId.Len parameter");
-        VerifyOrFail((certData->AuthKeyId.Id[0] & 0xF0)    == 0x40,                                              "LoadCert() returned incorrect certData->AuthKeyId.Id parameter");
-        VerifyOrFail(certData->PubKeyCurveId               == WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID,     "LoadCert() returned incorrect certData->PubKeyCurveId parameter");
-        VerifyOrFail(certData->CertFlags                   == (kCertFlag_ExtPresent_BasicConstraints |
-                                                               kCertFlag_ExtPresent_KeyUsage |
-                                                               kCertFlag_ExtPresent_ExtendedKeyUsage |
-                                                               kCertFlag_ExtPresent_SubjectKeyId |
-                                                               kCertFlag_ExtPresent_AuthKeyId |
-                                                               kCertFlag_TBSHashPresent |
-                                                               kCertFlag_IsTrusted),                             "LoadCert() returned incorrect certData->CertFlags parameter");
-        VerifyOrFail(certData->KeyUsageFlags               == (kKeyUsageFlag_DigitalSignature |
-                                                               kKeyUsageFlag_KeyEncipherment),                   "LoadCert() returned incorrect certData->KeyUsageFlags parameter");
-        VerifyOrFail(certData->PubKeyAlgoOID               == kOID_PubKeyAlgo_ECPublicKey,                       "LoadCert() returned incorrect certData->PubKeyAlgoOID parameter");
-        VerifyOrFail(certData->SigAlgoOID                  == kOID_SigAlgo_ECDSAWithSHA256,                      "LoadCert() returned incorrect certData->SigAlgoOID parameter");
-        VerifyOrFail(certData->KeyPurposeFlags             == (kKeyPurposeFlag_ServerAuth |
-                                                               kKeyPurposeFlag_ClientAuth),                      "LoadCert() returned incorrect certData->KeyPurposeFlags parameter");
-        VerifyOrFail(certData->NotBeforeDate               == WEAVE_CONFIG_OP_DEVICE_CERT_VALID_DATE_NOT_BEFORE, "LoadCert() returned incorrect certData->NotBeforeDate parameter");
-        VerifyOrFail(certData->NotAfterDate                == WEAVE_CONFIG_OP_DEVICE_CERT_VALID_DATE_NOT_AFTER,  "LoadCert() returned incorrect certData->NotAfterDate parameter");
-        VerifyOrFail(certData->PublicKey.EC.ECPointLen     == devicePubKey.ECPointLen,                           "LoadCert() returned incorrect certData->PublicKey.EC.ECPointLen parameter");
-        VerifyOrFail(memcmp(certData->PublicKey.EC.ECPoint, devicePubKey.ECPoint, devicePubKey.ECPointLen) == 0, "LoadCert() returned incorrect certData->PublicKey.EC.ECPoint parameter");
+        VerifyOrFail(certData->SubjectDN.AttrOID == ASN1::kOID_AttributeType_WeaveDeviceId,
+                     "LoadCert() returned incorrect certData->SubjectDN.AttrOID parameter");
+        VerifyOrFail(certData->SubjectDN.AttrValue.WeaveId == deviceId,
+                     "LoadCert() returned incorrect certData->SubjectDN.AttrValue.WeaveId parameter");
+        VerifyOrFail(certData->IssuerDN.AttrOID == ASN1::kOID_AttributeType_WeaveDeviceId,
+                     "LoadCert() returned incorrect certData->SubjectDN.AttrOID parameter");
+        VerifyOrFail(certData->IssuerDN.AttrValue.WeaveId == deviceId,
+                     "LoadCert() returned incorrect certData->SubjectDN.AttrValue.WeaveId parameter");
+        VerifyOrFail(certData->SubjectKeyId.Len == 8, "LoadCert() returned incorrect certData->SubjectKeyId.Len parameter");
+        VerifyOrFail((certData->SubjectKeyId.Id[0] & 0xF0) == 0x40,
+                     "LoadCert() returned incorrect certData->SubjectKeyId.Id parameter");
+        VerifyOrFail(certData->AuthKeyId.Len == 8, "LoadCert() returned incorrect certData->AuthKeyId.Len parameter");
+        VerifyOrFail((certData->AuthKeyId.Id[0] & 0xF0) == 0x40, "LoadCert() returned incorrect certData->AuthKeyId.Id parameter");
+        VerifyOrFail(certData->PubKeyCurveId == WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID,
+                     "LoadCert() returned incorrect certData->PubKeyCurveId parameter");
+        VerifyOrFail(certData->CertFlags ==
+                         (kCertFlag_ExtPresent_BasicConstraints | kCertFlag_ExtPresent_KeyUsage |
+                          kCertFlag_ExtPresent_ExtendedKeyUsage | kCertFlag_ExtPresent_SubjectKeyId |
+                          kCertFlag_ExtPresent_AuthKeyId | kCertFlag_TBSHashPresent | kCertFlag_IsTrusted),
+                     "LoadCert() returned incorrect certData->CertFlags parameter");
+        VerifyOrFail(certData->KeyUsageFlags == (kKeyUsageFlag_DigitalSignature | kKeyUsageFlag_KeyEncipherment),
+                     "LoadCert() returned incorrect certData->KeyUsageFlags parameter");
+        VerifyOrFail(certData->PubKeyAlgoOID == kOID_PubKeyAlgo_ECPublicKey,
+                     "LoadCert() returned incorrect certData->PubKeyAlgoOID parameter");
+        VerifyOrFail(certData->SigAlgoOID == kOID_SigAlgo_ECDSAWithSHA256,
+                     "LoadCert() returned incorrect certData->SigAlgoOID parameter");
+        VerifyOrFail(certData->KeyPurposeFlags == (kKeyPurposeFlag_ServerAuth | kKeyPurposeFlag_ClientAuth),
+                     "LoadCert() returned incorrect certData->KeyPurposeFlags parameter");
+        VerifyOrFail(certData->NotBeforeDate == WEAVE_CONFIG_OP_DEVICE_CERT_VALID_DATE_NOT_BEFORE,
+                     "LoadCert() returned incorrect certData->NotBeforeDate parameter");
+        VerifyOrFail(certData->NotAfterDate == WEAVE_CONFIG_OP_DEVICE_CERT_VALID_DATE_NOT_AFTER,
+                     "LoadCert() returned incorrect certData->NotAfterDate parameter");
+        VerifyOrFail(certData->PublicKey.EC.ECPointLen == devicePubKey.ECPointLen,
+                     "LoadCert() returned incorrect certData->PublicKey.EC.ECPointLen parameter");
+        VerifyOrFail(memcmp(certData->PublicKey.EC.ECPoint, devicePubKey.ECPoint, devicePubKey.ECPointLen) == 0,
+                     "LoadCert() returned incorrect certData->PublicKey.EC.ECPoint parameter");
     }
 
     // Validate generated certificate.
     {
         // Initialize the validation context.
         memset(&validContext, 0, sizeof(validContext));
-        ASN1UniversalTime testEffectiveTime = {
-            .Year   = 2020,
-            .Month  = 01,
-            .Day    = 01,
-            .Hour   = 00,
-            .Minute = 00,
-            .Second = 00
-        };
+        ASN1UniversalTime testEffectiveTime = { .Year = 2020, .Month = 01, .Day = 01, .Hour = 00, .Minute = 00, .Second = 00 };
         SetEffectiveTime(validContext, testEffectiveTime.Year, testEffectiveTime.Month, testEffectiveTime.Day);
-        validContext.ValidateFlags = kValidateFlag_RequireSHA256;
-        validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature |
-                                         kKeyUsageFlag_KeyEncipherment;
-        validContext.RequiredKeyPurposes = kKeyPurposeFlag_ServerAuth |
-                                           kKeyPurposeFlag_ClientAuth;
-        validContext.RequiredCertType = kCertType_Device;
+        validContext.ValidateFlags       = kValidateFlag_RequireSHA256;
+        validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature | kKeyUsageFlag_KeyEncipherment;
+        validContext.RequiredKeyPurposes = kKeyPurposeFlag_ServerAuth | kKeyPurposeFlag_ClientAuth;
+        validContext.RequiredCertType    = kCertType_Device;
 
         // Validate generated certificate.
         err = certSet.ValidateCert(*certData, validContext);
         SuccessOrFail(err, "ValidateCert() returned error");
 
         // Verify certificate signature.
-        err = VerifyECDSASignature(WeaveCurveIdToOID(certData->PubKeyCurveId),
-                                   certData->TBSHash, SHA256::kHashLength,
+        err = VerifyECDSASignature(WeaveCurveIdToOID(certData->PubKeyCurveId), certData->TBSHash, SHA256::kHashLength,
                                    certData->Signature.EC, certData->PublicKey.EC);
         SuccessOrFail(err, "VerifyECDSASignature() returned error");
     }
@@ -818,16 +801,15 @@ void WeaveCertTest_GenerateAndPrintTestOperationalDeviceCert()
 
     enum
     {
-        kTestDevice_OpDeviceIdBase     = 0x1AB4300000000000ULL,
-        kTestDevice_NumberOfOpCerts    = 10,
+        kTestDevice_OpDeviceIdBase  = 0x1AB4300000000000ULL,
+        kTestDevice_NumberOfOpCerts = 10,
     };
 
-    sDevicePrivKey.PrivKey = devicePrivKeyBuf;
+    sDevicePrivKey.PrivKey    = devicePrivKeyBuf;
     sDevicePrivKey.PrivKeyLen = sizeof(devicePrivKeyBuf);
 
-    devicePubKey.ECPoint = devicePubKeyBuf;
+    devicePubKey.ECPoint    = devicePubKeyBuf;
     devicePubKey.ECPointLen = sizeof(devicePubKeyBuf);
-
 
     for (int i = 1; i <= kTestDevice_NumberOfOpCerts; i++)
     {
@@ -836,8 +818,8 @@ void WeaveCertTest_GenerateAndPrintTestOperationalDeviceCert()
         err = GenerateECDHKey(WeaveCurveIdToOID(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID), devicePubKey, sDevicePrivKey);
         SuccessOrFail(err, "GenerateECDHKey() returned error");
 
-        err = EncodeWeaveECPrivateKey(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID, &devicePubKey, sDevicePrivKey,
-                                      keyBuf, sizeof(keyBuf), keyLen);
+        err = EncodeWeaveECPrivateKey(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID, &devicePubKey, sDevicePrivKey, keyBuf,
+                                      sizeof(keyBuf), keyLen);
         SuccessOrFail(err, "EncodeWeaveECPrivateKey() returned error");
 
         err = GenerateOperationalDeviceCert(deviceId, devicePubKey, certBuf, sizeof(certBuf), certLen, sGenerateCertSignature);
@@ -847,13 +829,13 @@ void WeaveCertTest_GenerateAndPrintTestOperationalDeviceCert()
 
         printf("uint64_t TestDevice%d_OperationalNodeId = 0x%" PRIX64 "ULL;\n\n", i, deviceId);
 
-        printf("uint8_t TestDevice%d_OperationalCert[] = \n{\n", i);
+        printf("uint8_t TestDevice%d_OperationalCert[] = \n {\n", i);
         DumpMemoryCStyle(certBuf, certLen, "    ", 16);
         printf("};\n\n");
 
         printf("uint16_t TestDevice%d_OperationalCertLength = sizeof(TestDevice%d_OperationalCert);\n\n", i, i);
 
-        printf("uint8_t TestDevice%d_OperationalPrivateKey[] = \n{\n", i);
+        printf("uint8_t TestDevice%d_OperationalPrivateKey[] = \n {\n", i);
         DumpMemoryCStyle(keyBuf, keyLen, "    ", 16);
         printf("};\n\n");
 
@@ -863,7 +845,7 @@ void WeaveCertTest_GenerateAndPrintTestOperationalDeviceCert()
     printf("%s passed\n", __FUNCTION__);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WeaveCertTest_WeaveToX509();
     WeaveCertTest_X509ToWeave();

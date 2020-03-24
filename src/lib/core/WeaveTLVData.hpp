@@ -26,7 +26,6 @@
  *
  */
 
-
 #ifndef WEAVETLVDATA_H_
 #define WEAVETLVDATA_H_
 
@@ -38,42 +37,42 @@
  *
  *  @note Integral truncate would take the least significant bits, regardless of hardware endianness.
  */
-#define nlWeaveTLV_GetLower32From64(v)  ((uint32_t)(((uint64_t)(v) >>  0) & 0xFFFFFFFFUL))
+#define nlWeaveTLV_GetLower32From64(v) ((uint32_t)(((uint64_t)(v) >> 0) & 0xFFFFFFFFUL))
 
 /*
  *  @brief Integral truncate argument X to the next least significant 32-bit
  *
  *  @note Right bit shift gets rid of the least significant bits, regardless of hardware endianness.
  */
-#define nlWeaveTLV_GetUpper32From64(v)  ((uint32_t)(((uint64_t)(v) >> 32) & 0xFFFFFFFFUL))
+#define nlWeaveTLV_GetUpper32From64(v) ((uint32_t)(((uint64_t)(v) >> 32) & 0xFFFFFFFFUL))
 
 /*
  *  @brief Integral truncate L to the least significant 16-bit
  *
  *  @note Integral truncate would take the least significant bits, regardless of hardware endianness.
  */
-#define nlWeaveTLV_GetLower16From32(v)  ((uint16_t)(((uint32_t)(v) >>  0) & 0xFFFFU))
+#define nlWeaveTLV_GetLower16From32(v) ((uint16_t)(((uint32_t)(v) >> 0) & 0xFFFFU))
 
 /*
  *  @brief Integral truncate argument X to the next least significant 16-bit
  *
  *  @note Right bit shift gets rid of the least significant bits, regardless of hardware endianness.
  */
-#define nlWeaveTLV_GetUpper16From32(v)  ((uint16_t)(((uint32_t)(v) >> 16) & 0xFFFFU))
+#define nlWeaveTLV_GetUpper16From32(v) ((uint16_t)(((uint32_t)(v) >> 16) & 0xFFFFU))
 
 /*
  *  @brief Integral truncate L to the least significant 8-bit
  *
  *  @note Integral truncate would take the least significant bits, regardless of hardware endianness.
  */
-#define nlWeaveTLV_GetLower8From16(v)   ((uint8_t)(((uint16_t)(v) >> 0) & 0xFFU))
+#define nlWeaveTLV_GetLower8From16(v) ((uint8_t)(((uint16_t)(v) >> 0) & 0xFFU))
 
 /*
  *  @brief Integral truncate argument X to the next least significant 8-bit
  *
  *  @note Right bit shift gets rid of the least significant bits, regardless of hardware endianness.
  */
-#define nlWeaveTLV_GetUpper8From16(v)   ((uint8_t)(((uint16_t)(v) >> 8) & 0xFFU))
+#define nlWeaveTLV_GetUpper8From16(v) ((uint8_t)(((uint16_t)(v) >> 8) & 0xFFU))
 
 /*
  *  @brief Integral truncate argument v to 8-bit
@@ -93,12 +92,14 @@
 /*
  *  @brief Integral truncate argument v to 32-bit, and then serialize it using Weave standard Little Endian order
  */
-#define nlWeaveTLV_Serialize32(v) nlWeaveTLV_Serialize16(nlWeaveTLV_GetLower16From32(v)), nlWeaveTLV_Serialize16(nlWeaveTLV_GetUpper16From32(v))
+#define nlWeaveTLV_Serialize32(v)                                                                                                  \
+    nlWeaveTLV_Serialize16(nlWeaveTLV_GetLower16From32(v)), nlWeaveTLV_Serialize16(nlWeaveTLV_GetUpper16From32(v))
 
 /*
  *  @brief Integral truncate argument v to 64-bit, and then serialize it using Weave standard Little Endian order
  */
-#define nlWeaveTLV_Serialize64(v) nlWeaveTLV_Serialize32(nlWeaveTLV_GetLower32From64(v)), nlWeaveTLV_Serialize32(nlWeaveTLV_GetUpper32From64(v))
+#define nlWeaveTLV_Serialize64(v)                                                                                                  \
+    nlWeaveTLV_Serialize32(nlWeaveTLV_GetLower32From64(v)), nlWeaveTLV_Serialize32(nlWeaveTLV_GetUpper32From64(v))
 
 /*
  *  @brief Specifies an anonymous TLV element, which doesn't have any tag
@@ -116,23 +117,21 @@
  *  @param Tag      The tag for this TLV element, defined under Common Profile.
  *                  Would be truncated to 16 bites.
  */
-#define nlWeaveTLV_TAG_COMMON_PROFILE_2Bytes(Tag) \
-    nl::Weave::TLV::kTLVTagControl_CommonProfile_2Bytes, nlWeaveTLV_Serialize16(Tag)
+#define nlWeaveTLV_TAG_COMMON_PROFILE_2Bytes(Tag) nl::Weave::TLV::kTLVTagControl_CommonProfile_2Bytes, nlWeaveTLV_Serialize16(Tag)
 
 /*
  *  @brief Specifies a TLV element with a Common Profile tag
  *  @param Tag      The tag for this TLV element, defined under Common Profile.
  *                  Would be truncated to 32 bites.
  */
-#define nlWeaveTLV_TAG_COMMON_PROFILE_4Bytes(Tag) \
-    nl::Weave::TLV::kTLVTagControl_CommonProfile_4Bytes, nlWeaveTLV_Serialize32(Tag)
+#define nlWeaveTLV_TAG_COMMON_PROFILE_4Bytes(Tag) nl::Weave::TLV::kTLVTagControl_CommonProfile_4Bytes, nlWeaveTLV_Serialize32(Tag)
 
 /*
  *  @brief Specifies a TLV element with an Implicit Profile tag
  *  @param Tag      The tag for this TLV element, defined under the current implicit profile.
  *                  Would be truncated to 16 bits.
  */
-#define nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(Tag) \
+#define nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(Tag)                                                                                \
     nl::Weave::TLV::kTLVTagControl_ImplicitProfile_2Bytes, nlWeaveTLV_Serialize16(Tag)
 
 /*
@@ -140,7 +139,7 @@
  *  @param Tag      The tag for this TLV element, defined under the current implicit profile.
  *                  Would be truncated to 32 bits.
  */
-#define nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(Tag) \
+#define nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(Tag)                                                                                \
     nl::Weave::TLV::kTLVTagControl_ImplicitProfile_4Bytes, nlWeaveTLV_Serialize32(Tag)
 
 /*
@@ -149,8 +148,9 @@
  *  @param Tag          The tag for this TLV element, defined under ProfileId.
  *                      Would be truncated to 16 bits.
  */
-#define nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(ProfileId, Tag) \
-    nl::Weave::TLV::kTLVTagControl_FullyQualified_6Bytes, nlWeaveTLV_Serialize16(ProfileId >> 16), nlWeaveTLV_Serialize16(ProfileId), nlWeaveTLV_Serialize16(Tag)
+#define nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(ProfileId, Tag)                                                                      \
+    nl::Weave::TLV::kTLVTagControl_FullyQualified_6Bytes, nlWeaveTLV_Serialize16(ProfileId >> 16),                                 \
+        nlWeaveTLV_Serialize16(ProfileId), nlWeaveTLV_Serialize16(Tag)
 
 /*
  *  @brief Specifies a TLV element with a Fully Qualified tag
@@ -158,8 +158,9 @@
  *  @param Tag          The tag for this TLV element, defined under ProfileId.
  *                      Would be truncated to 32 bits.
  */
-#define nlWeaveTLV_TAG_FULLY_QUALIFIED_8Bytes(ProfileId, Tag) \
-    nl::Weave::TLV::kTLVTagControl_FullyQualified_8Bytes, nlWeaveTLV_Serialize16(ProfileId >> 16), nlWeaveTLV_Serialize16(ProfileId), nlWeaveTLV_Serialize32(Tag)
+#define nlWeaveTLV_TAG_FULLY_QUALIFIED_8Bytes(ProfileId, Tag)                                                                      \
+    nl::Weave::TLV::kTLVTagControl_FullyQualified_8Bytes, nlWeaveTLV_Serialize16(ProfileId >> 16),                                 \
+        nlWeaveTLV_Serialize16(ProfileId), nlWeaveTLV_Serialize32(Tag)
 
 /*
  *  @brief Specifies a NULL TLV element, which has just the tag but no value
@@ -190,7 +191,7 @@
  *  @param TagSpec      Should be filled with macros begin with nlWeaveTLV_TAG_
  *  @param Value        Should be either true or false
  */
-#define nlWeaveTLV_BOOL(TagSpec, Value) \
+#define nlWeaveTLV_BOOL(TagSpec, Value)                                                                                            \
     ((Value) ? nl::Weave::TLV::kTLVElementType_BooleanTrue : nl::Weave::TLV::kTLVElementType_BooleanFalse) | TagSpec
 
 /**
@@ -201,8 +202,7 @@
  *
  *  @param ...          Bytes representing the floating point value to serialize
  */
-#define nlWeaveTLV_FLOAT32(TagSpec, ...) \
-    nl::Weave::TLV::kTLVElementType_FloatingPointNumber32 | TagSpec, ## __VA_ARGS__
+#define nlWeaveTLV_FLOAT32(TagSpec, ...) nl::Weave::TLV::kTLVElementType_FloatingPointNumber32 | TagSpec, ##__VA_ARGS__
 
 /**
  *  @brief
@@ -212,8 +212,7 @@
  *
  *  @param ...          Bytes representing the floating point value to serialize
  */
-#define nlWeaveTLV_FLOAT64(TagSpec, ...) \
-    nl::Weave::TLV::kTLVElementType_FloatingPointNumber64 | TagSpec, ## __VA_ARGS__
+#define nlWeaveTLV_FLOAT64(TagSpec, ...) nl::Weave::TLV::kTLVElementType_FloatingPointNumber64 | TagSpec, ##__VA_ARGS__
 
 /*
  *  @brief Specifies a EndOfContainer TLV element, marking the end of a Structure, Array, or Path
@@ -234,7 +233,6 @@
  *  @brief Specifies a EndOfContainer TLV element, marking the end of a Structure, Array, or Path
  */
 #define nlWeaveTLV_END_OF_PATH nlWeaveTLV_END_OF_CONTAINER
-
 
 /*
  *  @brief Specifies an 8-bit Signed Integer TLV element
@@ -276,21 +274,24 @@
  *  @param TagSpec      Should be filled with macros begin with nlWeaveTLV_TAG_
  *  @param Value        Would be first converted to (uint16_t), and then serialized
  */
-#define nlWeaveTLV_UINT16(TagSpec, Value) nl::Weave::TLV::kTLVElementType_UInt16 | TagSpec, nlWeaveTLV_Serialize16((uint16_t)(Value))
+#define nlWeaveTLV_UINT16(TagSpec, Value)                                                                                          \
+    nl::Weave::TLV::kTLVElementType_UInt16 | TagSpec, nlWeaveTLV_Serialize16((uint16_t)(Value))
 
 /*
  *  @brief Specifies a 32-bit Unsigned Integer TLV element
  *  @param TagSpec      Should be filled with macros begin with nlWeaveTLV_TAG_
  *  @param Value        Would be first converted to (uint32_t), and then serialized
  */
-#define nlWeaveTLV_UINT32(TagSpec, Value) nl::Weave::TLV::kTLVElementType_UInt32 | TagSpec, nlWeaveTLV_Serialize32((uint32_t)(Value))
+#define nlWeaveTLV_UINT32(TagSpec, Value)                                                                                          \
+    nl::Weave::TLV::kTLVElementType_UInt32 | TagSpec, nlWeaveTLV_Serialize32((uint32_t)(Value))
 
 /*
  *  @brief Specifies a 64-bit Unsigned Integer TLV element
  *  @param TagSpec      Should be filled with macros begin with nlWeaveTLV_TAG_
  *  @param Value        Would be first converted to (uint64_t), and then serialized
  */
-#define nlWeaveTLV_UINT64(TagSpec, Value) nl::Weave::TLV::kTLVElementType_UInt64 | TagSpec, nlWeaveTLV_Serialize64((uint64_t)(Value))
+#define nlWeaveTLV_UINT64(TagSpec, Value)                                                                                          \
+    nl::Weave::TLV::kTLVElementType_UInt64 | TagSpec, nlWeaveTLV_Serialize64((uint64_t)(Value))
 
 /**
  *  @brief
@@ -302,8 +303,8 @@
  *
  *  @param ...                  Bytes representing the string characters to serialize
  */
-#define nlWeaveTLV_UTF8_STRING_1ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_UTF8String_1ByteLength | TagSpec, nlWeaveTLV_Serialize8((uint8_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_UTF8_STRING_1ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_UTF8String_1ByteLength | TagSpec, nlWeaveTLV_Serialize8((uint8_t)(StringLength)), ##__VA_ARGS__
 
 /**
  *  @brief
@@ -315,8 +316,9 @@
  *
  *  @param ...                  Bytes representing the string characters to serialize
  */
-#define nlWeaveTLV_UTF8_STRING_2ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_UTF8String_2ByteLength | TagSpec, nlWeaveTLV_Serialize16((uint16_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_UTF8_STRING_2ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_UTF8String_2ByteLength | TagSpec, nlWeaveTLV_Serialize16((uint16_t)(StringLength)),            \
+        ##__VA_ARGS__
 
 /**
  *  @brief
@@ -328,8 +330,9 @@
  *
  *  @param ...                  Bytes representing the string characters to serialize
  */
-#define nlWeaveTLV_UTF8_STRING_4ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_UTF8String_4ByteLength | TagSpec, nlWeaveTLV_Serialize32((uint32_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_UTF8_STRING_4ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_UTF8String_4ByteLength | TagSpec, nlWeaveTLV_Serialize32((uint32_t)(StringLength)),            \
+        ##__VA_ARGS__
 
 /**
  *  @brief
@@ -341,8 +344,9 @@
  *
  *  @param ...                  Bytes representing the string characters to serialize
  */
-#define nlWeaveTLV_UTF8_STRING_8ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_UTF8String_8ByteLength | TagSpec, nlWeaveTLV_Serialize64((uint64_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_UTF8_STRING_8ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_UTF8String_8ByteLength | TagSpec, nlWeaveTLV_Serialize64((uint64_t)(StringLength)),            \
+        ##__VA_ARGS__
 
 /**
  *  @brief
@@ -354,8 +358,8 @@
  *
  *  @param ...                  Bytes to serialize
  */
-#define nlWeaveTLV_BYTE_STRING_1ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_ByteString_1ByteLength | TagSpec, nlWeaveTLV_Serialize8((uint8_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_BYTE_STRING_1ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_ByteString_1ByteLength | TagSpec, nlWeaveTLV_Serialize8((uint8_t)(StringLength)), ##__VA_ARGS__
 
 /**
  *  @brief
@@ -367,8 +371,9 @@
  *
  *  @param ...                  Bytes to serialize
  */
-#define nlWeaveTLV_BYTE_STRING_2ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_ByteString_2ByteLength | TagSpec, nlWeaveTLV_Serialize16((uint16_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_BYTE_STRING_2ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_ByteString_2ByteLength | TagSpec, nlWeaveTLV_Serialize16((uint16_t)(StringLength)),            \
+        ##__VA_ARGS__
 
 /**
  *  @brief
@@ -380,8 +385,9 @@
  *
  *  @param ...                  Bytes to serialize
  */
-#define nlWeaveTLV_BYTE_STRING_4ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_ByteString_4ByteLength | TagSpec, nlWeaveTLV_Serialize32((uint32_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_BYTE_STRING_4ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_ByteString_4ByteLength | TagSpec, nlWeaveTLV_Serialize32((uint32_t)(StringLength)),            \
+        ##__VA_ARGS__
 
 /**
  *  @brief
@@ -393,7 +399,8 @@
  *
  *  @param ...                  Bytes to serialize
  */
-#define nlWeaveTLV_BYTE_STRING_8ByteLength(TagSpec, StringLength, ...) \
-    nl::Weave::TLV::kTLVElementType_ByteString_8ByteLength | TagSpec, nlWeaveTLV_Serialize64((uint64_t)(StringLength)), ## __VA_ARGS__
+#define nlWeaveTLV_BYTE_STRING_8ByteLength(TagSpec, StringLength, ...)                                                             \
+    nl::Weave::TLV::kTLVElementType_ByteString_8ByteLength | TagSpec, nlWeaveTLV_Serialize64((uint64_t)(StringLength)),            \
+        ##__VA_ARGS__
 
 #endif /* WEAVETLVDATA_H_ */

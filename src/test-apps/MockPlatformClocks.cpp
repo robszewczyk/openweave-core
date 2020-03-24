@@ -44,7 +44,6 @@
 #include <Weave/Support/CodeUtils.h>
 #include <Weave/Support/logging/WeaveLogging.h>
 
-
 namespace nl {
 namespace Weave {
 namespace MockPlatform {
@@ -62,18 +61,15 @@ static System::Error SetClock_RealTime(uint64_t newCurTime);
  * This allows test applications to override the implementation of
  * any of the functions with a private one.
  */
-struct MockPlatformClocks gMockPlatformClocks =
-{
-    GetClock_Monotonic,
-    GetClock_MonotonicMS,
-    GetClock_MonotonicHiRes,
-    GetClock_RealTime,
-    GetClock_RealTimeMS,
-    SetClock_RealTime,
-    0,
-    false,
-    false
-};
+struct MockPlatformClocks gMockPlatformClocks = { GetClock_Monotonic,
+                                                  GetClock_MonotonicMS,
+                                                  GetClock_MonotonicHiRes,
+                                                  GetClock_RealTime,
+                                                  GetClock_RealTimeMS,
+                                                  SetClock_RealTime,
+                                                  0,
+                                                  false,
+                                                  false };
 
 void MockPlatformClocks::SetRandomRealTimeOffset()
 {

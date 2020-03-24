@@ -80,75 +80,75 @@ static bool IsProductWildcard(uint16_t productId);
 
 static const uint32_t ENUMERATED_NODES_LIST_INITIAL_SIZE = 256;
 
-WeaveDeviceManager *WeaveDeviceManager::sListeningDeviceMgr = NULL;
+WeaveDeviceManager * WeaveDeviceManager::sListeningDeviceMgr = NULL;
 
 WeaveDeviceManager::WeaveDeviceManager()
 {
     State = kState_NotInitialized;
 }
 
-WEAVE_ERROR WeaveDeviceManager::Init(WeaveExchangeManager *exchangeMgr, WeaveSecurityManager *securityMgr)
+WEAVE_ERROR WeaveDeviceManager::Init(WeaveExchangeManager * exchangeMgr, WeaveSecurityManager * securityMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    AppState = NULL;
-    mMessageLayer = exchangeMgr->MessageLayer;
-    mSystemLayer = mMessageLayer->SystemLayer;
-    mExchangeMgr = exchangeMgr;
-    mSecurityMgr = securityMgr;
-    mConState = kConnectionState_NotConnected;
-    mDeviceCon = NULL;
-    mOpState = kOpState_Idle;
-    mCurReq = NULL;
-    mCurReqMsg = NULL;
+    AppState           = NULL;
+    mMessageLayer      = exchangeMgr->MessageLayer;
+    mSystemLayer       = mMessageLayer->SystemLayer;
+    mExchangeMgr       = exchangeMgr;
+    mSecurityMgr       = securityMgr;
+    mConState          = kConnectionState_NotConnected;
+    mDeviceCon         = NULL;
+    mOpState           = kOpState_Idle;
+    mCurReq            = NULL;
+    mCurReqMsg         = NULL;
     mCurReqMsgRetained = NULL;
-    mAppReqState = NULL;
+    mAppReqState       = NULL;
     memset(&mOnComplete, 0, sizeof(mOnComplete));
-    mOnError = NULL;
-    mOnStart = NULL;
-    mOnConnectionClosedFunc = NULL;
-    mOnConnectionClosedAppReq = NULL;
-    mDeviceAddr = IPAddress::Any;
-    mAssistingDeviceAddr = IPAddress::Any;
-    mDeviceIntf = INET_NULL_INTERFACEID;
-    mAssistingDeviceIntf = INET_NULL_INTERFACEID;
-    mRendezvousIntf = INET_NULL_INTERFACEID;
-    mDeviceId = kNodeIdNotSpecified;
-    mAssistingDeviceId = kNodeIdNotSpecified;
-    mConTimeout = secondsToMilliseconds(60);
-    mConTryCount = 0;
-    mSessionKeyId = WeaveKeyId::kNone;
-    mEncType = kWeaveEncryptionType_None;
-    mAuthType = kAuthType_None;
-    mAssistingDeviceAuthType = kAuthType_None;
-    mRemoteDeviceAuthType = kAuthType_None;
-    mAuthKey = NULL;
-    mAssistingDeviceAuthKey = NULL;
-    mRemoteDeviceAuthKey = NULL;
-    mAuthKeyLen = 0;
-    mAssistingDeviceAuthKeyLen = 0;
-    mRemoteDeviceAuthKeyLen = 0;
-    mConMonitorTimeout = 0;
-    mConMonitorInterval = 0;
-    mConMonitorEnabled = false;
-    mRemotePassiveRendezvousTimeout = 0;
+    mOnError                                  = NULL;
+    mOnStart                                  = NULL;
+    mOnConnectionClosedFunc                   = NULL;
+    mOnConnectionClosedAppReq                 = NULL;
+    mDeviceAddr                               = IPAddress::Any;
+    mAssistingDeviceAddr                      = IPAddress::Any;
+    mDeviceIntf                               = INET_NULL_INTERFACEID;
+    mAssistingDeviceIntf                      = INET_NULL_INTERFACEID;
+    mRendezvousIntf                           = INET_NULL_INTERFACEID;
+    mDeviceId                                 = kNodeIdNotSpecified;
+    mAssistingDeviceId                        = kNodeIdNotSpecified;
+    mConTimeout                               = secondsToMilliseconds(60);
+    mConTryCount                              = 0;
+    mSessionKeyId                             = WeaveKeyId::kNone;
+    mEncType                                  = kWeaveEncryptionType_None;
+    mAuthType                                 = kAuthType_None;
+    mAssistingDeviceAuthType                  = kAuthType_None;
+    mRemoteDeviceAuthType                     = kAuthType_None;
+    mAuthKey                                  = NULL;
+    mAssistingDeviceAuthKey                   = NULL;
+    mRemoteDeviceAuthKey                      = NULL;
+    mAuthKeyLen                               = 0;
+    mAssistingDeviceAuthKeyLen                = 0;
+    mRemoteDeviceAuthKeyLen                   = 0;
+    mConMonitorTimeout                        = 0;
+    mConMonitorInterval                       = 0;
+    mConMonitorEnabled                        = false;
+    mRemotePassiveRendezvousTimeout           = 0;
     mRemotePassiveRendezvousInactivityTimeout = 0;
-    mRemotePassiveRendezvousTimerIsRunning = false;
-    mAutoReconnect = true;
-    mRendezvousLinkLocal = true;
-    mUseAccessToken = true;
-    mConnectedToRemoteDevice = false;
-    mIsUnsecuredConnectionListenerSet = false;
+    mRemotePassiveRendezvousTimerIsRunning    = false;
+    mAutoReconnect                            = true;
+    mRendezvousLinkLocal                      = true;
+    mUseAccessToken                           = true;
+    mConnectedToRemoteDevice                  = false;
+    mIsUnsecuredConnectionListenerSet         = false;
 #if WEAVE_CONFIG_DEVICE_MGR_DEMAND_ENABLE_UDP
     mUDPEnabled = false;
 #endif // WEAVE_CONFIG_DEVICE_MGR_DEMAND_ENABLE_UDP
-    mPingSize = 0;
-    mTokenPairingCertificate = NULL;
+    mPingSize                   = 0;
+    mTokenPairingCertificate    = NULL;
     mTokenPairingCertificateLen = 0;
-    mCameraNonce = NULL;
-    mEnumeratedNodes = NULL;
-    mEnumeratedNodesLen = 0;
-    mEnumeratedNodesMaxLen = 0;
+    mCameraNonce                = NULL;
+    mEnumeratedNodes            = NULL;
+    mEnumeratedNodesLen         = 0;
+    mEnumeratedNodesMaxLen      = 0;
 
     // By default, rendezvous messages are sent to the IPv6 link-local, all-nodes multicast address.
     mRendezvousAddr = IPAddress::MakeIPv6WellKnownMulticast(kIPv6MulticastScope_Link, kIPV6MulticastGroup_AllNodes);
@@ -202,17 +202,17 @@ WEAVE_ERROR WeaveDeviceManager::Shutdown()
     if (mTokenPairingCertificate != NULL)
     {
         free(mTokenPairingCertificate);
-        mTokenPairingCertificate = NULL;
+        mTokenPairingCertificate    = NULL;
         mTokenPairingCertificateLen = 0;
     }
 
-    mSystemLayer = NULL;
+    mSystemLayer  = NULL;
     mMessageLayer = NULL;
-    mExchangeMgr = NULL;
-    mSecurityMgr = NULL;
-    mConState = kConnectionState_NotConnected;
-    mOpState = kOpState_Idle;
-    mAppReqState = NULL;
+    mExchangeMgr  = NULL;
+    mSecurityMgr  = NULL;
+    mConState     = kConnectionState_NotConnected;
+    mOpState      = kOpState_Idle;
+    mAppReqState  = NULL;
     memset(&mOnComplete, 0, sizeof(mOnComplete));
     mOnError = NULL;
     mOnStart = NULL;
@@ -220,35 +220,35 @@ WEAVE_ERROR WeaveDeviceManager::Shutdown()
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetDeviceId(uint64_t& deviceId)
+WEAVE_ERROR WeaveDeviceManager::GetDeviceId(uint64_t & deviceId)
 {
     deviceId = mDeviceId;
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetDeviceAddress(IPAddress& deviceAddr)
+WEAVE_ERROR WeaveDeviceManager::GetDeviceAddress(IPAddress & deviceAddr)
 {
     deviceAddr = mDeviceAddr;
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress deviceAddr,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress deviceAddr, void * appReqState, CompleteFunct onComplete,
+                                              ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if ((mOpState != kOpState_Idle && mOpState != kOpState_RestartRemotePassiveRendezvous) ||
-            mConState != kConnectionState_NotConnected)
+        mConState != kConnectionState_NotConnected)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = deviceId;
+    mDeviceId   = deviceId;
     mDeviceAddr = deviceAddr;
     mDeviceIntf = INET_NULL_INTERFACEID;
     mDeviceCriteria.Reset();
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     mAuthType = kAuthType_None;
     ClearAuthKey();
@@ -264,41 +264,8 @@ WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress devic
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress deviceAddr, const char *pairingCode,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
-{
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-
-    if ((mOpState != kOpState_Idle && mOpState != kOpState_RestartRemotePassiveRendezvous) ||
-            mConState != kConnectionState_NotConnected)
-        return WEAVE_ERROR_INCORRECT_STATE;
-
-    mDeviceId = deviceId;
-    mDeviceAddr = deviceAddr;
-    mDeviceIntf = INET_NULL_INTERFACEID;
-    mDeviceCriteria.Reset();
-
-    mAppReqState = appReqState;
-    mOnComplete.General = onComplete;
-    mOnError = onError;
-
-    mAuthType = kAuthType_PASEWithPairingCode;
-    err = SaveAuthKey(pairingCode);
-    SuccessOrExit(err);
-
-    mConMonitorEnabled = false;
-
-    mOpState = kOpState_ConnectDevice;
-    err = InitiateConnection();
-
-exit:
-    if (err != WEAVE_NO_ERROR)
-        ClearOpState();
-    return err;
-}
-
-WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress deviceAddr, const uint8_t *accessToken, uint32_t accessTokenLen,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress deviceAddr, const char * pairingCode, void * appReqState,
+                                              CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -306,19 +273,53 @@ WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress devic
         mConState != kConnectionState_NotConnected)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = deviceId;
+    mDeviceId   = deviceId;
     mDeviceAddr = deviceAddr;
     mDeviceIntf = INET_NULL_INTERFACEID;
     mDeviceCriteria.Reset();
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
+
+    mAuthType = kAuthType_PASEWithPairingCode;
+    err       = SaveAuthKey(pairingCode);
+    SuccessOrExit(err);
+
+    mConMonitorEnabled = false;
+
+    mOpState = kOpState_ConnectDevice;
+    err      = InitiateConnection();
+
+exit:
+    if (err != WEAVE_NO_ERROR)
+        ClearOpState();
+    return err;
+}
+
+WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress deviceAddr, const uint8_t * accessToken,
+                                              uint32_t accessTokenLen, void * appReqState, CompleteFunct onComplete,
+                                              ErrorFunct onError)
+{
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+
+    if ((mOpState != kOpState_Idle && mOpState != kOpState_RestartRemotePassiveRendezvous) ||
+        mConState != kConnectionState_NotConnected)
+        return WEAVE_ERROR_INCORRECT_STATE;
+
+    mDeviceId   = deviceId;
+    mDeviceAddr = deviceAddr;
+    mDeviceIntf = INET_NULL_INTERFACEID;
+    mDeviceCriteria.Reset();
+
+    mAppReqState        = appReqState;
+    mOnComplete.General = onComplete;
+    mOnError            = onError;
 
     if (mUseAccessToken && accessTokenLen != 0)
     {
         mAuthType = kAuthType_CASEWithAccessToken;
-        err = SaveAuthKey(accessToken, accessTokenLen);
+        err       = SaveAuthKey(accessToken, accessTokenLen);
         SuccessOrExit(err);
     }
     else
@@ -330,7 +331,7 @@ WEAVE_ERROR WeaveDeviceManager::ConnectDevice(uint64_t deviceId, IPAddress devic
     mConMonitorEnabled = false;
 
     mOpState = kOpState_ConnectDevice;
-    err = InitiateConnection();
+    err      = InitiateConnection();
 
 exit:
     if (err != WEAVE_NO_ERROR)
@@ -338,8 +339,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::StartDeviceEnumeration(void* appReqState, const IdentifyDeviceCriteria &deviceCriteria,
-        DeviceEnumerationResponseFunct onResponse, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::StartDeviceEnumeration(void * appReqState, const IdentifyDeviceCriteria & deviceCriteria,
+                                                       DeviceEnumerationResponseFunct onResponse, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -347,9 +348,9 @@ WEAVE_ERROR WeaveDeviceManager::StartDeviceEnumeration(void* appReqState, const 
 
     mDeviceCriteria = deviceCriteria;
 
-    mAppReqState = appReqState;
+    mAppReqState                  = appReqState;
     mOnComplete.DeviceEnumeration = onResponse;
-    mOnError = onError;
+    mOnError                      = onError;
 
     mOpState = kOpState_EnumerateDevices;
 
@@ -364,7 +365,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ValidateIdentifyRequest(const IdentifyRequestMessage &reqMsg)
+WEAVE_ERROR WeaveDeviceManager::ValidateIdentifyRequest(const IdentifyRequestMessage & reqMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -381,10 +382,10 @@ WEAVE_ERROR WeaveDeviceManager::ValidateIdentifyRequest(const IdentifyRequestMes
 
 WEAVE_ERROR WeaveDeviceManager::InitiateDeviceEnumeration()
 {
-    WEAVE_ERROR             err     = WEAVE_NO_ERROR;
-    PacketBuffer*           msgBuf  = NULL;
-    IdentifyRequestMessage  reqMsg;
-    uint16_t                sendFlags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    IdentifyRequestMessage reqMsg;
+    uint16_t sendFlags;
 
     VerifyOrExit(kOpState_EnumerateDevices == mOpState, err = WEAVE_ERROR_INCORRECT_STATE);
 
@@ -392,11 +393,11 @@ WEAVE_ERROR WeaveDeviceManager::InitiateDeviceEnumeration()
 #if WEAVE_CONFIG_DEVICE_MGR_DEMAND_ENABLE_UDP
     err = EnableUDP();
     SuccessOrExit(err);
-#endif //WEAVE_CONFIG_DEVICE_MGR_DEMAND_ENABLE_UDP
+#endif // WEAVE_CONFIG_DEVICE_MGR_DEMAND_ENABLE_UDP
 
     // Form an Identify device request containing the device criteria specified by the application.
     reqMsg.TargetFabricId = mDeviceCriteria.TargetFabricId;
-    reqMsg.TargetModes = mDeviceCriteria.TargetModes;
+    reqMsg.TargetModes    = mDeviceCriteria.TargetModes;
     reqMsg.TargetVendorId = mDeviceCriteria.TargetVendorId;
 
     if (mDeviceCriteria.TargetVendorId == kWeaveVendor_NestLabs && IsProductWildcard(mDeviceCriteria.TargetProductId))
@@ -450,11 +451,9 @@ WEAVE_ERROR WeaveDeviceManager::InitiateDeviceEnumeration()
     // node is not a member of a Weave fabric (which is true for most uses of the WeaveDeviceManager class).
     // Thus the state of the 'rendezvous link-local' option is moot in those contexts.
     //
-    sendFlags = (mRendezvousLinkLocal)
-            ? ExchangeContext::kSendFlag_DefaultMulticastSourceAddress
-            : 0;
-    err = mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, sendFlags);
-    msgBuf = NULL;
+    sendFlags = (mRendezvousLinkLocal) ? ExchangeContext::kSendFlag_DefaultMulticastSourceAddress : 0;
+    err       = mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, sendFlags);
+    msgBuf    = NULL;
 
     if (err == System::MapErrorPOSIX(ENETUNREACH) || err == System::MapErrorPOSIX(EHOSTUNREACH) ||
         err == System::MapErrorPOSIX(EPIPE))
@@ -489,8 +488,8 @@ void WeaveDeviceManager::StopDeviceEnumeration()
         free(mEnumeratedNodes);
     }
 
-    mEnumeratedNodes = NULL;
-    mEnumeratedNodesLen = 0;
+    mEnumeratedNodes       = NULL;
+    mEnumeratedNodesLen    = 0;
     mEnumeratedNodesMaxLen = 0;
 
     ClearOpState();
@@ -502,26 +501,25 @@ exit:
     }
 }
 
-
-WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const IdentifyDeviceCriteria &deviceCriteria,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const IdentifyDeviceCriteria & deviceCriteria, void * appReqState,
+                                                 CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = deviceCriteria.TargetDeviceId;
-    mDeviceAddr = mRendezvousAddr;
-    mDeviceIntf = INET_NULL_INTERFACEID;
+    mDeviceId       = deviceCriteria.TargetDeviceId;
+    mDeviceAddr     = mRendezvousAddr;
+    mDeviceIntf     = INET_NULL_INTERFACEID;
     mDeviceCriteria = deviceCriteria;
 
     mAuthType = kAuthType_None;
     ClearAuthKey();
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     mConMonitorEnabled = false;
 
@@ -534,38 +532,38 @@ WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const IdentifyDeviceCriteria &d
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const char *pairingCode, void* appReqState,
-        CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const char * pairingCode, void * appReqState, CompleteFunct onComplete,
+                                                 ErrorFunct onError)
 {
     IdentifyDeviceCriteria deviceCriteria;
-    deviceCriteria.TargetFabricId = kTargetFabricId_Any;
-    deviceCriteria.TargetModes = kTargetDeviceMode_UserSelectedMode;
-    deviceCriteria.TargetVendorId = kWeaveVendor_NestLabs;
+    deviceCriteria.TargetFabricId  = kTargetFabricId_Any;
+    deviceCriteria.TargetModes     = kTargetDeviceMode_UserSelectedMode;
+    deviceCriteria.TargetVendorId  = kWeaveVendor_NestLabs;
     deviceCriteria.TargetProductId = 5; // Topaz
 
     return RendezvousDevice(pairingCode, deviceCriteria, appReqState, onComplete, onError);
 }
 
-WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const char *pairingCode, const IdentifyDeviceCriteria &deviceCriteria,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const char * pairingCode, const IdentifyDeviceCriteria & deviceCriteria,
+                                                 void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = deviceCriteria.TargetDeviceId;
-    mDeviceAddr = mRendezvousAddr;
-    mDeviceIntf = INET_NULL_INTERFACEID;
+    mDeviceId       = deviceCriteria.TargetDeviceId;
+    mDeviceAddr     = mRendezvousAddr;
+    mDeviceIntf     = INET_NULL_INTERFACEID;
     mDeviceCriteria = deviceCriteria;
 
     mAuthType = kAuthType_PASEWithPairingCode;
-    err = SaveAuthKey(pairingCode);
+    err       = SaveAuthKey(pairingCode);
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     mConMonitorEnabled = false;
 
@@ -579,24 +577,24 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const uint8_t *accessToken, uint32_t accessTokenLen,
-        const IdentifyDeviceCriteria &deviceCriteria,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const uint8_t * accessToken, uint32_t accessTokenLen,
+                                                 const IdentifyDeviceCriteria & deviceCriteria, void * appReqState,
+                                                 CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = deviceCriteria.TargetDeviceId;
-    mDeviceAddr = mRendezvousAddr;
-    mDeviceIntf = INET_NULL_INTERFACEID;
+    mDeviceId       = deviceCriteria.TargetDeviceId;
+    mDeviceAddr     = mRendezvousAddr;
+    mDeviceIntf     = INET_NULL_INTERFACEID;
     mDeviceCriteria = deviceCriteria;
 
     if (mUseAccessToken && accessTokenLen != 0)
     {
         mAuthType = kAuthType_CASEWithAccessToken;
-        err = SaveAuthKey(accessToken, accessTokenLen);
+        err       = SaveAuthKey(accessToken, accessTokenLen);
         SuccessOrExit(err);
     }
     else
@@ -605,9 +603,9 @@ WEAVE_ERROR WeaveDeviceManager::RendezvousDevice(const uint8_t *accessToken, uin
         ClearAuthKey();
     }
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     mConMonitorEnabled = false;
 
@@ -621,18 +619,17 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected ||
-            sListeningDeviceMgr != NULL)
+    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected || sListeningDeviceMgr != NULL)
     {
         err = WEAVE_ERROR_INCORRECT_STATE;
         ExitNow();
     }
 
-    mDeviceId = kAnyNodeId;
+    mDeviceId   = kAnyNodeId;
     mDeviceAddr = IPAddress::Any;
     mDeviceIntf = INET_NULL_INTERFACEID;
 
@@ -641,14 +638,14 @@ WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(void* appReqState, Compl
 
     mConMonitorEnabled = false;
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     err = SetUnsecuredConnectionHandler();
     SuccessOrExit(err);
 
-    mOpState = kOpState_PassiveRendezvousDevice;
+    mOpState  = kOpState_PassiveRendezvousDevice;
     mConState = kConnectionState_WaitDeviceConnect;
 
     // Setup pointer to device manager instance is currently doing a passive rendezvous.  Because the
@@ -660,32 +657,33 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(const char *pairingCode, void* appReqState, CompleteFunct onComplete, ErrorFunct onError, StartFunct onStart)
+WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(const char * pairingCode, void * appReqState, CompleteFunct onComplete,
+                                                        ErrorFunct onError, StartFunct onStart)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected || sListeningDeviceMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = kAnyNodeId;
+    mDeviceId   = kAnyNodeId;
     mDeviceAddr = IPAddress::Any;
     mDeviceIntf = INET_NULL_INTERFACEID;
 
     mAuthType = kAuthType_PASEWithPairingCode;
-    err = SaveAuthKey(pairingCode);
+    err       = SaveAuthKey(pairingCode);
     SuccessOrExit(err);
 
     mConMonitorEnabled = false;
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOnStart = onStart;
+    mOnError            = onError;
+    mOnStart            = onStart;
 
     err = SetUnsecuredConnectionHandler();
     SuccessOrExit(err);
 
-    mOpState = kOpState_PassiveRendezvousDevice;
+    mOpState  = kOpState_PassiveRendezvousDevice;
     mConState = kConnectionState_WaitDeviceConnect;
 
     // Setup pointer to device manager instance is currently doing a passive rendezvous.  Because the
@@ -697,21 +695,22 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(const uint8_t *accessToken, uint32_t accessTokenLen, void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(const uint8_t * accessToken, uint32_t accessTokenLen, void * appReqState,
+                                                        CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected || sListeningDeviceMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    mDeviceId = kAnyNodeId;
+    mDeviceId   = kAnyNodeId;
     mDeviceAddr = IPAddress::Any;
     mDeviceIntf = INET_NULL_INTERFACEID;
 
     if (mUseAccessToken && accessTokenLen != 0)
     {
         mAuthType = kAuthType_CASEWithAccessToken;
-        err = SaveAuthKey(accessToken, accessTokenLen);
+        err       = SaveAuthKey(accessToken, accessTokenLen);
         SuccessOrExit(err);
     }
     else
@@ -722,15 +721,15 @@ WEAVE_ERROR WeaveDeviceManager::PassiveRendezvousDevice(const uint8_t *accessTok
 
     mConMonitorEnabled = false;
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     err = SetUnsecuredConnectionHandler();
     SuccessOrExit(err);
 
     mConState = kConnectionState_WaitDeviceConnect;
-    mOpState = kOpState_PassiveRendezvousDevice;
+    mOpState  = kOpState_PassiveRendezvousDevice;
 
     // Setup pointer to device manager instance is currently doing a passive rendezvous.  Because the
     // device connects to the device manager in the passive rendezvous case there can only be one
@@ -742,13 +741,12 @@ exit:
 }
 
 #if CONFIG_NETWORK_LAYER_BLE
-WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj,
-                                           void *appReqState, CompleteFunct onComplete, ErrorFunct onError, bool autoClose)
+WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj, void * appReqState, CompleteFunct onComplete,
+                                           ErrorFunct onError, bool autoClose)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected ||
-            sListeningDeviceMgr != NULL)
+    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected || sListeningDeviceMgr != NULL)
     {
         err = WEAVE_ERROR_INCORRECT_STATE;
         ExitNow();
@@ -763,20 +761,19 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj, const char *pairingCode,
-                                           void *appReqState, CompleteFunct onComplete, ErrorFunct onError, bool autoClose)
+WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj, const char * pairingCode, void * appReqState,
+                                           CompleteFunct onComplete, ErrorFunct onError, bool autoClose)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected ||
-            sListeningDeviceMgr != NULL)
+    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected || sListeningDeviceMgr != NULL)
     {
         err = WEAVE_ERROR_INCORRECT_STATE;
         ExitNow();
     }
 
     mAuthType = kAuthType_PASEWithPairingCode;
-    err = SaveAuthKey(pairingCode);
+    err       = SaveAuthKey(pairingCode);
     SuccessOrExit(err);
 
     err = InitiateBleConnection(connObj, appReqState, onComplete, onError, autoClose);
@@ -785,13 +782,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj, const uint8_t *accessToken,
-                                           uint32_t accessTokenLen, void *appReqState, CompleteFunct onComplete, ErrorFunct onError, bool autoClose)
+WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj, const uint8_t * accessToken, uint32_t accessTokenLen,
+                                           void * appReqState, CompleteFunct onComplete, ErrorFunct onError, bool autoClose)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected ||
-            sListeningDeviceMgr != NULL)
+    if (mOpState != kOpState_Idle || mConState != kConnectionState_NotConnected || sListeningDeviceMgr != NULL)
     {
         err = WEAVE_ERROR_INCORRECT_STATE;
         ExitNow();
@@ -800,7 +796,7 @@ WEAVE_ERROR WeaveDeviceManager::ConnectBle(BLE_CONNECTION_OBJECT connObj, const 
     if (mUseAccessToken && accessTokenLen != 0)
     {
         mAuthType = kAuthType_CASEWithAccessToken;
-        err = SaveAuthKey(accessToken, accessTokenLen);
+        err       = SaveAuthKey(accessToken, accessTokenLen);
         SuccessOrExit(err);
     }
     else
@@ -815,13 +811,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::InitiateBleConnection(BLE_CONNECTION_OBJECT connObj,
-                                                      void *appReqState, CompleteFunct onComplete, ErrorFunct onError, bool autoClose)
+WEAVE_ERROR WeaveDeviceManager::InitiateBleConnection(BLE_CONNECTION_OBJECT connObj, void * appReqState, CompleteFunct onComplete,
+                                                      ErrorFunct onError, bool autoClose)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveConnection *bleCon;
+    WeaveConnection * bleCon;
 
-    mDeviceId = kAnyNodeId;
+    mDeviceId   = kAnyNodeId;
     mDeviceAddr = IPAddress::Any;
     mDeviceIntf = INET_NULL_INTERFACEID;
     mDeviceCriteria.Reset();
@@ -831,11 +827,11 @@ WEAVE_ERROR WeaveDeviceManager::InitiateBleConnection(BLE_CONNECTION_OBJECT conn
     // We can't auto-reconnect via BLE, since BLE connection management occurs outside of Weave.
     mAutoReconnect = false;
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
-    mOpState = kOpState_InitializeBleConnection;
+    mOpState  = kOpState_InitializeBleConnection;
     mConState = kConnectionState_ConnectDevice;
 
     // Setup pointer to listening device manager. This lets us reuse the code in static HandleConnectionReceived
@@ -846,9 +842,9 @@ WEAVE_ERROR WeaveDeviceManager::InitiateBleConnection(BLE_CONNECTION_OBJECT conn
     bleCon = mMessageLayer->NewConnection();
     VerifyOrExit(bleCon != NULL, err = WEAVE_ERROR_TOO_MANY_CONNECTIONS);
 
-    bleCon->AppState = this;
+    bleCon->AppState             = this;
     bleCon->OnConnectionComplete = HandleConnectionComplete;
-    bleCon->OnConnectionClosed = HandleConnectionClosed;
+    bleCon->OnConnectionClosed   = HandleConnectionClosed;
 
     err = bleCon->ConnectBle(connObj, kWeaveAuthMode_Unauthenticated, autoClose);
     SuccessOrExit(err);
@@ -857,7 +853,7 @@ exit:
     if (err != WEAVE_NO_ERROR)
     {
         ClearOpState();
-        mConState = kConnectionState_NotConnected;
+        mConState           = kConnectionState_NotConnected;
         sListeningDeviceMgr = NULL;
     }
 
@@ -866,28 +862,29 @@ exit:
 
 #endif /* CONFIG_NETWORK_LAYER_BLE */
 
-WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDeviceAddr, const uint8_t *accessToken,
-        uint32_t accessTokenLen, const uint16_t rendezvousTimeoutSec, const uint16_t inactivityTimeoutSec,
-        void *appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDeviceAddr, const uint8_t * accessToken,
+                                                        uint32_t accessTokenLen, const uint16_t rendezvousTimeoutSec,
+                                                        const uint16_t inactivityTimeoutSec, void * appReqState,
+                                                        CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Save remote device authentication info, including auth type. Can't just SaveAuthKey() here, as this would
     // clear the auth key for the assisting device. We must preserve this key in case the Device Manager needs to
     // reconnect to the assisting device before it can send the RPR request.
-    err = SaveRemoteDeviceAuthInfo(kAuthType_CASEWithAccessToken, (const char *)accessToken, accessTokenLen);
+    err = SaveRemoteDeviceAuthInfo(kAuthType_CASEWithAccessToken, (const char *) accessToken, accessTokenLen);
     SuccessOrExit(err);
 
     err = DoRemotePassiveRendezvous(rendezvousDeviceAddr, rendezvousTimeoutSec, inactivityTimeoutSec, appReqState, onComplete,
-            onError);
+                                    onError);
 
 exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDeviceAddr, const char *pairingCode,
-        const uint16_t rendezvousTimeoutSec, const uint16_t inactivityTimeoutSec, void *appReqState,
-        CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDeviceAddr, const char * pairingCode,
+                                                        const uint16_t rendezvousTimeoutSec, const uint16_t inactivityTimeoutSec,
+                                                        void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -898,15 +895,15 @@ WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDevi
     SuccessOrExit(err);
 
     err = DoRemotePassiveRendezvous(rendezvousDeviceAddr, rendezvousTimeoutSec, inactivityTimeoutSec, appReqState, onComplete,
-            onError);
+                                    onError);
 
 exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDeviceAddr,
-        const uint16_t rendezvousTimeoutSec, const uint16_t inactivityTimeoutSec, void *appReqState,
-        CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDeviceAddr, const uint16_t rendezvousTimeoutSec,
+                                                        const uint16_t inactivityTimeoutSec, void * appReqState,
+                                                        CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -917,26 +914,25 @@ WEAVE_ERROR WeaveDeviceManager::RemotePassiveRendezvous(IPAddress rendezvousDevi
     SuccessOrExit(err);
 
     err = DoRemotePassiveRendezvous(rendezvousDeviceAddr, rendezvousTimeoutSec, inactivityTimeoutSec, appReqState, onComplete,
-            onError);
+                                    onError);
 
 exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::DoRemotePassiveRendezvous(IPAddress rendezvousDeviceAddr,
-        const uint16_t rendezvousTimeoutSec, const uint16_t inactivityTimeoutSec, void *appReqState,
-        CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::DoRemotePassiveRendezvous(IPAddress rendezvousDeviceAddr, const uint16_t rendezvousTimeoutSec,
+                                                          const uint16_t inactivityTimeoutSec, void * appReqState,
+                                                          CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
 #if WEAVE_DETAIL_LOGGING
     char rendezvousDeviceAddrStr[48]; // max(INET6_ADDRSTRLEN, 40) - see inet_ntop (POSIX), ip6addr_ntoa (LwIP)
 
     WeaveLogDetail(DeviceManager, "RemotePassiveRendezvous (");
-    WeaveLogDetail(DeviceManager, "   rendezvousDeviceAddr = %s,", rendezvousDeviceAddr.ToString(
-            rendezvousDeviceAddrStr, 48));
+    WeaveLogDetail(DeviceManager, "   rendezvousDeviceAddr = %s,", rendezvousDeviceAddr.ToString(rendezvousDeviceAddrStr, 48));
     WeaveLogDetail(DeviceManager, "   rendezvousTimeoutSec   = %u,", rendezvousTimeoutSec);
     WeaveLogDetail(DeviceManager, "   inactivityTimeoutSec   = %u )", inactivityTimeoutSec);
 #endif // WEAVE_DETAIL_LOGGING
@@ -971,9 +967,9 @@ WEAVE_ERROR WeaveDeviceManager::DoRemotePassiveRendezvous(IPAddress rendezvousDe
 
     // Save rendezvous and inactivity timeout values, in case we need to reestablish RPR with assisting device and
     // pack these values into another RPR request.
-    mRemotePassiveRendezvousTimeout = rendezvousTimeoutSec;
+    mRemotePassiveRendezvousTimeout           = rendezvousTimeoutSec;
     mRemotePassiveRendezvousInactivityTimeout = inactivityTimeoutSec;
-    mRemoteDeviceAddr = rendezvousDeviceAddr;
+    mRemoteDeviceAddr                         = rendezvousDeviceAddr;
 
     // Construct Remote Passive Rendezvous Request.
     msgBuf = PacketBuffer::New();
@@ -990,10 +986,10 @@ WEAVE_ERROR WeaveDeviceManager::DoRemotePassiveRendezvous(IPAddress rendezvousDe
     msgBuf->SetDataLength(DeviceControl::kMessageLength_RemotePassiveRendezvous);
 
     // Hook DM return callbacks, app state, and OpState.
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_RemotePassiveRendezvousRequest;
+    mOnError            = onError;
+    mOpState            = kOpState_RemotePassiveRendezvousRequest;
 
     // Start client-side timer for rendezvous with remote host.
     if (!mRemotePassiveRendezvousTimerIsRunning) // In retry case, don't restart timer
@@ -1003,8 +999,8 @@ WEAVE_ERROR WeaveDeviceManager::DoRemotePassiveRendezvous(IPAddress rendezvousDe
     }
 
     WeaveLogProgress(DeviceManager, "Sending RPR request...");
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_RemotePassiveRendezvous,
-            msgBuf, HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_RemotePassiveRendezvous, msgBuf,
+                      HandleDeviceControlResponse);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1031,13 +1027,13 @@ WEAVE_ERROR WeaveDeviceManager::SaveAssistingDeviceConnectionInfo()
     // Save info needed to reconnect to assisting device.
     mAssistingDeviceAddr = mDeviceAddr;
     mAssistingDeviceIntf = mDeviceIntf;
-    mAssistingDeviceId = mDeviceId;
+    mAssistingDeviceId   = mDeviceId;
 
     // Clear previous copy of assisting device auth key, if any.
     ClearAuthKey(mAssistingDeviceAuthKey, mAssistingDeviceAuthKeyLen);
 
     // Save copy of info needed to reauthenticate with assisting device from scratch.
-    mAssistingDeviceAuthType = mAuthType;
+    mAssistingDeviceAuthType   = mAuthType;
     mAssistingDeviceAuthKeyLen = mAuthKeyLen;
 
     mAssistingDeviceAuthKey = malloc(mAuthKeyLen);
@@ -1053,7 +1049,7 @@ void WeaveDeviceManager::RestoreAssistingDeviceAddressInfo()
     // Restore info needed to reconnect to assisting device.
     mDeviceAddr = mAssistingDeviceAddr;
     mDeviceIntf = mAssistingDeviceIntf;
-    mDeviceId = mAssistingDeviceId;
+    mDeviceId   = mAssistingDeviceId;
 }
 
 WEAVE_ERROR WeaveDeviceManager::RestoreAssistingDeviceAuthInfo()
@@ -1067,24 +1063,24 @@ WEAVE_ERROR WeaveDeviceManager::RestoreAssistingDeviceAuthInfo()
 
 void WeaveDeviceManager::ResetConnectionInfo()
 {
-    mSessionKeyId = WeaveKeyId::kNone;
-    mEncType = kWeaveEncryptionType_None;
+    mSessionKeyId          = WeaveKeyId::kNone;
+    mEncType               = kWeaveEncryptionType_None;
     mDeviceCon->PeerNodeId = kNodeIdNotSpecified;
-    mDeviceId = kNodeIdNotSpecified;
-    mDeviceAddr = IPAddress::Any;
-    mDeviceIntf = INET_NULL_INTERFACEID;
+    mDeviceId              = kNodeIdNotSpecified;
+    mDeviceAddr            = IPAddress::Any;
+    mDeviceIntf            = INET_NULL_INTERFACEID;
 }
 
-void WeaveDeviceManager::HandleAssistingDeviceReconnectCompleteEntry(WeaveDeviceManager *devMgr, void *appReqState)
+void WeaveDeviceManager::HandleAssistingDeviceReconnectCompleteEntry(WeaveDeviceManager * devMgr, void * appReqState)
 {
     devMgr->HandleRemotePassiveRendezvousReconnectComplete();
 }
 
 void WeaveDeviceManager::HandleRemotePassiveRendezvousReconnectComplete()
 {
-    WEAVE_ERROR err = RemotePassiveRendezvous(mRemoteDeviceAddr, static_cast<const char*>(mRemoteDeviceAuthKey),
-            mRemotePassiveRendezvousTimeout, mRemotePassiveRendezvousInactivityTimeout,
-            mAppReqState, mOnRemotePassiveRendezvousComplete, mOnError);
+    WEAVE_ERROR err = RemotePassiveRendezvous(mRemoteDeviceAddr, static_cast<const char *>(mRemoteDeviceAuthKey),
+                                              mRemotePassiveRendezvousTimeout, mRemotePassiveRendezvousInactivityTimeout,
+                                              mAppReqState, mOnRemotePassiveRendezvousComplete, mOnError);
 
     if (err != WEAVE_NO_ERROR)
     {
@@ -1113,24 +1109,21 @@ WEAVE_ERROR WeaveDeviceManager::StartReconnectToAssistingDevice()
     case kAuthType_PASEWithPairingCode:
         WeaveLogProgress(DeviceManager, "Reconnecting to assisting device with PASE auth");
         err = ConnectDevice(mDeviceId, mDeviceAddr, static_cast<const char *>(mAuthKey), mAppReqState,
-                HandleAssistingDeviceReconnectCompleteEntry, mOnError);
+                            HandleAssistingDeviceReconnectCompleteEntry, mOnError);
         break;
 
     case kAuthType_CASEWithAccessToken:
         WeaveLogProgress(DeviceManager, "Reconnecting to assisting device with CASE auth");
         err = ConnectDevice(mDeviceId, mDeviceAddr, static_cast<const uint8_t *>(mAuthKey), mAuthKeyLen, mAppReqState,
-                HandleAssistingDeviceReconnectCompleteEntry, mOnError);
+                            HandleAssistingDeviceReconnectCompleteEntry, mOnError);
         break;
 
     case kAuthType_None:
         WeaveLogProgress(DeviceManager, "Reconnecting to assisting device without authentication");
-        err = ConnectDevice(mDeviceId, mDeviceAddr, mAppReqState,
-                HandleAssistingDeviceReconnectCompleteEntry, mOnError);
+        err = ConnectDevice(mDeviceId, mDeviceAddr, mAppReqState, HandleAssistingDeviceReconnectCompleteEntry, mOnError);
         break;
 
-    default:
-        err = WEAVE_ERROR_INCORRECT_STATE;
-        break;
+    default: err = WEAVE_ERROR_INCORRECT_STATE; break;
     }
 
 exit:
@@ -1152,7 +1145,7 @@ void WeaveDeviceManager::CancelRemotePassiveRendezvous()
     CancelRemotePassiveRendezvousTimer();
 }
 
-WEAVE_ERROR WeaveDeviceManager::ReconnectDevice(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::ReconnectDevice(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1164,9 +1157,9 @@ WEAVE_ERROR WeaveDeviceManager::ReconnectDevice(void* appReqState, CompleteFunct
 
     mDeviceCriteria.Reset();
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
+    mOnError            = onError;
 
     mOpState = kOpState_ReconnectDevice;
 
@@ -1177,11 +1170,12 @@ WEAVE_ERROR WeaveDeviceManager::ReconnectDevice(void* appReqState, CompleteFunct
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::EnableConnectionMonitor(uint16_t interval, uint16_t timeout, void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::EnableConnectionMonitor(uint16_t interval, uint16_t timeout, void * appReqState,
+                                                        CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1196,18 +1190,18 @@ WEAVE_ERROR WeaveDeviceManager::EnableConnectionMonitor(uint16_t interval, uint1
     LittleEndian::Write16(p, interval);
     msgBuf->SetDataLength(4);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_EnableConnectionMonitor;
+    mOnError            = onError;
+    mOpState            = kOpState_EnableConnectionMonitor;
 
     CancelConnectionMonitorTimer();
-    mConMonitorEnabled = false;
+    mConMonitorEnabled  = false;
     mConMonitorInterval = interval;
-    mConMonitorTimeout = timeout;
+    mConMonitorTimeout  = timeout;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_EnableConnectionMonitor, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_EnableConnectionMonitor, msgBuf,
+                      HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -1218,10 +1212,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::DisableConnectionMonitor(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::DisableConnectionMonitor(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1234,13 +1228,13 @@ WEAVE_ERROR WeaveDeviceManager::DisableConnectionMonitor(void* appReqState, Comp
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_DisableConnectionMonitor;
+    mOnError            = onError;
+    mOpState            = kOpState_DisableConnectionMonitor;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_DisableConnectionMonitor, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_DisableConnectionMonitor, msgBuf,
+                      HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -1299,7 +1293,7 @@ void WeaveDeviceManager::CloseDeviceConnection(bool graceful)
         else
         {
             mDeviceCon->OnConnectionComplete = NULL;
-            mDeviceCon->OnConnectionClosed = NULL;
+            mDeviceCon->OnConnectionClosed   = NULL;
             mDeviceCon->Abort();
             mDeviceCon = NULL;
         }
@@ -1326,18 +1320,17 @@ void WeaveDeviceManager::CloseDeviceConnection(bool graceful)
     //     mConMonitorEnabled/mConMonitorInterval/mConMonitorTimeout
     //
     //
-    mConState = kConnectionState_NotConnected;
-    mConTryCount = 0;
-    mSessionKeyId = WeaveKeyId::kNone;
-    mEncType = kWeaveEncryptionType_None;
+    mConState                = kConnectionState_NotConnected;
+    mConTryCount             = 0;
+    mSessionKeyId            = WeaveKeyId::kNone;
+    mEncType                 = kWeaveEncryptionType_None;
     mConnectedToRemoteDevice = false;
     if (mTokenPairingCertificate != NULL)
     {
         free(mTokenPairingCertificate);
-        mTokenPairingCertificate = NULL;
+        mTokenPairingCertificate    = NULL;
         mTokenPairingCertificateLen = 0;
     }
-
 }
 
 bool WeaveDeviceManager::IsConnected() const
@@ -1345,26 +1338,26 @@ bool WeaveDeviceManager::IsConnected() const
     return mConState == kConnectionState_Connected;
 }
 
-void WeaveDeviceManager::SetConnectionClosedCallback(ConnectionClosedFunc onConnecionClosedFunc, void *onConnecionClosedAppReq)
+void WeaveDeviceManager::SetConnectionClosedCallback(ConnectionClosedFunc onConnecionClosedFunc, void * onConnecionClosedAppReq)
 {
-    mOnConnectionClosedFunc = onConnecionClosedFunc;
+    mOnConnectionClosedFunc   = onConnecionClosedFunc;
     mOnConnectionClosedAppReq = onConnecionClosedAppReq;
 }
 
-WEAVE_ERROR WeaveDeviceManager::IdentifyDevice(void* appReqState, IdentifyDeviceCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::IdentifyDevice(void * appReqState, IdentifyDeviceCompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR             err     = WEAVE_NO_ERROR;
-    PacketBuffer*           msgBuf  = NULL;
-    IdentifyRequestMessage  reqMsg;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    IdentifyRequestMessage reqMsg;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
 
     VerifyOrExit(onComplete != NULL && onError != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    reqMsg.TargetFabricId = kTargetFabricId_Any;
-    reqMsg.TargetModes = kTargetDeviceMode_Any;
-    reqMsg.TargetVendorId = 0xFFFF; // Any vendor
+    reqMsg.TargetFabricId  = kTargetFabricId_Any;
+    reqMsg.TargetModes     = kTargetDeviceMode_Any;
+    reqMsg.TargetVendorId  = 0xFFFF; // Any vendor
     reqMsg.TargetProductId = 0xFFFF; // Any product
 
     msgBuf = PacketBuffer::New();
@@ -1373,13 +1366,13 @@ WEAVE_ERROR WeaveDeviceManager::IdentifyDevice(void* appReqState, IdentifyDevice
     err = reqMsg.Encode(msgBuf);
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState               = appReqState;
     mOnComplete.IdentifyDevice = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_IdentifyDevice;
+    mOnError                   = onError;
+    mOpState                   = kOpState_IdentifyDevice;
 
-    err = SendRequest(kWeaveProfile_DeviceDescription, DeviceDescription::kMessageType_IdentifyRequest,
-            msgBuf, HandleIdentifyDeviceResponse);
+    err    = SendRequest(kWeaveProfile_DeviceDescription, DeviceDescription::kMessageType_IdentifyRequest, msgBuf,
+                      HandleIdentifyDeviceResponse);
     msgBuf = NULL;
 
 exit:
@@ -1390,11 +1383,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::PairToken(const uint8_t *pairingToken, uint32_t pairingTokenLen, void* appReqState, PairTokenCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::PairToken(const uint8_t * pairingToken, uint32_t pairingTokenLen, void * appReqState,
+                                          PairTokenCompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1409,20 +1403,19 @@ WEAVE_ERROR WeaveDeviceManager::PairToken(const uint8_t *pairingToken, uint32_t 
     memcpy(p, pairingToken, pairingTokenLen);
     msgBuf->SetDataLength(pairingTokenLen);
 
-    mAppReqState = appReqState;
+    mAppReqState          = appReqState;
     mOnComplete.PairToken = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_PairToken;
+    mOnError              = onError;
+    mOpState              = kOpState_PairToken;
 
     if (mTokenPairingCertificate != NULL)
     {
         WeaveLogError(DeviceManager, "% TokenPairingCertificate not NULL.", __FUNCTION__);
-        mTokenPairingCertificate = NULL;
+        mTokenPairingCertificate    = NULL;
         mTokenPairingCertificateLen = 0;
     }
 
-    err = SendRequest(kWeaveProfile_TokenPairing, TokenPairing::kMsgType_PairTokenRequest,
-            msgBuf, HandlePairTokenResponse);
+    err    = SendRequest(kWeaveProfile_TokenPairing, TokenPairing::kMsgType_PairTokenRequest, msgBuf, HandlePairTokenResponse);
     msgBuf = NULL;
 
 exit:
@@ -1433,10 +1426,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::UnpairToken(void* appReqState, UnpairTokenCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::UnpairToken(void * appReqState, UnpairTokenCompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1446,13 +1439,12 @@ WEAVE_ERROR WeaveDeviceManager::UnpairToken(void* appReqState, UnpairTokenComple
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    mAppReqState = appReqState;
+    mAppReqState            = appReqState;
     mOnComplete.UnpairToken = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_UnpairToken;
+    mOnError                = onError;
+    mOpState                = kOpState_UnpairToken;
 
-    err = SendRequest(kWeaveProfile_TokenPairing, TokenPairing::kMsgType_UnpairTokenRequest,
-            msgBuf, HandleUnpairTokenResponse);
+    err    = SendRequest(kWeaveProfile_TokenPairing, TokenPairing::kMsgType_UnpairTokenRequest, msgBuf, HandleUnpairTokenResponse);
     msgBuf = NULL;
 
 exit:
@@ -1463,11 +1455,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ScanNetworks(NetworkType networkType, void* appReqState,
-        NetworkScanCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::ScanNetworks(NetworkType networkType, void * appReqState, NetworkScanCompleteFunct onComplete,
+                                             ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1480,13 +1472,13 @@ WEAVE_ERROR WeaveDeviceManager::ScanNetworks(NetworkType networkType, void* appR
     Put8(msgBuf->Start(), (uint8_t) networkType);
     msgBuf->SetDataLength(1);
 
-    mAppReqState = appReqState;
+    mAppReqState             = appReqState;
     mOnComplete.ScanNetworks = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_ScanNetworks;
+    mOnError                 = onError;
+    mOpState                 = kOpState_ScanNetworks;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_ScanNetworks, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_ScanNetworks, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1497,13 +1489,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::AddNetwork(const NetworkInfo *netInfo, void* appReqState,
-        AddNetworkCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::AddNetwork(const NetworkInfo * netInfo, void * appReqState, AddNetworkCompleteFunct onComplete,
+                                           ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint16_t        msgType = kMsgType_AddNetworkV2;
-    TLVWriter       writer;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint16_t msgType      = kMsgType_AddNetworkV2;
+    TLVWriter writer;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1521,10 +1513,10 @@ WEAVE_ERROR WeaveDeviceManager::AddNetwork(const NetworkInfo *netInfo, void* app
     err = writer.Finalize();
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState           = appReqState;
     mOnComplete.AddNetwork = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_AddNetwork;
+    mOnError               = onError;
+    mOpState               = kOpState_AddNetwork;
 
 #if WEAVE_CONFIG_SUPPORT_LEGACY_ADD_NETWORK_MESSAGE
 
@@ -1547,8 +1539,7 @@ WEAVE_ERROR WeaveDeviceManager::AddNetwork(const NetworkInfo *netInfo, void* app
 
 #endif // WEAVE_CONFIG_SUPPORT_LEGACY_ADD_NETWORK_MESSAGE
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, msgType, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, msgType, msgBuf, HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1559,12 +1550,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::UpdateNetwork(const NetworkInfo *netInfo, void* appReqState, CompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::UpdateNetwork(const NetworkInfo * netInfo, void * appReqState, CompleteFunct onComplete,
+                                              ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    TLVWriter       writer;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    TLVWriter writer;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1582,13 +1573,12 @@ WEAVE_ERROR WeaveDeviceManager::UpdateNetwork(const NetworkInfo *netInfo, void* 
     err = writer.Finalize();
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_UpdateNetwork;
+    mOnError            = onError;
+    mOpState            = kOpState_UpdateNetwork;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, kMsgType_UpdateNetwork, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, kMsgType_UpdateNetwork, msgBuf, HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1599,11 +1589,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::RemoveNetwork(uint32_t networkId, void* appReqState, CompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RemoveNetwork(uint32_t networkId, void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1616,13 +1605,13 @@ WEAVE_ERROR WeaveDeviceManager::RemoveNetwork(uint32_t networkId, void* appReqSt
     LittleEndian::Put32(msgBuf->Start(), networkId);
     msgBuf->SetDataLength(4);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_RemoveNetwork;
+    mOnError            = onError;
+    mOpState            = kOpState_RemoveNetwork;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_RemoveNetwork, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_RemoveNetwork, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1633,11 +1622,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetCameraAuthData(const char* nonce, void* appReqState,
-        GetCameraAuthDataCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::GetCameraAuthData(const char * nonce, void * appReqState, GetCameraAuthDataCompleteFunct onComplete,
+                                                  ErrorFunct onError)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1659,13 +1648,13 @@ WEAVE_ERROR WeaveDeviceManager::GetCameraAuthData(const char* nonce, void* appRe
     err = EncodeCameraAuthDataRequest(msgBuf, nonce);
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState                  = appReqState;
     mOnComplete.GetCameraAuthData = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_GetCameraAuthData;
+    mOnError                      = onError;
+    mOpState                      = kOpState_GetCameraAuthData;
 
-    err = SendRequest(kWeaveProfile_DropcamLegacyPairing, kMsgType_CameraAuthDataRequest, msgBuf,
-            HandleGetCameraAuthDataResponseEntry);
+    err    = SendRequest(kWeaveProfile_DropcamLegacyPairing, kMsgType_CameraAuthDataRequest, msgBuf,
+                      HandleGetCameraAuthDataResponseEntry);
     msgBuf = NULL;
 
 exit:
@@ -1676,11 +1665,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetNetworks(uint8_t flags, void* appReqState,
-        GetNetworksCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::GetNetworks(uint8_t flags, void * appReqState, GetNetworksCompleteFunct onComplete,
+                                            ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1693,13 +1682,13 @@ WEAVE_ERROR WeaveDeviceManager::GetNetworks(uint8_t flags, void* appReqState,
     Put8(msgBuf->Start(), (uint8_t) flags);
     msgBuf->SetDataLength(1);
 
-    mAppReqState = appReqState;
+    mAppReqState            = appReqState;
     mOnComplete.GetNetworks = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_GetNetworks;
+    mOnError                = onError;
+    mOpState                = kOpState_GetNetworks;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_GetNetworks, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_GetNetworks, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1710,11 +1699,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::EnableNetwork(uint32_t networkId, void* appReqState, CompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::EnableNetwork(uint32_t networkId, void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1727,13 +1715,13 @@ WEAVE_ERROR WeaveDeviceManager::EnableNetwork(uint32_t networkId, void* appReqSt
     LittleEndian::Put32(msgBuf->Start(), networkId);
     msgBuf->SetDataLength(4);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_EnableNetwork;
+    mOnError            = onError;
+    mOpState            = kOpState_EnableNetwork;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_EnableNetwork, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_EnableNetwork, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1744,11 +1732,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::DisableNetwork(uint32_t networkId, void* appReqState, CompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::DisableNetwork(uint32_t networkId, void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1761,13 +1748,13 @@ WEAVE_ERROR WeaveDeviceManager::DisableNetwork(uint32_t networkId, void* appReqS
     LittleEndian::Put32(msgBuf->Start(), networkId);
     msgBuf->SetDataLength(4);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_DisableNetwork;
+    mOnError            = onError;
+    mOpState            = kOpState_DisableNetwork;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_DisableNetwork, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_DisableNetwork, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1778,11 +1765,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::TestNetworkConnectivity(uint32_t networkId, void* appReqState, CompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::TestNetworkConnectivity(uint32_t networkId, void * appReqState, CompleteFunct onComplete,
+                                                        ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1795,13 +1782,13 @@ WEAVE_ERROR WeaveDeviceManager::TestNetworkConnectivity(uint32_t networkId, void
     LittleEndian::Put32(msgBuf->Start(), networkId);
     msgBuf->SetDataLength(4);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_TestNetworkConnectivity;
+    mOnError            = onError;
+    mOpState            = kOpState_TestNetworkConnectivity;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_TestConnectivity, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_TestConnectivity, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1812,17 +1799,16 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetRendezvousMode(void* appReqState, GetRendezvousModeCompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::GetRendezvousMode(void * appReqState, GetRendezvousModeCompleteFunct onComplete, ErrorFunct onError)
 {
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 }
 
-WEAVE_ERROR WeaveDeviceManager::SetRendezvousMode(uint16_t modeFlags, void* appReqState, CompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::SetRendezvousMode(uint16_t modeFlags, void * appReqState, CompleteFunct onComplete,
+                                                  ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1835,13 +1821,13 @@ WEAVE_ERROR WeaveDeviceManager::SetRendezvousMode(uint16_t modeFlags, void* appR
     LittleEndian::Put16(msgBuf->Start(), modeFlags);
     msgBuf->SetDataLength(2);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_SetRendezvousMode;
+    mOnError            = onError;
+    mOpState            = kOpState_SetRendezvousMode;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_SetRendezvousMode, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_SetRendezvousMode, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1852,11 +1838,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetWirelessRegulatoryConfig(void* appReqState, GetWirelessRegulatoryConfigCompleteFunct onComplete,
-        ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::GetWirelessRegulatoryConfig(void * appReqState, GetWirelessRegulatoryConfigCompleteFunct onComplete,
+                                                            ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1866,13 +1852,13 @@ WEAVE_ERROR WeaveDeviceManager::GetWirelessRegulatoryConfig(void* appReqState, G
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    mAppReqState = appReqState;
+    mAppReqState                            = appReqState;
     mOnComplete.GetWirelessRegulatoryConfig = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_GetWirelessRegulatoryConfig;
+    mOnError                                = onError;
+    mOpState                                = kOpState_GetWirelessRegulatoryConfig;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_GetWirelessRegulatoryConfig, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_GetWirelessRegulatoryConfig, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1883,12 +1869,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::SetWirelessRegulatoryConfig(const WirelessRegConfig *regConfig, void* appReqState,
-        CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::SetWirelessRegulatoryConfig(const WirelessRegConfig * regConfig, void * appReqState,
+                                                            CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    TLVWriter       writer;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    TLVWriter writer;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1906,13 +1892,13 @@ WEAVE_ERROR WeaveDeviceManager::SetWirelessRegulatoryConfig(const WirelessRegCon
     err = writer.Finalize();
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_SetWirelessRegulatoryConfig;
+    mOnError            = onError;
+    mOpState            = kOpState_SetWirelessRegulatoryConfig;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_SetWirelessRegulatoryConfig, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_SetWirelessRegulatoryConfig, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1923,10 +1909,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetLastNetworkProvisioningResult(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::GetLastNetworkProvisioningResult(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1936,13 +1922,13 @@ WEAVE_ERROR WeaveDeviceManager::GetLastNetworkProvisioningResult(void* appReqSta
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_GetLastNPResult;
+    mOnError            = onError;
+    mOpState            = kOpState_GetLastNPResult;
 
-    err = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_GetLastResult, msgBuf,
-            HandleNetworkProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_NetworkProvisioning, NetworkProvisioning::kMsgType_GetLastResult, msgBuf,
+                      HandleNetworkProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -1953,41 +1939,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::CreateFabric(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::CreateFabric(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-
-    if (mOpState != kOpState_Idle)
-        return WEAVE_ERROR_INCORRECT_STATE;
-
-    VerifyOrExit(onComplete != NULL && onError != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
-
-    msgBuf = PacketBuffer::New();
-    VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
-    msgBuf->SetDataLength(0);
-
-    mAppReqState = appReqState;
-    mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_CreateFabric;
-
-    err = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_CreateFabric, msgBuf,
-            HandleFabricProvisioningResponse);
-    msgBuf = NULL;
-
-exit:
-    if (msgBuf != NULL)
-        PacketBuffer::Free(msgBuf);
-    if (err != WEAVE_NO_ERROR)
-        ClearOpState();
-    return err;
-}
-
-WEAVE_ERROR WeaveDeviceManager::LeaveFabric(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
-{
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1998,13 +1953,13 @@ WEAVE_ERROR WeaveDeviceManager::LeaveFabric(void* appReqState, CompleteFunct onC
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
     msgBuf->SetDataLength(0);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_LeaveFabric;
+    mOnError            = onError;
+    mOpState            = kOpState_CreateFabric;
 
-    err = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_LeaveFabric, msgBuf,
-            HandleFabricProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_CreateFabric, msgBuf,
+                      HandleFabricProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -2015,10 +1970,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GetFabricConfig(void* appReqState, GetFabricConfigCompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::LeaveFabric(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2029,13 +1984,44 @@ WEAVE_ERROR WeaveDeviceManager::GetFabricConfig(void* appReqState, GetFabricConf
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
     msgBuf->SetDataLength(0);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
+    mOnComplete.General = onComplete;
+    mOnError            = onError;
+    mOpState            = kOpState_LeaveFabric;
+
+    err    = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_LeaveFabric, msgBuf,
+                      HandleFabricProvisioningResponse);
+    msgBuf = NULL;
+
+exit:
+    if (msgBuf != NULL)
+        PacketBuffer::Free(msgBuf);
+    if (err != WEAVE_NO_ERROR)
+        ClearOpState();
+    return err;
+}
+
+WEAVE_ERROR WeaveDeviceManager::GetFabricConfig(void * appReqState, GetFabricConfigCompleteFunct onComplete, ErrorFunct onError)
+{
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+
+    if (mOpState != kOpState_Idle)
+        return WEAVE_ERROR_INCORRECT_STATE;
+
+    VerifyOrExit(onComplete != NULL && onError != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
+
+    msgBuf = PacketBuffer::New();
+    VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
+    msgBuf->SetDataLength(0);
+
+    mAppReqState                = appReqState;
     mOnComplete.GetFabricConfig = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_GetFabricConfig;
+    mOnError                    = onError;
+    mOpState                    = kOpState_GetFabricConfig;
 
-    err = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_GetFabricConfig, msgBuf,
-            HandleFabricProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_GetFabricConfig, msgBuf,
+                      HandleFabricProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -2046,11 +2032,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::JoinExistingFabric(const uint8_t *fabricConfig, uint32_t fabricConfigLen,
-        void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::JoinExistingFabric(const uint8_t * fabricConfig, uint32_t fabricConfigLen, void * appReqState,
+                                                   CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2063,13 +2049,13 @@ WEAVE_ERROR WeaveDeviceManager::JoinExistingFabric(const uint8_t *fabricConfig, 
     memcpy(msgBuf->Start(), fabricConfig, fabricConfigLen);
     msgBuf->SetDataLength(fabricConfigLen);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_JoinExistingFabric;
+    mOnError            = onError;
+    mOpState            = kOpState_JoinExistingFabric;
 
-    err = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_JoinExistingFabric, msgBuf,
-            HandleFabricProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_FabricProvisioning, FabricProvisioning::kMsgType_JoinExistingFabric, msgBuf,
+                      HandleFabricProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -2080,30 +2066,30 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::RegisterServicePairAccount(uint64_t serviceId, const char *accountId,
-                                                           const uint8_t *serviceConfig, uint16_t serviceConfigLen,
-                                                           const uint8_t *pairingToken, uint16_t pairingTokenLen,
-                                                           const uint8_t *pairingInitData, uint16_t pairingInitDataLen,
-                                                           void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::RegisterServicePairAccount(uint64_t serviceId, const char * accountId,
+                                                           const uint8_t * serviceConfig, uint16_t serviceConfigLen,
+                                                           const uint8_t * pairingToken, uint16_t pairingTokenLen,
+                                                           const uint8_t * pairingInitData, uint16_t pairingInitDataLen,
+                                                           void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR                         err             = WEAVE_NO_ERROR;
-    PacketBuffer*                       msgBuf          = NULL;
-    size_t                              accountIdLen    = strlen(accountId);
-    RegisterServicePairAccountMessage   msg;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    size_t accountIdLen   = strlen(accountId);
+    RegisterServicePairAccountMessage msg;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
 
     VerifyOrExit(onComplete != NULL && onError != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    msg.ServiceId = serviceId;
-    msg.AccountId = accountId;
-    msg.AccountIdLen = accountIdLen;
-    msg.ServiceConfig = serviceConfig;
-    msg.ServiceConfigLen = serviceConfigLen;
-    msg.PairingToken = pairingToken;
-    msg.PairingTokenLen = pairingTokenLen;
-    msg.PairingInitData = pairingInitData;
+    msg.ServiceId          = serviceId;
+    msg.AccountId          = accountId;
+    msg.AccountIdLen       = accountIdLen;
+    msg.ServiceConfig      = serviceConfig;
+    msg.ServiceConfigLen   = serviceConfigLen;
+    msg.PairingToken       = pairingToken;
+    msg.PairingTokenLen    = pairingTokenLen;
+    msg.PairingInitData    = pairingInitData;
     msg.PairingInitDataLen = pairingInitDataLen;
 
     msgBuf = PacketBuffer::New();
@@ -2112,13 +2098,13 @@ WEAVE_ERROR WeaveDeviceManager::RegisterServicePairAccount(uint64_t serviceId, c
     err = msg.Encode(msgBuf);
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_RegisterServicePairAccount;
+    mOnError            = onError;
+    mOpState            = kOpState_RegisterServicePairAccount;
 
-    err = SendRequest(kWeaveProfile_ServiceProvisioning, ServiceProvisioning::kMsgType_RegisterServicePairAccount, msgBuf,
-            HandleServiceProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_ServiceProvisioning, ServiceProvisioning::kMsgType_RegisterServicePairAccount, msgBuf,
+                      HandleServiceProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -2129,12 +2115,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::UpdateService(uint64_t serviceId, const uint8_t *serviceConfig, uint16_t serviceConfigLen,
-                                              void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::UpdateService(uint64_t serviceId, const uint8_t * serviceConfig, uint16_t serviceConfigLen,
+                                              void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR             err     = WEAVE_NO_ERROR;
-    PacketBuffer*           msgBuf  = NULL;
-    UpdateServiceMessage    msg;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    UpdateServiceMessage msg;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2144,20 +2130,20 @@ WEAVE_ERROR WeaveDeviceManager::UpdateService(uint64_t serviceId, const uint8_t 
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    msg.ServiceId = serviceId;
-    msg.ServiceConfig = serviceConfig;
+    msg.ServiceId        = serviceId;
+    msg.ServiceConfig    = serviceConfig;
     msg.ServiceConfigLen = serviceConfigLen;
 
     err = msg.Encode(msgBuf);
     SuccessOrExit(err);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_UpdateService;
+    mOnError            = onError;
+    mOpState            = kOpState_UpdateService;
 
-    err = SendRequest(kWeaveProfile_ServiceProvisioning, ServiceProvisioning::kMsgType_UpdateService, msgBuf,
-            HandleServiceProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_ServiceProvisioning, ServiceProvisioning::kMsgType_UpdateService, msgBuf,
+                      HandleServiceProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -2168,11 +2154,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::UnregisterService(uint64_t serviceId, void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::UnregisterService(uint64_t serviceId, void * appReqState, CompleteFunct onComplete,
+                                                  ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2186,13 +2173,13 @@ WEAVE_ERROR WeaveDeviceManager::UnregisterService(uint64_t serviceId, void* appR
     LittleEndian::Write64(p, serviceId);
     msgBuf->SetDataLength(8);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_UnregisterService;
+    mOnError            = onError;
+    mOpState            = kOpState_UnregisterService;
 
-    err = SendRequest(kWeaveProfile_ServiceProvisioning, ServiceProvisioning::kMsgType_UnregisterService, msgBuf,
-            HandleServiceProvisioningResponse);
+    err    = SendRequest(kWeaveProfile_ServiceProvisioning, ServiceProvisioning::kMsgType_UnregisterService, msgBuf,
+                      HandleServiceProvisioningResponse);
     msgBuf = NULL;
 
 exit:
@@ -2203,11 +2190,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ArmFailSafe(uint8_t armMode, uint32_t failSafeToken, void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::ArmFailSafe(uint8_t armMode, uint32_t failSafeToken, void * appReqState, CompleteFunct onComplete,
+                                            ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2222,13 +2210,12 @@ WEAVE_ERROR WeaveDeviceManager::ArmFailSafe(uint8_t armMode, uint32_t failSafeTo
     LittleEndian::Write32(p, failSafeToken);
     msgBuf->SetDataLength(5);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_ArmFailSafe;
+    mOnError            = onError;
+    mOpState            = kOpState_ArmFailSafe;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_ArmFailSafe, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_ArmFailSafe, msgBuf, HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -2239,10 +2226,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::DisarmFailSafe(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::DisarmFailSafe(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2254,13 +2241,12 @@ WEAVE_ERROR WeaveDeviceManager::DisarmFailSafe(void* appReqState, CompleteFunct 
 
     msgBuf->SetDataLength(0);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_DisarmFailSafe;
+    mOnError            = onError;
+    mOpState            = kOpState_DisarmFailSafe;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_DisarmFailSafe, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_DisarmFailSafe, msgBuf, HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -2271,11 +2257,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::StartSystemTest(void* appReqState, uint32_t profileId, uint32_t testId, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::StartSystemTest(void * appReqState, uint32_t profileId, uint32_t testId, CompleteFunct onComplete,
+                                                ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2290,13 +2277,12 @@ WEAVE_ERROR WeaveDeviceManager::StartSystemTest(void* appReqState, uint32_t prof
     LittleEndian::Write32(p, testId);
     msgBuf->SetDataLength(DeviceControl::kMessageLength_StartSystemTest);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_StartSystemTest;
+    mOnError            = onError;
+    mOpState            = kOpState_StartSystemTest;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_StartSystemTest, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_StartSystemTest, msgBuf, HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -2307,10 +2293,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::StopSystemTest(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::StopSystemTest(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2322,13 +2308,12 @@ WEAVE_ERROR WeaveDeviceManager::StopSystemTest(void* appReqState, CompleteFunct 
 
     msgBuf->SetDataLength(DeviceControl::kMessageLength_StopSystemTest);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_StopSystemTest;
+    mOnError            = onError;
+    mOpState            = kOpState_StopSystemTest;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_StopSystemTest, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_StopSystemTest, msgBuf, HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -2339,11 +2324,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::ResetConfig(uint16_t resetFlags, void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::ResetConfig(uint16_t resetFlags, void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2357,13 +2342,12 @@ WEAVE_ERROR WeaveDeviceManager::ResetConfig(uint16_t resetFlags, void* appReqSta
     LittleEndian::Write16(p, resetFlags);
     msgBuf->SetDataLength(2);
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_ResetConfig;
+    mOnError            = onError;
+    mOpState            = kOpState_ResetConfig;
 
-    err = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_ResetConfig, msgBuf,
-            HandleDeviceControlResponse);
+    err    = SendRequest(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_ResetConfig, msgBuf, HandleDeviceControlResponse);
     msgBuf = NULL;
 
 exit:
@@ -2374,15 +2358,15 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::Ping(void* appReqState, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::Ping(void * appReqState, CompleteFunct onComplete, ErrorFunct onError)
 {
     return Ping(appReqState, 0, onComplete, onError);
 }
 
-WEAVE_ERROR WeaveDeviceManager::Ping(void* appReqState, int32_t payloadSize, CompleteFunct onComplete, ErrorFunct onError)
+WEAVE_ERROR WeaveDeviceManager::Ping(void * appReqState, int32_t payloadSize, CompleteFunct onComplete, ErrorFunct onError)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     if (mOpState != kOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -2397,22 +2381,24 @@ WEAVE_ERROR WeaveDeviceManager::Ping(void* appReqState, int32_t payloadSize, Com
     WeaveLogProgress(DeviceManager, "DataLength: %d, payload: %d, next: %p", msgBuf->DataLength(), payloadSize, msgBuf->Next());
     VerifyOrExit(((msgBuf->DataLength() == payloadSize) && (msgBuf->Next() == NULL)), err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
-    if (payloadSize > 0) {
+    if (payloadSize > 0)
+    {
         // fill with test pattern
-        uint8_t *data = msgBuf->Start();
-        for (int i = 0; i < payloadSize; i++) {
+        uint8_t * data = msgBuf->Start();
+        for (int i = 0; i < payloadSize; i++)
+        {
             *data++ = 0xff & i;
         }
     }
     // Store ping size so return function can check for truncation.
     mPingSize = payloadSize;
 
-    mAppReqState = appReqState;
+    mAppReqState        = appReqState;
     mOnComplete.General = onComplete;
-    mOnError = onError;
-    mOpState = kOpState_Ping;
+    mOnError            = onError;
+    mOpState            = kOpState_Ping;
 
-    err = SendRequest(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, msgBuf, HandlePingResponse);
+    err    = SendRequest(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, msgBuf, HandlePingResponse);
     msgBuf = NULL;
 
 exit:
@@ -2423,7 +2409,7 @@ exit:
     return err;
 }
 
-bool WeaveDeviceManager::IsValidPairingCode(const char *pairingCode)
+bool WeaveDeviceManager::IsValidPairingCode(const char * pairingCode)
 {
     if (pairingCode == NULL)
         return false;
@@ -2490,8 +2476,8 @@ WEAVE_ERROR WeaveDeviceManager::SetWiFiRendezvousAddress(IPAddress addr)
     return SetRendezvousAddress(addr);
 }
 
-WEAVE_ERROR WeaveDeviceManager::SendRequest(uint32_t profileId, uint16_t msgType, PacketBuffer *msgBuf,
-        ExchangeContext::MessageReceiveFunct onMsgRcvd)
+WEAVE_ERROR WeaveDeviceManager::SendRequest(uint32_t profileId, uint16_t msgType, PacketBuffer * msgBuf,
+                                            ExchangeContext::MessageReceiveFunct onMsgRcvd)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2500,10 +2486,10 @@ WEAVE_ERROR WeaveDeviceManager::SendRequest(uint32_t profileId, uint16_t msgType
 
     // Save the information about the new request.
     mCurReqProfileId = profileId;
-    mCurReqMsgType = msgType;
-    mCurReqMsg = msgBuf;
-    msgBuf = NULL;
-    mCurReqRcvFunct = onMsgRcvd;
+    mCurReqMsgType   = msgType;
+    mCurReqMsg       = msgBuf;
+    msgBuf           = NULL;
+    mCurReqRcvFunct  = onMsgRcvd;
 
     // If not already connected...
     if (!IsConnected())
@@ -2554,16 +2540,16 @@ WEAVE_ERROR WeaveDeviceManager::SendPendingRequest()
     // Create and initialize an exchange context for the request.
     mCurReq = mExchangeMgr->NewContext(mDeviceId, this);
     VerifyOrExit(mCurReq != NULL, err = WEAVE_ERROR_NO_MEMORY);
-    mCurReq->Con = mDeviceCon;
-    mCurReq->KeyId = mSessionKeyId;
-    mCurReq->EncryptionType = mEncType;
-    mCurReq->OnMessageReceived = mCurReqRcvFunct;
+    mCurReq->Con                = mDeviceCon;
+    mCurReq->KeyId              = mSessionKeyId;
+    mCurReq->EncryptionType     = mEncType;
+    mCurReq->OnMessageReceived  = mCurReqRcvFunct;
     mCurReq->OnConnectionClosed = HandleRequestConnectionClosed;
 
     // TODO: setup request timeout
 
     // Send the current request over the connection.
-    err = mCurReq->SendMessage(mCurReqProfileId, mCurReqMsgType, mCurReqMsg, 0);
+    err        = mCurReq->SendMessage(mCurReqProfileId, mCurReqMsgType, mCurReqMsg, 0);
     mCurReqMsg = NULL;
 
 exit:
@@ -2578,7 +2564,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::SaveAuthKey(const char *pairingCode)
+WEAVE_ERROR WeaveDeviceManager::SaveAuthKey(const char * pairingCode)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2605,7 +2591,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::SaveAuthKey(const uint8_t *accessToken, uint32_t accessTokenLen)
+WEAVE_ERROR WeaveDeviceManager::SaveAuthKey(const uint8_t * accessToken, uint32_t accessTokenLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2625,7 +2611,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::SaveRemoteDeviceAuthInfo(uint8_t authType, const char *authKey, uint32_t authKeyLen)
+WEAVE_ERROR WeaveDeviceManager::SaveRemoteDeviceAuthInfo(uint8_t authType, const char * authKey, uint32_t authKeyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2658,12 +2644,9 @@ WEAVE_ERROR WeaveDeviceManager::SaveRemoteDeviceAuthInfo(uint8_t authType, const
         mRemoteDeviceAuthKeyLen = authKeyLen;
         break;
 
-    case kAuthType_None:
-        break;
+    case kAuthType_None: break;
 
-    default:
-        err = WEAVE_ERROR_INVALID_ARGUMENT;
-        break;
+    default: err = WEAVE_ERROR_INVALID_ARGUMENT; break;
     }
 
 exit:
@@ -2686,11 +2669,11 @@ void WeaveDeviceManager::ClearAuthKey()
     }
 }
 
-void WeaveDeviceManager::ClearAuthKey(void *&authKey, uint32_t &authKeyLen)
+void WeaveDeviceManager::ClearAuthKey(void *& authKey, uint32_t & authKeyLen)
 {
     if (authKey != NULL)
     {
-        nl::Weave::Crypto::ClearSecretData((uint8_t *)authKey, authKeyLen);
+        nl::Weave::Crypto::ClearSecretData((uint8_t *) authKey, authKeyLen);
         free(authKey);
         authKey = NULL;
     }
@@ -2719,8 +2702,8 @@ void WeaveDeviceManager::ClearRequestState()
     }
 
     mCurReqProfileId = 0;
-    mCurReqMsgType = 0;
-    mCurReqRcvFunct = NULL;
+    mCurReqMsgType   = 0;
+    mCurReqRcvFunct  = NULL;
 }
 
 void WeaveDeviceManager::ClearOpState()
@@ -2804,9 +2787,9 @@ exit:
 
 #endif // WEAVE_CONFIG_DEVICE_MGR_DEMAND_ENABLE_UDP
 
-void WeaveDeviceManager::HandleUnsecuredConnectionCallbackRemoved(void *appState)
+void WeaveDeviceManager::HandleUnsecuredConnectionCallbackRemoved(void * appState)
 {
-    WeaveDeviceManager *devMgr = static_cast<WeaveDeviceManager *>(appState);
+    WeaveDeviceManager * devMgr = static_cast<WeaveDeviceManager *>(appState);
 
     // Ensure we don't call ClearUnsecuredConnectionListener after our listener has been removed.
     devMgr->mIsUnsecuredConnectionListenerSet = false;
@@ -2818,9 +2801,9 @@ void WeaveDeviceManager::HandleUnsecuredConnectionCallbackRemoved(void *appState
     devMgr->mOnError(devMgr, devMgr->mAppReqState, WEAVE_ERROR_CALLBACK_REPLACED, NULL);
 }
 
-void WeaveDeviceManager::HandleRequestConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveDeviceManager::HandleRequestConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     if (devMgr->mOpState == kOpState_Idle || ec != devMgr->mCurReq)
     {
@@ -2837,21 +2820,20 @@ void WeaveDeviceManager::HandleRequestConnectionClosed(ExchangeContext *ec, Weav
 
 WEAVE_ERROR WeaveDeviceManager::InitiateConnection()
 {
-    WEAVE_ERROR             err     = WEAVE_NO_ERROR;
-    PacketBuffer*           msgBuf  = NULL;
-    IdentifyRequestMessage  reqMsg;
-    uint16_t                sendFlags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    IdentifyRequestMessage reqMsg;
+    uint16_t sendFlags;
 
     VerifyOrExit(mConState == kConnectionState_NotConnected || mConState == kConnectionState_IdentifyDevice,
-        err = WEAVE_ERROR_INCORRECT_STATE);
-
+                 err = WEAVE_ERROR_INCORRECT_STATE);
 
     // If starting from the NotConnected state, reset the connection identify count.
     if (mConState == kConnectionState_NotConnected)
     {
-        WeaveLogProgress(DeviceManager, (mOpState == kOpState_RendezvousDevice)
-                ? "Initiating rendezvous for device"
-                : "Initiating connection to device");
+        WeaveLogProgress(DeviceManager,
+                         (mOpState == kOpState_RendezvousDevice) ? "Initiating rendezvous for device"
+                                                                 : "Initiating connection to device");
         mConTryCount = 0;
     }
 
@@ -2863,7 +2845,7 @@ WEAVE_ERROR WeaveDeviceManager::InitiateConnection()
 
     // Form an Identify device request containing the device criteria specified by the application.
     reqMsg.TargetFabricId = mDeviceCriteria.TargetFabricId;
-    reqMsg.TargetModes = mDeviceCriteria.TargetModes;
+    reqMsg.TargetModes    = mDeviceCriteria.TargetModes;
     reqMsg.TargetVendorId = mDeviceCriteria.TargetVendorId;
 
     if (mDeviceCriteria.TargetVendorId == kWeaveVendor_NestLabs && IsProductWildcard(mDeviceCriteria.TargetProductId))
@@ -2925,11 +2907,9 @@ WEAVE_ERROR WeaveDeviceManager::InitiateConnection()
     // node is not a member of a Weave fabric (which is true for most uses of the WeaveDeviceManager class).
     // Thus the state of the 'rendezvous link-local' option is moot in those contexts.
     //
-    sendFlags = (mRendezvousLinkLocal)
-            ? ExchangeContext::kSendFlag_DefaultMulticastSourceAddress
-            : 0;
-    err = mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, sendFlags);
-    msgBuf = NULL;
+    sendFlags = (mRendezvousLinkLocal) ? ExchangeContext::kSendFlag_DefaultMulticastSourceAddress : 0;
+    err       = mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, sendFlags);
+    msgBuf    = NULL;
     if (err == System::MapErrorPOSIX(ENETUNREACH) || err == System::MapErrorPOSIX(EHOSTUNREACH) ||
         err == System::MapErrorPOSIX(EPIPE))
         err = WEAVE_NO_ERROR;
@@ -2947,7 +2927,7 @@ exit:
     return err;
 }
 
-bool WeaveDeviceManager::IsNodeInList(uint64_t nodeId, uint64_t *list, uint32_t listLen)
+bool WeaveDeviceManager::IsNodeInList(uint64_t nodeId, uint64_t * list, uint32_t listLen)
 {
     uint32_t idx;
 
@@ -2962,10 +2942,11 @@ bool WeaveDeviceManager::IsNodeInList(uint64_t nodeId, uint64_t *list, uint32_t 
     return false;
 }
 
-WEAVE_ERROR WeaveDeviceManager::AddNodeToList(uint64_t nodeId, uint64_t *&list, uint32_t &listLen, uint32_t &listMaxLen, uint32_t initialMaxLen)
+WEAVE_ERROR WeaveDeviceManager::AddNodeToList(uint64_t nodeId, uint64_t *& list, uint32_t & listLen, uint32_t & listMaxLen,
+                                              uint32_t initialMaxLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint64_t *tmp;
+    uint64_t * tmp;
 
     // If list is uninitialized, allocate default amount of initial space
     if (!list)
@@ -2994,11 +2975,12 @@ exit:
     return err;
 }
 
-void WeaveDeviceManager::HandleDeviceEnumerationIdentifyResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleDeviceEnumerationIdentifyResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                                 const WeaveMessageInfo * msgInfo, uint32_t profileId,
+                                                                 uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
     IdentifyResponseMessage respMsg;
     bool isMatch;
 
@@ -3006,7 +2988,8 @@ void WeaveDeviceManager::HandleDeviceEnumerationIdentifyResponse(ExchangeContext
 
     // If we got an Identify response, check that it matches the requested criteria and ignore it
     // if not.
-    VerifyOrExit(profileId == kWeaveProfile_DeviceDescription && msgType == kMessageType_IdentifyResponse, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
+    VerifyOrExit(profileId == kWeaveProfile_DeviceDescription && msgType == kMessageType_IdentifyResponse,
+                 err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
     // Parse the identify response.
     err = IdentifyResponseMessage::Decode(payload, respMsg);
@@ -3022,12 +3005,14 @@ void WeaveDeviceManager::HandleDeviceEnumerationIdentifyResponse(ExchangeContext
     VerifyOrExit(!IsNodeInList(msgInfo->SourceNodeId, devMgr->mEnumeratedNodes, devMgr->mEnumeratedNodesLen), err = WEAVE_NO_ERROR);
 
     // Mark responder ID as enumerated
-    err = AddNodeToList(msgInfo->SourceNodeId, devMgr->mEnumeratedNodes, devMgr->mEnumeratedNodesLen, devMgr->mEnumeratedNodesMaxLen,
-                        ENUMERATED_NODES_LIST_INITIAL_SIZE);
+    err = AddNodeToList(msgInfo->SourceNodeId, devMgr->mEnumeratedNodes, devMgr->mEnumeratedNodesLen,
+                        devMgr->mEnumeratedNodesMaxLen, ENUMERATED_NODES_LIST_INITIAL_SIZE);
     SuccessOrExit(err);
 
     // Notify the application
-    devMgr->mOnComplete.DeviceEnumeration(devMgr, devMgr->mAppReqState, const_cast<const WeaveDeviceDescriptor *>(&respMsg.DeviceDesc), pktInfo->SrcAddress, pktInfo->Interface);
+    devMgr->mOnComplete.DeviceEnumeration(devMgr, devMgr->mAppReqState,
+                                          const_cast<const WeaveDeviceDescriptor *>(&respMsg.DeviceDesc), pktInfo->SrcAddress,
+                                          pktInfo->Interface);
 
 exit:
     if (payload)
@@ -3042,11 +3027,12 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleConnectionIdentifyResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleConnectionIdentifyResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                          const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                          PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
     IdentifyResponseMessage respMsg;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
@@ -3121,8 +3107,7 @@ void WeaveDeviceManager::HandleConnectionIdentifyResponse(ExchangeContext *ec, c
             devMgr->mDeviceCon->PeerNodeId = msgInfo->SourceNodeId;
 
         // If performing a passive rendezvous or initializing a Weave BLE connection...
-        if (devMgr->mOpState == kOpState_PassiveRendezvousDevice ||
-            devMgr->mOpState == kOpState_InitializeBleConnection)
+        if (devMgr->mOpState == kOpState_PassiveRendezvousDevice || devMgr->mOpState == kOpState_InitializeBleConnection)
         {
             // Initiate a secure session. If this fails, fail the passive rendezvous or BLE connection
             // initialization.
@@ -3170,8 +3155,8 @@ exit:
     }
 }
 
-WEAVE_ERROR WeaveDeviceManager::FilterIdentifyResponse(IdentifyResponseMessage &respMsg, IdentifyDeviceCriteria criteria, uint64_t sourceNodeId,
-    bool& isMatch)
+WEAVE_ERROR WeaveDeviceManager::FilterIdentifyResponse(IdentifyResponseMessage & respMsg, IdentifyDeviceCriteria criteria,
+                                                       uint64_t sourceNodeId, bool & isMatch)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -3239,10 +3224,10 @@ exit:
     return err;
 }
 
-void WeaveDeviceManager::HandleDeviceEnumerationTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveDeviceManager::HandleDeviceEnumerationTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveDeviceManager* lDevMgr  = reinterpret_cast<WeaveDeviceManager*>(aAppState);
-    WEAVE_ERROR         lError = static_cast<WEAVE_ERROR>(aError);
+    WeaveDeviceManager * lDevMgr = reinterpret_cast<WeaveDeviceManager *>(aAppState);
+    WEAVE_ERROR lError           = static_cast<WEAVE_ERROR>(aError);
 
     // Bail immediately if no device enumeration in progress. (This should never be the case.)
     VerifyOrExit(kOpState_EnumerateDevices == lDevMgr->mOpState, lError = WEAVE_ERROR_INCORRECT_STATE);
@@ -3258,10 +3243,10 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleConnectionIdentifyTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveDeviceManager::HandleConnectionIdentifyTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveDeviceManager* lDevMgr  = reinterpret_cast<WeaveDeviceManager*>(aAppState);
-    WEAVE_ERROR         lError = static_cast<WEAVE_ERROR>(aError);
+    WeaveDeviceManager * lDevMgr = reinterpret_cast<WeaveDeviceManager *>(aAppState);
+    WEAVE_ERROR lError           = static_cast<WEAVE_ERROR>(aError);
 
     // Bail immediately if not in the right state. (This should never be the case.)
     if (lDevMgr->mConState != kConnectionState_IdentifyDevice)
@@ -3295,8 +3280,8 @@ WEAVE_ERROR WeaveDeviceManager::SetUnsecuredConnectionHandler()
 
     if (!mIsUnsecuredConnectionListenerSet)
     {
-        err = mMessageLayer->SetUnsecuredConnectionListener(HandleConnectionReceived,
-            HandleUnsecuredConnectionCallbackRemoved, true, this);
+        err = mMessageLayer->SetUnsecuredConnectionListener(HandleConnectionReceived, HandleUnsecuredConnectionCallbackRemoved,
+                                                            true, this);
         SuccessOrExit(err);
 
         mIsUnsecuredConnectionListenerSet = true;
@@ -3312,8 +3297,7 @@ WEAVE_ERROR WeaveDeviceManager::ClearUnsecuredConnectionHandler()
 
     if (mIsUnsecuredConnectionListenerSet)
     {
-        err = mMessageLayer->ClearUnsecuredConnectionListener(HandleConnectionReceived,
-            HandleUnsecuredConnectionCallbackRemoved);
+        err = mMessageLayer->ClearUnsecuredConnectionListener(HandleConnectionReceived, HandleUnsecuredConnectionCallbackRemoved);
         SuccessOrExit(err);
 
         mIsUnsecuredConnectionListenerSet = false;
@@ -3341,9 +3325,9 @@ WEAVE_ERROR WeaveDeviceManager::StartConnectDevice(uint64_t deviceId, IPAddress 
     mDeviceCon = mMessageLayer->NewConnection();
     VerifyOrExit(mDeviceCon != NULL, err = WEAVE_ERROR_TOO_MANY_CONNECTIONS);
 
-    mDeviceCon->AppState = this;
+    mDeviceCon->AppState             = this;
     mDeviceCon->OnConnectionComplete = HandleConnectionComplete;
-    mDeviceCon->OnConnectionClosed = HandleConnectionClosed;
+    mDeviceCon->OnConnectionClosed   = HandleConnectionClosed;
 
     mConState = kConnectionState_ConnectDevice;
 
@@ -3358,9 +3342,9 @@ exit:
     return err;
 }
 
-void WeaveDeviceManager::HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR err)
+void WeaveDeviceManager::HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR err)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) con->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) con->AppState;
 
     // Bail immediately if not in the correct state.
     if (devMgr->mConState != kConnectionState_ConnectDevice)
@@ -3377,7 +3361,7 @@ void WeaveDeviceManager::HandleConnectionComplete(WeaveConnection *con, WEAVE_ER
 
         if (devMgr->mOpState == kOpState_InitializeBleConnection) // If BLE connection...
         {
-            //TODO Clean up this kludge:
+            // TODO Clean up this kludge:
             devMgr->mConState = kConnectionState_WaitDeviceConnect;
 
             devMgr->HandleConnectionReceived(devMgr->mMessageLayer, con);
@@ -3393,7 +3377,7 @@ void WeaveDeviceManager::HandleConnectionComplete(WeaveConnection *con, WEAVE_ER
     }
     else
     {
-        if (err == WEAVE_ERROR_TIMEOUT )
+        if (err == WEAVE_ERROR_TIMEOUT)
         {
             err = WEAVE_ERROR_DEVICE_CONNECT_TIMEOUT;
         }
@@ -3407,12 +3391,12 @@ void WeaveDeviceManager::HandleConnectionComplete(WeaveConnection *con, WEAVE_ER
     }
 }
 
-void WeaveDeviceManager::HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void WeaveDeviceManager::HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
-    WEAVE_ERROR             err     = WEAVE_NO_ERROR;
-    WeaveDeviceManager*     devMgr  = sListeningDeviceMgr;
-    PacketBuffer*           msgBuf  = NULL;
-    IdentifyRequestMessage  reqMsg;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = sListeningDeviceMgr;
+    PacketBuffer * msgBuf       = NULL;
+    IdentifyRequestMessage reqMsg;
 
     if (devMgr != NULL && devMgr->mConState == kConnectionState_WaitDeviceConnect)
     {
@@ -3438,8 +3422,8 @@ void WeaveDeviceManager::HandleConnectionReceived(WeaveMessageLayer *msgLayer, W
         }
 
         // Capture the connection object.
-        devMgr->mDeviceCon = con;
-        devMgr->mDeviceCon->AppState = devMgr;
+        devMgr->mDeviceCon                     = con;
+        devMgr->mDeviceCon->AppState           = devMgr;
         devMgr->mDeviceCon->OnConnectionClosed = HandleConnectionClosed;
 
         // Disallow further incoming connections. Since we can only process one connection at a time
@@ -3474,7 +3458,7 @@ void WeaveDeviceManager::HandleConnectionReceived(WeaveMessageLayer *msgLayer, W
         devMgr->mConState = kConnectionState_IdentifyDevice;
 
         // Send the Identify message.
-        err = devMgr->mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, 0);
+        err    = devMgr->mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, 0);
         msgBuf = NULL;
         SuccessOrExit(err);
     }
@@ -3494,9 +3478,9 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveDeviceManager::HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) con->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) con->AppState;
 
     devMgr->mConState = kConnectionState_NotConnected;
 
@@ -3528,9 +3512,8 @@ WEAVE_ERROR WeaveDeviceManager::StartSession()
     case kAuthType_PASEWithPairingCode:
         WeaveLogProgress(DeviceManager, "Initiating PASE session");
         mConState = kConnectionState_StartSession;
-        err = mSecurityMgr->StartPASESession(mDeviceCon, kWeaveAuthMode_PASE_PairingCode, this,
-                                             HandleSessionEstablished, HandleSessionError,
-                                             (const uint8_t *)mAuthKey, mAuthKeyLen);
+        err       = mSecurityMgr->StartPASESession(mDeviceCon, kWeaveAuthMode_PASE_PairingCode, this, HandleSessionEstablished,
+                                             HandleSessionError, (const uint8_t *) mAuthKey, mAuthKeyLen);
         break;
 
     case kAuthType_CASEWithAccessToken:
@@ -3543,28 +3526,25 @@ WEAVE_ERROR WeaveDeviceManager::StartSession()
         mSecurityMgr->InitiatorCASEConfig = Profiles::Security::CASE::kCASEConfig_Config1;
 #endif
         err = mSecurityMgr->StartCASESession(mDeviceCon, mDeviceCon->PeerNodeId, mDeviceCon->PeerAddr, mDeviceCon->PeerPort,
-                                             kWeaveAuthMode_CASE_Device, this,
-                                             HandleSessionEstablished, HandleSessionError, this);
+                                             kWeaveAuthMode_CASE_Device, this, HandleSessionEstablished, HandleSessionError, this);
         break;
 
     case kAuthType_None:
         mSessionKeyId = WeaveKeyId::kNone;
-        mEncType = kWeaveEncryptionType_None;
+        mEncType      = kWeaveEncryptionType_None;
         ReenableConnectionMonitor();
         break;
 
-    default:
-        err = WEAVE_ERROR_INCORRECT_STATE;
-        break;
+    default: err = WEAVE_ERROR_INCORRECT_STATE; break;
     }
 
     return err;
 }
 
-void WeaveDeviceManager::HandleSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *appReqState,
-        uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
+void WeaveDeviceManager::HandleSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * appReqState,
+                                                  uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *)appReqState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) appReqState;
 
     // Bail immediately if not in the correct state.
     if (devMgr->mConState != kConnectionState_StartSession || con != devMgr->mDeviceCon)
@@ -3587,22 +3567,24 @@ void WeaveDeviceManager::HandleSessionEstablished(WeaveSecurityManager *sm, Weav
     // Save the session key and encryption type for the new session. We will use these later when making requests
     // to the device.
     devMgr->mSessionKeyId = sessionKeyId;
-    devMgr->mEncType = encType;
+    devMgr->mEncType      = encType;
 
     // Re-enable the connection monitor if needed.
     devMgr->ReenableConnectionMonitor();
 }
 
-void WeaveDeviceManager::HandleSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *appReqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport)
+void WeaveDeviceManager::HandleSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * appReqState,
+                                            WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport * statusReport)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *)appReqState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) appReqState;
     DeviceStatus devStatus;
-    DeviceStatus *devStatusArg = NULL;
+    DeviceStatus * devStatusArg = NULL;
 
     // Log the error.
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
     {
-        WeaveLogProgress(DeviceManager, "Secure session failed: %s", StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        WeaveLogProgress(DeviceManager, "Secure session failed: %s",
+                         StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     }
     else
     {
@@ -3624,8 +3606,7 @@ void WeaveDeviceManager::HandleSessionError(WeaveSecurityManager *sm, WeaveConne
     //   2) if the session failed for any other reason, then the connection state will be
     //      StartSession.
     // Any other connection state value is unexpected and likely signals a logic bug.
-    if (devMgr->mConState != kConnectionState_StartSession &&
-        devMgr->mConState != kConnectionState_NotConnected)
+    if (devMgr->mConState != kConnectionState_StartSession && devMgr->mConState != kConnectionState_NotConnected)
     {
         WeaveLogError(DeviceManager, "Wrong connection state in HandleSessionError()");
         return;
@@ -3666,19 +3647,19 @@ void WeaveDeviceManager::HandleSessionError(WeaveSecurityManager *sm, WeaveConne
         if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
         {
             devStatus.StatusProfileId = statusReport->mProfileId;
-            devStatus.StatusCode = statusReport->mStatusCode;
+            devStatus.StatusCode      = statusReport->mStatusCode;
             devStatus.SystemErrorCode = 0;
-            devStatusArg = &devStatus;
+            devStatusArg              = &devStatus;
         }
 
         devMgr->mOnError(devMgr, devMgr->mAppReqState, localErr, devStatusArg);
     }
 }
 
-void WeaveDeviceManager::RetrySession(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveDeviceManager::RetrySession(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveDeviceManager* lDevMgr  = reinterpret_cast<WeaveDeviceManager*>(aAppState);
-    WEAVE_ERROR         lError = static_cast<WEAVE_ERROR>(aError);
+    WeaveDeviceManager * lDevMgr = reinterpret_cast<WeaveDeviceManager *>(aAppState);
+    WEAVE_ERROR lError           = static_cast<WEAVE_ERROR>(aError);
 
     // Bail immediately if not in the right state. (This should never be the case.)
     if (lDevMgr->mConState != kConnectionState_StartSession)
@@ -3733,9 +3714,9 @@ void WeaveDeviceManager::RestartRemotePassiveRendezvousListen()
 
 void WeaveDeviceManager::ReenableConnectionMonitor()
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t*        p;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
 
     if (mConMonitorEnabled)
     {
@@ -3752,20 +3733,18 @@ void WeaveDeviceManager::ReenableConnectionMonitor()
         // Create and initialize an exchange context for the request.
         mCurReq = mExchangeMgr->NewContext(mDeviceId, this);
         VerifyOrExit(mCurReq != NULL, err = WEAVE_ERROR_NO_MEMORY);
-        mCurReq->Con = mDeviceCon;
-        mCurReq->KeyId = mSessionKeyId;
-        mCurReq->EncryptionType = mEncType;
-        mCurReq->OnMessageReceived = HandleReenableConnectionMonitorResponse;
+        mCurReq->Con                = mDeviceCon;
+        mCurReq->KeyId              = mSessionKeyId;
+        mCurReq->EncryptionType     = mEncType;
+        mCurReq->OnMessageReceived  = HandleReenableConnectionMonitorResponse;
         mCurReq->OnConnectionClosed = HandleRequestConnectionClosed;
         // OnResponseTimeout, OnRetransmit
 
         // TODO: setup request timeout
 
         // Send the current request over the connection.
-        err = mCurReq->SendMessage(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_EnableConnectionMonitor,
-                msgBuf, 0);
+        err    = mCurReq->SendMessage(kWeaveProfile_DeviceControl, DeviceControl::kMsgType_EnableConnectionMonitor, msgBuf, 0);
         msgBuf = NULL;
-
     }
     else
         HandleConnectionReady();
@@ -3781,11 +3760,12 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleReenableConnectionMonitorResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleReenableConnectionMonitorResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                                 const WeaveMessageInfo * msgInfo, uint32_t profileId,
+                                                                 uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     ec->Close();
     if (ec != devMgr->mCurReq)
@@ -3835,8 +3815,8 @@ void WeaveDeviceManager::HandleConnectionReady()
     mConState = kConnectionState_Connected;
 
     // Register to receive unsolicited EchoRequest messages from the device.
-    err = mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Echo, kEchoMessageType_EchoRequest,
-            mDeviceCon, HandleEchoRequest, this);
+    err = mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, mDeviceCon,
+                                                          HandleEchoRequest, this);
     SuccessOrExit(err);
 
     // If the operation being performed is RendezvousDevice, PassiveRendezvousDevice, ConnectDevice,
@@ -3866,12 +3846,13 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleIdentifyDeviceResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleIdentifyDeviceResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState opState = devMgr->mOpState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState opState             = devMgr->mOpState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -3914,12 +3895,13 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-void WeaveDeviceManager::HandlePairTokenResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandlePairTokenResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                 const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                 PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState opState = devMgr->mOpState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState opState             = devMgr->mOpState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -3934,7 +3916,7 @@ void WeaveDeviceManager::HandlePairTokenResponse(ExchangeContext *ec, const IPPa
     if (profileId == kWeaveProfile_TokenPairing && msgType == TokenPairing::kMsgType_TokenCertificateResponse)
     {
         VerifyOrExit(devMgr->mTokenPairingCertificate == NULL, err = WEAVE_ERROR_INCORRECT_STATE);
-        devMgr->mTokenPairingCertificate = (uint8_t *)malloc(payload->DataLength());
+        devMgr->mTokenPairingCertificate = (uint8_t *) malloc(payload->DataLength());
         VerifyOrExit(devMgr->mTokenPairingCertificate != NULL, err = WEAVE_ERROR_NO_MEMORY);
         memcpy(devMgr->mTokenPairingCertificate, payload->Start(), payload->DataLength());
         devMgr->mTokenPairingCertificateLen = payload->DataLength();
@@ -3948,7 +3930,7 @@ void WeaveDeviceManager::HandlePairTokenResponse(ExchangeContext *ec, const IPPa
         {
             // TODO(jay): StitchTogether(payload, mTokenPairingCertificate, mTokenPairingCertificateLen);
             free(devMgr->mTokenPairingCertificate);
-            devMgr->mTokenPairingCertificate = NULL;
+            devMgr->mTokenPairingCertificate    = NULL;
             devMgr->mTokenPairingCertificateLen = 0;
         }
 
@@ -3968,13 +3950,13 @@ void WeaveDeviceManager::HandlePairTokenResponse(ExchangeContext *ec, const IPPa
 
         if (devStatus.StatusProfileId == kWeaveProfile_Common && devStatus.StatusCode == Common::kStatus_Success)
         {
-          // Protocol should only send kWeaveProfile_Common status on errors.
-          err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
+            // Protocol should only send kWeaveProfile_Common status on errors.
+            err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
         }
         else
         {
-          devMgr->mOnError(devMgr, devMgr->mAppReqState, WEAVE_ERROR_STATUS_REPORT_RECEIVED, &devStatus);
-          devMgr->ClearOpState();
+            devMgr->mOnError(devMgr, devMgr->mAppReqState, WEAVE_ERROR_STATUS_REPORT_RECEIVED, &devStatus);
+            devMgr->ClearOpState();
         }
     }
     else
@@ -3989,7 +3971,7 @@ exit:
         if (devMgr->mTokenPairingCertificate != NULL)
         {
             free(devMgr->mTokenPairingCertificate);
-            devMgr->mTokenPairingCertificate = NULL;
+            devMgr->mTokenPairingCertificate    = NULL;
             devMgr->mTokenPairingCertificateLen = 0;
         }
 
@@ -3999,12 +3981,13 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-void WeaveDeviceManager::HandleUnpairTokenResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleUnpairTokenResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                   const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                   PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState opState = devMgr->mOpState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState opState             = devMgr->mOpState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -4035,7 +4018,7 @@ void WeaveDeviceManager::HandleUnpairTokenResponse(ExchangeContext *ec, const IP
     }
     else
     {
-      err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
+        err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
     }
 
 exit:
@@ -4045,12 +4028,13 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                           const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                           PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState opState = devMgr->mOpState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState opState             = devMgr->mOpState;
 #if WEAVE_CONFIG_SUPPORT_LEGACY_ADD_NETWORK_MESSAGE
     uint16_t curReqMsgType = devMgr->mCurReqMsgType;
 #endif
@@ -4084,8 +4068,8 @@ void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext *ec, 
     {
         VerifyOrExit(opState == kOpState_ScanNetworks, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
-        uint16_t resultCount = 0;
-        NetworkInfo *netInfoList = NULL;
+        uint16_t resultCount      = 0;
+        NetworkInfo * netInfoList = NULL;
 
         err = DecodeNetworkInfoList(payload, resultCount, netInfoList);
         SuccessOrExit(err);
@@ -4098,8 +4082,7 @@ void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext *ec, 
         delete[] netInfoList;
     }
 
-    else if (profileId == kWeaveProfile_NetworkProvisioning &&
-             msgType == NetworkProvisioning::kMsgType_AddNetworkComplete)
+    else if (profileId == kWeaveProfile_NetworkProvisioning && msgType == NetworkProvisioning::kMsgType_AddNetworkComplete)
     {
         VerifyOrExit(opState == kOpState_AddNetwork, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
@@ -4118,8 +4101,8 @@ void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext *ec, 
     {
         VerifyOrExit(opState == kOpState_GetNetworks, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
-        uint16_t resultCount = 0;
-        NetworkInfo *netInfoList = NULL;
+        uint16_t resultCount      = 0;
+        NetworkInfo * netInfoList = NULL;
 
         err = DecodeNetworkInfoList(payload, resultCount, netInfoList);
         SuccessOrExit(err);
@@ -4132,7 +4115,8 @@ void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext *ec, 
         delete[] netInfoList;
     }
 
-    else if (profileId == kWeaveProfile_NetworkProvisioning && msgType == NetworkProvisioning::kMgrType_GetWirelessRegulatoryConfigComplete)
+    else if (profileId == kWeaveProfile_NetworkProvisioning &&
+             msgType == NetworkProvisioning::kMgrType_GetWirelessRegulatoryConfigComplete)
     {
         VerifyOrExit(opState == kOpState_GetWirelessRegulatoryConfig, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
@@ -4158,8 +4142,7 @@ void WeaveDeviceManager::HandleNetworkProvisioningResponse(ExchangeContext *ec, 
 
 #if WEAVE_CONFIG_SUPPORT_LEGACY_ADD_NETWORK_MESSAGE
         // If legacy device doesn't support new version of AddNetwork() message.
-        if (curReqMsgType == kMsgType_AddNetworkV2 &&
-            devStatus.StatusProfileId == kWeaveProfile_Common &&
+        if (curReqMsgType == kMsgType_AddNetworkV2 && devStatus.StatusProfileId == kWeaveProfile_Common &&
             (devStatus.StatusCode == Common::kStatus_UnsupportedMessage ||
              // Additional check is required because in some cases legacy devices return
              // "bad request" status code in response to unsupported message type.
@@ -4201,11 +4184,12 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-void WeaveDeviceManager::HandleServiceProvisioningResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleServiceProvisioningResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                           const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                           PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -4247,12 +4231,13 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-void WeaveDeviceManager::HandleFabricProvisioningResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleFabricProvisioningResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                          const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                          PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState savedOpState = devMgr->mOpState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState savedOpState        = devMgr->mOpState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -4284,7 +4269,8 @@ void WeaveDeviceManager::HandleFabricProvisioningResponse(ExchangeContext *ec, c
             devMgr->mOnError(devMgr, devMgr->mAppReqState, WEAVE_ERROR_STATUS_REPORT_RECEIVED, &devStatus);
     }
 
-    else if (profileId == kWeaveProfile_FabricProvisioning && msgType == nl::Weave::Profiles::FabricProvisioning::kMsgType_GetFabricConfigComplete)
+    else if (profileId == kWeaveProfile_FabricProvisioning &&
+             msgType == nl::Weave::Profiles::FabricProvisioning::kMsgType_GetFabricConfigComplete)
     {
         VerifyOrExit(savedOpState == kOpState_GetFabricConfig, err = WEAVE_ERROR_INCORRECT_STATE);
         devMgr->mOnComplete.GetFabricConfig(devMgr, devMgr->mAppReqState, payload->Start(), payload->DataLength());
@@ -4300,15 +4286,16 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-void WeaveDeviceManager::HandleGetCameraAuthDataResponseEntry(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleGetCameraAuthDataResponseEntry(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                              const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                              PacketBuffer * payload)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     devMgr->HandleGetCameraAuthDataResponse(ec, pktInfo, msgInfo, profileId, msgType, payload);
 }
 
-void WeaveDeviceManager::Eui48ToString(char *strBuf, uint8_t (&eui)[EUI48_LEN])
+void WeaveDeviceManager::Eui48ToString(char * strBuf, uint8_t (&eui)[EUI48_LEN])
 {
     // Generate string representation of camera's EUI-48 MAC address
     for (int idx = 0; idx < EUI48_LEN; idx++)
@@ -4318,21 +4305,22 @@ void WeaveDeviceManager::Eui48ToString(char *strBuf, uint8_t (&eui)[EUI48_LEN])
     strBuf[EUI48_STR_LEN - 1] = '\0';
 }
 
-void WeaveDeviceManager::HandleGetCameraAuthDataResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleGetCameraAuthDataResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                         const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                         PacketBuffer * payload)
 {
     WeaveLogDetail(DeviceManager, "Entering HandleGetCameraAuthDataResponse");
 
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     DeviceStatus devStatus;
-    DeviceStatus *retDevStatus = NULL;
-    OpState prevOpState = mOpState;
+    DeviceStatus * retDevStatus = NULL;
+    OpState prevOpState         = mOpState;
     uint8_t macAddress[EUI48_LEN];
     uint8_t hmac[HMAC_BUF_LEN];
     uint8_t authData[CAMERA_AUTH_DATA_LEN];
     char authDataStr[CAMERA_AUTH_DATA_LEN * 2]; // base64-encoded authData
     char macAddressStr[EUI48_STR_LEN];
-    uint8_t *cursor;
+    uint8_t * cursor;
     uint8_t idx;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
@@ -4385,7 +4373,7 @@ void WeaveDeviceManager::HandleGetCameraAuthDataResponse(ExchangeContext *ec, co
         PacketBuffer::Free(payload);
         payload = NULL;
 
-        err = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
+        err          = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
         retDevStatus = &devStatus;
     }
     else
@@ -4410,16 +4398,17 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleDeviceControlResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleDeviceControlResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                     const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                     PacketBuffer * payload)
 {
     WeaveLogDetail(DeviceManager, "Entering HandleDeviceControlReponse");
 
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     DeviceStatus devStatus;
-    DeviceStatus *retDevStatus = NULL;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState prevOpState = devMgr->mOpState;
+    DeviceStatus * retDevStatus = NULL;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState prevOpState         = devMgr->mOpState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -4469,8 +4458,8 @@ void WeaveDeviceManager::HandleDeviceControlResponse(ExchangeContext *ec, const 
                 // If operation was an EnableConnectionMonitor, and positive values were supplied for the interval
                 // and timeout, then mark connection monitoring enabled locally and start the connection monitor
                 // timer.
-                if (prevOpState == kOpState_EnableConnectionMonitor &&
-                    devMgr->mConMonitorInterval > 0 && devMgr->mConMonitorTimeout > 0)
+                if (prevOpState == kOpState_EnableConnectionMonitor && devMgr->mConMonitorInterval > 0 &&
+                    devMgr->mConMonitorTimeout > 0)
                 {
                     WeaveLogProgress(DeviceManager, "EnableConnectionMonitor Request succeeded");
 
@@ -4484,7 +4473,7 @@ void WeaveDeviceManager::HandleDeviceControlResponse(ExchangeContext *ec, const 
         }
         else
         {
-            err = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
+            err          = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
             retDevStatus = &devStatus;
         }
     }
@@ -4512,15 +4501,16 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleRemotePassiveRendezvousComplete(ExchangeContext *ec, const IPPacketInfo *pktInfo, const
-        WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleRemotePassiveRendezvousComplete(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                               const WeaveMessageInfo * msgInfo, uint32_t profileId,
+                                                               uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     WeaveLogProgress(DeviceManager, "Entering HandleRemotePassiveRendezvousComplete");
 
     DeviceStatus devStatus;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -4549,8 +4539,8 @@ void WeaveDeviceManager::HandleRemotePassiveRendezvousComplete(ExchangeContext *
         PacketBuffer::Free(payload);
         payload = NULL;
 
-        if (devStatus.StatusProfileId == kWeaveProfile_DeviceControl && devStatus.StatusCode ==
-                DeviceControl::kStatusCode_RemotePassiveRendezvousTimedOut)
+        if (devStatus.StatusProfileId == kWeaveProfile_DeviceControl &&
+            devStatus.StatusCode == DeviceControl::kStatusCode_RemotePassiveRendezvousTimedOut)
         {
             WeaveLogProgress(DeviceManager, "RemotePassiveRendezvous timed out on assisting device");
             devMgr->CancelRemotePassiveRendezvous();
@@ -4558,8 +4548,8 @@ void WeaveDeviceManager::HandleRemotePassiveRendezvousComplete(ExchangeContext *
         }
         else
         {
-            WeaveLogProgress(DeviceManager, "Received unexpected status report, profile = %u, code = %u",
-                    devStatus.StatusProfileId, devStatus.StatusCode);
+            WeaveLogProgress(DeviceManager, "Received unexpected status report, profile = %u, code = %u", devStatus.StatusProfileId,
+                             devStatus.StatusCode);
             err = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
         }
     }
@@ -4580,14 +4570,14 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandlePingResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandlePingResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                            uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
-    OpState opState = devMgr->mOpState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
+    OpState opState             = devMgr->mOpState;
     int i;
-    uint8_t *data;
+    uint8_t * data;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding request.
@@ -4612,7 +4602,8 @@ void WeaveDeviceManager::HandlePingResponse(ExchangeContext *ec, const IPPacketI
 
         // check test pattern
         data = payload->Start();
-        for (i = 0; i < payload->DataLength(); i++) {
+        for (i = 0; i < payload->DataLength(); i++)
+        {
             VerifyOrExit(data[i] == (0xff & i), err = WEAVE_ERROR_INVALID_ARGUMENT);
         }
 
@@ -4657,10 +4648,10 @@ void WeaveDeviceManager::CancelConnectionMonitorTimer()
     mSystemLayer->CancelTimer(HandleConnectionMonitorTimeout, this);
 }
 
-void WeaveDeviceManager::HandleEchoRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *)ec->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     WeaveLogProgress(DeviceManager, "EchoRequest received from device");
 
@@ -4673,9 +4664,9 @@ void WeaveDeviceManager::HandleEchoRequest(ExchangeContext *ec, const IPPacketIn
     devMgr->StartConnectionMonitorTimer();
 }
 
-void WeaveDeviceManager::HandleConnectionMonitorTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveDeviceManager::HandleConnectionMonitorTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveDeviceManager* lDevMgr  = reinterpret_cast<WeaveDeviceManager*>(aAppState);
+    WeaveDeviceManager * lDevMgr = reinterpret_cast<WeaveDeviceManager *>(aAppState);
 
     if (lDevMgr->mConMonitorEnabled)
     {
@@ -4701,10 +4692,8 @@ WEAVE_ERROR WeaveDeviceManager::StartRemotePassiveRendezvousTimer()
         // Start timer for mRemotePassiveRendezvousTimeout + 2 seconds. This allows time for the assisting device to
         // send the client an error message on timeout, in which case the client can keep its connection to the
         // assisting device open for further communication.
-        err = mSystemLayer->StartTimer(secondsToMilliseconds(mRemotePassiveRendezvousTimeout) +
-                secondsToMilliseconds(2),
-                HandleRemotePassiveRendezvousTimeout,
-                this);
+        err = mSystemLayer->StartTimer(secondsToMilliseconds(mRemotePassiveRendezvousTimeout) + secondsToMilliseconds(2),
+                                       HandleRemotePassiveRendezvousTimeout, this);
         SuccessOrExit(err);
 
         mRemotePassiveRendezvousTimerIsRunning = true;
@@ -4722,9 +4711,9 @@ void WeaveDeviceManager::CancelRemotePassiveRendezvousTimer()
     mSystemLayer->CancelTimer(HandleRemotePassiveRendezvousTimeout, this);
 }
 
-void WeaveDeviceManager::HandleRemotePassiveRendezvousTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveDeviceManager::HandleRemotePassiveRendezvousTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveDeviceManager* lDevMgr  = reinterpret_cast<WeaveDeviceManager*>(aAppState);
+    WeaveDeviceManager * lDevMgr = reinterpret_cast<WeaveDeviceManager *>(aAppState);
 
     // Mark timer as no longer running.
     lDevMgr->mRemotePassiveRendezvousTimerIsRunning = false;
@@ -4745,9 +4734,9 @@ void WeaveDeviceManager::HandleRemotePassiveRendezvousTimeout(System::Layer* aSy
 
 void WeaveDeviceManager::HandleRemoteConnectionComplete()
 {
-    WEAVE_ERROR             err     = WEAVE_NO_ERROR;
-    IdentifyRequestMessage  reqMsg;
-    PacketBuffer*           msgBuf  = NULL;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    IdentifyRequestMessage reqMsg;
+    PacketBuffer * msgBuf = NULL;
 
     // We can't auto-reconnect to a remote device, as it may not even be on our network.
     mAutoReconnect = false;
@@ -4794,11 +4783,11 @@ void WeaveDeviceManager::HandleRemoteConnectionComplete()
     // Construct an exchange context.
     mCurReq = mExchangeMgr->NewContext(mDeviceCon, this);
     VerifyOrExit(mCurReq != NULL, err = WEAVE_ERROR_NO_MEMORY);
-    mCurReq->ResponseTimeout = secondsToMilliseconds(5);
-    mCurReq->OnMessageReceived = HandleRemoteIdentifyResponse;
-    mCurReq->OnConnectionClosed = HandleRemoteIdentifyConnectionClosed;
+    mCurReq->ResponseTimeout         = secondsToMilliseconds(5);
+    mCurReq->OnMessageReceived       = HandleRemoteIdentifyResponse;
+    mCurReq->OnConnectionClosed      = HandleRemoteIdentifyConnectionClosed;
     mCurReq->OnRetransmissionTimeout = HandleRemoteIdentifyTimeout;
-    mCurReq->OnResponseTimeout = HandleRemoteIdentifyTimeout;
+    mCurReq->OnResponseTimeout       = HandleRemoteIdentifyTimeout;
 
     // Since we don't know the device's id yet, arrange to send the identify request to the 'Any' node id.
     mCurReq->PeerNodeId = kAnyNodeId;
@@ -4808,7 +4797,7 @@ void WeaveDeviceManager::HandleRemoteConnectionComplete()
     mConState = kConnectionState_IdentifyRemoteDevice;
 
     // Send the Identify message.
-    err = mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, 0);
+    err    = mCurReq->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -4840,13 +4829,14 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleRemoteIdentifyResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveDeviceManager::HandleRemoteIdentifyResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
     DeviceStatus devStatus;
-    DeviceStatus *devStatusPtr = NULL;
+    DeviceStatus * devStatusPtr = NULL;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding operation.
@@ -4862,8 +4852,7 @@ void WeaveDeviceManager::HandleRemoteIdentifyResponse(ExchangeContext *ec, const
     devMgr->mCurReq = NULL;
 
     // Verify that we're in the correct connection state.
-    VerifyOrExit(devMgr->mConState == kConnectionState_IdentifyRemoteDevice,
-            err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(devMgr->mConState == kConnectionState_IdentifyRemoteDevice, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // If we got an Identify response...
     if (profileId == kWeaveProfile_DeviceDescription && msgType == kMessageType_IdentifyResponse)
@@ -4872,7 +4861,8 @@ void WeaveDeviceManager::HandleRemoteIdentifyResponse(ExchangeContext *ec, const
         {
             char msgSourceStr[WEAVE_MAX_MESSAGE_SOURCE_STR_LENGTH];
             WeaveMessageSourceToStr(msgSourceStr, sizeof(msgSourceStr), msgInfo);
-            WeaveLogProgress(DeviceManager, "Received RPR identify response from device %s", msgSourceStr); //TODO get remote IP address from RemoteConnectionComplete msg
+            WeaveLogProgress(DeviceManager, "Received RPR identify response from device %s",
+                             msgSourceStr); // TODO get remote IP address from RemoteConnectionComplete msg
         }
 #endif
 
@@ -4941,11 +4931,10 @@ exit:
     }
 }
 
-void WeaveDeviceManager::HandleRemoteIdentifyConnectionClosed(ExchangeContext *ec, WeaveConnection *con,
-    WEAVE_ERROR conErr)
+void WeaveDeviceManager::HandleRemoteIdentifyConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
     WeaveLogError(DeviceManager, "RPR connection closed during remote Id");
-    WeaveDeviceManager *devMgr = (WeaveDeviceManager *) ec->AppState;
+    WeaveDeviceManager * devMgr = (WeaveDeviceManager *) ec->AppState;
 
     if (con == devMgr->mDeviceCon)
         devMgr->mDeviceCon = NULL;
@@ -4954,20 +4943,20 @@ void WeaveDeviceManager::HandleRemoteIdentifyConnectionClosed(ExchangeContext *e
     devMgr->RestartRemotePassiveRendezvousListen();
 }
 
-void WeaveDeviceManager::HandleRemoteIdentifyTimeout(ExchangeContext *ec)
+void WeaveDeviceManager::HandleRemoteIdentifyTimeout(ExchangeContext * ec)
 {
     WeaveLogError(DeviceManager, "RPR Id timed out");
-    WeaveDeviceManager *devMgr = static_cast<WeaveDeviceManager *>(ec->AppState);
+    WeaveDeviceManager * devMgr = static_cast<WeaveDeviceManager *>(ec->AppState);
 
     // Continue with RPR, as there may be other devices with which to rendezvous.
     devMgr->RestartRemotePassiveRendezvousListen();
 }
 
-WEAVE_ERROR WeaveDeviceManager::DecodeStatusReport(PacketBuffer *msgBuf, DeviceStatus& status)
+WEAVE_ERROR WeaveDeviceManager::DecodeStatusReport(PacketBuffer * msgBuf, DeviceStatus & status)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
-    uint8_t *p = msgBuf->Start();
+    uint8_t * p      = msgBuf->Start();
     uint16_t dataLen = msgBuf->DataLength();
     TLVType containingType;
 
@@ -4976,7 +4965,7 @@ WEAVE_ERROR WeaveDeviceManager::DecodeStatusReport(PacketBuffer *msgBuf, DeviceS
     VerifyOrExit(dataLen >= 6, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
     status.StatusProfileId = LittleEndian::Read32(p);
-    status.StatusCode = LittleEndian::Read16(p);
+    status.StatusCode      = LittleEndian::Read16(p);
 
     if (dataLen > 6)
     {
@@ -5020,12 +5009,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::DecodeNetworkInfoList(PacketBuffer *msgBuf, uint16_t& count,
-        NetworkInfo *& netInfoList)
+WEAVE_ERROR WeaveDeviceManager::DecodeNetworkInfoList(PacketBuffer * msgBuf, uint16_t & count, NetworkInfo *& netInfoList)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
-    uint8_t *p = msgBuf->Start();
+    uint8_t * p      = msgBuf->Start();
     uint16_t dataLen = msgBuf->DataLength();
 
     netInfoList = NULL;
@@ -5060,17 +5048,15 @@ exit:
     return err;
 }
 
-
 #if !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
-WEAVE_ERROR WeaveDeviceManager::EncodeNodeCertInfo(const Security::CASE::BeginSessionContext & msgCtx,
-        TLVWriter & writer)
+WEAVE_ERROR WeaveDeviceManager::EncodeNodeCertInfo(const Security::CASE::BeginSessionContext & msgCtx, TLVWriter & writer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
 
     // Initialize a reader to read the access token.
-    reader.Init((const uint8_t *)mAuthKey, mAuthKeyLen);
+    reader.Init((const uint8_t *) mAuthKey, mAuthKeyLen);
     reader.ImplicitProfileId = kWeaveProfile_Security;
 
     // Generate a CASE CertificateInformation structure from the information in the access token.
@@ -5083,11 +5069,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::GenerateNodeSignature(const Security::CASE::BeginSessionContext & msgCtx,
-        const uint8_t * msgHash, uint8_t msgHashLen,
-        TLVWriter & writer, uint64_t tag)
+WEAVE_ERROR WeaveDeviceManager::GenerateNodeSignature(const Security::CASE::BeginSessionContext & msgCtx, const uint8_t * msgHash,
+                                                      uint8_t msgHashLen, TLVWriter & writer, uint64_t tag)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
     const uint8_t * privKey = NULL;
     uint16_t privKeyLen;
 
@@ -5103,13 +5088,13 @@ exit:
     if (privKey != NULL)
     {
         WEAVE_ERROR relErr = ReleaseNodePrivateKey(privKey);
-        err = (err == WEAVE_NO_ERROR) ? relErr : err;
+        err                = (err == WEAVE_NO_ERROR) ? relErr : err;
     }
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceManager::EncodeNodePayload(const Security::CASE::BeginSessionContext & msgCtx,
-        uint8_t * payloadBuf, uint16_t payloadBufSize, uint16_t & payloadLen)
+WEAVE_ERROR WeaveDeviceManager::EncodeNodePayload(const Security::CASE::BeginSessionContext & msgCtx, uint8_t * payloadBuf,
+                                                  uint16_t payloadBufSize, uint16_t & payloadLen)
 {
     // No payload
     payloadLen = 0;
@@ -5117,33 +5102,33 @@ WEAVE_ERROR WeaveDeviceManager::EncodeNodePayload(const Security::CASE::BeginSes
 }
 
 WEAVE_ERROR WeaveDeviceManager::BeginValidation(const Security::CASE::BeginSessionContext & msgCtx,
-        Security::ValidationContext & validCtx, Security::WeaveCertificateSet & certSet)
+                                                Security::ValidationContext & validCtx, Security::WeaveCertificateSet & certSet)
 {
     return BeginCertValidation(msgCtx.IsInitiator(), certSet, validCtx);
 }
 
 WEAVE_ERROR WeaveDeviceManager::HandleValidationResult(const Security::CASE::BeginSessionContext & msgCtx,
-        Security::ValidationContext & validCtx,
-        Security::WeaveCertificateSet & certSet, WEAVE_ERROR & validRes)
+                                                       Security::ValidationContext & validCtx,
+                                                       Security::WeaveCertificateSet & certSet, WEAVE_ERROR & validRes)
 {
     return HandleCertValidationResult(msgCtx.IsInitiator(), validRes, validCtx.SigningCert, msgCtx.PeerNodeId, certSet, validCtx);
 }
 
-void WeaveDeviceManager::EndValidation(const Security::CASE::BeginSessionContext & msgCtx,
-        Security::ValidationContext & validCtx, Security::WeaveCertificateSet & certSet)
+void WeaveDeviceManager::EndValidation(const Security::CASE::BeginSessionContext & msgCtx, Security::ValidationContext & validCtx,
+                                       Security::WeaveCertificateSet & certSet)
 {
     EndCertValidation(certSet, validCtx);
 }
 
 #else // !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
-WEAVE_ERROR WeaveDeviceManager::GetNodeCertInfo(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen)
+WEAVE_ERROR WeaveDeviceManager::GetNodeCertInfo(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen)
 {
     WEAVE_ERROR err;
 
     // Decode the supplied access token and generate a CASE Certificate Info TLV structure
     // containing the certificate(s) from the access token.
-    err = CASECertInfoFromAccessToken((const uint8_t *)mAuthKey, mAuthKeyLen, buf, bufSize, certInfoLen);
+    err = CASECertInfoFromAccessToken((const uint8_t *) mAuthKey, mAuthKeyLen, buf, bufSize, certInfoLen);
     SuccessOrExit(err);
 
 exit:
@@ -5153,7 +5138,7 @@ exit:
 }
 
 // Get payload information, if any, to be included in the message to the peer.
-WEAVE_ERROR WeaveDeviceManager::GetNodePayload(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& payloadLen)
+WEAVE_ERROR WeaveDeviceManager::GetNodePayload(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & payloadLen)
 {
     // No payload
     payloadLen = 0;
@@ -5163,23 +5148,23 @@ WEAVE_ERROR WeaveDeviceManager::GetNodePayload(bool isInitiator, uint8_t *buf, u
 #endif // WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
 // Get the local node's private key.
-WEAVE_ERROR WeaveDeviceManager::GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t& weavePrivKeyLen)
+WEAVE_ERROR WeaveDeviceManager::GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen)
 {
     WEAVE_ERROR err;
-    uint8_t *privKeyBuf = NULL;
+    uint8_t * privKeyBuf = NULL;
 
     // Allocate a buffer to hold the private key.  Since the key is held within the access token, a
     // buffer as big as the access token will always be sufficient.
-    privKeyBuf = (uint8_t *)malloc(mAuthKeyLen);
+    privKeyBuf = (uint8_t *) malloc(mAuthKeyLen);
     VerifyOrExit(privKeyBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Extract the private key from the access token, converting the encoding to a EllipticCurvePrivateKey TLV object.
-    err = ExtractPrivateKeyFromAccessToken((const uint8_t *)mAuthKey, mAuthKeyLen, privKeyBuf, mAuthKeyLen, weavePrivKeyLen);
+    err = ExtractPrivateKeyFromAccessToken((const uint8_t *) mAuthKey, mAuthKeyLen, privKeyBuf, mAuthKeyLen, weavePrivKeyLen);
     SuccessOrExit(err);
 
     // Pass the extracted key back to the caller.
     weavePrivKey = privKeyBuf;
-    privKeyBuf = NULL;
+    privKeyBuf   = NULL;
 
 exit:
     if (err != WEAVE_NO_ERROR)
@@ -5190,18 +5175,19 @@ exit:
 }
 
 // Called when the CASE engine is done with the buffer returned by GetNodePrivateKey().
-WEAVE_ERROR WeaveDeviceManager::ReleaseNodePrivateKey(const uint8_t *weavePrivKey)
+WEAVE_ERROR WeaveDeviceManager::ReleaseNodePrivateKey(const uint8_t * weavePrivKey)
 {
-    free((void *)weavePrivKey);
+    free((void *) weavePrivKey);
     return WEAVE_NO_ERROR;
 }
 
 // Prepare the supplied certificate set and validation context for use in validating the certificate of a peer.
 // This method is responsible for loading the trust anchors into the certificate set.
-WEAVE_ERROR WeaveDeviceManager::BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR WeaveDeviceManager::BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet,
+                                                    ValidationContext & validContext)
 {
     WEAVE_ERROR err;
-    WeaveCertificateData *cert;
+    WeaveCertificateData * cert;
 
     err = certSet.Init(kMaxCASECerts, kCertDecodeBufferSize);
     SuccessOrExit(err);
@@ -5214,15 +5200,17 @@ WEAVE_ERROR WeaveDeviceManager::BeginCertValidation(bool isInitiator, WeaveCerti
     SuccessOrExit(err);
     cert->CertFlags |= kCertFlag_IsTrusted;
 
-    err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+    err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength,
+                           kDecodeFlag_GenerateTBSHash, cert);
     SuccessOrExit(err);
 
-    err = certSet.LoadCert(nl::NestCerts::Production::DeviceCA::Cert, nl::NestCerts::Production::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+    err = certSet.LoadCert(nl::NestCerts::Production::DeviceCA::Cert, nl::NestCerts::Production::DeviceCA::CertLength,
+                           kDecodeFlag_GenerateTBSHash, cert);
     SuccessOrExit(err);
 
     memset(&validContext, 0, sizeof(validContext));
-    validContext.EffectiveTime = SecondsSinceEpochToPackedCertTime(time(NULL));
-    validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+    validContext.EffectiveTime       = SecondsSinceEpochToPackedCertTime(time(NULL));
+    validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
     validContext.RequiredKeyPurposes = (isInitiator) ? kKeyPurposeFlag_ServerAuth : kKeyPurposeFlag_ClientAuth;
 
 exit:
@@ -5230,8 +5218,9 @@ exit:
 }
 
 // Called with the results of validating the peer's certificate.
-WEAVE_ERROR WeaveDeviceManager::HandleCertValidationResult(bool isInitiator, WEAVE_ERROR& validRes,
-        WeaveCertificateData *peerCert, uint64_t peerNodeId, WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR WeaveDeviceManager::HandleCertValidationResult(bool isInitiator, WEAVE_ERROR & validRes,
+                                                           WeaveCertificateData * peerCert, uint64_t peerNodeId,
+                                                           WeaveCertificateSet & certSet, ValidationContext & validContext)
 {
     // If the device's certificate is otherwise valid, make sure its subject DN matches the expected device id.
     if (validRes == WEAVE_NO_ERROR)
@@ -5265,7 +5254,7 @@ WEAVE_ERROR WeaveDeviceManager::HandleCertValidationResult(bool isInitiator, WEA
 }
 
 // Called when peer certificate validation is complete.
-WEAVE_ERROR WeaveDeviceManager::EndCertValidation(WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR WeaveDeviceManager::EndCertValidation(WeaveCertificateSet & certSet, ValidationContext & validContext)
 {
     // Nothing to do
     return WEAVE_NO_ERROR;
@@ -5279,10 +5268,9 @@ WEAVE_ERROR WeaveDeviceManager::ConfigureBinding(Binding * const apBinding)
 
     if (mDeviceCon != NULL)
     {
-        bindingConfig
-                .Target_NodeId(mDeviceId)
-                .Transport_ExistingConnection(mDeviceCon)
-                .Exchange_ResponseTimeoutMsec(kResponseTimeoutMsec);
+        bindingConfig.Target_NodeId(mDeviceId)
+            .Transport_ExistingConnection(mDeviceCon)
+            .Exchange_ResponseTimeoutMsec(kResponseTimeoutMsec);
 
         if (mSessionKeyId == WeaveKeyId::kNone)
         {

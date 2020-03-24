@@ -41,10 +41,10 @@ using namespace nl::Weave::Encoding;
 
 DeviceDescriptionClient::DeviceDescriptionClient()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState                = NULL;
+    ExchangeMgr                = NULL;
     OnIdentifyResponseReceived = NULL;
-    ExchangeCtx = NULL;
+    ExchangeCtx                = NULL;
 }
 
 /**
@@ -56,16 +56,16 @@ DeviceDescriptionClient::DeviceDescriptionClient()
  *                                          has already been registered.
  * @retval #WEAVE_NO_ERROR                  On success.
  */
-WEAVE_ERROR DeviceDescriptionClient::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR DeviceDescriptionClient::Init(WeaveExchangeManager * exchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
+    ExchangeMgr                = exchangeMgr;
+    FabricState                = exchangeMgr->FabricState;
     OnIdentifyResponseReceived = NULL;
-    ExchangeCtx = NULL;
+    ExchangeCtx                = NULL;
 
     return WEAVE_NO_ERROR;
 }
@@ -86,8 +86,8 @@ WEAVE_ERROR DeviceDescriptionClient::Shutdown()
         ExchangeCtx = NULL;
     }
 
-    ExchangeMgr = NULL;
-    FabricState = NULL;
+    ExchangeMgr                = NULL;
+    FabricState                = NULL;
     OnIdentifyResponseReceived = NULL;
 
     return WEAVE_NO_ERROR;
@@ -99,7 +99,7 @@ WEAVE_ERROR DeviceDescriptionClient::Shutdown()
  * @param[in] msg   A reference to the IdentifyRequest message to send.
  *
  */
-WEAVE_ERROR DeviceDescriptionClient::SendIdentifyRequest(const IdentifyRequestMessage& msg)
+WEAVE_ERROR DeviceDescriptionClient::SendIdentifyRequest(const IdentifyRequestMessage & msg)
 {
     return SendIdentifyRequest(IPAddress::Any, msg);
 }
@@ -115,10 +115,10 @@ WEAVE_ERROR DeviceDescriptionClient::SendIdentifyRequest(const IdentifyRequestMe
  * @retval other                   Other Weave or platform-specific error codes indicating that an error
  *                                 occurred preventing the sending of the IdentifyRequest.
  */
-WEAVE_ERROR DeviceDescriptionClient::SendIdentifyRequest(const IPAddress& nodeAddr, const IdentifyRequestMessage& msg)
+WEAVE_ERROR DeviceDescriptionClient::SendIdentifyRequest(const IPAddress & nodeAddr, const IdentifyRequestMessage & msg)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Discard any existing exchange context. Effectively we can only have one exchange with
     // a single node at any one time.
@@ -142,7 +142,7 @@ WEAVE_ERROR DeviceDescriptionClient::SendIdentifyRequest(const IPAddress& nodeAd
     SuccessOrExit(err);
 
     // Send the Request message.  Discard the exchange context if the send fails.
-    err = ExchangeCtx->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf);
+    err    = ExchangeCtx->SendMessage(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, msgBuf);
     msgBuf = NULL;
 
 exit:
@@ -173,14 +173,15 @@ WEAVE_ERROR DeviceDescriptionClient::CancelExchange()
     return WEAVE_NO_ERROR;
 }
 
-void DeviceDescriptionClient::HandleResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void DeviceDescriptionClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                             uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err;
-    DeviceDescriptionClient *client = (DeviceDescriptionClient *)ec->AppState;
+    DeviceDescriptionClient * client = (DeviceDescriptionClient *) ec->AppState;
     IdentifyResponseMessage respMsg;
 
     // Verify that the message is an Identify Response.
-    if (profileId != kWeaveProfile_DeviceDescription || msgType !=  kMessageType_IdentifyResponse)
+    if (profileId != kWeaveProfile_DeviceDescription || msgType != kMessageType_IdentifyResponse)
     {
         // TODO: handle unexpected response
         ExitNow();
@@ -200,13 +201,12 @@ void DeviceDescriptionClient::HandleResponse(ExchangeContext *ec, const IPPacket
 
     // Call the registered OnEchoResponseReceived handler.
     client->OnIdentifyResponseReceived(client->AppState, msgInfo->SourceNodeId,
-        (pktInfo != NULL) ? pktInfo->SrcAddress : IPAddress::Any, respMsg);
+                                       (pktInfo != NULL) ? pktInfo->SrcAddress : IPAddress::Any, respMsg);
 
 exit:
     // Free the payload buffer.
     PacketBuffer::Free(payload);
 }
-
 
 } // namespace DeviceDescription
 } // namespace Profiles

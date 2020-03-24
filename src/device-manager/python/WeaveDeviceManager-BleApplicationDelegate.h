@@ -20,8 +20,7 @@
 
 #include <BleLayer/BleApplicationDelegate.h>
 
-class DeviceManager_BleApplicationDelegate :
-    public nl::Ble::BleApplicationDelegate
+class DeviceManager_BleApplicationDelegate : public nl::Ble::BleApplicationDelegate
 {
     void NotifyWeaveConnectionClosed(BLE_CONNECTION_OBJECT connObj);
 };

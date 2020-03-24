@@ -27,23 +27,17 @@
 #ifndef _NEST_TEST_TRAIT__TEST_E_TRAIT_C_H_
 #define _NEST_TEST_TRAIT__TEST_E_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // EnumE
-    typedef enum
-    {
+// EnumE
+typedef enum
+{
     ENUM_E_VALUE_1 = 1,
     ENUM_E_VALUE_2 = 2,
     ENUM_E_VALUE_3 = 3,
     ENUM_E_VALUE_4 = 4,
-    } schema_nest_test_test_e_trait_enum_e_t;
-
-
-
+} schema_nest_test_test_e_trait_enum_e_t;
 
 #endif // _NEST_TEST_TRAIT__TEST_E_TRAIT_C_H_

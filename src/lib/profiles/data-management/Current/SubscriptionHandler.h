@@ -213,8 +213,8 @@ private:
         kState_Canceling                         = 7,
         kState_Terminated                        = 8,
 
-        kState_SubscriptionInfoValid_Begin       = kState_Subscribing,
-        kState_SubscriptionInfoValid_End         = kState_Canceling,
+        kState_SubscriptionInfoValid_Begin = kState_Subscribing,
+        kState_SubscriptionInfoValid_End   = kState_Canceling,
     };
 
     HandlerState mCurrentState;
@@ -275,7 +275,8 @@ private:
 
     void _AddRef(void);
     void _Release(void);
-    void TerminateSubscription(WEAVE_ERROR aReason, Profiles::StatusReporting::StatusReport * aStatusReport, bool suppressAppCallback);
+    void TerminateSubscription(WEAVE_ERROR aReason, Profiles::StatusReporting::StatusReport * aStatusReport,
+                               bool suppressAppCallback);
     void MoveToState(const HandlerState aTargetState);
     const char * GetStateStr() const;
 

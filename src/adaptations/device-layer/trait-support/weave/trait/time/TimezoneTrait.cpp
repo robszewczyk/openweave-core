@@ -48,58 +48,48 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0x1
-};
+uint8_t IsNullableHandleBitfield[] = { 0x1 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor UtcOffsetStructFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(UtcOffsetStruct, startTimestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 1
-    },
+const nl::FieldDescriptor UtcOffsetStructFieldDescriptors[] = {
+    { NULL, offsetof(UtcOffsetStruct, startTimestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 1 },
 
-    {
-        NULL, offsetof(UtcOffsetStruct, offsetMinutes), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2
-    },
+    { NULL, offsetof(UtcOffsetStruct, offsetMinutes), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor UtcOffsetStruct::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(UtcOffsetStructFieldDescriptors)/sizeof(UtcOffsetStructFieldDescriptors[0]),
-    .mFields = UtcOffsetStructFieldDescriptors,
-    .mSize = sizeof(UtcOffsetStruct)
+const nl::SchemaFieldDescriptor UtcOffsetStruct::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(UtcOffsetStructFieldDescriptors) / sizeof(UtcOffsetStructFieldDescriptors[0]),
+    .mFields                     = UtcOffsetStructFieldDescriptors,
+    .mSize                       = sizeof(UtcOffsetStruct)
 };
 
 } // namespace TimezoneTrait

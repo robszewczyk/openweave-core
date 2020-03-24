@@ -41,18 +41,14 @@ using namespace ::nl::NestCerts;
 
 #define CMD_NAME "weave make-service-config"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "cert",      kArgumentRequired, 'c' },
-    { "prod-root", kNoArgument,       'p' },
-    { "dev-root",  kNoArgument,       'd' },
-    { }
+static OptionDef gCmdOptionDefs[] = {
+    { "cert", kArgumentRequired, 'c' }, { "prod-root", kNoArgument, 'p' }, { "dev-root", kNoArgument, 'd' }, { }
 };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "  -c, --cert <file-name>\n"
     "\n"
     "      File containing Weave certificate to be included in the list of trusted\n"
@@ -67,60 +63,48 @@ static const char *const gCmdOptionHelp =
     "\n"
     "      Include the Nest development root certificate in the list of trusted\n"
     "      certificates.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
+
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [<options...>] <dir-host-name> [<dir-port>]\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Make a Weave service config object.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <dir-host-name>\n"
+                                "\n"
+                                "       Service directory hostname.\n"
+                                "\n"
+                                "  <dir-port>\n"
+                                "\n"
+                                "       Service directory port. Defaults to the Weave port.\n"
+                                "\n");
+
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
+
+enum
 {
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
+    kMaxCerts = 64
 };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [<options...>] <dir-host-name> [<dir-port>]\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Make a Weave service config object.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <dir-host-name>\n"
-    "\n"
-    "       Service directory hostname.\n"
-    "\n"
-    "  <dir-port>\n"
-    "\n"
-    "       Service directory port. Defaults to the Weave port.\n"
-    "\n"
-);
-
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
-
-enum { kMaxCerts = 64 };
-
-static const char *gCertFileNames[kMaxCerts];
-static size_t gNumCertFileNames = 0;
-static const char *gDirHostName = NULL;
-static int32_t gDirPort = WEAVE_PORT;
+static const char * gCertFileNames[kMaxCerts];
+static size_t gNumCertFileNames  = 0;
+static const char * gDirHostName = NULL;
+static int32_t gDirPort          = WEAVE_PORT;
 static bool gIncludeProdRootCert = false;
-static bool gIncludeDevRootCert = false;
+static bool gIncludeDevRootCert  = false;
 
-bool Cmd_MakeServiceConfig(int argc, char *argv[])
+bool Cmd_MakeServiceConfig(int argc, char * argv[])
 {
     bool res = true;
     WEAVE_ERROR err;
     WeaveCertificateSet certSet;
-    uint8_t *certBufs[kMaxCerts];
-    uint8_t *serviceConfigBuf = NULL;
-    uint16_t serviceConfigLen = 63353;
-    uint8_t *b64ServiceConfigBuf = NULL;
+    uint8_t * certBufs[kMaxCerts];
+    uint8_t * serviceConfigBuf    = NULL;
+    uint16_t serviceConfigLen     = 63353;
+    uint8_t * b64ServiceConfigBuf = NULL;
     uint32_t b64ServiceConfigLen;
 
     memset(certBufs, 0, sizeof(certBufs));
@@ -151,7 +135,7 @@ bool Cmd_MakeServiceConfig(int argc, char *argv[])
 
     if (gIncludeProdRootCert)
     {
-        WeaveCertificateData *cert;
+        WeaveCertificateData * cert;
         err = certSet.LoadCert(nl::NestCerts::Production::Root::Cert, nl::NestCerts::Production::Root::CertLength, 0, cert);
         if (err != WEAVE_NO_ERROR)
         {
@@ -162,7 +146,7 @@ bool Cmd_MakeServiceConfig(int argc, char *argv[])
 
     if (gIncludeDevRootCert)
     {
-        WeaveCertificateData *cert;
+        WeaveCertificateData * cert;
         err = certSet.LoadCert(nl::NestCerts::Development::Root::Cert, nl::NestCerts::Development::Root::CertLength, 0, cert);
         if (err != WEAVE_NO_ERROR)
         {
@@ -177,14 +161,14 @@ bool Cmd_MakeServiceConfig(int argc, char *argv[])
             ExitNow(res = false);
     }
 
-    serviceConfigBuf = (uint8_t *)malloc(serviceConfigLen);
+    serviceConfigBuf = (uint8_t *) malloc(serviceConfigLen);
     if (serviceConfigBuf == NULL)
     {
         fprintf(stderr, "weave: Memory allocation failed\n");
         ExitNow(res = false);
     }
 
-    err = EncodeServiceConfig(certSet, gDirHostName, (uint16_t)gDirPort, serviceConfigBuf, serviceConfigLen);
+    err = EncodeServiceConfig(certSet, gDirHostName, (uint16_t) gDirPort, serviceConfigBuf, serviceConfigLen);
     if (err != WEAVE_NO_ERROR)
     {
         fprintf(stderr, "weave: Error encoding service config: %s\n", nl::ErrorStr(err));
@@ -210,28 +194,20 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'c':
-        gCertFileNames[gNumCertFileNames++] = arg;
-        break;
-    case 'p':
-        gIncludeProdRootCert = true;
-        break;
-    case 'd':
-        gIncludeDevRootCert = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'c': gCertFileNames[gNumCertFileNames++] = arg; break;
+    case 'p': gIncludeProdRootCert = true; break;
+    case 'd': gIncludeDevRootCert = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {
@@ -254,7 +230,6 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
             PrintArgError("%s: Invalid value specified for service directory port: %s\n", progName, argv[1]);
             return false;
         }
-
     }
 
     return true;

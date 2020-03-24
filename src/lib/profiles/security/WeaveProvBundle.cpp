@@ -46,7 +46,8 @@
 #include <Weave/Support/Base64.h>
 
 #if WEAVE_CONFIG_ENABLE_PROVISIONING_BUNDLE_SUPPORT && !WEAVE_WITH_OPENSSL
-#error "INVALID WEAVE CONFIG: Provisioning bundle feature enabled but OpenSSL not available (WEAVE_CONFIG_ENABLE_PROVISIONING_BUNDLE_SUPPORT == 1 && WEAVE_WITH_OPENSSL == 0)."
+#error                                                                                                                             \
+    "INVALID WEAVE CONFIG: Provisioning bundle feature enabled but OpenSSL not available (WEAVE_CONFIG_ENABLE_PROVISIONING_BUNDLE_SUPPORT == 1 && WEAVE_WITH_OPENSSL == 0)."
 #endif
 
 #include <openssl/evp.h>
@@ -82,8 +83,9 @@ using namespace nl::Weave::Encoding;
 using namespace nl::Weave::Crypto;
 using namespace nl::Weave::ASN1;
 
-enum {
-    kProvisioningBundleVersion = 1,
+enum
+{
+    kProvisioningBundleVersion  = 1,
     kProvisioningBundleKDFIters = 1000
 };
 
@@ -101,7 +103,7 @@ WEAVE_ERROR WeaveProvisioningBundle::Verify(uint64_t expectedDeviceId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveCertificateSet certSet;
-    WeaveCertificateData *certData;
+    WeaveCertificateData * certData;
     uint32_t weaveCurveId;
     EncodedECPublicKey pubKey;
     EncodedECPrivateKey privKey;
@@ -142,18 +144,20 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t *provBundleBuf, uint32_t provBundleLen, const char *masterKey, uint32_t masterKeyLen, WeaveProvisioningBundle &provBundle)
+WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t * provBundleBuf, uint32_t provBundleLen, const char * masterKey,
+                                            uint32_t masterKeyLen, WeaveProvisioningBundle & provBundle)
 {
-    enum {
-        kEncryptKeySize         = 32,
-        kMACKeySize             = 32,
-        kVersionFieldSize       = 2,
-        kFixedHeaderSize        = 2 + 2 + 2 + 8, // cert len + priv key len + pairing code len + device id
-        kMACFieldSize           = HMACSHA256::kDigestLength,
-        kIVSize                 = 32,
+    enum
+    {
+        kEncryptKeySize   = 32,
+        kMACKeySize       = 32,
+        kVersionFieldSize = 2,
+        kFixedHeaderSize  = 2 + 2 + 2 + 8, // cert len + priv key len + pairing code len + device id
+        kMACFieldSize     = HMACSHA256::kDigestLength,
+        kIVSize           = 32,
     };
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EVP_CIPHER_CTX *decryptCtx;
+    EVP_CIPHER_CTX * decryptCtx;
     HMACSHA256 hmac;
     uint8_t expectedMAC[kMACFieldSize];
     uint8_t keyMaterial[kEncryptKeySize + kMACKeySize];
@@ -170,7 +174,7 @@ WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t *provBundleBuf, uint32_t pro
     EVP_CIPHER_CTX_init(decryptCtx);
 
     // Un-base64 the provisioning bundle, storing the resultant data back into the input buffer.
-    provBundleLen = Base64Decode((char *)provBundleBuf, (uint16_t)provBundleLen, (uint8_t *)provBundleBuf);
+    provBundleLen = Base64Decode((char *) provBundleBuf, (uint16_t) provBundleLen, (uint8_t *) provBundleBuf);
     VerifyOrExit(provBundleLen != UINT16_MAX, err = WEAVE_ERROR_INVALID_PROVISIONING_BUNDLE);
 
     // Verify the provided data is at least big enough to hold the version field and the initialization vector.
@@ -182,22 +186,18 @@ WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t *provBundleBuf, uint32_t pro
 
     // Allocate a temporary buffer to hold the decrypted data.
     decryptBufSize = provBundleLen;
-    decryptBuf = (uint8_t *)malloc(decryptBufSize);
+    decryptBuf     = (uint8_t *) malloc(decryptBufSize);
 
     // Generate the encryption and MAC keys from the master key.
-    res = PKCS5_PBKDF2_HMAC(masterKey, (int)masterKeyLen,
-                            (const unsigned char *)gProvisioningBundleKDFSalt, gProvisioningBundleKDFSaltLen,
-                            kProvisioningBundleKDFIters,
-                            EVP_sha1(),
-                            sizeof(keyMaterial), keyMaterial);
+    res =
+        PKCS5_PBKDF2_HMAC(masterKey, (int) masterKeyLen, (const unsigned char *) gProvisioningBundleKDFSalt,
+                          gProvisioningBundleKDFSaltLen, kProvisioningBundleKDFIters, EVP_sha1(), sizeof(keyMaterial), keyMaterial);
     if (res != 1)
         ExitNow(err = TranslateOpenSSLError(WEAVE_ERROR_PROVISIONING_BUNDLE_DECRYPTION_ERROR));
 
     // Initialize the OpenSSL cipher context for decryption using the generated encryption key and
     // the initialization vector from the bundle.
-    res = EVP_CipherInit_ex(decryptCtx, EVP_aes_256_cbc(), NULL,
-                            keyMaterial,
-                            (uint8_t *)provBundleBuf + (provBundleLen - kIVSize),
+    res = EVP_CipherInit_ex(decryptCtx, EVP_aes_256_cbc(), NULL, keyMaterial, (uint8_t *) provBundleBuf + (provBundleLen - kIVSize),
                             0);
     if (res != 1)
         ExitNow(err = TranslateOpenSSLError(WEAVE_ERROR_PROVISIONING_BUNDLE_DECRYPTION_ERROR));
@@ -207,7 +207,7 @@ WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t *provBundleBuf, uint32_t pro
 
     // Pass the encrypted data to the decryption function, storing the output in the decryption buffer.
     outLen = provBundleLen;
-    res = EVP_CipherUpdate(decryptCtx, decryptBuf, &outLen, decodePoint, (int)encryptedDataLen);
+    res    = EVP_CipherUpdate(decryptCtx, decryptBuf, &outLen, decodePoint, (int) encryptedDataLen);
     if (res != 1)
         ExitNow(err = TranslateOpenSSLError(WEAVE_ERROR_PROVISIONING_BUNDLE_DECRYPTION_ERROR));
     decryptedDataLen = outLen;
@@ -216,7 +216,7 @@ WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t *provBundleBuf, uint32_t pro
     // does not tell us how long the padding is (although it obviously knows), so decryptedDataLen should be
     // the same as encryptedDataLen.
     outLen = decryptBufSize - decryptedDataLen;
-    res = EVP_CipherFinal_ex(decryptCtx, decryptBuf + decryptedDataLen, &outLen);
+    res    = EVP_CipherFinal_ex(decryptCtx, decryptBuf + decryptedDataLen, &outLen);
     if (res != 1)
         ExitNow(err = TranslateOpenSSLError(WEAVE_ERROR_PROVISIONING_BUNDLE_DECRYPTION_ERROR));
     decryptedDataLen += outLen;
@@ -233,21 +233,27 @@ WEAVE_ERROR WeaveProvisioningBundle::Decode(uint8_t *provBundleBuf, uint32_t pro
 
     // Decode the fields of the provisioning bundle into the provided object.
     provBundle.CertificateLen = LittleEndian::Read16(decodePoint);
-    provBundle.PrivateKeyLen = LittleEndian::Read16(decodePoint);
+    provBundle.PrivateKeyLen  = LittleEndian::Read16(decodePoint);
     provBundle.PairingCodeLen = LittleEndian::Read16(decodePoint);
-    provBundle.WeaveDeviceId = LittleEndian::Read64(decodePoint);
-    provBundle.Certificate = decodePoint; decodePoint += provBundle.CertificateLen;
-    provBundle.PrivateKey = decodePoint; decodePoint += provBundle.PrivateKeyLen;
-    provBundle.PairingCode = (const char *)decodePoint; decodePoint += provBundle.PairingCodeLen;
+    provBundle.WeaveDeviceId  = LittleEndian::Read64(decodePoint);
+    provBundle.Certificate    = decodePoint;
+    decodePoint += provBundle.CertificateLen;
+    provBundle.PrivateKey = decodePoint;
+    decodePoint += provBundle.PrivateKeyLen;
+    provBundle.PairingCode = (const char *) decodePoint;
+    decodePoint += provBundle.PairingCodeLen;
 
     // Verify that the size of the data within the provisioning bundle matches the length of the data
     // returned by decryption.
-    expectedDecryptedDataLen = kFixedHeaderSize + provBundle.CertificateLen + provBundle.PrivateKeyLen + provBundle.PairingCodeLen + kMACFieldSize;
+    expectedDecryptedDataLen =
+        kFixedHeaderSize + provBundle.CertificateLen + provBundle.PrivateKeyLen + provBundle.PairingCodeLen + kMACFieldSize;
     VerifyOrExit(decryptedDataLen == expectedDecryptedDataLen, err = WEAVE_ERROR_INVALID_PROVISIONING_BUNDLE);
 
     // Recompute the MAC using the generated MAC key.
     hmac.Begin(keyMaterial + kEncryptKeySize, kMACKeySize);
-    hmac.AddData(provBundleBuf, kVersionFieldSize + kFixedHeaderSize + provBundle.CertificateLen + provBundle.PrivateKeyLen + provBundle.PairingCodeLen);
+    hmac.AddData(provBundleBuf,
+                 kVersionFieldSize + kFixedHeaderSize + provBundle.CertificateLen + provBundle.PrivateKeyLen +
+                     provBundle.PairingCodeLen);
     hmac.Finish(expectedMAC);
 
     // Fail if the MAC supplied in the bundle does not match the computed MAC.
@@ -264,12 +270,12 @@ exit:
 
 void WeaveProvisioningBundle::Clear()
 {
-    WeaveDeviceId = 0;
-    Certificate = NULL;
+    WeaveDeviceId  = 0;
+    Certificate    = NULL;
     CertificateLen = 0;
-    PrivateKey = NULL;
-    PrivateKeyLen = 0;
-    PairingCode = NULL;
+    PrivateKey     = NULL;
+    PrivateKeyLen  = 0;
+    PairingCode    = NULL;
     PairingCodeLen = 0;
 }
 
@@ -277,6 +283,5 @@ void WeaveProvisioningBundle::Clear()
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_CONFIG_ENABLE_PROVISIONING_BUNDLE_SUPPORT

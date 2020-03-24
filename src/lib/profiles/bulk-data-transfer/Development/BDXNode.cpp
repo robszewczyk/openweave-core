@@ -47,11 +47,11 @@ using namespace ::nl::Weave::Logging;
  */
 BdxNode::BdxNode(void)
 {
-    mExchangeMgr            = NULL;
-    mIsBdxTransferAllowed   = false;
-    mInitialized            = false;
-    mSendInitHandler        = NULL;
-    mReceiveInitHandler     = NULL;
+    mExchangeMgr          = NULL;
+    mIsBdxTransferAllowed = false;
+    mInitialized          = false;
+    mSendInitHandler      = NULL;
+    mReceiveInitHandler   = NULL;
 }
 
 /**
@@ -65,7 +65,7 @@ BdxNode::BdxNode(void)
  * @retval      #WEAVE_NO_ERROR                 if successful
  * @retval      #WEAVE_ERROR_INCORRECT_STATE    if mExchangeMgr isn't null, already initialized
  */
-WEAVE_ERROR BdxNode::Init(WeaveExchangeManager *anExchangeMgr)
+WEAVE_ERROR BdxNode::Init(WeaveExchangeManager * anExchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -82,7 +82,7 @@ WEAVE_ERROR BdxNode::Init(WeaveExchangeManager *anExchangeMgr)
     }
 
     mIsBdxTransferAllowed = true;
-    mInitialized = true;
+    mInitialized          = true;
 
 exit:
     return err;
@@ -114,18 +114,12 @@ WEAVE_ERROR BdxNode::Shutdown(void)
 #if WEAVE_CONFIG_BDX_SERVER_SUPPORT
     // Unregister any callbacks BEFORE releasing mExchangeMgr
     err = AwaitBdxSendInit(NULL);
-    VerifyOrExit(err == WEAVE_NO_ERROR || err == WEAVE_ERROR_INCORRECT_STATE ||
-                 err == WEAVE_ERROR_NO_UNSOLICITED_MESSAGE_HANDLER,
-                 WeaveLogDetail(BDX,
-                               "Error removing existing sendinit callback in ShutdownServer: %d", err);
-                );
+    VerifyOrExit(err == WEAVE_NO_ERROR || err == WEAVE_ERROR_INCORRECT_STATE || err == WEAVE_ERROR_NO_UNSOLICITED_MESSAGE_HANDLER,
+                 WeaveLogDetail(BDX, "Error removing existing sendinit callback in ShutdownServer: %d", err); );
 
     err = AwaitBdxReceiveInit(NULL);
-    VerifyOrExit(err == WEAVE_NO_ERROR || err == WEAVE_ERROR_INCORRECT_STATE ||
-                 err == WEAVE_ERROR_NO_UNSOLICITED_MESSAGE_HANDLER,
-                 WeaveLogDetail(BDX,
-                               "Error removing existing receiveinit callback in ShutdownServer: %d", err);
-                );
+    VerifyOrExit(err == WEAVE_NO_ERROR || err == WEAVE_ERROR_INCORRECT_STATE || err == WEAVE_ERROR_NO_UNSOLICITED_MESSAGE_HANDLER,
+                 WeaveLogDetail(BDX, "Error removing existing receiveinit callback in ShutdownServer: %d", err); );
 
 exit:
 #endif // WEAVE_CONFIG_BDX_SERVER_SUPPORT
@@ -158,7 +152,7 @@ exit:
  * @retval      #WEAVE_NO_ERROR                     If we successfully found a new BDXTransfer.
  * @retval      #WEAVE_ERROR_TOO_MANY_CONNECTIONS   If too many transfers are currently active and aXfer is NULL
  */
-WEAVE_ERROR BdxNode::AllocTransfer(BDXTransfer * &aXfer)
+WEAVE_ERROR BdxNode::AllocTransfer(BDXTransfer *& aXfer)
 {
     WEAVE_ERROR err = WEAVE_ERROR_TOO_MANY_CONNECTIONS;
 
@@ -179,7 +173,7 @@ WEAVE_ERROR BdxNode::AllocTransfer(BDXTransfer * &aXfer)
         }
 
         aXfer->mIsInitiated = true;
-        err = WEAVE_NO_ERROR;
+        err                 = WEAVE_NO_ERROR;
         ExitNow();
     }
 
@@ -218,11 +212,10 @@ exit:
  * @retval      #WEAVE_ERROR_TOO_MANY_CONNECTIONS   If too many transfers are currently active and aXfer is NULL
  * @retval      #WEAVE_ERROR_INCORRECT_STATE        If aBinding is not prepared
  */
-WEAVE_ERROR BdxNode::NewTransfer(Binding * aBinding, BDXHandlers aBDXHandlers,
-                                 ReferencedString &aFileDesignator, void * anAppState,
-                                 BDXTransfer * &aXfer)
+WEAVE_ERROR BdxNode::NewTransfer(Binding * aBinding, BDXHandlers aBDXHandlers, ReferencedString & aFileDesignator,
+                                 void * anAppState, BDXTransfer *& aXfer)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err      = WEAVE_NO_ERROR;
     ExchangeContext * ec = NULL;
 
     VerifyOrExit(aBinding != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -265,12 +258,11 @@ exit:
  * @retval      #WEAVE_ERROR_TOO_MANY_CONNECTIONS   If too many transfers are currently active and aXfer is NULL
  * @retval      #WEAVE_ERROR_INCORRECT_STATE        If mExchangeMgr has not been set yet or if aCon has not successfully connected
  */
-WEAVE_ERROR BdxNode::NewTransfer(WeaveConnection * aCon, BDXHandlers aBDXHandlers,
-                                 ReferencedString &aFileDesignator, void * anAppState,
-                                 BDXTransfer * &aXfer)
+WEAVE_ERROR BdxNode::NewTransfer(WeaveConnection * aCon, BDXHandlers aBDXHandlers, ReferencedString & aFileDesignator,
+                                 void * anAppState, BDXTransfer *& aXfer)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ExchangeContext *ec = NULL;
+    WEAVE_ERROR err      = WEAVE_NO_ERROR;
+    ExchangeContext * ec = NULL;
 
     VerifyOrExit(aCon != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(aCon->State == WeaveConnection::kState_Connected, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -317,9 +309,8 @@ exit:
  * @retval      #WEAVE_ERROR_TOO_MANY_CONNECTIONS   If too many transfers are currently active (aXfer is NULL)
  * @retval      #WEAVE_ERROR_INCORRECT_STATE        If ec is NULL, closed, or otherwise invalid for a transfer
  */
-WEAVE_ERROR BdxNode::NewTransfer(ExchangeContext *anEc, BDXHandlers aBDXHandlers,
-                                 ReferencedString &aFileDesignator, void * anAppState,
-                                 BDXTransfer * &aXfer)
+WEAVE_ERROR BdxNode::NewTransfer(ExchangeContext * anEc, BDXHandlers aBDXHandlers, ReferencedString & aFileDesignator,
+                                 void * anAppState, BDXTransfer *& aXfer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -330,7 +321,7 @@ WEAVE_ERROR BdxNode::NewTransfer(ExchangeContext *anEc, BDXHandlers aBDXHandlers
 
     // set up the application-specific state
     aXfer->mFileDesignator = aFileDesignator;
-    aXfer->mAppState = anAppState;
+    aXfer->mAppState       = anAppState;
 
     // install application-specifc handlers
     aXfer->SetHandlers(aBDXHandlers);
@@ -376,13 +367,12 @@ exit:
  * @retval      #WEAVE_ERROR_TOO_MANY_CONNECTIONS   If too many transfers are currently active (aXfer is NULL)
  * @retval      #WEAVE_ERROR_INCORRECT_STATE        If ec is NULL, closed, or otherwise invalid for a transfer
  */
-WEAVE_ERROR BdxNode::InitTransfer(ExchangeContext *anEc,
-                                 BDXTransfer * &aXfer)
+WEAVE_ERROR BdxNode::InitTransfer(ExchangeContext * anEc, BDXTransfer *& aXfer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    //TODO: check if there is already an ongoing BDX Transfer on this ExchangeContext:
-    //only one is allowed at a time according to the BDX specification
+    // TODO: check if there is already an ongoing BDX Transfer on this ExchangeContext:
+    // only one is allowed at a time according to the BDX specification
     VerifyOrExit(anEc != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(!anEc->IsConnectionClosed(), err = WEAVE_ERROR_INCORRECT_STATE);
 
@@ -398,9 +388,9 @@ WEAVE_ERROR BdxNode::InitTransfer(ExchangeContext *anEc,
     {
         anEc->ResponseTimeout = BDX_RESPONSE_TIMEOUT_MS;
     }
-    anEc->OnResponseTimeout = BdxProtocol::HandleResponseTimeout;
+    anEc->OnResponseTimeout  = BdxProtocol::HandleResponseTimeout;
     anEc->OnConnectionClosed = BdxProtocol::HandleConnectionClosed;
-    anEc->OnKeyError = BdxProtocol::HandleKeyError;
+    anEc->OnKeyError         = BdxProtocol::HandleKeyError;
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     anEc->OnSendError = BdxProtocol::HandleSendError;
@@ -420,7 +410,7 @@ exit:
  *
  * @param[in]   aXfer       The BDXTransfer to shut down
  */
-void BdxNode::ShutdownTransfer(BDXTransfer *aXfer)
+void BdxNode::ShutdownTransfer(BDXTransfer * aXfer)
 {
     aXfer->Shutdown();
 }
@@ -479,16 +469,16 @@ bool BdxNode::IsInitialized(void)
  * @retval      #WEAVE_ERROR_INCORRECT_STATE    If BDXTransfer can't run right now
  * @retval      #WEAVE_ERROR_NO_MEMORY          BdxProtocol::InitBdxReceive failed to init
  */
-WEAVE_ERROR BdxNode::InitBdxReceive(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                                    bool aAsyncOk, ReferencedTLVData *aMetaData)
+WEAVE_ERROR BdxNode::InitBdxReceive(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk,
+                                    ReferencedTLVData * aMetaData)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit(CanBdxTransferRun(),
-                 err = WEAVE_ERROR_INCORRECT_STATE; WeaveLogDetail(BDX, "InitBdxReceive called but server cannot run currently"));
+    VerifyOrExit(CanBdxTransferRun(), err = WEAVE_ERROR_INCORRECT_STATE;
+                 WeaveLogDetail(BDX, "InitBdxReceive called but server cannot run currently"));
 
     aXfer.mAmInitiator = true;
-    aXfer.mAmSender = false;
+    aXfer.mAmSender    = false;
 
     // Arrange for messages in this exchange to go to our response handler.
     // NOTE: we may want to set different handlers for e.g., Receive, Send in the future
@@ -522,16 +512,16 @@ exit:
  * @retval      #WEAVE_ERROR_INCORRECT_STATE    If BDXTransfer can't run right now
  * @retval      #WEAVE_ERROR_NO_MEMORY          BdxProtocol::InitBdxSend failed to init
  */
-WEAVE_ERROR BdxNode::InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                                 bool aAsyncOk, ReferencedTLVData *aMetaData)
+WEAVE_ERROR BdxNode::InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk,
+                                 ReferencedTLVData * aMetaData)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit(CanBdxTransferRun(),
-                 err = WEAVE_ERROR_INCORRECT_STATE; WeaveLogDetail(BDX, "InitBdxSend called but server cannot run currently"));
+    VerifyOrExit(CanBdxTransferRun(), err = WEAVE_ERROR_INCORRECT_STATE;
+                 WeaveLogDetail(BDX, "InitBdxSend called but server cannot run currently"));
 
     aXfer.mAmInitiator = true;
-    aXfer.mAmSender = true;
+    aXfer.mAmSender    = true;
 
     // Arrange for messages in this exchange to go to our response handler.
     aXfer.mExchangeContext->OnMessageReceived = BdxProtocol::HandleResponse;
@@ -563,17 +553,16 @@ exit:
  * @retval      #WEAVE_ERROR_INCORRECT_STATE    If BDXTransfer can't run right now
  * @retval      #WEAVE_ERROR_NO_MEMORY          BdxProtocol::InitBdxSend failed to init
  */
-WEAVE_ERROR BdxNode::InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                                 bool aAsyncOk, SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback,
-                                 void *aMetaDataAppState)
+WEAVE_ERROR BdxNode::InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk,
+                                 SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback, void * aMetaDataAppState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit(CanBdxTransferRun(),
-                 err = WEAVE_ERROR_INCORRECT_STATE; WeaveLogDetail(BDX, "InitBdxSend called but server cannot run currently"));
+    VerifyOrExit(CanBdxTransferRun(), err = WEAVE_ERROR_INCORRECT_STATE;
+                 WeaveLogDetail(BDX, "InitBdxSend called but server cannot run currently"));
 
     aXfer.mAmInitiator = true;
-    aXfer.mAmSender = true;
+    aXfer.mAmSender    = true;
 
     // Arrange for messages in this exchange to go to our response handler.
     aXfer.mExchangeContext->OnMessageReceived = BdxProtocol::HandleResponse;
@@ -674,16 +663,14 @@ exit:
  * @param[in]   aMessageType            The message type of that profile
  * @param[in]   aPayloadReceiveInit     The packed message itself
  */
-void BdxNode::HandleReceiveInit(ExchangeContext *anEc, const IPPacketInfo *aPktInfo,
-                                const WeaveMessageInfo *aWeaveMsgInfo,
-                                uint32_t aProfileId, uint8_t aMessageType,
-                                PacketBuffer *aPayloadReceiveInit)
+void BdxNode::HandleReceiveInit(ExchangeContext * anEc, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aWeaveMsgInfo,
+                                uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPayloadReceiveInit)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
     uint16_t statusCode = kStatus_Success;
-    BdxNode *bdxApp = NULL;
-    BDXTransfer *xfer = NULL;
-    bool success = false;
+    BdxNode * bdxApp    = NULL;
+    BDXTransfer * xfer  = NULL;
+    bool success        = false;
 
     ReceiveInit receiveInit;
     // Set version early in case we exit before parsing. This allows us to send
@@ -695,44 +682,39 @@ void BdxNode::HandleReceiveInit(ExchangeContext *anEc, const IPPacketInfo *aPktI
     VerifyOrExit(anEc != NULL, err = WEAVE_ERROR_INCORRECT_STATE; statusCode = kStatus_ServerBadState);
 
     VerifyOrExit(aProfileId == kWeaveProfile_BDX, err = WEAVE_ERROR_INVALID_PROFILE_ID; statusCode = kStatus_BadMessageContents);
-    VerifyOrExit(aMessageType == kMsgType_ReceiveInit, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE; statusCode = kStatus_BadMessageContents);
+    VerifyOrExit(aMessageType == kMsgType_ReceiveInit, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
+                 statusCode = kStatus_BadMessageContents);
 
     // Parse init request and discard payload buffer
     err = ReceiveInit::parse(aPayloadReceiveInit, receiveInit);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 statusCode = kStatus_BadMessageContents;
+    VerifyOrExit(err == WEAVE_NO_ERROR, statusCode = kStatus_BadMessageContents;
                  WeaveLogDetail(BDX, "Error: HandleReceiveInit: Unable to parse Receive Init request: %d", err));
     PacketBuffer::Free(aPayloadReceiveInit);
     aPayloadReceiveInit = NULL;
 
     bdxApp = static_cast<BdxNode *>(anEc->AppState);
 
-    VerifyOrExit(bdxApp->CanBdxTransferRun(),
-                 err = WEAVE_ERROR_INCORRECT_STATE; statusCode = kStatus_ServerBadState);
+    VerifyOrExit(bdxApp->CanBdxTransferRun(), err = WEAVE_ERROR_INCORRECT_STATE; statusCode = kStatus_ServerBadState);
 
     // Grab BDXTransfer object for this transfer
     err = bdxApp->InitTransfer(anEc, xfer);
-    VerifyOrExit(err == WEAVE_NO_ERROR && xfer != NULL,
-                 err = WEAVE_ERROR_NO_MEMORY; statusCode = kStatus_ServerBadState);
+    VerifyOrExit(err == WEAVE_NO_ERROR && xfer != NULL, err = WEAVE_ERROR_NO_MEMORY; statusCode = kStatus_ServerBadState);
 
     // Configure xfer object
-    xfer->mAmInitiator = false;
-    xfer->mIsAccepted = false;
-    xfer->mAmSender = true;
+    xfer->mAmInitiator  = false;
+    xfer->mIsAccepted   = false;
+    xfer->mAmSender     = true;
     xfer->mMaxBlockSize = receiveInit.mMaxBlockSize;
-    xfer->mVersion = (receiveInit.mVersion > WEAVE_CONFIG_BDX_VERSION) ? WEAVE_CONFIG_BDX_VERSION : receiveInit.mVersion;
+    xfer->mVersion      = (receiveInit.mVersion > WEAVE_CONFIG_BDX_VERSION) ? WEAVE_CONFIG_BDX_VERSION : receiveInit.mVersion;
 
     // Verify we have a legitimate block size or reject
-    VerifyOrExit(receiveInit.mMaxBlockSize > 0,
-                 err = WEAVE_ERROR_INVALID_ARGUMENT; statusCode = kStatus_BadRequest);
+    VerifyOrExit(receiveInit.mMaxBlockSize > 0, err = WEAVE_ERROR_INVALID_ARGUMENT; statusCode = kStatus_BadRequest);
 
-    VerifyOrExit(receiveInit.mFileDesignator.theLength > 0,
-                 err = WEAVE_ERROR_INVALID_ARGUMENT; statusCode = kStatus_BadRequest);
+    VerifyOrExit(receiveInit.mFileDesignator.theLength > 0, err = WEAVE_ERROR_INVALID_ARGUMENT; statusCode = kStatus_BadRequest);
 
     // Fire application callback to validate request and setup transfer
     // Application should set the transfer mode and accept the transfer.
-    VerifyOrExit(bdxApp->mReceiveInitHandler,
-                 err = WEAVE_ERROR_NO_MESSAGE_HANDLER; statusCode = kStatus_ServerBadState);
+    VerifyOrExit(bdxApp->mReceiveInitHandler, err = WEAVE_ERROR_NO_MESSAGE_HANDLER; statusCode = kStatus_ServerBadState);
 
     statusCode = bdxApp->mReceiveInitHandler(xfer, &receiveInit);
     VerifyOrExit(statusCode == kStatus_Success, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -741,8 +723,9 @@ void BdxNode::HandleReceiveInit(ExchangeContext *anEc, const IPPacketInfo *aPktI
     VerifyOrExit(!(((xfer->mTransferMode == kMode_ReceiverDrive) && !receiveInit.mReceiverDriveSupported) ||
                    ((xfer->mTransferMode == kMode_SenderDrive) && !receiveInit.mSenderDriveSupported) ||
                    ((xfer->mTransferMode == kMode_Asynchronous))),
-        //TODO: merge this up one line when async supported: && !receiveInit.mAsynchronousModeSupported)
-                 err = WEAVE_ERROR_INVALID_TRANSFER_MODE; statusCode = kStatus_ServerBadState);
+                 // TODO: merge this up one line when async supported: && !receiveInit.mAsynchronousModeSupported)
+                 err        = WEAVE_ERROR_INVALID_TRANSFER_MODE;
+                 statusCode = kStatus_ServerBadState);
 
     // TODO: validate max block size?  anything else?
     WeaveLogDetail(BDX, "HandleReceiveInit validated request\n");
@@ -819,17 +802,15 @@ exit:
  * @param[in]   aMessageType            The message type of that profile
  * @param[in]   aPayload                The packed message itself
  */
-    //TODO: pull in documentation from WeaveExchangeMgr.h::MessageReceiveFunct
-void BdxNode::HandleSendInit(ExchangeContext *anEc, const IPPacketInfo *aPktInfo,
-                             const WeaveMessageInfo *aWeaveMsgInfo,
-                             uint32_t aProfileId, uint8_t aMessageType,
-                             PacketBuffer *aPayload)
+// TODO: pull in documentation from WeaveExchangeMgr.h::MessageReceiveFunct
+void BdxNode::HandleSendInit(ExchangeContext * anEc, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aWeaveMsgInfo,
+                             uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPayload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
     uint16_t statusCode = kStatus_Success;
     BdxNode * bdxApp;
-    BDXTransfer *xfer = NULL;
-    bool success = false;
+    BDXTransfer * xfer = NULL;
+    bool success       = false;
 
     SendInit sendInit;
     // Set version early in case we exit before parsing. This allows us to send
@@ -841,37 +822,34 @@ void BdxNode::HandleSendInit(ExchangeContext *anEc, const IPPacketInfo *aPktInfo
     VerifyOrExit(anEc != NULL, err = WEAVE_ERROR_INCORRECT_STATE; statusCode = kStatus_ServerBadState);
 
     VerifyOrExit(aProfileId == kWeaveProfile_BDX, err = WEAVE_ERROR_INVALID_PROFILE_ID; statusCode = kStatus_BadMessageContents);
-    VerifyOrExit(aMessageType == kMsgType_SendInit, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE; statusCode = kStatus_BadMessageContents);
+    VerifyOrExit(aMessageType == kMsgType_SendInit, err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
+                 statusCode = kStatus_BadMessageContents);
 
     // Parse init request and discard payload buffer
     err = SendInit::parse(aPayload, sendInit);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 statusCode = kStatus_BadMessageContents;
+    VerifyOrExit(err == WEAVE_NO_ERROR, statusCode = kStatus_BadMessageContents;
                  WeaveLogDetail(BDX, "Error: HandleSendInit: Unable to parse Send Init request: %d", err));
     PacketBuffer::Free(aPayload);
     aPayload = NULL;
 
     bdxApp = static_cast<BdxNode *>(anEc->AppState);
 
-    VerifyOrExit(bdxApp->CanBdxTransferRun(),
-                 err = WEAVE_ERROR_INCORRECT_STATE; statusCode = kStatus_ServerBadState);
+    VerifyOrExit(bdxApp->CanBdxTransferRun(), err = WEAVE_ERROR_INCORRECT_STATE; statusCode = kStatus_ServerBadState);
 
     // Grab BDXTransfer object for this transfer
     err = bdxApp->InitTransfer(anEc, xfer);
-    VerifyOrExit(err == WEAVE_NO_ERROR && xfer != NULL,
-                 err = WEAVE_ERROR_NO_MEMORY; statusCode = kStatus_ServerBadState);
+    VerifyOrExit(err == WEAVE_NO_ERROR && xfer != NULL, err = WEAVE_ERROR_NO_MEMORY; statusCode = kStatus_ServerBadState);
 
     // Configure xfer object
-    xfer->mIsAccepted = false;
+    xfer->mIsAccepted   = false;
     xfer->mMaxBlockSize = sendInit.mMaxBlockSize;
-    xfer->mAmInitiator = false;
-    xfer->mAmSender = false;
-    xfer->mVersion = (sendInit.mVersion > WEAVE_CONFIG_BDX_VERSION) ? WEAVE_CONFIG_BDX_VERSION : sendInit.mVersion;
+    xfer->mAmInitiator  = false;
+    xfer->mAmSender     = false;
+    xfer->mVersion      = (sendInit.mVersion > WEAVE_CONFIG_BDX_VERSION) ? WEAVE_CONFIG_BDX_VERSION : sendInit.mVersion;
 
     // Fire application callback to validate request and setup transfer
     // Application should set the transfer mode and accept the transfer.
-    VerifyOrExit(bdxApp->mSendInitHandler,
-                 err = WEAVE_ERROR_NO_MESSAGE_HANDLER; statusCode = kStatus_ServerBadState);
+    VerifyOrExit(bdxApp->mSendInitHandler, err = WEAVE_ERROR_NO_MESSAGE_HANDLER; statusCode = kStatus_ServerBadState);
 
     statusCode = bdxApp->mSendInitHandler(xfer, &sendInit);
     VerifyOrExit(statusCode == kStatus_Success, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -880,8 +858,9 @@ void BdxNode::HandleSendInit(ExchangeContext *anEc, const IPPacketInfo *aPktInfo
     VerifyOrExit(!(((xfer->mTransferMode == kMode_ReceiverDrive) && !sendInit.mReceiverDriveSupported) ||
                    ((xfer->mTransferMode == kMode_SenderDrive) && !sendInit.mSenderDriveSupported) ||
                    ((xfer->mTransferMode == kMode_Asynchronous))),
-        //TODO: merge this up one line when async supported: && !sendInit.mAsynchronousModeSupported)
-                 err = WEAVE_ERROR_INVALID_TRANSFER_MODE; statusCode = kStatus_ServerBadState);
+                 // TODO: merge this up one line when async supported: && !sendInit.mAsynchronousModeSupported)
+                 err        = WEAVE_ERROR_INVALID_TRANSFER_MODE;
+                 statusCode = kStatus_ServerBadState);
 
     WeaveLogDetail(BDX, "HandleSendInit validated request\n");
 
@@ -939,39 +918,36 @@ exit:
 /**
  * Function to send a reject message with the specified error.
  */
-WEAVE_ERROR BdxNode::SendReject(ExchangeContext *anEc, uint8_t aVersion, uint16_t anErr, uint8_t aMsgType)
+WEAVE_ERROR BdxNode::SendReject(ExchangeContext * anEc, uint8_t aVersion, uint16_t anErr, uint8_t aMsgType)
 {
-    WEAVE_ERROR     err             = WEAVE_NO_ERROR;
-    StatusReport    rejectStatus;
-    PacketBuffer*   responsePayload = NULL;
-    uint16_t        flags           = 0;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    StatusReport rejectStatus;
+    PacketBuffer * responsePayload = NULL;
+    uint16_t flags                 = 0;
 
-    VerifyOrExit(aMsgType == kMsgType_SendReject || aMsgType == kMsgType_ReceiveReject,
-                 err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(aMsgType == kMsgType_SendReject || aMsgType == kMsgType_ReceiveReject, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     WeaveLogDetail(BDX, "%s sending Reject due to error: %d", __FUNCTION__, anErr);
 
     err = rejectStatus.init(kWeaveProfile_BDX, anErr);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendReject error calling Init on rejectStatus: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendReject error calling Init on rejectStatus: %d", err));
 
     responsePayload = PacketBuffer::New();
-    VerifyOrExit(responsePayload != NULL,
-                 err = WEAVE_ERROR_NO_MEMORY; WeaveLogDetail(BDX, "SendReject couldn't grab PacketBuffer"));
+    VerifyOrExit(responsePayload != NULL, err = WEAVE_ERROR_NO_MEMORY;
+                 WeaveLogDetail(BDX, "SendReject couldn't grab PacketBuffer"));
 
     err = rejectStatus.pack(responsePayload);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendReject couldn't pack rejectStatus: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendReject couldn't pack rejectStatus: %d", err));
 
     flags = GetBDXAckFlag(anEc);
     if (aVersion == 0)
     {
-        err = anEc->SendMessage(kWeaveProfile_BDX, aMsgType, responsePayload, flags);
+        err             = anEc->SendMessage(kWeaveProfile_BDX, aMsgType, responsePayload, flags);
         responsePayload = NULL;
     }
     else if (aVersion == 1)
     {
-        err = anEc->SendMessage(kWeaveProfile_Common, Common::kMsgType_StatusReport, responsePayload, flags);
+        err             = anEc->SendMessage(kWeaveProfile_Common, Common::kMsgType_StatusReport, responsePayload, flags);
         responsePayload = NULL;
     }
     else
@@ -979,8 +955,7 @@ WEAVE_ERROR BdxNode::SendReject(ExchangeContext *anEc, uint8_t aVersion, uint16_
         err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
     }
 
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendReject error sending reject message: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendReject error sending reject message: %d", err));
 
 exit:
     if (responsePayload)
@@ -994,26 +969,23 @@ exit:
 /**
  * Function to send a receive accept for the given transfer
  */
-WEAVE_ERROR BdxNode::SendReceiveAccept(ExchangeContext *anEc, BDXTransfer *aXfer)
+WEAVE_ERROR BdxNode::SendReceiveAccept(ExchangeContext * anEc, BDXTransfer * aXfer)
 {
-    WEAVE_ERROR     err             = WEAVE_NO_ERROR;
-    ReceiveAccept   receiveAccept;
-    PacketBuffer*   payload         = NULL;
-    uint16_t        flags;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    ReceiveAccept receiveAccept;
+    PacketBuffer * payload = NULL;
+    uint16_t flags;
 
     // Send a ReceiveAccept response back to the receiver.
     err = receiveAccept.init(aXfer->mVersion, aXfer->mTransferMode, aXfer->mMaxBlockSize, aXfer->mLength, NULL);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendReceiveAccept error calling Init on receiveAccept: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendReceiveAccept error calling Init on receiveAccept: %d", err));
 
     payload = PacketBuffer::New();
-    VerifyOrExit(payload != NULL,
-                 err = WEAVE_ERROR_NO_MEMORY;
+    VerifyOrExit(payload != NULL, err = WEAVE_ERROR_NO_MEMORY;
                  WeaveLogDetail(BDX, "SendReceiveAccept error grabbing PacketBuffer"));
 
     err = receiveAccept.pack(payload);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendReceiveAccept error packing receiveAccept : %d\n", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendReceiveAccept error packing receiveAccept : %d\n", err));
 
     // Set ourselves up to handle first BlockQueryRequest.
     anEc->OnMessageReceived = BdxProtocol::HandleResponse;
@@ -1021,7 +993,7 @@ WEAVE_ERROR BdxNode::SendReceiveAccept(ExchangeContext *anEc, BDXTransfer *aXfer
     // Expect a response if we are not the driver
     flags = aXfer->GetDefaultFlags(!aXfer->IsDriver());
 
-    err = anEc->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveAccept, payload, flags);
+    err     = anEc->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveAccept, payload, flags);
     payload = NULL;
     VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendReceiveAccept error sending accept message: %d", err));
 
@@ -1044,8 +1016,7 @@ WEAVE_ERROR BdxNode::SendReceiveAccept(ExchangeContext *anEc, BDXTransfer *aXfer
             err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
         }
 
-        VerifyOrExit(err == WEAVE_NO_ERROR,
-                     WeaveLogDetail(BDX, "Error sending first block in SendReceiveAccept: %d", err));
+        VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "Error sending first block in SendReceiveAccept: %d", err));
     }
 
 exit:
@@ -1060,26 +1031,22 @@ exit:
 /**
  * Function to send a send accept for the given transfer
  */
-WEAVE_ERROR BdxNode::SendSendAccept(ExchangeContext *anEc, BDXTransfer *aXfer)
+WEAVE_ERROR BdxNode::SendSendAccept(ExchangeContext * anEc, BDXTransfer * aXfer)
 {
-    WEAVE_ERROR     err         = WEAVE_NO_ERROR;
-    SendAccept      sendAccept;
-    PacketBuffer*   payload     = NULL;
-    uint16_t        flags;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    SendAccept sendAccept;
+    PacketBuffer * payload = NULL;
+    uint16_t flags;
 
     // Send a ReceiveAccept response back to the receiver.
     err = sendAccept.init(aXfer->mVersion, aXfer->mTransferMode, aXfer->mMaxBlockSize, NULL);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendSendAccept error calling Init on sendAccept: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendSendAccept error calling Init on sendAccept: %d", err));
 
     payload = PacketBuffer::New();
-    VerifyOrExit(payload != NULL,
-                 err = WEAVE_ERROR_NO_MEMORY;
-                 WeaveLogDetail(BDX, "SendSendAccept error grabbing PacketBuffer"));
+    VerifyOrExit(payload != NULL, err = WEAVE_ERROR_NO_MEMORY; WeaveLogDetail(BDX, "SendSendAccept error grabbing PacketBuffer"));
 
     err = sendAccept.pack(payload);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendSendAccept error packing sendAccept : %d\n", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendSendAccept error packing sendAccept : %d\n", err));
 
     // Set ourselves up to handle first BlockQueryRequest.
     anEc->OnMessageReceived = BdxProtocol::HandleResponse;
@@ -1087,10 +1054,9 @@ WEAVE_ERROR BdxNode::SendSendAccept(ExchangeContext *anEc, BDXTransfer *aXfer)
     // Expect a response if we are not the driver
     flags = aXfer->GetDefaultFlags(!aXfer->IsDriver());
 
-    err = anEc->SendMessage(kWeaveProfile_BDX, kMsgType_SendAccept, payload, flags);
+    err     = anEc->SendMessage(kWeaveProfile_BDX, kMsgType_SendAccept, payload, flags);
     payload = NULL;
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX, "SendSendAccept error sending accept message: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendSendAccept error sending accept message: %d", err));
 
     // Send a block query if we're driving
     if (aXfer->IsDriver())
@@ -1111,8 +1077,7 @@ WEAVE_ERROR BdxNode::SendSendAccept(ExchangeContext *anEc, BDXTransfer *aXfer)
             err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
         }
 
-        VerifyOrExit(err == WEAVE_NO_ERROR,
-                     WeaveLogDetail(BDX, "Error sending first block query in SendSendAccept: %d", err));
+        VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "Error sending first block query in SendSendAccept: %d", err));
     }
 
 exit:
@@ -1125,7 +1090,7 @@ exit:
 }
 #endif // WEAVE_CONFIG_BDX_SERVER_SUPPORT
 
-} // namespace BulkDataTransfer
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

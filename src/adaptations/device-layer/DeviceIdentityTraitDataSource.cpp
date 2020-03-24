@@ -36,10 +36,7 @@ using namespace ::nl::Weave::Profiles::DataManagement_Current;
 using namespace ::nl::Weave::TLV;
 using namespace ::Schema::Weave::Trait::Description;
 
-DeviceIdentityTraitDataSource::DeviceIdentityTraitDataSource(void)
-    : TraitDataSource(&DeviceIdentityTrait::TraitSchema)
-{
-}
+DeviceIdentityTraitDataSource::DeviceIdentityTraitDataSource(void) : TraitDataSource(&DeviceIdentityTrait::TraitSchema) { }
 
 WEAVE_ERROR DeviceIdentityTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
@@ -79,34 +76,35 @@ WEAVE_ERROR DeviceIdentityTraitDataSource::GetLeafData(PropertyPathHandle aLeafH
 
     case DeviceIdentityTrait::kPropertyHandle_SerialNumber:
     {
-        char serialNum[ConfigurationManager::kMaxSerialNumberLength+1];
+        char serialNum[ConfigurationManager::kMaxSerialNumberLength + 1];
         size_t serialNumLen;
         err = ConfigurationMgr().GetSerialNumber(serialNum, sizeof(serialNum), serialNumLen);
         VerifyOrExit(err != WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND, err = WEAVE_NO_ERROR);
         SuccessOrExit(err);
-        err = aWriter.PutString(aTagToWrite, serialNum, (uint32_t)serialNumLen);
+        err = aWriter.PutString(aTagToWrite, serialNum, (uint32_t) serialNumLen);
         SuccessOrExit(err);
         break;
     }
 
     case DeviceIdentityTrait::kPropertyHandle_SoftwareVersion:
     {
-        char firmwareRev[ConfigurationManager::kMaxFirmwareRevisionLength+1];
+        char firmwareRev[ConfigurationManager::kMaxFirmwareRevisionLength + 1];
         size_t firmwareRevLen;
         err = ConfigurationMgr().GetFirmwareRevision(firmwareRev, sizeof(firmwareRev), firmwareRevLen);
         VerifyOrExit(err != WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND, err = WEAVE_NO_ERROR);
         SuccessOrExit(err);
-        err = aWriter.PutString(aTagToWrite, firmwareRev, (uint32_t)firmwareRevLen);
+        err = aWriter.PutString(aTagToWrite, firmwareRev, (uint32_t) firmwareRevLen);
         SuccessOrExit(err);
         break;
     }
 
     case DeviceIdentityTrait::kPropertyHandle_ManufacturingDate:
     {
-        enum {
+        enum
+        {
             kDateStrLen = 10 // YYYY-MM-DD
         };
-        char mfgDateStr[kDateStrLen+1];
+        char mfgDateStr[kDateStrLen + 1];
         uint16_t year;
         uint8_t month, dayOfMonth;
         err = ConfigurationMgr().GetManufacturingDate(year, month, dayOfMonth);
@@ -131,17 +129,14 @@ WEAVE_ERROR DeviceIdentityTraitDataSource::GetLeafData(PropertyPathHandle aLeafH
         }
         break;
 
-    default:
-        break;
+    default: break;
     }
 
 exit:
     return err;
 }
 
-} // Internal
-} // Device
-} // Weave
-} // nl
-
-
+} // namespace Internal
+} // namespace DeviceLayer
+} // namespace Weave
+} // namespace nl

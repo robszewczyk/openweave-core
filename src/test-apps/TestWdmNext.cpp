@@ -68,29 +68,15 @@ using nl::Weave::WeaveExchangeManager;
 static void HandleWdmCompleteTest();
 static void HandleError();
 
-
 // events
-EventGenerator * gEventGenerator = NULL;
+EventGenerator * gEventGenerator       = NULL;
 uint32_t TestWdmSublessNotifyDelayMsec = 6000;
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gTestWdmNextOptions,
-    &gMockWdmNodeOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWeaveSecurityMode,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    &gCASEOptions,
-    &gGroupKeyEncOptions,
-    NULL
+static OptionSet * gToolOptionSets[] = {
+    &gTestWdmNextOptions,    &gMockWdmNodeOptions, &gNetworkOptions, &gWeaveNodeOptions,   &gWeaveSecurityMode,
+    &gFaultInjectionOptions, &gHelpOptions,        &gCASEOptions,    &gGroupKeyEncOptions, NULL
 };
 
 static int32_t GetNumFaultInjectionEventsAvailable(void)
@@ -98,28 +84,26 @@ static int32_t GetNumFaultInjectionEventsAvailable(void)
     int32_t retval = 0;
 
 #if WEAVE_CONFIG_ENABLE_WDM_UPDATE
-    MockWdmSubscriptionInitiator *initiator = MockWdmSubscriptionInitiator::GetInstance();
+    MockWdmSubscriptionInitiator * initiator = MockWdmSubscriptionInitiator::GetInstance();
 
     retval = initiator->GetNumFaultInjectionEventsAvailable();
 #endif
 
     return retval;
-
 }
 static void ExpireTimer(int32_t argument)
 {
     ExchangeMgr.ExpireExchangeTimers();
 }
 
-
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
-    WdmNextPerfUtility &TimeRef = *WdmNextPerfUtility::Instance();
+    WdmNextPerfUtility & TimeRef = *WdmNextPerfUtility::Instance();
     struct timeval sleepTime;
     time_t begin, end;
-    double seconds = 0;
-    sleepTime.tv_sec = 0;
+    double seconds    = 0;
+    sleepTime.tv_sec  = 0;
     sleepTime.tv_usec = 100000;
     nl::Weave::System::Stats::Snapshot before;
     nl::Weave::System::Stats::Snapshot after;
@@ -129,8 +113,7 @@ int main(int argc, char *argv[])
 
     InitToolCommon();
 
-    SetupFaultInjectionContext(argc, argv,
-            GetNumFaultInjectionEventsAvailable, ExpireTimer);
+    SetupFaultInjectionContext(argc, argv, GetNumFaultInjectionEventsAvailable, ExpireTimer);
 
     SetSignalHandler(DoneOnHandleSIGUSR1);
 
@@ -161,104 +144,96 @@ int main(int argc, char *argv[])
 
     switch (gMockWdmNodeOptions.mWdmRoleInTest)
     {
-        case 0:
-            break;
+    case 0: break;
 
 #if ENABLE_VIEW_TEST
 
-        case kToolOpt_WdmSimpleViewClient:
-                if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
-                {
-                    err = MockWdmViewClient::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions.mTestCaseId);
-                    FAIL_ERROR(err, "MockWdmViewClient.Init failed");
-                    MockWdmViewClient::GetInstance()-> onCompleteTest = HandleWdmCompleteTest;
-                }
-                else
-                {
-                    err = WEAVE_ERROR_INVALID_ARGUMENT;
-                    FAIL_ERROR(err, "Simple View Client requires node ID to some publisher");
-                }
+    case kToolOpt_WdmSimpleViewClient:
+        if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
+        {
+            err = MockWdmViewClient::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions.mTestCaseId);
+            FAIL_ERROR(err, "MockWdmViewClient.Init failed");
+            MockWdmViewClient::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
+        }
+        else
+        {
+            err = WEAVE_ERROR_INVALID_ARGUMENT;
+            FAIL_ERROR(err, "Simple View Client requires node ID to some publisher");
+        }
 
-                break;
-            case kToolOpt_WdmSimpleViewServer:
-                err = MockWdmViewServer::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions.mTestCaseId);
-                FAIL_ERROR(err, "MockWdmViewServer.Init failed");
-                break;
+        break;
+    case kToolOpt_WdmSimpleViewServer:
+        err = MockWdmViewServer::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions.mTestCaseId);
+        FAIL_ERROR(err, "MockWdmViewServer.Init failed");
+        break;
 
 #endif // ENABLE_VIEW_TEST
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-        case kToolOpt_WdmSimpleSublessNotifyClient:
-                err = TestWdmSubscriptionlessNotificationReceiver::GetInstance()->Init(&ExchangeMgr);
-                FAIL_ERROR(err, "TestWdmSubscriptionlessNotificationReceiver.Init failed");
+    case kToolOpt_WdmSimpleSublessNotifyClient:
+        err = TestWdmSubscriptionlessNotificationReceiver::GetInstance()->Init(&ExchangeMgr);
+        FAIL_ERROR(err, "TestWdmSubscriptionlessNotificationReceiver.Init failed");
 
-                TestWdmSubscriptionlessNotificationReceiver::GetInstance()->OnTestComplete = HandleWdmCompleteTest;
+        TestWdmSubscriptionlessNotificationReceiver::GetInstance()->OnTestComplete = HandleWdmCompleteTest;
 
-                TestWdmSubscriptionlessNotificationReceiver::GetInstance()->OnError = HandleError;
-            break;
-        case kToolOpt_WdmSimpleSublessNotifyServer:
-                time(&begin);
+        TestWdmSubscriptionlessNotificationReceiver::GetInstance()->OnError = HandleError;
+        break;
+    case kToolOpt_WdmSimpleSublessNotifyServer:
+        time(&begin);
 
-                while (seconds * 1000 < TestWdmSublessNotifyDelayMsec)
-                {
-                    ServiceNetwork(sleepTime);
-                    time(&end);
-                    seconds = difftime(end, begin);
-                }
-                printf("delay %d milliseconds\n", TestWdmSublessNotifyDelayMsec);
-                seconds = 0;
+        while (seconds * 1000 < TestWdmSublessNotifyDelayMsec)
+        {
+            ServiceNetwork(sleepTime);
+            time(&end);
+            seconds = difftime(end, begin);
+        }
+        printf("delay %d milliseconds\n", TestWdmSublessNotifyDelayMsec);
+        seconds = 0;
 
-                if (gMockWdmNodeOptions.mWdmSublessNotifyDestNodeId != kAnyNodeId)
-                {
-                    err = TestWdmSubscriptionlessNotificationSender::GetInstance()->Init(&ExchangeMgr,
-                                                                                         gMockWdmNodeOptions.mWdmUseSubnetId,
-                                                                                         gMockWdmNodeOptions.mWdmSublessNotifyDestNodeId);
-                    FAIL_ERROR(err, "TestWdmSubscriptionlessNotificationSender.Init failed");
-                }
-            break;
+        if (gMockWdmNodeOptions.mWdmSublessNotifyDestNodeId != kAnyNodeId)
+        {
+            err = TestWdmSubscriptionlessNotificationSender::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions.mWdmUseSubnetId,
+                                                                                 gMockWdmNodeOptions.mWdmSublessNotifyDestNodeId);
+            FAIL_ERROR(err, "TestWdmSubscriptionlessNotificationSender.Init failed");
+        }
+        break;
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-        case kToolOpt_WdmInitMutualSubscription:
-        case kToolOpt_WdmSubscriptionClient:
+    case kToolOpt_WdmInitMutualSubscription:
+    case kToolOpt_WdmSubscriptionClient:
 
-            if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
-            {
-                err = MockWdmSubscriptionInitiator::GetInstance()->Init(&ExchangeMgr,
-                                                                        gGroupKeyEncOptions.GetEncKeyId(),
-                                                                        gWeaveSecurityMode.SecurityMode,
-                                                                        gMockWdmNodeOptions);
-                FAIL_ERROR(err, "MockWdmSubscriptionInitiator.Init failed");
-                MockWdmSubscriptionInitiator::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
-                MockWdmSubscriptionInitiator::GetInstance()->onError = HandleError;
-
-            }
-            else
-            {
-                err = WEAVE_ERROR_INVALID_ARGUMENT;
-                FAIL_ERROR(err, "MockWdmSubscriptionInitiator requires node ID to some publisher");
-            }
-
-            break;
-        case kToolOpt_WdmRespMutualSubscription:
-        case kToolOpt_WdmSubscriptionPublisher:
-            if (gMockWdmNodeOptions.mEnableRetry)
-            {
-                err = WEAVE_ERROR_INVALID_ARGUMENT;
-                FAIL_ERROR(err, "MockWdmSubcriptionResponder is incompatible with --enable-retry");
-            }
-
-            err = MockWdmSubscriptionResponder::GetInstance()->Init(&ExchangeMgr,
-                                                                    gMockWdmNodeOptions);
-            FAIL_ERROR(err, "MockWdmSubscriptionResponder.Init failed");
-            MockWdmSubscriptionResponder::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
-            MockWdmSubscriptionResponder::GetInstance()->onError = HandleError;
-            if (gTestWdmNextOptions.mClearDataSinkState)
-            {
-                MockWdmSubscriptionResponder::GetInstance()->ClearDataSinkState();
-            }
-            break;
-        default:
+        if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
+        {
+            err = MockWdmSubscriptionInitiator::GetInstance()->Init(&ExchangeMgr, gGroupKeyEncOptions.GetEncKeyId(),
+                                                                    gWeaveSecurityMode.SecurityMode, gMockWdmNodeOptions);
+            FAIL_ERROR(err, "MockWdmSubscriptionInitiator.Init failed");
+            MockWdmSubscriptionInitiator::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
+            MockWdmSubscriptionInitiator::GetInstance()->onError        = HandleError;
+        }
+        else
+        {
             err = WEAVE_ERROR_INVALID_ARGUMENT;
-            FAIL_ERROR(err, "WdmRoleInTest is invalid");
+            FAIL_ERROR(err, "MockWdmSubscriptionInitiator requires node ID to some publisher");
+        }
+
+        break;
+    case kToolOpt_WdmRespMutualSubscription:
+    case kToolOpt_WdmSubscriptionPublisher:
+        if (gMockWdmNodeOptions.mEnableRetry)
+        {
+            err = WEAVE_ERROR_INVALID_ARGUMENT;
+            FAIL_ERROR(err, "MockWdmSubcriptionResponder is incompatible with --enable-retry");
+        }
+
+        err = MockWdmSubscriptionResponder::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions);
+        FAIL_ERROR(err, "MockWdmSubscriptionResponder.Init failed");
+        MockWdmSubscriptionResponder::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
+        MockWdmSubscriptionResponder::GetInstance()->onError        = HandleError;
+        if (gTestWdmNextOptions.mClearDataSinkState)
+        {
+            MockWdmSubscriptionResponder::GetInstance()->ClearDataSinkState();
+        }
+        break;
+    default: err = WEAVE_ERROR_INVALID_ARGUMENT; FAIL_ERROR(err, "WdmRoleInTest is invalid");
     };
 
     nl::Weave::Stats::UpdateSnapshot(before);
@@ -271,12 +246,11 @@ int main(int argc, char *argv[])
 
         TimeRef();
 
-#endif //ENABLE_WDMPERFDATA
+#endif // ENABLE_WDMPERFDATA
 
         switch (gMockWdmNodeOptions.mWdmRoleInTest)
         {
-        case 0:
-            break;
+        case 0: break;
 
 #if ENABLE_VIEW_TEST
 
@@ -293,15 +267,14 @@ int main(int argc, char *argv[])
 #endif
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-        case kToolOpt_WdmSimpleSublessNotifyClient:
-            break;
+        case kToolOpt_WdmSimpleSublessNotifyClient: break;
         case kToolOpt_WdmSimpleSublessNotifyServer:
-                if (gMockWdmNodeOptions.mWdmSublessNotifyDestNodeId != kAnyNodeId)
-                {
-                    err = TestWdmSubscriptionlessNotificationSender::GetInstance()->SendSubscriptionlessNotify();
-                    Done = true;
-                    FAIL_ERROR(err, "TestWdmSubscriptionlessNotificationSender.SendSubscriptionlessNotify failed");
-                }
+            if (gMockWdmNodeOptions.mWdmSublessNotifyDestNodeId != kAnyNodeId)
+            {
+                err  = TestWdmSubscriptionlessNotificationSender::GetInstance()->SendSubscriptionlessNotify();
+                Done = true;
+                FAIL_ERROR(err, "TestWdmSubscriptionlessNotificationSender.SendSubscriptionlessNotify failed");
+            }
             break;
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
         case kToolOpt_WdmInitMutualSubscription:
@@ -310,44 +283,30 @@ int main(int argc, char *argv[])
             {
                 MockWdmSubscriptionInitiator::GetInstance()->ClearDataSinkState();
             }
-            err = MockWdmSubscriptionInitiator::GetInstance()->StartTesting(gMockWdmNodeOptions.mWdmPublisherNodeId, gMockWdmNodeOptions.mWdmUseSubnetId);
+            err = MockWdmSubscriptionInitiator::GetInstance()->StartTesting(gMockWdmNodeOptions.mWdmPublisherNodeId,
+                                                                            gMockWdmNodeOptions.mWdmUseSubnetId);
             if (err != WEAVE_NO_ERROR)
             {
                 printf("\nMockWdmSubscriptionInitiator.StartTesting failed: %s\n", ErrorStr(err));
                 Done = true;
             }
-            //FAIL_ERROR(err, "MockWdmSubscriptionInitiator.StartTesting failed");
+            // FAIL_ERROR(err, "MockWdmSubscriptionInitiator.StartTesting failed");
             break;
-        default:
-            printf("TestWdmNext server is ready\n");
+        default: printf("TestWdmNext server is ready\n");
         };
 
         PrintNodeConfig();
 
         switch (gMockWdmNodeOptions.mEventGeneratorType)
         {
-            case MockWdmNodeOptions::kGenerator_None:
-                gEventGenerator = NULL;
-                break;
-            case MockWdmNodeOptions::kGenerator_TestDebug:
-                gEventGenerator = GetTestDebugGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestLiveness:
-                gEventGenerator = GetTestLivenessGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestSecurity:
-                gEventGenerator = GetTestSecurityGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestTelemetry:
-                gEventGenerator = GetTestTelemetryGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestTrait:
-                gEventGenerator = GetTestTraitGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_NumItems:
-            default:
-                gEventGenerator = NULL;
-                break;
+        case MockWdmNodeOptions::kGenerator_None: gEventGenerator = NULL; break;
+        case MockWdmNodeOptions::kGenerator_TestDebug: gEventGenerator = GetTestDebugGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestLiveness: gEventGenerator = GetTestLivenessGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestSecurity: gEventGenerator = GetTestSecurityGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestTelemetry: gEventGenerator = GetTestTelemetryGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestTrait: gEventGenerator = GetTestTraitGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_NumItems:
+        default: gEventGenerator = NULL; break;
         }
 
         if (gEventGenerator != NULL)
@@ -375,17 +334,15 @@ int main(int argc, char *argv[])
 
         switch (gMockWdmNodeOptions.mWdmRoleInTest)
         {
-            case kToolOpt_WdmInitMutualSubscription:
-            case kToolOpt_WdmSubscriptionClient:
-                if (gTestWdmNextOptions.mClearDataSinkState)
-                {
-                    MockWdmSubscriptionInitiator::GetInstance()->Cleanup();
-                }
-                break;
-            default:
-                break;
+        case kToolOpt_WdmInitMutualSubscription:
+        case kToolOpt_WdmSubscriptionClient:
+            if (gTestWdmNextOptions.mClearDataSinkState)
+            {
+                MockWdmSubscriptionInitiator::GetInstance()->Cleanup();
+            }
+            break;
+        default: break;
         }
-
 
 #ifdef ENABLE_WDMPERFDATA
 
@@ -393,7 +350,7 @@ int main(int argc, char *argv[])
         TimeRef.SetPerf();
         TimeRef.ReportPerf();
 
-#endif //ENABLE_WDMPERFDATA
+#endif // ENABLE_WDMPERFDATA
 
         if (gSigusr1Received)
         {
@@ -425,7 +382,6 @@ int main(int argc, char *argv[])
     MockWdmSubscriptionInitiator::GetInstance()->Cleanup();
 
     MockWdmSubscriptionResponder::GetInstance()->PrintVersionsLog();
-
 
     if (gTestWdmNextOptions.mSavePerfData)
     {

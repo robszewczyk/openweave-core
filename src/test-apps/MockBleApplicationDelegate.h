@@ -21,8 +21,7 @@
 
 #include <BleLayer/BleApplicationDelegate.h>
 
-class MockBleApplicationDelegate :
-    public nl::Ble::BleApplicationDelegate
+class MockBleApplicationDelegate : public nl::Ble::BleApplicationDelegate
 {
     void NotifyWeaveConnectionClosed(BLE_CONNECTION_OBJECT connObj);
 };

@@ -42,11 +42,11 @@ using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::Encoding;
 using namespace nl::Weave::TLV;
 
-WEAVE_ERROR RegisterServicePairAccountMessage::Encode(PacketBuffer *msgBuf)
+WEAVE_ERROR RegisterServicePairAccountMessage::Encode(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t msgLen;
-    uint8_t *p;
+    uint8_t * p;
 
     msgLen = 2 + 2 + 2 + 2 + 8 + ServiceConfigLen + AccountIdLen + PairingTokenLen + PairingInitDataLen;
     VerifyOrExit(msgBuf->AvailableDataLength() >= msgLen, err = WEAVE_ERROR_MESSAGE_TOO_LONG);
@@ -57,9 +57,12 @@ WEAVE_ERROR RegisterServicePairAccountMessage::Encode(PacketBuffer *msgBuf)
     LittleEndian::Write16(p, PairingTokenLen);
     LittleEndian::Write16(p, PairingInitDataLen);
     LittleEndian::Write64(p, ServiceId);
-    memcpy(p, AccountId, AccountIdLen); p += AccountIdLen;
-    memcpy(p, ServiceConfig, ServiceConfigLen); p += ServiceConfigLen;
-    memcpy(p, PairingToken, PairingTokenLen); p += PairingTokenLen;
+    memcpy(p, AccountId, AccountIdLen);
+    p += AccountIdLen;
+    memcpy(p, ServiceConfig, ServiceConfigLen);
+    p += ServiceConfigLen;
+    memcpy(p, PairingToken, PairingTokenLen);
+    p += PairingTokenLen;
     memcpy(p, PairingInitData, PairingInitDataLen);
     msgBuf->SetDataLength(msgLen);
 
@@ -67,36 +70,37 @@ exit:
     return err;
 }
 
-WEAVE_ERROR RegisterServicePairAccountMessage::Decode(PacketBuffer *msgBuf, RegisterServicePairAccountMessage& msg)
+WEAVE_ERROR RegisterServicePairAccountMessage::Decode(PacketBuffer * msgBuf, RegisterServicePairAccountMessage & msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t dataLen = msgBuf->DataLength();
-    const uint8_t *p = msgBuf->Start();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint16_t dataLen  = msgBuf->DataLength();
+    const uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(dataLen >= 2 + 2 + 2 + 2 + 8, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
-    msg.AccountIdLen = LittleEndian::Read16(p);
-    msg.ServiceConfigLen = LittleEndian::Read16(p);
-    msg.PairingTokenLen = LittleEndian::Read16(p);
+    msg.AccountIdLen       = LittleEndian::Read16(p);
+    msg.ServiceConfigLen   = LittleEndian::Read16(p);
+    msg.PairingTokenLen    = LittleEndian::Read16(p);
     msg.PairingInitDataLen = LittleEndian::Read16(p);
-    msg.ServiceId = LittleEndian::Read64(p);
+    msg.ServiceId          = LittleEndian::Read64(p);
 
-    VerifyOrExit(dataLen == 2 + 2 + 2 + 2 + 8 + msg.AccountIdLen + msg.ServiceConfigLen + msg.PairingTokenLen + msg.PairingInitDataLen,
+    VerifyOrExit(dataLen ==
+                     2 + 2 + 2 + 2 + 8 + msg.AccountIdLen + msg.ServiceConfigLen + msg.PairingTokenLen + msg.PairingInitDataLen,
                  err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
-    msg.AccountId        = (const char *)p;
-    msg.ServiceConfig    = p + msg.AccountIdLen;
-    msg.PairingToken     = p + msg.AccountIdLen + msg.ServiceConfigLen;
-    msg.PairingInitData  = p + msg.AccountIdLen + msg.ServiceConfigLen + msg.PairingTokenLen;
+    msg.AccountId       = (const char *) p;
+    msg.ServiceConfig   = p + msg.AccountIdLen;
+    msg.PairingToken    = p + msg.AccountIdLen + msg.ServiceConfigLen;
+    msg.PairingInitData = p + msg.AccountIdLen + msg.ServiceConfigLen + msg.PairingTokenLen;
 
 exit:
     return err;
 }
 
-WEAVE_ERROR UpdateServiceMessage::Encode(PacketBuffer *msgBuf)
+WEAVE_ERROR UpdateServiceMessage::Encode(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t msgLen;
-    uint8_t *p;
+    uint8_t * p;
 
     msgLen = 2 + 8 + ServiceConfigLen;
     VerifyOrExit(msgBuf->AvailableDataLength() >= msgLen, err = WEAVE_ERROR_MESSAGE_TOO_LONG);
@@ -111,15 +115,15 @@ exit:
     return err;
 }
 
-WEAVE_ERROR UpdateServiceMessage::Decode(PacketBuffer *msgBuf, UpdateServiceMessage& msg)
+WEAVE_ERROR UpdateServiceMessage::Decode(PacketBuffer * msgBuf, UpdateServiceMessage & msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t dataLen = msgBuf->DataLength();
-    const uint8_t *p = msgBuf->Start();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint16_t dataLen  = msgBuf->DataLength();
+    const uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(dataLen >= 2 + 8, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
     msg.ServiceConfigLen = LittleEndian::Read16(p);
-    msg.ServiceId = LittleEndian::Read64(p);
+    msg.ServiceId        = LittleEndian::Read64(p);
 
     VerifyOrExit(dataLen == 2 + 8 + msg.ServiceConfigLen, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
@@ -129,11 +133,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR PairDeviceToAccountMessage::Encode(PacketBuffer *msgBuf)
+WEAVE_ERROR PairDeviceToAccountMessage::Encode(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t msgLen;
-    uint8_t *p;
+    uint8_t * p;
 
     msgLen = 2 + 2 + 2 + 2 + 8 + 8 + AccountIdLen + PairingTokenLen + PairingInitDataLen + DeviceInitDataLen;
     VerifyOrExit(msgBuf->AvailableDataLength() >= msgLen, err = WEAVE_ERROR_MESSAGE_TOO_LONG);
@@ -145,9 +149,12 @@ WEAVE_ERROR PairDeviceToAccountMessage::Encode(PacketBuffer *msgBuf)
     LittleEndian::Write16(p, DeviceInitDataLen);
     LittleEndian::Write64(p, ServiceId);
     LittleEndian::Write64(p, FabricId);
-    memcpy(p, AccountId, AccountIdLen); p += AccountIdLen;
-    memcpy(p, PairingToken, PairingTokenLen); p += PairingTokenLen;
-    memcpy(p, PairingInitData, PairingInitDataLen); p += PairingInitDataLen;
+    memcpy(p, AccountId, AccountIdLen);
+    p += AccountIdLen;
+    memcpy(p, PairingToken, PairingTokenLen);
+    p += PairingTokenLen;
+    memcpy(p, PairingInitData, PairingInitDataLen);
+    p += PairingInitDataLen;
     memcpy(p, DeviceInitData, DeviceInitDataLen);
     msgBuf->SetDataLength(msgLen);
 
@@ -155,38 +162,39 @@ exit:
     return err;
 }
 
-WEAVE_ERROR PairDeviceToAccountMessage::Decode(PacketBuffer *msgBuf, PairDeviceToAccountMessage& msg)
+WEAVE_ERROR PairDeviceToAccountMessage::Decode(PacketBuffer * msgBuf, PairDeviceToAccountMessage & msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t dataLen = msgBuf->DataLength();
-    const uint8_t *p = msgBuf->Start();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint16_t dataLen  = msgBuf->DataLength();
+    const uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(dataLen >= 2 + 2 + 2 + 2 + 8 + 8, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
-    msg.AccountIdLen = LittleEndian::Read16(p);
-    msg.PairingTokenLen = LittleEndian::Read16(p);
+    msg.AccountIdLen       = LittleEndian::Read16(p);
+    msg.PairingTokenLen    = LittleEndian::Read16(p);
     msg.PairingInitDataLen = LittleEndian::Read16(p);
-    msg.DeviceInitDataLen = LittleEndian::Read16(p);
-    msg.ServiceId = LittleEndian::Read64(p);
-    msg.FabricId = LittleEndian::Read64(p);
+    msg.DeviceInitDataLen  = LittleEndian::Read16(p);
+    msg.ServiceId          = LittleEndian::Read64(p);
+    msg.FabricId           = LittleEndian::Read64(p);
 
-    VerifyOrExit(dataLen == 2 + 2 + 2 + 2 + 8 + 8 + msg.AccountIdLen + msg.PairingTokenLen + msg.PairingInitDataLen + msg.DeviceInitDataLen,
-                 err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
+    VerifyOrExit(
+        dataLen == 2 + 2 + 2 + 2 + 8 + 8 + msg.AccountIdLen + msg.PairingTokenLen + msg.PairingInitDataLen + msg.DeviceInitDataLen,
+        err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
-    msg.AccountId        = (const char *)p;
-    msg.PairingToken     = p + msg.AccountIdLen;
-    msg.PairingInitData  = p + msg.AccountIdLen + msg.PairingTokenLen;
-    msg.DeviceInitData   = p + msg.AccountIdLen + msg.PairingTokenLen + msg.PairingInitDataLen;
+    msg.AccountId       = (const char *) p;
+    msg.PairingToken    = p + msg.AccountIdLen;
+    msg.PairingInitData = p + msg.AccountIdLen + msg.PairingTokenLen;
+    msg.DeviceInitData  = p + msg.AccountIdLen + msg.PairingTokenLen + msg.PairingInitDataLen;
 
 exit:
     return err;
 }
 
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
-WEAVE_ERROR IFJServiceFabricJoinMessage::Encode(PacketBuffer *msgBuf)
+WEAVE_ERROR IFJServiceFabricJoinMessage::Encode(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t msgLen;
-    uint8_t *p;
+    uint8_t * p;
 
     msgLen = 2 + 8 + 8 + DeviceInitDataLen;
     VerifyOrExit(msgBuf->AvailableDataLength() >= msgLen, err = WEAVE_ERROR_MESSAGE_TOO_LONG);
@@ -202,28 +210,28 @@ exit:
     return err;
 }
 
-WEAVE_ERROR IFJServiceFabricJoinMessage::Decode(PacketBuffer *msgBuf, IFJServiceFabricJoinMessage& msg)
+WEAVE_ERROR IFJServiceFabricJoinMessage::Decode(PacketBuffer * msgBuf, IFJServiceFabricJoinMessage & msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t dataLen = msgBuf->DataLength();
-    const uint8_t *p = msgBuf->Start();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint16_t dataLen  = msgBuf->DataLength();
+    const uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(dataLen >= 2 + 8 + 8, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
     msg.DeviceInitDataLen = LittleEndian::Read16(p);
-    msg.ServiceId = LittleEndian::Read64(p);
-    msg.FabricId = LittleEndian::Read64(p);
+    msg.ServiceId         = LittleEndian::Read64(p);
+    msg.FabricId          = LittleEndian::Read64(p);
 
-    VerifyOrExit(dataLen == 2 + 8 + 8 + msg.DeviceInitDataLen,
-                 err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
+    VerifyOrExit(dataLen == 2 + 8 + 8 + msg.DeviceInitDataLen, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
-    msg.DeviceInitData   = p;
+    msg.DeviceInitData = p;
 
 exit:
     return err;
 }
 #endif // WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
-NL_DLL_EXPORT WEAVE_ERROR EncodeServiceConfig(WeaveCertificateSet& certSet, const char *dirHostName, uint16_t dirPort, uint8_t *outBuf, uint16_t& outLen)
+NL_DLL_EXPORT WEAVE_ERROR EncodeServiceConfig(WeaveCertificateSet & certSet, const char * dirHostName, uint16_t dirPort,
+                                              uint8_t * outBuf, uint16_t & outLen)
 {
     WEAVE_ERROR err;
     TLVWriter writer;
@@ -233,7 +241,8 @@ NL_DLL_EXPORT WEAVE_ERROR EncodeServiceConfig(WeaveCertificateSet& certSet, cons
     {
         TLVType containingType1;
 
-        err = writer.StartContainer(ProfileTag(kWeaveProfile_ServiceProvisioning, kTag_ServiceConfig), kTLVType_Structure, containingType1);
+        err = writer.StartContainer(ProfileTag(kWeaveProfile_ServiceProvisioning, kTag_ServiceConfig), kTLVType_Structure,
+                                    containingType1);
         SuccessOrExit(err);
 
         {
@@ -256,7 +265,7 @@ NL_DLL_EXPORT WEAVE_ERROR EncodeServiceConfig(WeaveCertificateSet& certSet, cons
             err = writer.StartContainer(ContextTag(kTag_ServiceEndPoint), kTLVType_Structure, containingType3);
             SuccessOrExit(err);
 
-            err = writer.Put(ContextTag(kTag_ServiceEndPoint_Id), (uint64_t)kServiceEndpoint_Directory);
+            err = writer.Put(ContextTag(kTag_ServiceEndPoint_Id), (uint64_t) kServiceEndpoint_Directory);
             SuccessOrExit(err);
 
             {
@@ -306,8 +315,7 @@ exit:
     return err;
 }
 
-
-} // ServiceProvisioning
+} // namespace ServiceProvisioning
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

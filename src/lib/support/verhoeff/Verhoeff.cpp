@@ -27,40 +27,40 @@
 
 int Verhoeff::DihedralMultiply(int x, int y, int n)
 {
-	int n2 = n * 2;
+    int n2 = n * 2;
 
-	x = x % n2;
-	y = y % n2;
+    x = x % n2;
+    y = y % n2;
 
-	if (x < n)
-	{
-		if (y < n)
-			return  (x +  y     ) % n;
-		else
-			return ((x + (y - n)) % n) + n;
-	}
-	else
-	{
-		if (y < n)
-			return ((n + (x - n) -  y     ) % n) + n;
-		else
-			return  (n + (x - n) - (y - n)) % n;
-	}
+    if (x < n)
+    {
+        if (y < n)
+            return (x + y) % n;
+        else
+            return ((x + (y - n)) % n) + n;
+    }
+    else
+    {
+        if (y < n)
+            return ((n + (x - n) - y) % n) + n;
+        else
+            return (n + (x - n) - (y - n)) % n;
+    }
 }
 
 int Verhoeff::DihedralInvert(int val, int n)
 {
-	if (val > 0 && val < n)
-		return n - val;
-	else
-		return val;
+    if (val > 0 && val < n)
+        return n - val;
+    else
+        return val;
 }
 
-int Verhoeff::Permute(int val, uint8_t *permTable, int permTableLen, int iterCount)
+int Verhoeff::Permute(int val, uint8_t * permTable, int permTableLen, int iterCount)
 {
-	val = val % permTableLen;
-	if (iterCount == 0)
-		return val;
-	else
-		return Permute(permTable[val], permTable, permTableLen, iterCount - 1);
+    val = val % permTableLen;
+    if (iterCount == 0)
+        return val;
+    else
+        return Permute(permTable[val], permTable, permTableLen, iterCount - 1);
 }

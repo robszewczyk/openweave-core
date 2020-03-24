@@ -296,8 +296,8 @@ public:
      *                          is expected to represent the final assessment of access control policy for the
      *                          message.
      */
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 
     /**
      * Called to determine if the device is currently paired to an account.
@@ -309,16 +309,17 @@ public:
 /**
  * Server class for implementing the Device Control profile.
  */
-// TODO: Additional documentation detail required (i.e. expected class usage, number in the system, instantiation requirements, lifetime).
+// TODO: Additional documentation detail required (i.e. expected class usage, number in the system, instantiation requirements,
+// lifetime).
 class NL_DLL_EXPORT DeviceControlServer : public WeaveServerBase
 {
 public:
     DeviceControlServer(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    void SetDelegate(DeviceControlDelegate *delegate);
+    void SetDelegate(DeviceControlDelegate * delegate);
     bool IsRemotePassiveRendezvousInProgress(void) const;
 
     void SystemTestTimeout(void);
@@ -327,98 +328,95 @@ public:
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
 protected:
-    ExchangeContext *mCurClientOp;
-    ExchangeContext *mRemotePassiveRendezvousOp;
-    DeviceControlDelegate *mDelegate;
-    WeaveConnection *mRemotePassiveRendezvousClientCon;
-    WeaveConnection *mRemotePassiveRendezvousJoinerCon;
-    WeaveConnectionTunnel *mRemotePassiveRendezvousTunnel;
+    ExchangeContext * mCurClientOp;
+    ExchangeContext * mRemotePassiveRendezvousOp;
+    DeviceControlDelegate * mDelegate;
+    WeaveConnection * mRemotePassiveRendezvousClientCon;
+    WeaveConnection * mRemotePassiveRendezvousJoinerCon;
+    WeaveConnectionTunnel * mRemotePassiveRendezvousTunnel;
     IPAddress mRemotePassiveRendezvousJoinerAddr;
     uint32_t mFailSafeToken;
     uint16_t mRemotePassiveRendezvousTimeout; // in sec
-    uint16_t mTunnelInactivityTimeout; // in sec
+    uint16_t mTunnelInactivityTimeout;        // in sec
     uint16_t mRemotePassiveRendezvousKeyId;
     uint8_t mRemotePassiveRendezvousEncryptionType;
     uint16_t mResetFlags;
     bool mFailSafeArmed;
 
 private:
-    void StartMonitorTimer(ExchangeContext *monitorOp);
-    void CancelMonitorTimer(ExchangeContext *monitorOp);
+    void StartMonitorTimer(ExchangeContext * monitorOp);
+    void CancelMonitorTimer(ExchangeContext * monitorOp);
     void CloseClientOp(void);
 
-    WEAVE_ERROR SetConnectionMonitor(uint64_t peerNodeId, WeaveConnection *peerCon, uint16_t idleTimeout,
-            uint16_t monitorInterval);
+    WEAVE_ERROR SetConnectionMonitor(uint64_t peerNodeId, WeaveConnection * peerCon, uint16_t idleTimeout,
+                                     uint16_t monitorInterval);
 
     // ----- Top-level message dispatch functions -----
-    WEAVE_ERROR HandleResetConfig(uint8_t *p, WeaveConnection *curCon);
-    WEAVE_ERROR HandleArmFailSafe(uint8_t *p);
+    WEAVE_ERROR HandleResetConfig(uint8_t * p, WeaveConnection * curCon);
+    WEAVE_ERROR HandleArmFailSafe(uint8_t * p);
     WEAVE_ERROR HandleDisarmFailSafe(void);
-    WEAVE_ERROR HandleEnableConnectionMonitor(uint8_t *p, const WeaveMessageInfo *msgInfo, ExchangeContext *ec);
-    WEAVE_ERROR HandleDisableConnectionMonitor(const WeaveMessageInfo *msgInfo, ExchangeContext *ec);
-    WEAVE_ERROR HandleRemotePassiveRendezvous(uint8_t *p, ExchangeContext *ec);
-    WEAVE_ERROR HandleStartSystemTest(uint8_t *p);
+    WEAVE_ERROR HandleEnableConnectionMonitor(uint8_t * p, const WeaveMessageInfo * msgInfo, ExchangeContext * ec);
+    WEAVE_ERROR HandleDisableConnectionMonitor(const WeaveMessageInfo * msgInfo, ExchangeContext * ec);
+    WEAVE_ERROR HandleRemotePassiveRendezvous(uint8_t * p, ExchangeContext * ec);
+    WEAVE_ERROR HandleStartSystemTest(uint8_t * p);
     WEAVE_ERROR HandleStopSystemTest(void);
-    WEAVE_ERROR HandleLookingToRendezvousMessage(const WeaveMessageInfo *msgInfo, ExchangeContext *ec);
+    WEAVE_ERROR HandleLookingToRendezvousMessage(const WeaveMessageInfo * msgInfo, ExchangeContext * ec);
 
     // ----- Weave callbacks -----
 
-	// ResetConfig connection closed
-    static void HandleResetConfigConnectionClose(WeaveConnection *con, WEAVE_ERROR conErr);
+    // ResetConfig connection closed
+    static void HandleResetConfigConnectionClose(WeaveConnection * con, WEAVE_ERROR conErr);
 
     // Connection received
-    static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+    static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 
     // OnUnsecuredConnetionReceived callback removed
-    static void HandleUnsecuredConnectionCallbackRemoved(void *appState);
+    static void HandleUnsecuredConnectionCallbackRemoved(void * appState);
 
     // Message received
-    static void HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleRendezvousIdentifyResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleMonitorResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleRendezvousIdentifyResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                 const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                 PacketBuffer * payload);
+    static void HandleMonitorResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                      uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
     // InetLayer timer expiration
-    static void HandleMonitorTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-    static void HandleRemotePassiveRendezvousTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-    static void HandleLookingToRendezvousTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-    static void HandleLookingToRendezvousClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+    static void HandleMonitorTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+    static void HandleRemotePassiveRendezvousTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+    static void HandleLookingToRendezvousTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+    static void HandleLookingToRendezvousClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
     // RPR tunnel shutdown
-    static void HandleTunnelShutdown(WeaveConnectionTunnel *tunnel);
+    static void HandleTunnelShutdown(WeaveConnectionTunnel * tunnel);
 
     // ExchangeContext timeouts
-    static void HandleRendezvousIdentifyResponseTimeout(ExchangeContext *ec);
-    static void HandleRendezvousIdentifyRetransmissionTimeout(ExchangeContext *ec);
+    static void HandleRendezvousIdentifyResponseTimeout(ExchangeContext * ec);
+    static void HandleRendezvousIdentifyRetransmissionTimeout(ExchangeContext * ec);
 
     // Connection closed
-    static void HandleRemotePassiveRendezvousConnectionClosed(ExchangeContext *ec, WeaveConnection *con,
-            WEAVE_ERROR conErr);
-    static void HandleRendezvousIdentifyConnectionClosed(ExchangeContext *ec, WeaveConnection *con,
-            WEAVE_ERROR conErr);
-    static void HandleMonitorConnectionClose(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
+    static void HandleRemotePassiveRendezvousConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
+    static void HandleRendezvousIdentifyConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
+    static void HandleMonitorConnectionClose(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
 
-
-    WEAVE_ERROR VerifyRendezvousedDeviceIdentity(WeaveConnection *con);
+    WEAVE_ERROR VerifyRendezvousedDeviceIdentity(WeaveConnection * con);
     void HandleIdentifyFailed(void);
-    WEAVE_ERROR CompleteRemotePassiveRendezvous(WeaveConnection *con);
+    WEAVE_ERROR CompleteRemotePassiveRendezvous(WeaveConnection * con);
     void CancelRemotePassiveRendezvousListen(void);
     void CloseRemotePassiveRendezvous(void);
     WEAVE_ERROR ArmRemotePassiveRendezvousTimer(void);
 
-    DeviceControlServer(const DeviceControlServer&);   // not defined
+    DeviceControlServer(const DeviceControlServer &); // not defined
 
-    static DeviceControlServer *sRemotePassiveRendezvousServer;
+    static DeviceControlServer * sRemotePassiveRendezvousServer;
 };
 
-WEAVE_ERROR SendLookingToRendezvous(ExchangeContext *ec);
+WEAVE_ERROR SendLookingToRendezvous(ExchangeContext * ec);
 
 } // namespace DeviceControl
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif /* DEVICECONTROL_H_ */

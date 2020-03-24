@@ -32,7 +32,7 @@
 
 #if defined(WEAVE_CONFIG_CUSTOM_BUILTIN_SCHEMA_INCLUDE)
 #define DirectoryGen_(dir) #dir
-#define DirectoryGen(dir) DirectoryGen_(dir)
+#define DirectoryGen(dir)  DirectoryGen_(dir)
 #include DirectoryGen(WEAVE_CONFIG_CUSTOM_BUILTIN_SCHEMA_INCLUDE)
 #else
 #include <weave/trait/locale/LocaleSettingsTrait.h>

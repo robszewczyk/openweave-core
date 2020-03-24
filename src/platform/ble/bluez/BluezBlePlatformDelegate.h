@@ -63,7 +63,7 @@ struct InEventParam
     EventTypeEnum EventType;
     void * ConnectionObject;
     BleLayer * Ble;
-    BluezBlePlatformDelegate *PlatformDelegate;
+    BluezBlePlatformDelegate * PlatformDelegate;
     union
     {
         struct

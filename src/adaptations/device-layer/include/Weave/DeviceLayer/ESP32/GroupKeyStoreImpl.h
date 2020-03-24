@@ -37,19 +37,17 @@ namespace Internal {
 /**
  * An implementation of the Weave GroupKeyStoreBase API for the ESP32.
  */
-class GroupKeyStoreImpl final
-        : public ::nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase,
-          private ESP32Config
+class GroupKeyStoreImpl final : public ::nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase, private ESP32Config
 {
     using WeaveGroupKey = ::nl::Weave::Profiles::Security::AppKeys::WeaveGroupKey;
 
 public:
     enum
     {
-        kMaxGroupKeys = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS +       // Maximum number of Epoch keys
-                        WEAVE_CONFIG_MAX_APPLICATION_GROUPS +           // Maximum number of Application Group Master keys
-                        1 +                                             // Maximum number of Root keys (1 for Service root key)
-                        1                                               // Fabric secret
+        kMaxGroupKeys = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS + // Maximum number of Epoch keys
+            WEAVE_CONFIG_MAX_APPLICATION_GROUPS +                 // Maximum number of Application Group Master keys
+            1 +                                                   // Maximum number of Root keys (1 for Service root key)
+            1                                                     // Fabric secret
     };
 
     WEAVE_ERROR Init();
@@ -64,7 +62,6 @@ public:
     WEAVE_ERROR StoreLastUsedEpochKeyId(void) override;
 
 private:
-
     uint32_t mKeyIndex[kMaxGroupKeys];
     uint8_t mNumKeys;
 

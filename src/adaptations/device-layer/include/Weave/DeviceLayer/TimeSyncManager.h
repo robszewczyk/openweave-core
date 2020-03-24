@@ -31,9 +31,9 @@ namespace Profiles {
 namespace StatusReporting {
 class StatusReport;
 }
-}
-}
-}
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 namespace nl {
 namespace Weave {
@@ -42,9 +42,9 @@ namespace DeviceLayer {
 class PlatformManagerImpl;
 namespace Internal {
 extern WEAVE_ERROR InitServiceDirectoryManager(void);
-template<class> class GenericPlatformManagerImpl;
-template<class> class GenericPlatformManagerImpl_FreeRTOS;
-}
+template <class> class GenericPlatformManagerImpl;
+template <class> class GenericPlatformManagerImpl_FreeRTOS;
+} // namespace Internal
 
 /**
  * Manages time synchronization for Weave Devices.
@@ -52,14 +52,13 @@ template<class> class GenericPlatformManagerImpl_FreeRTOS;
 class TimeSyncManager final
 {
 public:
-
     // ===== Members that define the public interface of the TimeSyncManager
 
     enum TimeSyncMode
     {
-        kTimeSyncMode_NotSupported          = 0,
-        kTimeSyncMode_Disabled              = 1,
-        kTimeSyncMode_Service               = 2,
+        kTimeSyncMode_NotSupported = 0,
+        kTimeSyncMode_Disabled     = 1,
+        kTimeSyncMode_Service      = 2,
 
         kTimeSyncMode_Max,
     };
@@ -73,12 +72,11 @@ public:
     bool IsTimeSynchronized();
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend class PlatformManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
+    template <class> friend class Internal::GenericPlatformManagerImpl;
+    template <class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
     friend WEAVE_ERROR Internal::InitServiceDirectoryManager();
     friend TimeSyncManager & TimeSyncMgr(void);
 
@@ -110,22 +108,22 @@ private:
 
 #if WEAVE_DEVICE_CONFIG_ENABLE_WEAVE_TIME_SERVICE_TIME_SYNC
     static void TimeServiceSync_HandleBindingEvent(void * appState, ::nl::Weave::Binding::EventType event,
-            const ::nl::Weave::Binding::InEventParam & inParam, ::nl::Weave::Binding::OutEventParam & outParam);
+                                                   const ::nl::Weave::Binding::InEventParam & inParam,
+                                                   ::nl::Weave::Binding::OutEventParam & outParam);
     static void TimeServiceSync_HandleSyncComplete(void * context, WEAVE_ERROR result, int64_t syncedRealTimeUS);
 #endif
 
     static void DriveTimeSync(::nl::Weave::System::Layer * layer, void * appState, ::nl::Weave::System::Error err);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    TimeSyncManager() = default;
+    TimeSyncManager()  = default;
     ~TimeSyncManager() = default;
 
     // No copy, move or assignment.
-    TimeSyncManager(const TimeSyncManager &) = delete;
+    TimeSyncManager(const TimeSyncManager &)  = delete;
     TimeSyncManager(const TimeSyncManager &&) = delete;
-    TimeSyncManager & operator=(const TimeSyncManager &) = delete;
+    TimeSyncManager & operator =(const TimeSyncManager &) = delete;
 };
 
 inline TimeSyncManager::TimeSyncMode TimeSyncManager::GetMode()

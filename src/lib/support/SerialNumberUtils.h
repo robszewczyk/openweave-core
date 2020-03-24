@@ -29,10 +29,11 @@
 
 namespace nl {
 
-extern void DateToManufacturingWeek(uint16_t year, uint8_t month, uint8_t day, uint16_t& mfgYear, uint8_t& mfgWeek);
-extern void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t& year, uint8_t& month, uint8_t& day);
-extern WEAVE_ERROR ExtractManufacturingDateFromSerialNumber(const char *serialNum, uint16_t& year, uint8_t& month, uint8_t& day);
-extern bool IsValidSerialNumber(const char *serialNum);
+extern void DateToManufacturingWeek(uint16_t year, uint8_t month, uint8_t day, uint16_t & mfgYear, uint8_t & mfgWeek);
+extern void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t & year, uint8_t & month, uint8_t & day);
+extern WEAVE_ERROR ExtractManufacturingDateFromSerialNumber(const char * serialNum, uint16_t & year, uint8_t & month,
+                                                            uint8_t & day);
+extern bool IsValidSerialNumber(const char * serialNum);
 
 } // namespace nl
 

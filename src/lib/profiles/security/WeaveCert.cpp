@@ -49,15 +49,15 @@ using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Crypto;
 
-extern WEAVE_ERROR DecodeConvertTBSCert(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData);
+extern WEAVE_ERROR DecodeConvertTBSCert(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData);
 
 #if HAVE_MALLOC && HAVE_FREE
-static void *DefaultAlloc(size_t size)
+static void * DefaultAlloc(size_t size)
 {
     return malloc(size);
 }
 
-static void DefaultFree(void *p)
+static void DefaultFree(void * p)
 {
     free(p);
 }
@@ -81,31 +81,32 @@ WEAVE_ERROR WeaveCertificateSet::Init(uint8_t maxCerts, uint16_t decodeBufSize, 
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Certs = (WeaveCertificateData *)allocFunct(sizeof(WeaveCertificateData) * maxCerts);
+    Certs = (WeaveCertificateData *) allocFunct(sizeof(WeaveCertificateData) * maxCerts);
     VerifyOrExit(Certs != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     CertCount = 0;
-    MaxCerts = maxCerts;
+    MaxCerts  = maxCerts;
 
-    mDecodeBuf = NULL;
+    mDecodeBuf     = NULL;
     mDecodeBufSize = decodeBufSize;
 
     mAllocFunct = allocFunct;
-    mFreeFunct = freeFunct;
+    mFreeFunct  = freeFunct;
 
 exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::Init(WeaveCertificateData *certsArray, uint8_t certArraySize, uint8_t *decodeBuf, uint16_t decodeBufSize)
+WEAVE_ERROR WeaveCertificateSet::Init(WeaveCertificateData * certsArray, uint8_t certArraySize, uint8_t * decodeBuf,
+                                      uint16_t decodeBufSize)
 {
-    Certs = certsArray;
-    CertCount = 0;
-    MaxCerts = certArraySize;
-    mDecodeBuf = decodeBuf;
+    Certs          = certsArray;
+    CertCount      = 0;
+    MaxCerts       = certArraySize;
+    mDecodeBuf     = decodeBuf;
     mDecodeBufSize = decodeBufSize;
-    mAllocFunct = NULL;
-    mFreeFunct = NULL;
+    mAllocFunct    = NULL;
+    mFreeFunct     = NULL;
     return WEAVE_NO_ERROR;
 }
 
@@ -132,18 +133,19 @@ void WeaveCertificateSet::Clear()
     CertCount = 0;
 }
 
-WeaveCertificateData *WeaveCertificateSet::FindCert(const CertificateKeyId& subjectKeyId) const
+WeaveCertificateData * WeaveCertificateSet::FindCert(const CertificateKeyId & subjectKeyId) const
 {
     for (uint8_t i = 0; i < CertCount; i++)
     {
-        WeaveCertificateData& cert = Certs[i];
+        WeaveCertificateData & cert = Certs[i];
         if (cert.SubjectKeyId.IsEqual(subjectKeyId))
             return &cert;
     }
     return NULL;
 }
 
-WEAVE_ERROR WeaveCertificateSet::LoadCert(const uint8_t *weaveCert, uint32_t weaveCertLen, uint16_t decodeFlags, WeaveCertificateData *& cert)
+WEAVE_ERROR WeaveCertificateSet::LoadCert(const uint8_t * weaveCert, uint32_t weaveCertLen, uint16_t decodeFlags,
+                                          WeaveCertificateData *& cert)
 {
     WEAVE_ERROR err;
     TLVReader reader;
@@ -160,11 +162,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::LoadCert(TLVReader& reader, uint16_t decodeFlags, WeaveCertificateData *& cert)
+WEAVE_ERROR WeaveCertificateSet::LoadCert(TLVReader & reader, uint16_t decodeFlags, WeaveCertificateData *& cert)
 {
     WEAVE_ERROR err;
     ASN1Writer writer;
-    uint8_t *decodeBuf = mDecodeBuf;
+    uint8_t * decodeBuf = mDecodeBuf;
 
     cert = NULL;
 
@@ -175,7 +177,7 @@ WEAVE_ERROR WeaveCertificateSet::LoadCert(TLVReader& reader, uint16_t decodeFlag
     VerifyOrExit(CertCount < MaxCerts, err = WEAVE_ERROR_NO_MEMORY);
 
     if (decodeBuf == NULL && mAllocFunct != NULL)
-        decodeBuf = (uint8_t *)(mAllocFunct(mDecodeBufSize));
+        decodeBuf = (uint8_t *) (mAllocFunct(mDecodeBufSize));
     VerifyOrExit(decodeBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     cert = &Certs[CertCount];
@@ -250,14 +252,14 @@ WEAVE_ERROR WeaveCertificateSet::LoadCert(TLVReader& reader, uint16_t decodeFlag
             // Extract the signature r value
             err = reader.Next(kTLVType_ByteString, ContextTag(kTag_ECDSASignature_r));
             SuccessOrExit(err);
-            err = reader.GetDataPtr((const uint8_t *&)cert->Signature.EC.R);
+            err = reader.GetDataPtr((const uint8_t *&) cert->Signature.EC.R);
             SuccessOrExit(err);
             cert->Signature.EC.RLen = reader.GetLength();
 
             // Extract the signature s value
             err = reader.Next(kTLVType_ByteString, ContextTag(kTag_ECDSASignature_s));
             SuccessOrExit(err);
-            err = reader.GetDataPtr((const uint8_t *&)cert->Signature.EC.S);
+            err = reader.GetDataPtr((const uint8_t *&) cert->Signature.EC.S);
             SuccessOrExit(err);
             cert->Signature.EC.SLen = reader.GetLength();
 
@@ -290,7 +292,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::LoadCerts(const uint8_t *encodedCerts, uint32_t encodedCertsLen, uint16_t decodeFlags)
+WEAVE_ERROR WeaveCertificateSet::LoadCerts(const uint8_t * encodedCerts, uint32_t encodedCertsLen, uint16_t decodeFlags)
 {
     WEAVE_ERROR err;
     TLVReader reader;
@@ -304,10 +306,10 @@ WEAVE_ERROR WeaveCertificateSet::LoadCerts(const uint8_t *encodedCerts, uint32_t
     SuccessOrExit(err);
 
     type = reader.GetType();
-    tag = reader.GetTag();
+    tag  = reader.GetTag();
 
     VerifyOrExit((type == kTLVType_Structure && tag == ProfileTag(kWeaveProfile_Security, kTag_WeaveCertificate)) ||
-                 (type == kTLVType_Array && tag == ProfileTag(kWeaveProfile_Security, kTag_WeaveCertificateList)),
+                     (type == kTLVType_Array && tag == ProfileTag(kWeaveProfile_Security, kTag_WeaveCertificateList)),
                  err = WEAVE_ERROR_UNEXPECTED_TLV_ELEMENT);
 
     err = LoadCerts(reader, decodeFlags);
@@ -316,10 +318,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::LoadCerts(TLVReader& reader, uint16_t decodeFlags)
+WEAVE_ERROR WeaveCertificateSet::LoadCerts(TLVReader & reader, uint16_t decodeFlags)
 {
     WEAVE_ERROR err;
-    WeaveCertificateData *cert;
+    WeaveCertificateData * cert;
 
     // If positioned on a structure, we assume that structure is a single certificate.
     if (reader.GetType() == kTLVType_Structure)
@@ -353,28 +355,27 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::AddTrustedKey(uint64_t caId, uint32_t curveId, const EncodedECPublicKey& pubKey,
-                                               const uint8_t *pubKeyId, uint16_t pubKeyIdLen)
+WEAVE_ERROR WeaveCertificateSet::AddTrustedKey(uint64_t caId, uint32_t curveId, const EncodedECPublicKey & pubKey,
+                                               const uint8_t * pubKeyId, uint16_t pubKeyIdLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveCertificateData *cert;
+    WeaveCertificateData * cert;
 
     // Verify we have room for the new certificate.
     VerifyOrExit(CertCount < MaxCerts, err = WEAVE_ERROR_NO_MEMORY);
 
     cert = &Certs[CertCount];
     memset(cert, 0, sizeof(*cert));
-    cert->SubjectDN.AttrOID = kOID_AttributeType_WeaveCAId;
+    cert->SubjectDN.AttrOID           = kOID_AttributeType_WeaveCAId;
     cert->SubjectDN.AttrValue.WeaveId = caId;
-    cert->IssuerDN = cert->SubjectDN;
-    cert->PubKeyCurveId = curveId;
-    cert->PublicKey.EC = pubKey;
+    cert->IssuerDN                    = cert->SubjectDN;
+    cert->PubKeyCurveId               = curveId;
+    cert->PublicKey.EC                = pubKey;
     cert->SubjectKeyId.Id = cert->AuthKeyId.Id = pubKeyId;
     cert->SubjectKeyId.Len = cert->AuthKeyId.Len = pubKeyIdLen;
-    cert->KeyUsageFlags = kKeyUsageFlag_KeyCertSign;
-    cert->CertFlags = kCertFlag_AuthKeyIdPresent | kCertFlag_ExtPresent_AuthKeyId |
-            kCertFlag_ExtPresent_BasicConstraints | kCertFlag_ExtPresent_SubjectKeyId |
-            kCertFlag_ExtPresent_KeyUsage | kCertFlag_IsCA | kCertFlag_IsTrusted;
+    cert->KeyUsageFlags                          = kKeyUsageFlag_KeyCertSign;
+    cert->CertFlags = kCertFlag_AuthKeyIdPresent | kCertFlag_ExtPresent_AuthKeyId | kCertFlag_ExtPresent_BasicConstraints |
+        kCertFlag_ExtPresent_SubjectKeyId | kCertFlag_ExtPresent_KeyUsage | kCertFlag_IsCA | kCertFlag_IsTrusted;
     cert->CertType = kCertType_CA;
 
     CertCount++;
@@ -383,7 +384,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::SaveCerts(TLVWriter& writer, WeaveCertificateData *firstCert, bool includeTrusted)
+WEAVE_ERROR WeaveCertificateSet::SaveCerts(TLVWriter & writer, WeaveCertificateData * firstCert, bool includeTrusted)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -395,7 +396,7 @@ WEAVE_ERROR WeaveCertificateSet::SaveCerts(TLVWriter& writer, WeaveCertificateDa
 
     for (uint8_t i = 0; i < CertCount; i++)
     {
-        WeaveCertificateData& cert = Certs[i];
+        WeaveCertificateData & cert = Certs[i];
         if (cert.EncodedCert != NULL && &cert != firstCert && (includeTrusted || (cert.CertFlags & kCertFlag_IsTrusted) == 0))
         {
             err = writer.PutPreEncodedContainer(AnonymousTag, kTLVType_Structure, cert.EncodedCert, cert.EncodedCertLen);
@@ -407,7 +408,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData& cert, ValidationContext& context)
+WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData & cert, ValidationContext & context)
 {
     WEAVE_ERROR err;
 
@@ -433,8 +434,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::FindValidCert(const WeaveDN& subjectDN, const CertificateKeyId& subjectKeyId,
-        ValidationContext& context, WeaveCertificateData *& cert)
+WEAVE_ERROR WeaveCertificateSet::FindValidCert(const WeaveDN & subjectDN, const CertificateKeyId & subjectKeyId,
+                                               ValidationContext & context, WeaveCertificateData *& cert)
 {
     WEAVE_ERROR err;
 
@@ -459,29 +460,32 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::GenerateECDSASignature(const uint8_t *msgHash, uint8_t msgHashLen,
-                                                        WeaveCertificateData& cert,
-                                                        const nl::Weave::Crypto::EncodedECPrivateKey& privKey,
-                                                        nl::Weave::Crypto::EncodedECDSASignature& encodedSig)
+WEAVE_ERROR WeaveCertificateSet::GenerateECDSASignature(const uint8_t * msgHash, uint8_t msgHashLen, WeaveCertificateData & cert,
+                                                        const nl::Weave::Crypto::EncodedECPrivateKey & privKey,
+                                                        nl::Weave::Crypto::EncodedECDSASignature & encodedSig)
 {
-    return nl::Weave::Crypto::GenerateECDSASignature(WeaveCurveIdToOID(cert.PubKeyCurveId),
-            msgHash, msgHashLen, privKey, encodedSig);
+    return nl::Weave::Crypto::GenerateECDSASignature(WeaveCurveIdToOID(cert.PubKeyCurveId), msgHash, msgHashLen, privKey,
+                                                     encodedSig);
 }
 
-WEAVE_ERROR WeaveCertificateSet::VerifyECDSASignature(const uint8_t *msgHash, uint8_t msgHashLen,
-                                                      const nl::Weave::Crypto::EncodedECDSASignature& encodedSig,
-                                                      WeaveCertificateData& cert)
+WEAVE_ERROR WeaveCertificateSet::VerifyECDSASignature(const uint8_t * msgHash, uint8_t msgHashLen,
+                                                      const nl::Weave::Crypto::EncodedECDSASignature & encodedSig,
+                                                      WeaveCertificateData & cert)
 {
-    return nl::Weave::Crypto::VerifyECDSASignature(WeaveCurveIdToOID(cert.PubKeyCurveId),
-            msgHash, msgHashLen, encodedSig, cert.PublicKey.EC);
+    return nl::Weave::Crypto::VerifyECDSASignature(WeaveCurveIdToOID(cert.PubKeyCurveId), msgHash, msgHashLen, encodedSig,
+                                                   cert.PublicKey.EC);
 }
 
-WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData& cert, ValidationContext& context, uint16_t validateFlags, uint8_t depth)
+WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData & cert, ValidationContext & context, uint16_t validateFlags,
+                                              uint8_t depth)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveCertificateData *caCert = NULL;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveCertificateData * caCert = NULL;
     uint8_t hashLen;
-    enum { kLastSecondOfDay = kSecondsPerDay - 1 };
+    enum
+    {
+        kLastSecondOfDay = kSecondsPerDay - 1
+    };
 
     // If the depth is greater than 0 then the certificate is required to be a CA certificate...
     if (depth > 0)
@@ -490,8 +494,7 @@ WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData& cert, Valida
         VerifyOrExit((cert.CertFlags & kCertFlag_IsCA) != 0, err = WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED);
 
         // Verify the key usage extension is present and contains the 'keyCertSign' flag.
-        VerifyOrExit((cert.CertFlags & kCertFlag_ExtPresent_KeyUsage) != 0 &&
-                     (cert.KeyUsageFlags & kKeyUsageFlag_KeyCertSign) != 0,
+        VerifyOrExit((cert.CertFlags & kCertFlag_ExtPresent_KeyUsage) != 0 && (cert.KeyUsageFlags & kKeyUsageFlag_KeyCertSign) != 0,
                      err = WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED);
 
         // Verify that the certificate type is set to "CA".
@@ -515,14 +518,14 @@ WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData& cert, Valida
         // in the certificate and that the corresponding usages are supported.
         if (context.RequiredKeyUsages != 0)
             VerifyOrExit((cert.CertFlags & kCertFlag_ExtPresent_KeyUsage) != 0 &&
-                         (cert.KeyUsageFlags & context.RequiredKeyUsages) == context.RequiredKeyUsages,
+                             (cert.KeyUsageFlags & context.RequiredKeyUsages) == context.RequiredKeyUsages,
                          err = WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED);
 
         // If a set of desired key purposes has been specified, verify that the extended key usage extension
         // exists in the certificate and that the corresponding purposes are supported.
         if (context.RequiredKeyPurposes != 0)
             VerifyOrExit((cert.CertFlags & kCertFlag_ExtPresent_ExtendedKeyUsage) != 0 &&
-                         (cert.KeyPurposeFlags & context.RequiredKeyPurposes) == context.RequiredKeyPurposes,
+                             (cert.KeyPurposeFlags & context.RequiredKeyPurposes) == context.RequiredKeyPurposes,
                          err = WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED);
 
         // If a required certificate type has been specified, verify it against the current certificate's type.
@@ -534,7 +537,8 @@ WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData& cert, Valida
     if (cert.NotBeforeDate != 0 && (validateFlags & kValidateFlag_IgnoreNotBefore) == 0)
         VerifyOrExit(context.EffectiveTime >= PackedCertDateToTime(cert.NotBeforeDate), err = WEAVE_ERROR_CERT_NOT_VALID_YET);
     if (cert.NotAfterDate != 0 && (validateFlags & kValidateFlag_IgnoreNotAfter) == 0)
-        VerifyOrExit(context.EffectiveTime <= PackedCertDateToTime(cert.NotAfterDate) + kLastSecondOfDay, err = WEAVE_ERROR_CERT_EXPIRED);
+        VerifyOrExit(context.EffectiveTime <= PackedCertDateToTime(cert.NotAfterDate) + kLastSecondOfDay,
+                     err = WEAVE_ERROR_CERT_EXPIRED);
 
     // If the certificate itself is trusted, then it is implicitly valid.  Record this certificate as the trust
     // anchor and return success.
@@ -577,9 +581,8 @@ WEAVE_ERROR WeaveCertificateSet::ValidateCert(WeaveCertificateData& cert, Valida
 
     // Verify signature of the current certificate against public key of the CA certificate. If signature verification
     // succeeds, the current certificate is valid.
-    hashLen = (cert.SigAlgoOID == kOID_SigAlgo_ECDSAWithSHA256)
-              ? (uint8_t)Platform::Security::SHA256::kHashLength
-              : (uint8_t)Platform::Security::SHA1::kHashLength;
+    hashLen = (cert.SigAlgoOID == kOID_SigAlgo_ECDSAWithSHA256) ? (uint8_t) Platform::Security::SHA256::kHashLength
+                                                                : (uint8_t) Platform::Security::SHA1::kHashLength;
     err = VerifyECDSASignature(cert.TBSHash, hashLen, cert.Signature.EC, *caCert);
     SuccessOrExit(err);
 
@@ -593,8 +596,9 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveCertificateSet::FindValidCert(const WeaveDN& subjectDN, const CertificateKeyId& subjectKeyId,
-        ValidationContext& context, uint16_t validateFlags, uint8_t depth, WeaveCertificateData *& cert)
+WEAVE_ERROR WeaveCertificateSet::FindValidCert(const WeaveDN & subjectDN, const CertificateKeyId & subjectKeyId,
+                                               ValidationContext & context, uint16_t validateFlags, uint8_t depth,
+                                               WeaveCertificateData *& cert)
 {
     WEAVE_ERROR err;
 
@@ -608,7 +612,7 @@ WEAVE_ERROR WeaveCertificateSet::FindValidCert(const WeaveDN& subjectDN, const C
     // For each cert in the set...
     for (uint8_t i = 0; i < CertCount; i++)
     {
-        WeaveCertificateData& candidateCert = Certs[i];
+        WeaveCertificateData & candidateCert = Certs[i];
 
         // Skip the certificate if its subject DN and key id do not match the input criteria.
         if (!subjectDN.IsEmpty() && !candidateCert.SubjectDN.IsEqual(subjectDN))
@@ -651,7 +655,7 @@ exit:
  * NOTE: Access token certificates cannot be distinguished solely by their structure.
  * Thus this function never sets cert.CertType = kCertType_AccessToken.
  */
-WEAVE_ERROR DetermineCertType(WeaveCertificateData& cert)
+WEAVE_ERROR DetermineCertType(WeaveCertificateData & cert)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -659,8 +663,7 @@ WEAVE_ERROR DetermineCertType(WeaveCertificateData& cert)
     if ((cert.CertFlags & kCertFlag_IsCA) != 0)
     {
         // Verify the key usage extension is present and contains the 'keyCertSign' flag.
-        VerifyOrExit((cert.CertFlags & kCertFlag_ExtPresent_KeyUsage) != 0 &&
-                     (cert.KeyUsageFlags & kKeyUsageFlag_KeyCertSign) != 0,
+        VerifyOrExit((cert.CertFlags & kCertFlag_ExtPresent_KeyUsage) != 0 && (cert.KeyUsageFlags & kKeyUsageFlag_KeyCertSign) != 0,
                      err = WEAVE_ERROR_CERT_USAGE_NOT_ALLOWED);
 
         // Set the certificate type to CA.
@@ -695,7 +698,7 @@ exit:
     return err;
 }
 
-bool WeaveDN::IsEqual(const WeaveDN& other) const
+bool WeaveDN::IsEqual(const WeaveDN & other) const
 {
     if (AttrOID == kOID_Unknown || AttrOID == kOID_NotSpecified || AttrOID != other.AttrOID)
         return false;
@@ -707,7 +710,7 @@ bool WeaveDN::IsEqual(const WeaveDN& other) const
                 memcmp(AttrValue.String.Value, other.AttrValue.String.Value, AttrValue.String.Len) == 0);
 }
 
-bool CertificateKeyId::IsEqual(const CertificateKeyId& other) const
+bool CertificateKeyId::IsEqual(const CertificateKeyId & other) const
 {
     return Id != NULL && other.Id != NULL && Len == other.Len && memcmp(Id, other.Id, Len) == 0;
 }
@@ -742,11 +745,13 @@ bool CertificateKeyId::IsEqual(const CertificateKeyId& other) const
  * @retval  #ASN1_ERROR_UNSUPPORTED_ENCODING    If the input time contained a year value that could not
  *                                              be represented in a packed certificate time value.
  */
-NL_DLL_EXPORT WEAVE_ERROR PackCertTime(const ASN1UniversalTime& time, uint32_t& packedTime)
+NL_DLL_EXPORT WEAVE_ERROR PackCertTime(const ASN1UniversalTime & time, uint32_t & packedTime)
 {
-    enum {
+    enum
+    {
         kCertTimeBaseYear = 2000,
-        kCertTimeMaxYear = kCertTimeBaseYear + UINT32_MAX / (kMonthsPerYear * kMaxDaysPerMonth * kHoursPerDay * kMinutesPerHour * kSecondsPerMinute),
+        kCertTimeMaxYear  = kCertTimeBaseYear +
+            UINT32_MAX / (kMonthsPerYear * kMaxDaysPerMonth * kHoursPerDay * kMinutesPerHour * kSecondsPerMinute),
         kX509NoWellDefinedExpirationDateYear = 9999
     };
 
@@ -790,10 +795,11 @@ NL_DLL_EXPORT WEAVE_ERROR PackCertTime(const ASN1UniversalTime& time, uint32_t& 
  *
  * @retval  #WEAVE_NO_ERROR                     If the input time was successfully unpacked.
  */
-NL_DLL_EXPORT WEAVE_ERROR UnpackCertTime(uint32_t packedTime, ASN1UniversalTime& time)
+NL_DLL_EXPORT WEAVE_ERROR UnpackCertTime(uint32_t packedTime, ASN1UniversalTime & time)
 {
-    enum {
-        kCertTimeBaseYear = 2000,
+    enum
+    {
+        kCertTimeBaseYear                    = 2000,
         kX509NoWellDefinedExpirationDateYear = 9999,
     };
 
@@ -801,10 +807,10 @@ NL_DLL_EXPORT WEAVE_ERROR UnpackCertTime(uint32_t packedTime, ASN1UniversalTime&
     // We represent that as a packed time value of 0.
     if (packedTime == kNullCertTime)
     {
-        time.Year = kX509NoWellDefinedExpirationDateYear;
-        time.Month = kMonthsPerYear;
-        time.Day = kMaxDaysPerMonth;
-        time.Hour = kHoursPerDay - 1;
+        time.Year   = kX509NoWellDefinedExpirationDateYear;
+        time.Month  = kMonthsPerYear;
+        time.Day    = kMaxDaysPerMonth;
+        time.Hour   = kHoursPerDay - 1;
         time.Minute = kMinutesPerHour - 1;
         time.Second = kSecondsPerMinute - 1;
     }
@@ -867,7 +873,7 @@ NL_DLL_EXPORT uint16_t PackedCertTimeToDate(uint32_t packedTime)
  */
 NL_DLL_EXPORT uint32_t PackedCertDateToTime(uint16_t packedDate)
 {
-    return (uint32_t)packedDate * kSecondsPerDay;
+    return (uint32_t) packedDate * kSecondsPerDay;
 }
 
 /**
@@ -887,7 +893,8 @@ NL_DLL_EXPORT uint32_t SecondsSinceEpochToPackedCertTime(uint32_t secondsSinceEp
     uint32_t packedTime;
 
     // Convert seconds-since-epoch to calendar date and time and store in an ASN1UniversalTime structure.
-    SecondsSinceEpochToCalendarTime(secondsSinceEpoch, asn1Time.Year, asn1Time.Month, asn1Time.Day, asn1Time.Hour, asn1Time.Minute, asn1Time.Second);
+    SecondsSinceEpochToCalendarTime(secondsSinceEpoch, asn1Time.Year, asn1Time.Month, asn1Time.Day, asn1Time.Hour, asn1Time.Minute,
+                                    asn1Time.Second);
 
     // Convert the calendar date/time to a packed certificate date/time.
     PackCertTime(asn1Time, packedTime);
@@ -913,8 +920,8 @@ NL_DLL_EXPORT uint32_t SecondsSinceEpochToPackedCertTime(uint32_t secondsSinceEp
  *
  * @retval #WEAVE_NO_ERROR         If Weave certificate was successfully generated.
  */
-NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, EncodedECPublicKey& devicePubKey,
-                                                        uint8_t *cert, uint16_t certBufSize, uint16_t& certLen,
+NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, EncodedECPublicKey & devicePubKey, uint8_t * cert,
+                                                        uint16_t certBufSize, uint16_t & certLen,
                                                         GenerateECDSASignatureFunct genCertSignature)
 {
     WEAVE_ERROR err;
@@ -922,8 +929,8 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
     TLVType containerType;
     TLVType containerType2;
     TLVType containerType3;
-    uint8_t *certDecodeBuf = NULL;
-    WeaveCertificateData *certData = NULL;
+    uint8_t * certDecodeBuf         = NULL;
+    WeaveCertificateData * certData = NULL;
 
     VerifyOrExit(genCertSignature != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -938,9 +945,9 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
     {
         enum
         {
-            kCertSerialNumber_Length          = 8,      // Length of the certificate serial number.
-            kCertSerialNumber_FirstByteMask   = 0x7F,   // Mask applied on the first byte of the key Id value.
-            kCertSerialNumber_FirstBytePrefix = 0x40,   // 4-bit Type value (0100) added at the beginning of the key Id value.
+            kCertSerialNumber_Length          = 8,    // Length of the certificate serial number.
+            kCertSerialNumber_FirstByteMask   = 0x7F, // Mask applied on the first byte of the key Id value.
+            kCertSerialNumber_FirstBytePrefix = 0x40, // 4-bit Type value (0100) added at the beginning of the key Id value.
         };
         uint8_t certSerialNumber[kCertSerialNumber_Length];
 
@@ -998,7 +1005,8 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
     SuccessOrExit(err);
 
     // EC public key curve Id.
-    err = writer.Put(ContextTag(kTag_EllipticCurveIdentifier), static_cast<uint32_t>(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID));
+    err =
+        writer.Put(ContextTag(kTag_EllipticCurveIdentifier), static_cast<uint32_t>(WEAVE_CONFIG_OPERATIONAL_DEVICE_CERT_CURVE_ID));
     SuccessOrExit(err);
 
     // EC public key.
@@ -1027,7 +1035,8 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
         err = writer.PutBoolean(ContextTag(kTag_KeyUsage_Critical), true);
         SuccessOrExit(err);
 
-        err = writer.Put(ContextTag(kTag_KeyUsage_KeyUsage), static_cast<uint16_t>(kKeyUsageFlag_DigitalSignature | kKeyUsageFlag_KeyEncipherment));
+        err = writer.Put(ContextTag(kTag_KeyUsage_KeyUsage),
+                         static_cast<uint16_t>(kKeyUsageFlag_DigitalSignature | kKeyUsageFlag_KeyEncipherment));
         SuccessOrExit(err);
 
         err = writer.EndContainer(containerType2);
@@ -1071,15 +1080,15 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
          */
         enum
         {
-            kCertKeyId_Length          = 8,      // Length of the certificate key identifier.
-            kCertKeyId_FirstByte       = Platform::Security::SHA1::kHashLength - kCertKeyId_Length,
-                                                 // First byte of the SHA1 hash that used to generate certificate keyId.
-            kCertKeyId_FirstByteMask   = 0x0F,   // Mask applied on the first byte of the key Id value.
-            kCertKeyId_FirstBytePrefix = 0x40,   // 4-bit Type value (0100) added at the beginning of the key Id value.
+            kCertKeyId_Length    = 8, // Length of the certificate key identifier.
+            kCertKeyId_FirstByte = Platform::Security::SHA1::kHashLength - kCertKeyId_Length,
+            // First byte of the SHA1 hash that used to generate certificate keyId.
+            kCertKeyId_FirstByteMask   = 0x0F, // Mask applied on the first byte of the key Id value.
+            kCertKeyId_FirstBytePrefix = 0x40, // 4-bit Type value (0100) added at the beginning of the key Id value.
         };
         Platform::Security::SHA1 sha1;
         uint8_t hash[Platform::Security::SHA1::kHashLength];
-        uint8_t *certKeyId = &hash[kCertKeyId_FirstByte];
+        uint8_t * certKeyId = &hash[kCertKeyId_FirstByte];
 
         sha1.Begin();
         sha1.AddData(devicePubKey.ECPoint, devicePubKey.ECPointLen);
@@ -1124,7 +1133,7 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
     {
         enum
         {
-            kCertDecodeBufferSize      = 1024,   // Maximum ASN1 encoded size of the operational device certificate.
+            kCertDecodeBufferSize = 1024, // Maximum ASN1 encoded size of the operational device certificate.
         };
 
         TLVReader reader;
@@ -1167,9 +1176,9 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, Encod
 
         // Reuse already allocated decode buffer to hold the generated signature value.
         EncodedECDSASignature ecdsaSig;
-        ecdsaSig.R = certDecodeBuf;
+        ecdsaSig.R    = certDecodeBuf;
         ecdsaSig.RLen = EncodedECDSASignature::kMaxValueLength;
-        ecdsaSig.S = certDecodeBuf + EncodedECDSASignature::kMaxValueLength;
+        ecdsaSig.S    = certDecodeBuf + EncodedECDSASignature::kMaxValueLength;
         ecdsaSig.SLen = EncodedECDSASignature::kMaxValueLength;
 
         // Generate an ECDSA signature for the given message hash.

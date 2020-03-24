@@ -44,22 +44,23 @@ class DMTestClient :
 
 {
 public:
+    WEAVE_ERROR ViewConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId);
 
-    WEAVE_ERROR ViewConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId);
+    WEAVE_ERROR ViewConfirm(const uint64_t & aResponderId, ReferencedTLVData & aDataList, uint16_t aTxnId);
 
-    WEAVE_ERROR ViewConfirm(const uint64_t &aResponderId, ReferencedTLVData &aDataList, uint16_t aTxnId);
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId);
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId);
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList,
+                                 uint16_t aTxnId);
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, ReferencedTLVData &aDataList, uint16_t aTxnId);
+    WEAVE_ERROR UnsubscribeIndication(const uint64_t & aPublisherId, const TopicIdentifier & aTopicId, StatusReport & aReport);
 
-    WEAVE_ERROR UnsubscribeIndication(const uint64_t &aPublisherId, const TopicIdentifier &aTopicId, StatusReport &aReport);
+    WEAVE_ERROR UpdateConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId);
 
-    WEAVE_ERROR UpdateConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId);
+    WEAVE_ERROR CancelSubscriptionConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, StatusReport & aStatus,
+                                          uint16_t aTxnId);
 
-    WEAVE_ERROR CancelSubscriptionConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, StatusReport &aStatus, uint16_t aTxnId);
-
-    WEAVE_ERROR NotifyIndication(const TopicIdentifier &aTopicId, ReferencedTLVData &aDataList);
+    WEAVE_ERROR NotifyIndication(const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList);
 
     /*
      * the client comes with a profile database

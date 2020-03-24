@@ -51,17 +51,18 @@ using namespace nl::Weave::Encoding;
  *
  * @param[in] inBufferLength Length, in bytes, of the backing store
  *
- * @param[in] inHead         Initial point for the head.  The @a inHead pointer is must fall within the backing store for the circular buffer, i.e. within @a inBuffer and &(@a inBuffer[@a inBufferLength])
+ * @param[in] inHead         Initial point for the head.  The @a inHead pointer is must fall within the backing store for the
+ * circular buffer, i.e. within @a inBuffer and &(@a inBuffer[@a inBufferLength])
  */
-WeaveCircularTLVBuffer::WeaveCircularTLVBuffer(uint8_t *inBuffer, size_t inBufferLength, uint8_t *inHead)
+WeaveCircularTLVBuffer::WeaveCircularTLVBuffer(uint8_t * inBuffer, size_t inBufferLength, uint8_t * inHead)
 {
-    mQueue = inBuffer;
-    mQueueSize = inBufferLength;
+    mQueue       = inBuffer;
+    mQueueSize   = inBufferLength;
     mQueueLength = 0;
-    mQueueHead = inHead;
+    mQueueHead   = inHead;
 
     mProcessEvictedElement = NULL;
-    mAppData = NULL;
+    mAppData               = NULL;
 
     // use common as opposed to unspecified, s.t. the reader that
     // skips over the elements does not complain about implicit
@@ -77,22 +78,21 @@ WeaveCircularTLVBuffer::WeaveCircularTLVBuffer(uint8_t *inBuffer, size_t inBuffe
  *
  * @param[in] inBufferLength Length, in bytes, of the backing store
  */
-WeaveCircularTLVBuffer::WeaveCircularTLVBuffer(uint8_t *inBuffer, size_t inBufferLength)
+WeaveCircularTLVBuffer::WeaveCircularTLVBuffer(uint8_t * inBuffer, size_t inBufferLength)
 {
-    mQueue = inBuffer;
-    mQueueSize = inBufferLength;
+    mQueue       = inBuffer;
+    mQueueSize   = inBufferLength;
     mQueueLength = 0;
-    mQueueHead = mQueue;
+    mQueueHead   = mQueue;
 
     mProcessEvictedElement = NULL;
-    mAppData = NULL;
+    mAppData               = NULL;
 
     // use common as opposed to unspecified, s.t. the reader that
     // skips over the elements does not complain about implicit
     // profile tags.
     mImplicitProfileId = kCommonProfileId;
 }
-
 
 /**
  * @brief
@@ -115,7 +115,7 @@ WeaveCircularTLVBuffer::WeaveCircularTLVBuffer(uint8_t *inBuffer, size_t inBuffe
 WEAVE_ERROR WeaveCircularTLVBuffer::EvictHead(void)
 {
     CircularTLVReader reader;
-    uint8_t *newHead;
+    uint8_t * newHead;
     size_t newLen;
     WEAVE_ERROR err;
 
@@ -149,7 +149,7 @@ WEAVE_ERROR WeaveCircularTLVBuffer::EvictHead(void)
 
     // update queue state
     mQueueLength = newLen;
-    mQueueHead = newHead;
+    mQueueHead   = newHead;
 
 exit:
     return err;
@@ -173,12 +173,13 @@ exit:
  *                         top-level TLV element.
  */
 
-WEAVE_ERROR WeaveCircularTLVBuffer::GetNewBuffer(TLVWriter& ioWriter, uint8_t *& outBufStart, uint32_t& outBufLen)
+WEAVE_ERROR WeaveCircularTLVBuffer::GetNewBuffer(TLVWriter & ioWriter, uint8_t *& outBufStart, uint32_t & outBufLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t * tail = QueueTail();
+    uint8_t * tail  = QueueTail();
 
-    if (mQueueLength >= mQueueSize) {
+    if (mQueueLength >= mQueueSize)
+    {
         // Queue is out of space, need to evict an element
         err = EvictHead();
         SuccessOrExit(err);
@@ -200,7 +201,6 @@ exit:
     return err;
 }
 
-
 /**
  * @brief
  *   FinalizeBuffer adjust the `WeaveCircularTLVBuffer` state on
@@ -218,10 +218,10 @@ exit:
  * @retval #WEAVE_NO_ERROR Unconditionally.
  */
 
-WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBuffer(TLVWriter& ioWriter, uint8_t *inBufStart, uint32_t inBufLen)
+WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBuffer(TLVWriter & ioWriter, uint8_t * inBufStart, uint32_t inBufLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t * tail = inBufStart + inBufLen;
+    uint8_t * tail  = inBufStart + inBufLen;
     if (inBufLen)
     {
         if (tail <= mQueueHead)
@@ -235,7 +235,6 @@ WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBuffer(TLVWriter& ioWriter, uint8_t 
     }
     return err;
 }
-
 
 /**
  * @brief
@@ -258,11 +257,11 @@ WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBuffer(TLVWriter& ioWriter, uint8_t 
  *
  * @retval #WEAVE_NO_ERROR    Succeeds unconditionally.
  */
-WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBuffer(TLVReader& ioReader, const uint8_t *& outBufStart, uint32_t & outBufLen)
+WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBuffer(TLVReader & ioReader, const uint8_t *& outBufStart, uint32_t & outBufLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t * tail = QueueTail();
-    const uint8_t *readerStart = outBufStart;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    uint8_t * tail              = QueueTail();
+    const uint8_t * readerStart = outBufStart;
 
     if (readerStart == NULL)
     {
@@ -282,7 +281,6 @@ WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBuffer(TLVReader& ioReader, const uin
         outBufLen = 0;
         return err;
     }
-
 
     if ((mQueueLength != 0) && (tail <= outBufStart))
     {
@@ -304,7 +302,6 @@ WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBuffer(TLVReader& ioReader, const uin
     return err;
 }
 
-
 /**
  * @brief
  *   A trampoline to fetch more space for the TLVWriter.
@@ -322,10 +319,11 @@ WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBuffer(TLVReader& ioReader, const uin
  * @retval other           If the function was unable to elide a complete
  *                         top-level TLV element.
  */
-WEAVE_ERROR WeaveCircularTLVBuffer::GetNewBufferFunct(TLVWriter& ioWriter, uintptr_t& inBufHandle, uint8_t *&outBufStart, uint32_t& outBufLen)
+WEAVE_ERROR WeaveCircularTLVBuffer::GetNewBufferFunct(TLVWriter & ioWriter, uintptr_t & inBufHandle, uint8_t *& outBufStart,
+                                                      uint32_t & outBufLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveCircularTLVBuffer *buf;
+    WeaveCircularTLVBuffer * buf;
 
     VerifyOrExit(inBufHandle != 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -336,7 +334,6 @@ WEAVE_ERROR WeaveCircularTLVBuffer::GetNewBufferFunct(TLVWriter& ioWriter, uintp
 exit:
     return err;
 }
-
 
 /**
  * @brief
@@ -354,10 +351,11 @@ exit:
  *
  * @retval #WEAVE_NO_ERROR Unconditionally.
  */
-WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBufferFunct(TLVWriter& ioWriter, uintptr_t inBufHandle, uint8_t *inBufStart, uint32_t inBufLen)
+WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBufferFunct(TLVWriter & ioWriter, uintptr_t inBufHandle, uint8_t * inBufStart,
+                                                        uint32_t inBufLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveCircularTLVBuffer *buf;
+    WeaveCircularTLVBuffer * buf;
 
     VerifyOrExit(inBufHandle != 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -368,7 +366,6 @@ WEAVE_ERROR WeaveCircularTLVBuffer::FinalizeBufferFunct(TLVWriter& ioWriter, uin
 exit:
     return err;
 }
-
 
 /**
  * @brief
@@ -387,10 +384,11 @@ exit:
  *
  * @retval #WEAVE_NO_ERROR    Succeeds unconditionally.
  */
-WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBufferFunct(TLVReader& ioReader, uintptr_t &inBufHandle, const uint8_t *&outBufStart, uint32_t &outBufLen)
+WEAVE_ERROR WeaveCircularTLVBuffer::GetNextBufferFunct(TLVReader & ioReader, uintptr_t & inBufHandle, const uint8_t *& outBufStart,
+                                                       uint32_t & outBufLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveCircularTLVBuffer *buf;
+    WeaveCircularTLVBuffer * buf;
 
     VerifyOrExit(inBufHandle != 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -417,18 +415,18 @@ exit:
  * @param[in]    buf   A pointer to a fully initialized WeaveCircularTLVBuffer
  *
  */
-void CircularTLVWriter::Init(WeaveCircularTLVBuffer *buf)
+void CircularTLVWriter::Init(WeaveCircularTLVBuffer * buf)
 {
-    mBufHandle = (uintptr_t) buf;
-    mLenWritten = 0;
-    mMaxLen = UINT32_MAX;
+    mBufHandle     = (uintptr_t) buf;
+    mLenWritten    = 0;
+    mMaxLen        = UINT32_MAX;
     mContainerType = kTLVType_NotSpecified;
     SetContainerOpen(false);
     SetCloseContainerReserved(false);
 
     ImplicitProfileId = kProfileIdNotSpecified;
-    GetNewBuffer = WeaveCircularTLVBuffer::GetNewBufferFunct;
-    FinalizeBuffer = WeaveCircularTLVBuffer::FinalizeBufferFunct;
+    GetNewBuffer      = WeaveCircularTLVBuffer::GetNewBufferFunct;
+    FinalizeBuffer    = WeaveCircularTLVBuffer::FinalizeBufferFunct;
 
     GetNewBuffer(*this, mBufHandle, mBufStart, mRemainingLen);
     mWritePoint = mBufStart;
@@ -446,24 +444,24 @@ void CircularTLVWriter::Init(WeaveCircularTLVBuffer *buf)
  * @param[in]    buf   A pointer to a fully initialized WeaveCircularTLVBuffer
  *
  */
-void CircularTLVReader::Init(WeaveCircularTLVBuffer *buf)
+void CircularTLVReader::Init(WeaveCircularTLVBuffer * buf)
 {
     uint32_t bufLen = 0;
 
-    mBufHandle = (uintptr_t) buf;
+    mBufHandle    = (uintptr_t) buf;
     GetNextBuffer = WeaveCircularTLVBuffer::GetNextBufferFunct;
-    mLenRead = 0;
-    mReadPoint = NULL;
+    mLenRead      = 0;
+    mReadPoint    = NULL;
     GetNextBuffer(*this, mBufHandle, mReadPoint, bufLen);
-    mBufEnd = mReadPoint + bufLen;
-    mMaxLen = buf->DataLength();
-    mControlByte = kTLVControlByte_NotSpecified;
-    mElemTag = AnonymousTag;
-    mElemLenOrVal = 0;
+    mBufEnd        = mReadPoint + bufLen;
+    mMaxLen        = buf->DataLength();
+    mControlByte   = kTLVControlByte_NotSpecified;
+    mElemTag       = AnonymousTag;
+    mElemLenOrVal  = 0;
     mContainerType = kTLVType_NotSpecified;
     SetContainerOpen(false);
     ImplicitProfileId = kProfileIdNotSpecified;
-    AppData = NULL;
+    AppData           = NULL;
 }
 
 } // namespace TLV

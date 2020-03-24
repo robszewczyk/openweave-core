@@ -39,32 +39,25 @@ using namespace nl::Weave::Profiles::Security;
 
 #define CMD_NAME "weave print-cert"
 
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [<options...>] <cert-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Print a Weave certificate.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <cert-file>\n"
-    "\n"
-    "       A file containing a Weave certificate. The certificate must be in\n"
-    "       base-64 or raw TLV format.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [<options...>] <cert-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Print a Weave certificate.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <cert-file>\n"
+                                "\n"
+                                "       A file containing a Weave certificate. The certificate must be in\n"
+                                "       base-64 or raw TLV format.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gHelpOptions, NULL };
 
-static const char *gCertFileName = NULL;
+static const char * gCertFileName = NULL;
 
-bool Cmd_PrintCert(int argc, char *argv[])
+bool Cmd_PrintCert(int argc, char * argv[])
 {
     bool res = true;
     WEAVE_ERROR err;
@@ -111,7 +104,7 @@ exit:
     return res;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {

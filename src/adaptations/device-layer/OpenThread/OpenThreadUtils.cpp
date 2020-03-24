@@ -21,7 +21,6 @@
  *          Utility functions for working with OpenThread.
  */
 
-
 #include <Weave/DeviceLayer/internal/WeaveDeviceLayerInternal.h>
 #include <Weave/DeviceLayer/OpenThread/OpenThreadUtils.h>
 
@@ -37,7 +36,7 @@ namespace Internal {
  */
 WEAVE_ERROR MapOpenThreadError(otError otErr)
 {
-    return (otErr == OT_ERROR_NONE) ? WEAVE_NO_ERROR : WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN + (WEAVE_ERROR)otErr;
+    return (otErr == OT_ERROR_NONE) ? WEAVE_NO_ERROR : WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN + (WEAVE_ERROR) otErr;
 }
 
 /**
@@ -61,8 +60,8 @@ bool FormatOpenThreadError(char * buf, uint16_t bufSize, int32_t err)
 
 #if WEAVE_CONFIG_SHORT_ERROR_STR
     const char * desc = NULL;
-#else // WEAVE_CONFIG_SHORT_ERROR_STR
-    otError otErr = (otError)(err - WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN);
+#else  // WEAVE_CONFIG_SHORT_ERROR_STR
+    otError otErr     = (otError)(err - WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN);
     const char * desc = otThreadErrorToString(otErr);
 #endif // WEAVE_CONFIG_SHORT_ERROR_STR
 
@@ -76,11 +75,7 @@ bool FormatOpenThreadError(char * buf, uint16_t bufSize, int32_t err)
  */
 void RegisterOpenThreadErrorFormatter(void)
 {
-    static ErrorFormatter sOpenThreadErrorFormatter =
-    {
-        FormatOpenThreadError,
-        NULL
-    };
+    static ErrorFormatter sOpenThreadErrorFormatter = { FormatOpenThreadError, NULL };
 
     RegisterErrorFormatter(&sOpenThreadErrorFormatter);
 }
@@ -94,12 +89,8 @@ void LogOpenThreadStateChange(otInstance * otInst, uint32_t flags)
 {
 #if WEAVE_DETAIL_LOGGING
 
-    const uint32_t kParamsChanged = (OT_CHANGED_THREAD_NETWORK_NAME |
-                                     OT_CHANGED_THREAD_PANID |
-                                     OT_CHANGED_THREAD_EXT_PANID |
-                                     OT_CHANGED_THREAD_CHANNEL |
-                                     OT_CHANGED_MASTER_KEY |
-                                     OT_CHANGED_PSKC);
+    const uint32_t kParamsChanged = (OT_CHANGED_THREAD_NETWORK_NAME | OT_CHANGED_THREAD_PANID | OT_CHANGED_THREAD_EXT_PANID |
+                                     OT_CHANGED_THREAD_CHANNEL | OT_CHANGED_MASTER_KEY | OT_CHANGED_PSKC);
 
     static char strBuf[64];
 
@@ -114,9 +105,8 @@ void LogOpenThreadStateChange(otInstance * otInst, uint32_t flags)
         WeaveLogDetail(DeviceLayer, "   PAN Id: 0x%04X", otLinkGetPanId(otInst));
         {
             const otExtendedPanId * exPanId = otThreadGetExtendedPanId(otInst);
-            snprintf(strBuf, sizeof(strBuf), "0x%02X%02X%02X%02X%02X%02X%02X%02X",
-                     exPanId->m8[0], exPanId->m8[1], exPanId->m8[2], exPanId->m8[3],
-                     exPanId->m8[4], exPanId->m8[5], exPanId->m8[6], exPanId->m8[7]);
+            snprintf(strBuf, sizeof(strBuf), "0x%02X%02X%02X%02X%02X%02X%02X%02X", exPanId->m8[0], exPanId->m8[1], exPanId->m8[2],
+                     exPanId->m8[3], exPanId->m8[4], exPanId->m8[5], exPanId->m8[6], exPanId->m8[7]);
             WeaveLogDetail(DeviceLayer, "   Extended PAN Id: %s", strBuf);
         }
         WeaveLogDetail(DeviceLayer, "   Channel: %d", otLinkGetChannel(otInst));
@@ -132,7 +122,7 @@ void LogOpenThreadStateChange(otInstance * otInst, uint32_t flags)
         {
             const otMasterKey * otKey = otThreadGetMasterKey(otInst);
             for (int i = 0; i < OT_MASTER_KEY_SIZE; i++)
-                snprintf(&strBuf[i*2], 3, "%02X", otKey->m8[i]);
+                snprintf(&strBuf[i * 2], 3, "%02X", otKey->m8[i]);
             WeaveLogDetail(DeviceLayer, "   Master Key: %s", strBuf);
         }
 #endif // WEAVE_CONFIG_SECURITY_TEST_MODE
@@ -141,7 +131,7 @@ void LogOpenThreadStateChange(otInstance * otInst, uint32_t flags)
     {
         WeaveLogDetail(DeviceLayer, "   Partition Id: 0x%" PRIX32, otThreadGetPartitionId(otInst));
     }
-    if ((flags & (OT_CHANGED_IP6_ADDRESS_ADDED|OT_CHANGED_IP6_ADDRESS_REMOVED)) != 0)
+    if ((flags & (OT_CHANGED_IP6_ADDRESS_ADDED | OT_CHANGED_IP6_ADDRESS_REMOVED)) != 0)
     {
         WeaveLogDetail(DeviceLayer, "   Thread Unicast Addresses:");
         for (const otNetifAddress * addr = otIp6GetUnicastAddresses(otInst); addr != NULL; addr = addr->mNext)
@@ -151,11 +141,8 @@ void LogOpenThreadStateChange(otInstance * otInst, uint32_t flags)
 
             ipAddr.ToString(strBuf, sizeof(strBuf));
 
-            WeaveLogDetail(DeviceLayer, "        %s/%d%s%s%s", strBuf,
-                             addr->mPrefixLength,
-                             addr->mValid ? " valid" : "",
-                             addr->mPreferred ? " preferred" : "",
-                             addr->mRloc ? " rloc" : "");
+            WeaveLogDetail(DeviceLayer, "        %s/%d%s%s%s", strBuf, addr->mPrefixLength, addr->mValid ? " valid" : "",
+                           addr->mPreferred ? " preferred" : "", addr->mRloc ? " rloc" : "");
         }
     }
 
@@ -172,19 +159,19 @@ void LogOpenThreadPacket(const char * titleStr, otMessage * pkt)
     uint8_t headerData[44];
     uint16_t pktLen;
 
-    const uint8_t & IPv6_NextHeader = headerData[6];
-    const uint8_t * const IPv6_SrcAddr = headerData + 8;
+    const uint8_t & IPv6_NextHeader     = headerData[6];
+    const uint8_t * const IPv6_SrcAddr  = headerData + 8;
     const uint8_t * const IPv6_DestAddr = headerData + 24;
-    const uint8_t * const IPv6_SrcPort = headerData + 40;
+    const uint8_t * const IPv6_SrcPort  = headerData + 40;
     const uint8_t * const IPv6_DestPort = headerData + 42;
-    const uint8_t & ICMPv6_Type = headerData[40];
-    const uint8_t & ICMPv6_Code = headerData[41];
+    const uint8_t & ICMPv6_Type         = headerData[40];
+    const uint8_t & ICMPv6_Code         = headerData[41];
 
-    constexpr uint8_t kIPProto_UDP = 17;
-    constexpr uint8_t kIPProto_TCP = 6;
+    constexpr uint8_t kIPProto_UDP    = 17;
+    constexpr uint8_t kIPProto_TCP    = 6;
     constexpr uint8_t kIPProto_ICMPv6 = 58;
 
-    constexpr uint8_t kICMPType_EchoRequest = 128;
+    constexpr uint8_t kICMPType_EchoRequest  = 128;
     constexpr uint8_t kICMPType_EchoResponse = 129;
 
     pktLen = otMessageGetLength(pkt);
@@ -256,21 +243,14 @@ const char * OpenThreadRoleToStr(otDeviceRole role)
 {
     switch (role)
     {
-    case OT_DEVICE_ROLE_DISABLED:
-        return "DISABLED";
-    case OT_DEVICE_ROLE_DETACHED:
-        return "DETACHED";
-    case OT_DEVICE_ROLE_CHILD:
-        return "CHILD";
-    case OT_DEVICE_ROLE_ROUTER:
-        return "ROUTER";
-    case OT_DEVICE_ROLE_LEADER:
-        return "LEADER";
-    default:
-        return "(unknown)";
+    case OT_DEVICE_ROLE_DISABLED: return "DISABLED";
+    case OT_DEVICE_ROLE_DETACHED: return "DETACHED";
+    case OT_DEVICE_ROLE_CHILD: return "CHILD";
+    case OT_DEVICE_ROLE_ROUTER: return "ROUTER";
+    case OT_DEVICE_ROLE_LEADER: return "LEADER";
+    default: return "(unknown)";
     }
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

@@ -42,44 +42,46 @@ using namespace nl::Inet;
 using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::Profiles::Security::TAKE;
 
-#define DEBUG_PRINT_ENABLE 0
+#define DEBUG_PRINT_ENABLE         0
 #define DEBUG_PRINT_MESSAGE_LENGTH 0
 
-#define Clean() \
-do { \
-    if (encodedMsg) \
-        PacketBuffer::Free(encodedMsg); \
-} while (0)
+#define Clean()                                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (encodedMsg)                                                                                                            \
+            PacketBuffer::Free(encodedMsg);                                                                                        \
+    } while (0)
 
-#define VerifyOrFail(TST, MSG) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        Clean(); \
-        exit(-1); \
-    } \
-} while (0)
+#define VerifyOrFail(TST, MSG)                                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            Clean();                                                                                                               \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrFail(ERR, MSG) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        fputs(ErrorStr(ERR), stderr); \
-        fputs("\n", stderr); \
-        Clean(); \
-        exit(-1); \
-    } \
-} while (0)
+#define SuccessOrFail(ERR, MSG)                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            fputs(ErrorStr(ERR), stderr);                                                                                          \
+            fputs("\n", stderr);                                                                                                   \
+            Clean();                                                                                                               \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
 class TAKEConfigNoAuthorized : public MockTAKEChallengerDelegate
 {
 public:
-
-    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t *identificationKey, uint16_t & identificationKeyLen)
+    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t * identificationKey, uint16_t & identificationKeyLen)
     {
         tokenId = kNodeIdNotSpecified;
         return WEAVE_NO_ERROR;
@@ -93,8 +95,8 @@ uint8_t junk2[] = { 0x74, 0x68, 0x69, 0x73, 0x69, 0x73, 0x61, 0x70, 0x69, 0x6c, 
 class TAKEConfigJunkAuthorized : public MockTAKEChallengerDelegate
 {
     int position;
-public:
 
+public:
     TAKEConfigJunkAuthorized() : position(0) { }
 
     WEAVE_ERROR RewindIdentificationKeyIterator()
@@ -105,7 +107,7 @@ public:
 
     // Get next {tokenId, IK} pair.
     // returns tokenId = kNodeIdNotSpecified if no more IKs are available.
-    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t *identificationKey, uint16_t & identificationKeyLen)
+    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t * identificationKey, uint16_t & identificationKeyLen)
     {
         if (identificationKeyLen < kIdentificationKeySize)
             return WEAVE_ERROR_BUFFER_TOO_SMALL;
@@ -113,41 +115,32 @@ public:
 
         switch (position)
         {
-            case 0:
-                memcpy(identificationKey, junk0, identificationKeyLen);
-                break;
-            case 1:
-                 memcpy(identificationKey, junk1, identificationKeyLen);
-                break;
-            case 2:
-                memcpy(identificationKey, junk2, identificationKeyLen);
-                break;
-            default:
-                tokenId = kNodeIdNotSpecified;
-                break;
+        case 0: memcpy(identificationKey, junk0, identificationKeyLen); break;
+        case 1: memcpy(identificationKey, junk1, identificationKeyLen); break;
+        case 2: memcpy(identificationKey, junk2, identificationKeyLen); break;
+        default: tokenId = kNodeIdNotSpecified; break;
         }
         position++;
         return WEAVE_NO_ERROR;
     }
 };
 
-
-// This IK correspond to an IK generated with takeTime = 17167, (number of days til 01/01/2017) which is the value used by the test Token auth delegate
+// This IK correspond to an IK generated with takeTime = 17167, (number of days til 01/01/2017) which is the value used by the test
+// Token auth delegate
 uint8_t IK_timeLimited[] = { 0x0F, 0x8E, 0x23, 0x34, 0xA4, 0xA1, 0xF7, 0x60, 0x29, 0x42, 0xB3, 0x4C, 0xA5, 0x28, 0xC5, 0xA9 };
 
 class TAKEConfigTimeLimitedIK : public MockTAKEChallengerDelegate
 {
 public:
-
     // Get next {tokenId, IK} pair.
     // returns tokenId = kNodeIdNotSpecified if no more IKs are available.
-    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t *identificationKey, uint16_t & identificationKeyLen)
+    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t * identificationKey, uint16_t & identificationKeyLen)
     {
         if (Rewinded)
         {
             if (identificationKeyLen < kIdentificationKeySize)
                 return WEAVE_ERROR_BUFFER_TOO_SMALL;
-            tokenId = 1;
+            tokenId              = 1;
             identificationKeyLen = kIdentificationKeySize;
             memcpy(identificationKey, IK_timeLimited, identificationKeyLen);
             Rewinded = false;
@@ -160,20 +153,21 @@ public:
     }
 };
 
-uint8_t IK_ChallengerIdIsNodeId[] = { 0xAE, 0x2D, 0xD8, 0x16, 0x4B, 0xAE, 0x1A, 0x77, 0xB8, 0xCF, 0x52, 0x0D, 0x20, 0x21, 0xE2, 0x45 };
+uint8_t IK_ChallengerIdIsNodeId[] = {
+    0xAE, 0x2D, 0xD8, 0x16, 0x4B, 0xAE, 0x1A, 0x77, 0xB8, 0xCF, 0x52, 0x0D, 0x20, 0x21, 0xE2, 0x45
+};
 class TAKEConfigChallengerIdIsNodeId : public MockTAKEChallengerDelegate
 {
 public:
-
     // Get next {tokenId, IK} pair.
     // returns tokenId = kNodeIdNotSpecified if no more IKs are available.
-    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t *identificationKey, uint16_t & identificationKeyLen)
+    WEAVE_ERROR GetNextIdentificationKey(uint64_t & tokenId, uint8_t * identificationKey, uint16_t & identificationKeyLen)
     {
         if (Rewinded)
         {
             if (identificationKeyLen < kIdentificationKeySize)
                 return WEAVE_ERROR_BUFFER_TOO_SMALL;
-            tokenId = 1;
+            tokenId              = 1;
             identificationKeyLen = kIdentificationKeySize;
             memcpy(identificationKey, IK_ChallengerIdIsNodeId, identificationKeyLen);
             Rewinded = false;
@@ -186,10 +180,12 @@ public:
     }
 };
 
+uint8_t MasterKey[] = { 0x11, 0xFF, 0xF1, 0x1F, 0xD1, 0x3F, 0xB1, 0x5F, 0x91, 0x7F, 0x71, 0x9F, 0x51, 0xBF, 0x31, 0xDF,
+                        0x11, 0xFF, 0xF1, 0x1F, 0xD1, 0x3F, 0xB1, 0x5F, 0x91, 0x7F, 0x71, 0x9F, 0x51, 0xBF, 0x31, 0xDF };
 
-uint8_t MasterKey[] = { 0x11, 0xFF, 0xF1, 0x1F, 0xD1, 0x3F, 0xB1, 0x5F, 0x91, 0x7F, 0x71, 0x9F, 0x51, 0xBF, 0x31, 0xDF, 0x11, 0xFF, 0xF1, 0x1F, 0xD1, 0x3F, 0xB1, 0x5F, 0x91, 0x7F, 0x71, 0x9F, 0x51, 0xBF, 0x31, 0xDF };
-
-void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, bool authorized = true, uint8_t config = kTAKEConfig_Config1, bool encryptAuthPhase = false, bool encryptCommPhase = true, bool timeLimitedIK = false, bool canDoReauth = false, bool sendChallengerId = true)
+void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate & ChallengerAuthDelegate, bool authorized = true,
+                    uint8_t config = kTAKEConfig_Config1, bool encryptAuthPhase = false, bool encryptCommPhase = true,
+                    bool timeLimitedIK = false, bool canDoReauth = false, bool sendChallengerId = true)
 {
     WEAVE_ERROR err;
     WeaveTAKEEngine initEng;
@@ -198,16 +194,16 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
     MockTAKETokenDelegate takeTokenAuthDelegate;
     uint64_t challengerNodeId = 1337;
 
-    PacketBuffer *encodedMsg = NULL;
-    const WeaveEncryptionKey *initSessionKey;
-    const WeaveEncryptionKey *respSessionKey;
+    PacketBuffer * encodedMsg = NULL;
+    const WeaveEncryptionKey * initSessionKey;
+    const WeaveEncryptionKey * respSessionKey;
 
     // Init TAKE Engines
     initEng.Init();
     respEng.Init();
 
     initEng.ChallengerAuthDelegate = &ChallengerAuthDelegate;
-    respEng.TokenAuthDelegate = &takeTokenAuthDelegate;
+    respEng.TokenAuthDelegate      = &takeTokenAuthDelegate;
 
     // Initiator generates and sends Identify Token message.
     {
@@ -216,10 +212,13 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
 #if DEBUG_PRINT_ENABLE
         fprintf(stdout, "GenerateIdentifyTokenMessage (Started):\n");
 #endif
-        err = initEng.GenerateIdentifyTokenMessage(sessionKeyIdInitiator, config, encryptAuthPhase, encryptCommPhase, timeLimitedIK, sendChallengerId, kWeaveEncryptionType_AES128CTRSHA1, challengerNodeId, encodedMsg);
+        err = initEng.GenerateIdentifyTokenMessage(sessionKeyIdInitiator, config, encryptAuthPhase, encryptCommPhase, timeLimitedIK,
+                                                   sendChallengerId, kWeaveEncryptionType_AES128CTRSHA1, challengerNodeId,
+                                                   encodedMsg);
         if (config != kTAKEConfig_Config1)
         {
-            VerifyOrFail(err == WEAVE_ERROR_UNSUPPORTED_TAKE_CONFIGURATION, "GenerateIdentifyTokenMessage: should have returned an error");
+            VerifyOrFail(err == WEAVE_ERROR_UNSUPPORTED_TAKE_CONFIGURATION,
+                         "GenerateIdentifyTokenMessage: should have returned an error");
             Clean();
             return;
         }
@@ -243,7 +242,8 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
         err = respEng.ProcessIdentifyTokenMessage(challengerNodeId, encodedMsg); // peerNodeId parameter is not used
         if (err == WEAVE_ERROR_TAKE_RECONFIGURE_REQUIRED)
         {
-            VerifyOrFail(config != kTAKEConfig_Config1, "WeaveTAKEEngine::ProcessIdentifyTokenMessage asks for unescessary reconfigure");
+            VerifyOrFail(config != kTAKEConfig_Config1,
+                         "WeaveTAKEEngine::ProcessIdentifyTokenMessage asks for unescessary reconfigure");
             Clean();
             return;
         }
@@ -288,7 +288,8 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
         err = initEng.ProcessIdentifyTokenResponseMessage(encodedMsg);
         if (!authorized)
         {
-            VerifyOrFail(err == WEAVE_ERROR_TAKE_TOKEN_IDENTIFICATION_FAILED, "Initiator accepted key, but shouldn't have done so\n");
+            VerifyOrFail(err == WEAVE_ERROR_TAKE_TOKEN_IDENTIFICATION_FAILED,
+                         "Initiator accepted key, but shouldn't have done so\n");
             Clean();
             return;
         }
@@ -312,17 +313,22 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
     VerifyOrFail(initEng.ControlHeader == respEng.ControlHeader, "Initiator controlHeader != Responder controlHeader\n");
     VerifyOrFail(initEng.EncryptionType == respEng.EncryptionType, "Initiator encryptionType != Responder encryptionType\n");
     VerifyOrFail(initEng.ProtocolConfig == respEng.ProtocolConfig, "Initiator protocolConfig != Responder protocolConfig\n");
-    VerifyOrFail(initEng.GetNumOptionalConfigurations() == respEng.GetNumOptionalConfigurations(), "Initiator numOptionalConfigurations != Responder numOptionalConfigurations\n");
+    VerifyOrFail(initEng.GetNumOptionalConfigurations() == respEng.GetNumOptionalConfigurations(),
+                 "Initiator numOptionalConfigurations != Responder numOptionalConfigurations\n");
     VerifyOrFail(initEng.ProtocolConfig == respEng.ProtocolConfig, "Initiator protocolConfig != Responder protocolConfig\n");
-    VerifyOrFail(memcmp(initEng.OptionalConfigurations, respEng.OptionalConfigurations, respEng.GetNumOptionalConfigurations()*sizeof(uint8_t)) == 0, "Initiator optionalConfigurations != Responder optionalConfigurations\n");
+    VerifyOrFail(memcmp(initEng.OptionalConfigurations, respEng.OptionalConfigurations,
+                        respEng.GetNumOptionalConfigurations() * sizeof(uint8_t)) == 0,
+                 "Initiator optionalConfigurations != Responder optionalConfigurations\n");
 
     VerifyOrFail(initEng.IsEncryptAuthPhase() == respEng.IsEncryptAuthPhase(), "Initiator EAP != Responder EAP\n");
     VerifyOrFail(initEng.IsEncryptCommPhase() == respEng.IsEncryptCommPhase(), "Initiator ECP != Responder ECP\n");
     VerifyOrFail(initEng.IsTimeLimitedIK() == respEng.IsTimeLimitedIK(), "Initiator TL != Responder TL\n");
 
     VerifyOrFail(initEng.ChallengerIdLen == respEng.ChallengerIdLen, "Initiator ChallengerIdLen != Responder ChallengerIdLen\n");
-    VerifyOrFail(memcmp(initEng.ChallengerId, respEng.ChallengerId, initEng.ChallengerIdLen) == 0, "Initiator ChallengerId != Responder ChallengerId\n");
-    VerifyOrFail(memcmp(initEng.ChallengerNonce, respEng.ChallengerNonce, kNonceSize) == 0, "Initiator ChallengerNonce != Responder ChallengerNonce\n");
+    VerifyOrFail(memcmp(initEng.ChallengerId, respEng.ChallengerId, initEng.ChallengerIdLen) == 0,
+                 "Initiator ChallengerId != Responder ChallengerId\n");
+    VerifyOrFail(memcmp(initEng.ChallengerNonce, respEng.ChallengerNonce, kNonceSize) == 0,
+                 "Initiator ChallengerNonce != Responder ChallengerNonce\n");
     VerifyOrFail(memcmp(initEng.TokenNonce, respEng.TokenNonce, kNonceSize) == 0, "Initiator TokenNonce != Responder TokenNonce\n");
 
     if (encryptAuthPhase)
@@ -333,11 +339,13 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
         err = respEng.GetSessionKey(respSessionKey);
         SuccessOrFail(err, "WeaveTAKEEngine::GetSessionKey() failed\n");
 
-        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.DataKey, respSessionKey->AES128CTRSHA1.DataKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
-                    "Data key mismatch\n");
+        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.DataKey, respSessionKey->AES128CTRSHA1.DataKey,
+                            WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
+                     "Data key mismatch\n");
 
-        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.IntegrityKey, respSessionKey->AES128CTRSHA1.IntegrityKey, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
-                    "Integrity key mismatch\n");
+        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.IntegrityKey, respSessionKey->AES128CTRSHA1.IntegrityKey,
+                            WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
+                     "Integrity key mismatch\n");
     }
 
     if (canDoReauth)
@@ -411,7 +419,6 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
             PacketBuffer::Free(encodedMsg);
             encodedMsg = NULL;
         }
-
     }
     else
     {
@@ -494,11 +501,13 @@ void TestTAKEEngine(WeaveTAKEChallengerAuthDelegate& ChallengerAuthDelegate, boo
         err = respEng.GetSessionKey(respSessionKey);
         SuccessOrFail(err, "WeaveTAKEEngine::GetSessionKey() failed\n");
 
-        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.DataKey, respSessionKey->AES128CTRSHA1.DataKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
-                    "Data key mismatch\n");
+        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.DataKey, respSessionKey->AES128CTRSHA1.DataKey,
+                            WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
+                     "Data key mismatch\n");
 
-        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.IntegrityKey, respSessionKey->AES128CTRSHA1.IntegrityKey, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
-                    "Integrity key mismatch\n");
+        VerifyOrFail(memcmp(initSessionKey->AES128CTRSHA1.IntegrityKey, respSessionKey->AES128CTRSHA1.IntegrityKey,
+                            WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
+                     "Integrity key mismatch\n");
     }
 }
 
@@ -536,13 +545,13 @@ void test5(bool EAP, bool ECP)
 
 void test6(bool EAP, bool ECP)
 {
-    uint8_t AK[] = { 0x9F, 0x0F, 0x92, 0xE3, 0xB9, 0x04, 0x96, 0xA1, 0xCB, 0x7C, 0x94, 0x99, 0xAB, 0x34, 0xDD, 0x04 };
+    uint8_t AK[]     = { 0x9F, 0x0F, 0x92, 0xE3, 0xB9, 0x04, 0x96, 0xA1, 0xCB, 0x7C, 0x94, 0x99, 0xAB, 0x34, 0xDD, 0x04 };
     uint8_t ENC_AK[] = { 0xE6, 0xC4, 0x03, 0xE8, 0xEE, 0xA3, 0x80, 0x56, 0xE0, 0xB1, 0x9C, 0xE9, 0xE3, 0xA6, 0xD8, 0x3A };
 
     MockTAKEChallengerDelegate config;
-    uint16_t authKeyLen = TAKE::kAuthenticationKeySize;
+    uint16_t authKeyLen          = TAKE::kAuthenticationKeySize;
     uint16_t encryptedAuthKeyLen = kTokenEncryptedStateSize;
-    WEAVE_ERROR err = config.StoreTokenAuthData(1, kTAKEConfig_Config1, AK, authKeyLen, ENC_AK, encryptedAuthKeyLen);
+    WEAVE_ERROR err              = config.StoreTokenAuthData(1, kTAKEConfig_Config1, AK, authKeyLen, ENC_AK, encryptedAuthKeyLen);
     if (err != WEAVE_NO_ERROR)
     {
         fprintf(stderr, "%s FAILED: ", __FUNCTION__);
@@ -562,9 +571,9 @@ void test7(bool EAP, bool ECP)
 }
 
 // Parameters are EAP and ECP
-typedef void(*testFunction)(bool, bool);
+typedef void (*testFunction)(bool, bool);
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
     int i;
@@ -579,11 +588,11 @@ int main(int argc, char *argv[])
     FAIL_ERROR(err, "InitSecureRandomDataSource() failed");
 
 #define NUMBER_OF_ITERATIONS 1
-#define NUMBER_OF_TESTS 7
-#define NUMBER_OF_CONFIGS 4
+#define NUMBER_OF_TESTS      7
+#define NUMBER_OF_CONFIGS    4
 
     testFunction tests[NUMBER_OF_TESTS] = { test1, test2, test3, test4, test5, test6, test7 };
-    bool configs[NUMBER_OF_CONFIGS][2] = { { false, false }, { true, false }, { false, true }, { true, true } };
+    bool configs[NUMBER_OF_CONFIGS][2]  = { { false, false }, { true, false }, { false, true }, { true, true } };
 
     for (int test = 0; test < NUMBER_OF_TESTS; test++)
     {
@@ -591,9 +600,10 @@ int main(int argc, char *argv[])
         {
             bool EAP = configs[conf][0];
             bool ECP = configs[conf][1];
-            printf("\nTEST%d, EAP = %s, ECP = %s (%d iterations)\n", test+1, EAP ? "true" : "false", ECP ? "true" : "false", NUMBER_OF_ITERATIONS);
+            printf("\nTEST%d, EAP = %s, ECP = %s (%d iterations)\n", test + 1, EAP ? "true" : "false", ECP ? "true" : "false",
+                   NUMBER_OF_ITERATIONS);
             sec_last = time(NULL);
-            for (i=0; i < NUMBER_OF_ITERATIONS; i++)
+            for (i = 0; i < NUMBER_OF_ITERATIONS; i++)
             {
                 tests[test](EAP, ECP);
             }

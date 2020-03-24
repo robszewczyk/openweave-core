@@ -40,8 +40,8 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // basic_user_schedules
-    { kPropertyHandle_BasicUserSchedules, 0 }, // value
+    { kPropertyHandle_Root, 1 },                     // basic_user_schedules
+    { kPropertyHandle_BasicUserSchedules, 0 },       // value
     { kPropertyHandle_BasicUserSchedules_Value, 1 }, // user_id
     { kPropertyHandle_BasicUserSchedules_Value, 2 }, // daily_repeating_schedules
     { kPropertyHandle_BasicUserSchedules_Value, 3 }, // time_box_schedules
@@ -51,73 +51,60 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsDictionary Table
 //
 
-uint8_t IsDictionaryTypeHandleBitfield[] = {
-        0x1
-};
+uint8_t IsDictionaryTypeHandleBitfield[] = { 0x1 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        3,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    3,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        IsDictionaryTypeHandleBitfield,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    IsDictionaryTypeHandleBitfield,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor OfflineDeviceSyncSchedulesEventFieldDescriptors[] =
-{
-    {
-        &Schema::Google::Protobuf::FieldMask::FieldSchema, offsetof(OfflineDeviceSyncSchedulesEvent, stateMask), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2
-    },
+const nl::FieldDescriptor OfflineDeviceSyncSchedulesEventFieldDescriptors[] = {
+    { &Schema::Google::Protobuf::FieldMask::FieldSchema, offsetof(OfflineDeviceSyncSchedulesEvent, stateMask),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2 },
 
-    {
-        NULL, offsetof(OfflineDeviceSyncSchedulesEvent, stateVersion), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 3
-    },
+    { NULL, offsetof(OfflineDeviceSyncSchedulesEvent, stateVersion), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 3 },
 
-    {
-        NULL, offsetof(OfflineDeviceSyncSchedulesEvent, acceptedTimestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 4
-    },
+    { NULL, offsetof(OfflineDeviceSyncSchedulesEvent, acceptedTimestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 4 },
 
-    {
-        NULL, offsetof(OfflineDeviceSyncSchedulesEvent, confirmedTimestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 5
-    },
+    { NULL, offsetof(OfflineDeviceSyncSchedulesEvent, confirmedTimestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 5 },
 
 };
 
-const nl::SchemaFieldDescriptor OfflineDeviceSyncSchedulesEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(OfflineDeviceSyncSchedulesEventFieldDescriptors)/sizeof(OfflineDeviceSyncSchedulesEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor OfflineDeviceSyncSchedulesEvent::FieldSchema = {
+    .mNumFieldDescriptorElements =
+        sizeof(OfflineDeviceSyncSchedulesEventFieldDescriptors) / sizeof(OfflineDeviceSyncSchedulesEventFieldDescriptors[0]),
     .mFields = OfflineDeviceSyncSchedulesEventFieldDescriptors,
-    .mSize = sizeof(OfflineDeviceSyncSchedulesEvent)
+    .mSize   = sizeof(OfflineDeviceSyncSchedulesEvent)
 };
-const nl::Weave::Profiles::DataManagement::EventSchema OfflineDeviceSyncSchedulesEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::ProductionCritical,
-    .mDataSchemaVersion = 1,
+const nl::Weave::Profiles::DataManagement::EventSchema OfflineDeviceSyncSchedulesEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::ProductionCritical,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 
@@ -125,77 +112,63 @@ const nl::Weave::Profiles::DataManagement::EventSchema OfflineDeviceSyncSchedule
 // Event Structs
 //
 
-const nl::FieldDescriptor DailyRepeatingScheduleItemFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(DailyRepeatingScheduleItem, daysOfWeek), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
+const nl::FieldDescriptor DailyRepeatingScheduleItemFieldDescriptors[] = {
+    { NULL, offsetof(DailyRepeatingScheduleItem, daysOfWeek), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 
-    {
-        &Schema::Weave::Common::TimeOfDay::FieldSchema, offsetof(DailyRepeatingScheduleItem, startTime), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2
-    },
+    { &Schema::Weave::Common::TimeOfDay::FieldSchema, offsetof(DailyRepeatingScheduleItem, startTime),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2 },
 
-    {
-        NULL, offsetof(DailyRepeatingScheduleItem, duration), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 3
-    },
+    { NULL, offsetof(DailyRepeatingScheduleItem, duration), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 3 },
 
 };
 
-const nl::SchemaFieldDescriptor DailyRepeatingScheduleItem::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(DailyRepeatingScheduleItemFieldDescriptors)/sizeof(DailyRepeatingScheduleItemFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor DailyRepeatingScheduleItem::FieldSchema = {
+    .mNumFieldDescriptorElements =
+        sizeof(DailyRepeatingScheduleItemFieldDescriptors) / sizeof(DailyRepeatingScheduleItemFieldDescriptors[0]),
     .mFields = DailyRepeatingScheduleItemFieldDescriptors,
-    .mSize = sizeof(DailyRepeatingScheduleItem)
+    .mSize   = sizeof(DailyRepeatingScheduleItem)
 };
 
+const nl::FieldDescriptor TimeboxScheduleItemFieldDescriptors[] = {
+    { NULL, offsetof(TimeboxScheduleItem, startTime), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 
-const nl::FieldDescriptor TimeboxScheduleItemFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(TimeboxScheduleItem, startTime), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
-
-    {
-        NULL, offsetof(TimeboxScheduleItem, endTime), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 1), 2
-    },
+    { NULL, offsetof(TimeboxScheduleItem, endTime), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 1), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor TimeboxScheduleItem::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(TimeboxScheduleItemFieldDescriptors)/sizeof(TimeboxScheduleItemFieldDescriptors[0]),
-    .mFields = TimeboxScheduleItemFieldDescriptors,
-    .mSize = sizeof(TimeboxScheduleItem)
+const nl::SchemaFieldDescriptor TimeboxScheduleItem::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(TimeboxScheduleItemFieldDescriptors) / sizeof(TimeboxScheduleItemFieldDescriptors[0]),
+    .mFields                     = TimeboxScheduleItemFieldDescriptors,
+    .mSize                       = sizeof(TimeboxScheduleItem)
 };
 
+const nl::FieldDescriptor BasicUserScheduleFieldDescriptors[] = {
+    { NULL, offsetof(BasicUserSchedule, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1 },
 
-const nl::FieldDescriptor BasicUserScheduleFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(BasicUserSchedule, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1
-    },
+    { NULL,
+      offsetof(BasicUserSchedule, dailyRepeatingSchedules) +
+          offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::DailyRepeatingScheduleItem_array, num),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 2 },
+    { &Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::DailyRepeatingScheduleItem::FieldSchema,
+      offsetof(BasicUserSchedule, dailyRepeatingSchedules) +
+          offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::DailyRepeatingScheduleItem_array, buf),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2 },
 
-    {
-        NULL, offsetof(BasicUserSchedule, dailyRepeatingSchedules) + offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::DailyRepeatingScheduleItem_array, num), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 2
-    },
-    {
-        &Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::DailyRepeatingScheduleItem::FieldSchema, offsetof(BasicUserSchedule, dailyRepeatingSchedules) + offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::DailyRepeatingScheduleItem_array, buf), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2
-    },
-
-    {
-        NULL, offsetof(BasicUserSchedule, timeBoxSchedules) + offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem_array, num), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 3
-    },
-    {
-        &Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem::FieldSchema, offsetof(BasicUserSchedule, timeBoxSchedules) + offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem_array, buf), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 3
-    },
+    { NULL,
+      offsetof(BasicUserSchedule, timeBoxSchedules) +
+          offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem_array, num),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 3 },
+    { &Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem::FieldSchema,
+      offsetof(BasicUserSchedule, timeBoxSchedules) +
+          offsetof(Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem_array, buf),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 3 },
 
 };
 
-const nl::SchemaFieldDescriptor BasicUserSchedule::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(BasicUserScheduleFieldDescriptors)/sizeof(BasicUserScheduleFieldDescriptors[0]),
-    .mFields = BasicUserScheduleFieldDescriptors,
-    .mSize = sizeof(BasicUserSchedule)
+const nl::SchemaFieldDescriptor BasicUserSchedule::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(BasicUserScheduleFieldDescriptors) / sizeof(BasicUserScheduleFieldDescriptors[0]),
+    .mFields                     = BasicUserScheduleFieldDescriptors,
+    .mSize                       = sizeof(BasicUserSchedule)
 };
 
 } // namespace BasicUserSchedulesSettingsTrait

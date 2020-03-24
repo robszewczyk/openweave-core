@@ -25,7 +25,7 @@
 
 // 10 second timeout sometimes expires mid-transfer; 60 sec seems stable (environment: 2nd floor of 900)
 #define BDX_RESPONSE_TIMEOUT_SEC 60
-#define BDX_RESPONSE_TIMEOUT_MS BDX_RESPONSE_TIMEOUT_SEC * 1000
+#define BDX_RESPONSE_TIMEOUT_MS  BDX_RESPONSE_TIMEOUT_SEC * 1000
 
 #define MAX_NUM_BDX_TRANSFERS 12 // Purely arbitrary, resize to fit application
 
@@ -45,7 +45,7 @@ using namespace ::nl::Weave;
 
 class BulkDataTransferServerDelegate
 {
-    //TODO: actually implement
+    // TODO: actually implement
 public:
     virtual bool AllowBDXServerToRun();
 };
@@ -53,49 +53,49 @@ public:
 class BulkDataTransferServer
 {
 public:
-	BulkDataTransferServer();
-	~BulkDataTransferServer();
+    BulkDataTransferServer();
+    ~BulkDataTransferServer();
 
-	WeaveExchangeManager *mpExchangeMgr; // [READ ONLY] Exchange manager object
-    void *mpAppState; // passed to application callbacks, set in Init(), currently unused
+    WeaveExchangeManager * mpExchangeMgr; // [READ ONLY] Exchange manager object
+    void * mpAppState;                    // passed to application callbacks, set in Init(), currently unused
 
-	WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr, void *appState);
-	WEAVE_ERROR Shutdown();
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr, void * appState);
+    WEAVE_ERROR Shutdown();
 
     /** Callback functions that will be fired, if set, during the appropriate event. */
-    typedef void (*BDXFunct)(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload, void *appState);
+    typedef void (*BDXFunct)(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload, void * appState);
     BDXFunct OnBDXReceiveInitRequestReceived;
     BDXFunct OnBDXSendInitRequestReceived;
     BDXFunct OnBDXBlockQueryRequestReceived;
     BDXFunct OnBDXBlockSendReceived; // also handles BlockEOF
     BDXFunct OnBDXBlockEOFAckReceived;
-    typedef void (*BDXCompletedFunct)(uint64_t nodeId, IPAddress nodeAddr, void *appState);
+    typedef void (*BDXCompletedFunct)(uint64_t nodeId, IPAddress nodeAddr, void * appState);
     BDXCompletedFunct OnBDXTransferFailed;
     BDXCompletedFunct OnBDXTransferSucceeded;
 
     void AllowBDXServerToRun(bool aEnable);
     bool CanBDXServerRun();
 
-    void SetDelegate(BulkDataTransferServerDelegate *pDelegate);
-    BulkDataTransferServerDelegate *GetDelegate();
+    void SetDelegate(BulkDataTransferServerDelegate * pDelegate);
+    BulkDataTransferServerDelegate * GetDelegate();
 
 private:
-    BulkDataTransferServerDelegate *mpDelegate;
+    BulkDataTransferServerDelegate * mpDelegate;
 
-    //TODO: move this to the transfer?  shouldn't a server be able to serve multiple files?
-    //currently it isn't even being used
-    char *mHostedFileName;
+    // TODO: move this to the transfer?  shouldn't a server be able to serve multiple files?
+    // currently it isn't even being used
+    char * mHostedFileName;
     typedef struct
     {
-        BulkDataTransferServer *BdxApp;
-        ExchangeContext *EC;
+        BulkDataTransferServer * BdxApp;
+        ExchangeContext * EC;
         FILE * FD;
-        //TODO when we actually use it: uint16_t mBlockCounter;
+        // TODO when we actually use it: uint16_t mBlockCounter;
         uint8_t mTransferMode;
-        //TODO: bool mAckRcvd; ???
+        // TODO: bool mAckRcvd; ???
         uint16_t mMaxBlockSize;
         bool CompletedSuccessfully;
-        //TODO: int mSendFlags; ????
+        // TODO: int mSendFlags; ????
     } BDXTransfer;
 
     bool mBDXDownloadCanRun;
@@ -103,40 +103,38 @@ private:
     BDXTransfer mTransferPool[MAX_NUM_BDX_TRANSFERS];
 
     /// Get new BDXTransfer from transfer pool if available, or return NULL
-    BDXTransfer *NewTransfer();
+    BDXTransfer * NewTransfer();
     /// Shutdown given transfer object and return it to pool
-    void ShutdownTransfer(BDXTransfer *xfer);
+    void ShutdownTransfer(BDXTransfer * xfer);
 
     // These static functions will actually be set as the handlers for the various messages.
     // Note that some handlers will actually set the next handler to be used based on the
     // expected response, so carefully error check that you receive an appropriate message type.
-	static void HandleReceiveInitRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-	static void HandleSendInitRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-	static void HandleBlockQueryRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-	static void HandleBlockSend(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-	static void HandleBlockEOFAck(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleResponseTimeout(ExchangeContext *ec);
-    static void HandleBDXConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
-    //TODO:
+    static void HandleReceiveInitRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                         uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleSendInitRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                      uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockQueryRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockSend(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockEOFAck(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                  uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleResponseTimeout(ExchangeContext * ec);
+    static void HandleBDXConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
+    // TODO:
     //    static void HandleDDRcvd(uint64_t nodeId, uint32_t pauseTime);
     //    static void HandleThrottleRcvd(uint64_t nodeId, uint32_t pauseTime);
     //    static void HandleAckRcvd(void *ctxt);
 
-
     /// Send status message to receiver with specified profile ID and status code
-    static void SendTransferError(ExchangeContext *ec, uint32_t aProfileId, uint16_t aStatusCode);
+    static void SendTransferError(ExchangeContext * ec, uint32_t aProfileId, uint16_t aStatusCode);
 
-    BulkDataTransferServer(const BulkDataTransferServer&);   // not defined
+    BulkDataTransferServer(const BulkDataTransferServer &); // not defined
 };
 
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_BDX_SERVER_H_

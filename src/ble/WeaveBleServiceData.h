@@ -32,8 +32,8 @@ namespace Ble {
  */
 enum WeaveBLEServiceDataType
 {
-    kWeaveBLEServiceDataType_DeviceIdentificationInfo       = 0x01,
-    kWeaveBLEServiceDataType_TokenIdentificationInfo        = 0x02,
+    kWeaveBLEServiceDataType_DeviceIdentificationInfo = 0x01,
+    kWeaveBLEServiceDataType_TokenIdentificationInfo  = 0x02,
 };
 
 /**
@@ -46,8 +46,8 @@ struct WeaveBLEDeviceIdentificationInfo
 {
     enum
     {
-        kMajorVersion           = 0,
-        kMinorVersion           = 1,
+        kMajorVersion = 0,
+        kMinorVersion = 1,
     };
 
     enum
@@ -68,41 +68,23 @@ struct WeaveBLEDeviceIdentificationInfo
     void Init()
     {
         memset(this, 0, sizeof(*this));
-        BlockLen = sizeof(*this) - sizeof(BlockLen); // size of all fields EXCEPT BlockLen
-        BlockType = kWeaveBLEServiceDataType_DeviceIdentificationInfo;
+        BlockLen     = sizeof(*this) - sizeof(BlockLen); // size of all fields EXCEPT BlockLen
+        BlockType    = kWeaveBLEServiceDataType_DeviceIdentificationInfo;
         MajorVersion = kMajorVersion;
         MinorVersion = kMinorVersion;
     }
 
-    uint16_t GetVendorId(void)
-    {
-        return nl::Weave::Encoding::LittleEndian::Get16(DeviceVendorId);
-    }
+    uint16_t GetVendorId(void) { return nl::Weave::Encoding::LittleEndian::Get16(DeviceVendorId); }
 
-    void SetVendorId(uint16_t vendorId)
-    {
-        nl::Weave::Encoding::LittleEndian::Put16(DeviceVendorId, vendorId);
-    }
+    void SetVendorId(uint16_t vendorId) { nl::Weave::Encoding::LittleEndian::Put16(DeviceVendorId, vendorId); }
 
-    uint16_t GetProductId(void)
-    {
-        return nl::Weave::Encoding::LittleEndian::Get16(DeviceProductId);
-    }
+    uint16_t GetProductId(void) { return nl::Weave::Encoding::LittleEndian::Get16(DeviceProductId); }
 
-    void SetProductId(uint16_t productId)
-    {
-        nl::Weave::Encoding::LittleEndian::Put16(DeviceProductId, productId);
-    }
+    void SetProductId(uint16_t productId) { nl::Weave::Encoding::LittleEndian::Put16(DeviceProductId, productId); }
 
-    uint64_t GetDeviceId(void)
-    {
-        return nl::Weave::Encoding::LittleEndian::Get64(DeviceId);
-    }
+    uint64_t GetDeviceId(void) { return nl::Weave::Encoding::LittleEndian::Get64(DeviceId); }
 
-    void SetDeviceId(uint64_t deviceId)
-    {
-        nl::Weave::Encoding::LittleEndian::Put64(DeviceId, deviceId);
-    }
+    void SetDeviceId(uint64_t deviceId) { nl::Weave::Encoding::LittleEndian::Put64(DeviceId, deviceId); }
 } __attribute__((packed));
 
 } /* namespace Ble */

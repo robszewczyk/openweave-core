@@ -85,83 +85,82 @@ static System::Error GetClock_RealTime(uint64_t & curTime)
 
 } // namespace Private
 
-
 namespace nl {
 namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current) {
 namespace Platform {
-    // for unit tests, the dummy critical section is sufficient.
-    void CriticalSectionEnter()
-    {
-        return;
-    }
-
-    void CriticalSectionExit()
-    {
-        return;
-    }
-} // Platform
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}
-}
+// for unit tests, the dummy critical section is sufficient.
+void CriticalSectionEnter()
+{
+    return;
 }
 
-static SubscriptionEngine *gSubscriptionEngine;
+void CriticalSectionExit()
+{
+    return;
+}
+} // namespace Platform
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
+
+static SubscriptionEngine * gSubscriptionEngine;
 
 SubscriptionEngine * SubscriptionEngine::GetInstance()
 {
     return gSubscriptionEngine;
 }
 
-static void CheckDataSourceEmptySchema(nlTestSuite *inSuite, void *inContext);
-static void CheckDataSinkEmptySchema(nlTestSuite *inSuite, void *inContext);
+static void CheckDataSourceEmptySchema(nlTestSuite * inSuite, void * inContext);
+static void CheckDataSinkEmptySchema(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmStatic_SingleLeafHandle(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_SingleLevelMerge(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_SingleLevelMergeDeep(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_DirtyStruct(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_MergeHandleSetOverflow(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite *inSuite, void *inContext);
+static void TestTdmStatic_SingleLeafHandle(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_SingleLevelMerge(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_SingleLevelMergeDeep(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_DirtyStruct(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_MergeHandleSetOverflow(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmStatic_TestNullableLeaf(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_TestNullableStruct(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_TestNonNullableLeaf(nlTestSuite *inSuite, void *inContext);
+static void TestTdmStatic_TestNullableLeaf(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_TestNullableStruct(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_TestNonNullableLeaf(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmStatic_TestEphemeralLeaf(nlTestSuite *inSuite, void *inContext);
-static void TestTdmStatic_TestEphemeralStruct(nlTestSuite *inSuite, void *inContext);
+static void TestTdmStatic_TestEphemeralLeaf(nlTestSuite * inSuite, void * inContext);
+static void TestTdmStatic_TestEphemeralStruct(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmStatic_TestIsParent(nlTestSuite *inSuite, void *inContext);
+static void TestTdmStatic_TestIsParent(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmMismatched_PathInDataElement(nlTestSuite *inSuite, void *inContext);
-static void TestTdmMismatched_TopLevelPOD(nlTestSuite *inSuite, void *inContext);
-static void TestTdmMismatched_NestedStruct(nlTestSuite *inSuite, void *inContext);
-static void TestTdmMismatched_TopLevelStruct(nlTestSuite *inSuite, void *inContext);
-static void TestTdmMismatched_SetLeafDataMismatch(nlTestSuite *inSuite, void *inContext);
+static void TestTdmMismatched_PathInDataElement(nlTestSuite * inSuite, void * inContext);
+static void TestTdmMismatched_TopLevelPOD(nlTestSuite * inSuite, void * inContext);
+static void TestTdmMismatched_NestedStruct(nlTestSuite * inSuite, void * inContext);
+static void TestTdmMismatched_TopLevelStruct(nlTestSuite * inSuite, void * inContext);
+static void TestTdmMismatched_SetLeafDataMismatch(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmDictionary_DictionaryEntryAddition(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_ReplaceDictionary(nlTestSuite *inSuite, void *inContext);
+static void TestTdmDictionary_DictionaryEntryAddition(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_ReplaceDictionary(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmDictionary_DeleteSingle(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteMultiple(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_AddDeleteDifferent(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite *inSuite, void *inContext);
-static void TestTdmDictionary_DeleteEntryTwice(nlTestSuite *inSuite, void *inContext);
-static void TestRandomizedDataVersions(nlTestSuite *inSuite, void *inContext);
+static void TestTdmDictionary_DeleteSingle(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteMultiple(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_AddDeleteDifferent(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite * inSuite, void * inContext);
+static void TestTdmDictionary_DeleteEntryTwice(nlTestSuite * inSuite, void * inContext);
+static void TestRandomizedDataVersions(nlTestSuite * inSuite, void * inContext);
 
-static void TestTdmStatic_MultiInstance(nlTestSuite *inSuite, void *inContext);
-static void CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite, void *inContext);
+static void TestTdmStatic_MultiInstance(nlTestSuite * inSuite, void * inContext);
+static void CheckAllocateRightSizedBufferForNotifications(nlTestSuite * inSuite, void * inContext);
 
 // Test Suite
 
@@ -169,8 +168,8 @@ static void CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite, 
  *  Test Suite that lists all the test functions.
  */
 static const nlTest sTests[] = {
-    NL_TEST_DEF("Test TraitDataSource + schema with no properties",  CheckDataSourceEmptySchema),
-    NL_TEST_DEF("Test TraitDataSink + schema with no properties",    CheckDataSinkEmptySchema),
+    NL_TEST_DEF("Test TraitDataSource + schema with no properties", CheckDataSourceEmptySchema),
+    NL_TEST_DEF("Test TraitDataSink + schema with no properties", CheckDataSinkEmptySchema),
 
     // Tests the static schema portions of TDM
     NL_TEST_DEF("Test Tdm (Static schema): Single leaf handle", TestTdmStatic_SingleLeafHandle),
@@ -199,24 +198,34 @@ static const nlTest sTests[] = {
     NL_TEST_DEF("Test Tdm (Mismatched schema): App code doesn't match schema", TestTdmMismatched_SetLeafDataMismatch),
 
     // Tests the dictionary addition/modification portions of TDM
-    NL_TEST_DEF("Test Tdm (Dictionary Addition/Modification): Addition of single dictionary entries", TestTdmDictionary_DictionaryEntryAddition),
-    NL_TEST_DEF("Test Tdm (Dictionary Addition/Modification): Addition of two dictionary entries", TestTdmDictionary_DictionaryEntriesAddition),
+    NL_TEST_DEF("Test Tdm (Dictionary Addition/Modification): Addition of single dictionary entries",
+                TestTdmDictionary_DictionaryEntryAddition),
+    NL_TEST_DEF("Test Tdm (Dictionary Addition/Modification): Addition of two dictionary entries",
+                TestTdmDictionary_DictionaryEntriesAddition),
     NL_TEST_DEF("Test Tdm (Dictionary Addition/Modification): Replace dictionary", TestTdmDictionary_ReplaceDictionary),
 
     // Tests the dictionary deletion portions of TDM
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete single dictionary entry", TestTdmDictionary_DeleteSingle),
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete two dictionary entries", TestTdmDictionary_DeleteMultiple),
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Overflow of delete handle set", TestTdmDictionary_DeleteHandleSetOverflow),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Addition of one entry, deletion of another (within same dictionary)", TestTdmDictionary_AddDeleteDifferent),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete dictionary entry, then mark dictionary dirty", TestTdmDictionary_DeleteAndMarkDirty),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Mark dictionary dirty, then delete dictionary entry", TestTdmDictionary_MarkDirtyAndDelete),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete entry, then mark another node that is not in a dictionary in the tree as dirty", TestTdmDictionary_DeleteAndMarkFarDirty),
+    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Addition of one entry, deletion of another (within same dictionary)",
+                TestTdmDictionary_AddDeleteDifferent),
+    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete dictionary entry, then mark dictionary dirty",
+                TestTdmDictionary_DeleteAndMarkDirty),
+    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Mark dictionary dirty, then delete dictionary entry",
+                TestTdmDictionary_MarkDirtyAndDelete),
+    NL_TEST_DEF(
+        "Test Tdm (Dictionary Deletion): Delete entry, then mark another node that is not in a dictionary in the tree as dirty",
+        TestTdmDictionary_DeleteAndMarkFarDirty),
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Add entry, then delete same entry", TestTdmDictionary_AddAndDeleteSimilar),
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Modify entry, then delete same entry", TestTdmDictionary_ModifyAndDeleteSimilar),
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete entry then add it back", TestTdmDictionary_DeleteAndModifySimilar),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete entry then add it back but only mark leaf of dictionary entry dirty", TestTdmDictionary_DeleteAndModifyLeafSimilar),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Test delete store overflow + item addition", TestTdmDictionary_DeleteStoreOverflowAndItemAddition),
-    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Test dirty store overflow + item deletion", TestTdmDictionary_DirtyStoreOverflowAndItemDeletion),
+    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Delete entry then add it back but only mark leaf of dictionary entry dirty",
+                TestTdmDictionary_DeleteAndModifyLeafSimilar),
+    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Test delete store overflow + item addition",
+                TestTdmDictionary_DeleteStoreOverflowAndItemAddition),
+    NL_TEST_DEF("Test Tdm (Dictionary Deletion): Test dirty store overflow + item deletion",
+                TestTdmDictionary_DirtyStoreOverflowAndItemDeletion),
     NL_TEST_DEF("Test Tdm (Dictionary Deletion): Test delete same dictionary entry twice", TestTdmDictionary_DeleteEntryTwice),
 
     // Test randomized data versions
@@ -228,7 +237,6 @@ static const nlTest sTests[] = {
     // Updates.
     NL_TEST_DEF("Test Allocate Right Sized Buffer", CheckAllocateRightSizedBufferForNotifications),
 
-
     NL_TEST_SENTINEL()
 };
 
@@ -238,81 +246,89 @@ static const nlTest sTests[] = {
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const TraitSchemaEngine::PropertyInfo gEmptyPropertyMap[] = {
-};
+const TraitSchemaEngine::PropertyInfo gEmptyPropertyMap[] = { };
 
-const TraitSchemaEngine gEmptyTraitSchema = {
-    {
-        0x0,
-        gEmptyPropertyMap,
-        sizeof(gEmptyPropertyMap) / sizeof(gEmptyPropertyMap[0]),
-        1,
+const TraitSchemaEngine gEmptyTraitSchema = { {
+    0x0,
+    gEmptyPropertyMap,
+    sizeof(gEmptyPropertyMap) / sizeof(gEmptyPropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
 #if (TDM_DICTIONARY_SUPPORT)
-        NULL,
+    NULL,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-class TestEmptyDataSource : public TraitDataSource {
+class TestEmptyDataSource : public TraitDataSource
+{
 public:
-    TestEmptyDataSource(const TraitSchemaEngine *aSchema) : TraitDataSource(aSchema), mGetLeafDataCalled(false) { }
+    TestEmptyDataSource(const TraitSchemaEngine * aSchema) : TraitDataSource(aSchema), mGetLeafDataCalled(false) { }
 
     // Making these public to allow tests to access them.
-    using TraitDataSource::SetVersion;
     using TraitDataSource::IncrementVersion;
+    using TraitDataSource::SetVersion;
 
     // Throw an error if this ever gets called.
-    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter) { mGetLeafDataCalled = true; return WEAVE_ERROR_INVALID_ARGUMENT; }
+    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
+    {
+        mGetLeafDataCalled = true;
+        return WEAVE_ERROR_INVALID_ARGUMENT;
+    }
 
     bool mGetLeafDataCalled;
 };
 
-class TestEmptyDataSink : public TraitDataSink {
+class TestEmptyDataSink : public TraitDataSink
+{
 public:
-    TestEmptyDataSink(const TraitSchemaEngine *aSchema);
+    TestEmptyDataSink(const TraitSchemaEngine * aSchema);
 
-    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader) { mSetLeafDataCalled = true; return WEAVE_ERROR_INVALID_ARGUMENT; }
-    WEAVE_ERROR OnEvent(uint16_t aType, void *aInEventParam);
+    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
+    {
+        mSetLeafDataCalled = true;
+        return WEAVE_ERROR_INVALID_ARGUMENT;
+    }
+    WEAVE_ERROR OnEvent(uint16_t aType, void * aInEventParam);
 
     bool mSetLeafDataCalled;
     bool mEventDataElementBeginSignalled;
     bool mEventDataElementEndSignalled;
 };
 
-TestEmptyDataSink::TestEmptyDataSink(const TraitSchemaEngine *aSchema)
-    : TraitDataSink(aSchema)
+TestEmptyDataSink::TestEmptyDataSink(const TraitSchemaEngine * aSchema) : TraitDataSink(aSchema)
 {
-    mSetLeafDataCalled = false;
+    mSetLeafDataCalled              = false;
     mEventDataElementBeginSignalled = false;
-    mEventDataElementEndSignalled = false;
+    mEventDataElementEndSignalled   = false;
 }
 
-WEAVE_ERROR TestEmptyDataSink::OnEvent(uint16_t aType, void *aInEventParam)
+WEAVE_ERROR TestEmptyDataSink::OnEvent(uint16_t aType, void * aInEventParam)
 {
-    if (aType == kEventDataElementBegin) {
+    if (aType == kEventDataElementBegin)
+    {
         mEventDataElementBeginSignalled = true;
     }
-    else if (aType == kEventDataElementEnd) {
+    else if (aType == kEventDataElementEnd)
+    {
         mEventDataElementEndSignalled = true;
     }
 
     return WEAVE_NO_ERROR;
 }
 
-static void CheckDataSourceEmptySchema(nlTestSuite *inSuite, void *inContext)
+static void CheckDataSourceEmptySchema(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     TLVWriter writer;
@@ -322,11 +338,10 @@ static void CheckDataSourceEmptySchema(nlTestSuite *inSuite, void *inContext)
     DataElement::Parser parser;
     TLVReader reader;
 
-    static const uint8_t Encoding[] =
-    {
+    static const uint8_t Encoding[] = {
         nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_ANONYMOUS),
-            nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(ContextTag(DataElement::kCsTag_Data))),
-            nlWeaveTLV_END_OF_CONTAINER,
+        nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(ContextTag(DataElement::kCsTag_Data))),
+        nlWeaveTLV_END_OF_CONTAINER,
         nlWeaveTLV_END_OF_CONTAINER,
     };
 
@@ -354,18 +369,17 @@ exit:
     return;
 }
 
-static void CheckDataSinkEmptySchema(nlTestSuite *inSuite, void *inContext)
+static void CheckDataSinkEmptySchema(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     TestEmptyDataSink dataSink(&gEmptyTraitSchema);
     TLVReader reader;
 
-    static const uint8_t Encoding[] =
-    {
+    static const uint8_t Encoding[] = {
         nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_ANONYMOUS),
-            nlWeaveTLV_UINT64(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(ContextTag(DataElement::kCsTag_Version)), 1),
-            nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(ContextTag(DataElement::kCsTag_Data))),
-            nlWeaveTLV_END_OF_CONTAINER,
+        nlWeaveTLV_UINT64(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(ContextTag(DataElement::kCsTag_Version)), 1),
+        nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(ContextTag(DataElement::kCsTag_Data))),
+        nlWeaveTLV_END_OF_CONTAINER,
         nlWeaveTLV_END_OF_CONTAINER,
     };
 
@@ -407,26 +421,26 @@ using namespace Schema::Nest::Test::Trait;
 // have all the fields be of the same type (i.e uint32_t) to focus the testing not on the value types, but rather validating the
 // fields extracted by the Notification Engine.
 //
-class TestTdmSource : public TraitDataSource {
+class TestTdmSource : public TraitDataSource
+{
 public:
     TestTdmSource();
     void SetValue(PropertyPathHandle aPropertyPathHandle, uint32_t aValue);
     void Reset();
 
 private:
-    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter);
-    WEAVE_ERROR GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, PropertyDictionaryKey &aKey);
+    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter);
+    WEAVE_ERROR GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t & aContext, PropertyDictionaryKey & aKey);
 
 public:
-    std::map <PropertyPathHandle, uint32_t> mValues;
-    std::map <uint16_t, TestHTrait::StructDictionary> mDictlValues;
-    std::map <uint16_t, TestHTrait::StructDictionary> mDictSaValues;
+    std::map<PropertyPathHandle, uint32_t> mValues;
+    std::map<uint16_t, TestHTrait::StructDictionary> mDictlValues;
+    std::map<uint16_t, TestHTrait::StructDictionary> mDictSaValues;
 
     uint32_t mBackingValue;
 };
 
-TestTdmSource::TestTdmSource()
-    : TraitDataSource(&TestHTrait::TraitSchema)
+TestTdmSource::TestTdmSource() : TraitDataSource(&TestHTrait::TraitSchema)
 {
     mBackingValue = 1;
 }
@@ -445,117 +459,137 @@ void TestTdmSource::Reset()
     mBackingValue = 1;
 }
 
-WEAVE_ERROR TestTdmSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, PropertyDictionaryKey &aKey)
+WEAVE_ERROR TestTdmSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t & aContext,
+                                                    PropertyDictionaryKey & aKey)
 {
     static std::map<uint16_t, TestHTrait::StructDictionary>::iterator it;
-    std::map <uint16_t, TestHTrait::StructDictionary> *mapPtr = (aDictionaryHandle == TestHTrait::kPropertyHandle_L) ? &mDictlValues : &mDictSaValues;
+    std::map<uint16_t, TestHTrait::StructDictionary> * mapPtr =
+        (aDictionaryHandle == TestHTrait::kPropertyHandle_L) ? &mDictlValues : &mDictSaValues;
 
-    if (aContext == 0) {
+    if (aContext == 0)
+    {
         it = mapPtr->begin();
     }
-    else {
+    else
+    {
         it++;
     }
 
-    aContext = (uintptr_t)&it;
-    if (it == mapPtr->end()) {
+    aContext = (uintptr_t) &it;
+    if (it == mapPtr->end())
+    {
         return WEAVE_END_OF_INPUT;
     }
-    else {
+    else
+    {
         aKey = it->first;
     }
 
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR TestTdmSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+WEAVE_ERROR TestTdmSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err                         = WEAVE_NO_ERROR;
     PropertyPathHandle dictionaryItemHandle = kNullPropertyPathHandle;
 
-    if (GetSchemaEngine()->IsInDictionary(aLeafHandle, dictionaryItemHandle)) {
+    if (GetSchemaEngine()->IsInDictionary(aLeafHandle, dictionaryItemHandle))
+    {
         PropertyPathHandle dictionaryHandle = GetSchemaEngine()->GetParent(dictionaryItemHandle);
-        PropertyDictionaryKey key = GetPropertyDictionaryKey(dictionaryItemHandle);
+        PropertyDictionaryKey key           = GetPropertyDictionaryKey(dictionaryItemHandle);
 
-        if (dictionaryHandle == TestHTrait::kPropertyHandle_L) {
-            if (mDictlValues.find(key) != mDictlValues.end()) {
+        if (dictionaryHandle == TestHTrait::kPropertyHandle_L)
+        {
+            if (mDictlValues.find(key) != mDictlValues.end())
+            {
                 TestHTrait::StructDictionary item = mDictlValues[key];
                 uint32_t val;
 
-                switch (GetPropertySchemaHandle(aLeafHandle)) {
-                    case TestHTrait::kPropertyHandle_L_Value_Da:
-                        WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> l[%u].da = %u", key, item.da);
-                        val = item.da;
-                        break;
+                switch (GetPropertySchemaHandle(aLeafHandle))
+                {
+                case TestHTrait::kPropertyHandle_L_Value_Da:
+                    WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> l[%u].da = %u", key, item.da);
+                    val = item.da;
+                    break;
 
-                    case TestHTrait::kPropertyHandle_L_Value_Db:
-                        WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> l[%u].db = %u", key, item.da);
-                        val = item.db;
-                        break;
+                case TestHTrait::kPropertyHandle_L_Value_Db:
+                    WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> l[%u].db = %u", key, item.da);
+                    val = item.db;
+                    break;
 
-                    case TestHTrait::kPropertyHandle_L_Value_Dc:
-                        WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> l[%u].dc = %u", key, item.da);
-                        val = item.dc;
-                        break;
+                case TestHTrait::kPropertyHandle_L_Value_Dc:
+                    WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> l[%u].dc = %u", key, item.da);
+                    val = item.dc;
+                    break;
 
-                    default:
-                        WeaveLogError(DataManagement, "Unknown handle passed in!");
-                        return WEAVE_ERROR_INVALID_ARGUMENT;
-                        break;
+                default:
+                    WeaveLogError(DataManagement, "Unknown handle passed in!");
+                    return WEAVE_ERROR_INVALID_ARGUMENT;
+                    break;
                 }
 
                 err = aWriter.Put(aTagToWrite, val);
                 SuccessOrExit(err);
             }
-            else {
-                WeaveLogError(DataManagement, "Requested key %u for dictionary handle %u that doesn't exist!", key, dictionaryHandle);
+            else
+            {
+                WeaveLogError(DataManagement, "Requested key %u for dictionary handle %u that doesn't exist!", key,
+                              dictionaryHandle);
                 return WEAVE_ERROR_INVALID_ARGUMENT;
             }
         }
 
-        if (dictionaryHandle == TestHTrait::kPropertyHandle_K_Sa) {
-            if (mDictSaValues.find(key) != mDictSaValues.end()) {
+        if (dictionaryHandle == TestHTrait::kPropertyHandle_K_Sa)
+        {
+            if (mDictSaValues.find(key) != mDictSaValues.end())
+            {
                 TestHTrait::StructDictionary item = mDictSaValues[key];
                 uint32_t val;
 
-                switch (GetPropertySchemaHandle(aLeafHandle)) {
-                    case TestHTrait::kPropertyHandle_K_Sa_Value_Da:
-                        WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> k.sa[%u].da = %u", key, item.da);
-                        val = item.da;
-                        break;
+                switch (GetPropertySchemaHandle(aLeafHandle))
+                {
+                case TestHTrait::kPropertyHandle_K_Sa_Value_Da:
+                    WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> k.sa[%u].da = %u", key, item.da);
+                    val = item.da;
+                    break;
 
-                    case TestHTrait::kPropertyHandle_K_Sa_Value_Db:
-                        WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> k.sa[%u].db = %u", key, item.db);
-                        val = item.db;
-                        break;
+                case TestHTrait::kPropertyHandle_K_Sa_Value_Db:
+                    WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> k.sa[%u].db = %u", key, item.db);
+                    val = item.db;
+                    break;
 
-                    case TestHTrait::kPropertyHandle_K_Sa_Value_Dc:
-                        WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> k.sa[%u].dc = %u", key, item.dc);
-                        val = item.dc;
-                        break;
+                case TestHTrait::kPropertyHandle_K_Sa_Value_Dc:
+                    WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> k.sa[%u].dc = %u", key, item.dc);
+                    val = item.dc;
+                    break;
 
-                    default:
-                        WeaveLogError(DataManagement, "Unknown handle passed in!");
-                        return WEAVE_ERROR_INVALID_ARGUMENT;
-                        break;
+                default:
+                    WeaveLogError(DataManagement, "Unknown handle passed in!");
+                    return WEAVE_ERROR_INVALID_ARGUMENT;
+                    break;
                 }
 
                 err = aWriter.Put(aTagToWrite, val);
                 SuccessOrExit(err);
             }
-            else {
-                WeaveLogError(DataManagement, "Requested key %u for dictionary handle %u that doesn't exist!", key, dictionaryHandle);
+            else
+            {
+                WeaveLogError(DataManagement, "Requested key %u for dictionary handle %u that doesn't exist!", key,
+                              dictionaryHandle);
                 return WEAVE_ERROR_INVALID_ARGUMENT;
             }
         }
     }
-    else {
-        if (mValues.find(aLeafHandle) != mValues.end()) {
+    else
+    {
+        if (mValues.find(aLeafHandle) != mValues.end())
+        {
             WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> handle:%u = %u", aLeafHandle, mValues[aLeafHandle]);
             err = aWriter.Put(aTagToWrite, mValues[aLeafHandle]);
             SuccessOrExit(err);
         }
-        else {
+        else
+        {
             WeaveLogDetail(DataManagement, "[TestTdmSource::GetLeafData] >> *handle:%u = %u", aLeafHandle, mBackingValue);
             err = aWriter.Put(aTagToWrite, mBackingValue);
         }
@@ -565,33 +599,31 @@ exit:
     return err;
 }
 
-
 //
 // This is a very special sink that tracks all the replaces, deletions and modifications that are sent to it through the
-// OnEvent and SetLeafData calls. This then allows for programmatic validation of the specific set of data that is expected for a set of modifications
-// that are made on the source side.
+// OnEvent and SetLeafData calls. This then allows for programmatic validation of the specific set of data that is expected for a
+// set of modifications that are made on the source side.
 //
-class TestTdmSink : public TraitDataSink {
+class TestTdmSink : public TraitDataSink
+{
 public:
     TestTdmSink();
     void Reset();
     void DumpChangeSets();
 
-    bool ValidateChangeSets(std::map <PropertyPathHandle, uint32_t> aTargetModifiedSet, std::set <PropertyPathHandle> aTargetDeletedSet, std::set <PropertyPathHandle> aTargetReplacedSet);
+    bool ValidateChangeSets(std::map<PropertyPathHandle, uint32_t> aTargetModifiedSet,
+                            std::set<PropertyPathHandle> aTargetDeletedSet, std::set<PropertyPathHandle> aTargetReplacedSet);
 
 private:
-    WEAVE_ERROR OnEvent(uint16_t aType, void *aInParam);
-    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader);
-    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter);
-    std::map <PropertyPathHandle, uint32_t> mModifiedHandles;
-    std::set <PropertyPathHandle> mDeletedHandles;
-    std::set <PropertyPathHandle> mReplacedDictionaries;
+    WEAVE_ERROR OnEvent(uint16_t aType, void * aInParam);
+    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader & aReader);
+    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter);
+    std::map<PropertyPathHandle, uint32_t> mModifiedHandles;
+    std::set<PropertyPathHandle> mDeletedHandles;
+    std::set<PropertyPathHandle> mReplacedDictionaries;
 };
 
-TestTdmSink::TestTdmSink()
-    : TraitDataSink(&TestHTrait::TraitSchema)
-{
-}
+TestTdmSink::TestTdmSink() : TraitDataSink(&TestHTrait::TraitSchema) { }
 
 void TestTdmSink::Reset()
 {
@@ -603,72 +635,98 @@ void TestTdmSink::Reset()
 
 void TestTdmSink::DumpChangeSets()
 {
-    for (std::map <PropertyPathHandle, uint32_t>::iterator map_it = mModifiedHandles.begin(); map_it != mModifiedHandles.end(); ++map_it) {
-        WeaveLogDetail(DataManagement, "[TestTdmSink::DumpChangeSets] <Modified> %u:%u = %u", GetPropertyDictionaryKey(map_it->first), GetPropertySchemaHandle(map_it->first), map_it->second);
+    for (std::map<PropertyPathHandle, uint32_t>::iterator map_it = mModifiedHandles.begin(); map_it != mModifiedHandles.end();
+         ++map_it)
+    {
+        WeaveLogDetail(DataManagement, "[TestTdmSink::DumpChangeSets] <Modified> %u:%u = %u",
+                       GetPropertyDictionaryKey(map_it->first), GetPropertySchemaHandle(map_it->first), map_it->second);
     }
 
-    for (std::set <PropertyPathHandle>::iterator set_it = mDeletedHandles.begin(); set_it != mDeletedHandles.end(); ++set_it) {
-        WeaveLogDetail(DataManagement, "[TestTdmSink::DumpChangeSets] <Deleted> %u:%u", GetPropertyDictionaryKey(*set_it), GetPropertySchemaHandle(*set_it));
+    for (std::set<PropertyPathHandle>::iterator set_it = mDeletedHandles.begin(); set_it != mDeletedHandles.end(); ++set_it)
+    {
+        WeaveLogDetail(DataManagement, "[TestTdmSink::DumpChangeSets] <Deleted> %u:%u", GetPropertyDictionaryKey(*set_it),
+                       GetPropertySchemaHandle(*set_it));
     }
 
-    for (std::set <PropertyPathHandle>::iterator set_it = mReplacedDictionaries.begin(); set_it != mReplacedDictionaries.end(); ++set_it) {
-        WeaveLogDetail(DataManagement, "[TestTdmSink::DumpChangeSets] <Replaced> %u:%u", GetPropertyDictionaryKey(*set_it), GetPropertySchemaHandle(*set_it));
+    for (std::set<PropertyPathHandle>::iterator set_it = mReplacedDictionaries.begin(); set_it != mReplacedDictionaries.end();
+         ++set_it)
+    {
+        WeaveLogDetail(DataManagement, "[TestTdmSink::DumpChangeSets] <Replaced> %u:%u", GetPropertyDictionaryKey(*set_it),
+                       GetPropertySchemaHandle(*set_it));
     }
 }
 
-bool TestTdmSink::ValidateChangeSets(std::map <PropertyPathHandle, uint32_t> aTargetModifiedSet, std::set <PropertyPathHandle> aTargetDeletedSet, std::set <PropertyPathHandle> aTargetReplacedSet)
+bool TestTdmSink::ValidateChangeSets(std::map<PropertyPathHandle, uint32_t> aTargetModifiedSet,
+                                     std::set<PropertyPathHandle> aTargetDeletedSet,
+                                     std::set<PropertyPathHandle> aTargetReplacedSet)
 {
-    std::map <PropertyPathHandle, uint32_t> modifiedDiff;
-    std::set <PropertyPathHandle> deletedDiff;
-    std::set <PropertyPathHandle> replacedDiff;
+    std::map<PropertyPathHandle, uint32_t> modifiedDiff;
+    std::set<PropertyPathHandle> deletedDiff;
+    std::set<PropertyPathHandle> replacedDiff;
     bool match = true;
 
-    std::set_symmetric_difference(mModifiedHandles.begin(), mModifiedHandles.end(), aTargetModifiedSet.begin(), aTargetModifiedSet.end(), inserter(modifiedDiff, modifiedDiff.begin()));
-    std::set_symmetric_difference(mDeletedHandles.begin(), mDeletedHandles.end(), aTargetDeletedSet.begin(), aTargetDeletedSet.end(), inserter(deletedDiff, deletedDiff.begin()));
-    std::set_symmetric_difference(mReplacedDictionaries.begin(), mReplacedDictionaries.end(), aTargetReplacedSet.begin(), aTargetReplacedSet.end(), inserter(replacedDiff, replacedDiff.begin()));
+    std::set_symmetric_difference(mModifiedHandles.begin(), mModifiedHandles.end(), aTargetModifiedSet.begin(),
+                                  aTargetModifiedSet.end(), inserter(modifiedDiff, modifiedDiff.begin()));
+    std::set_symmetric_difference(mDeletedHandles.begin(), mDeletedHandles.end(), aTargetDeletedSet.begin(),
+                                  aTargetDeletedSet.end(), inserter(deletedDiff, deletedDiff.begin()));
+    std::set_symmetric_difference(mReplacedDictionaries.begin(), mReplacedDictionaries.end(), aTargetReplacedSet.begin(),
+                                  aTargetReplacedSet.end(), inserter(replacedDiff, replacedDiff.begin()));
 
-    for (std::map <PropertyPathHandle, uint32_t>::iterator map_it = modifiedDiff.begin(); map_it != modifiedDiff.end(); ++map_it) {
-        WeaveLogDetail(DataManagement, "[TestTdmSink::ValidateChangeSets] <delta modified> %u:%u = %u", GetPropertyDictionaryKey(map_it->first), GetPropertySchemaHandle(map_it->first), map_it->second);
+    for (std::map<PropertyPathHandle, uint32_t>::iterator map_it = modifiedDiff.begin(); map_it != modifiedDiff.end(); ++map_it)
+    {
+        WeaveLogDetail(DataManagement, "[TestTdmSink::ValidateChangeSets] <delta modified> %u:%u = %u",
+                       GetPropertyDictionaryKey(map_it->first), GetPropertySchemaHandle(map_it->first), map_it->second);
         match = false;
     }
 
-    for (std::set <PropertyPathHandle>::iterator set_it = deletedDiff.begin(); set_it != deletedDiff.end(); ++set_it) {
-        WeaveLogDetail(DataManagement, "[TestTdmSink::ValidateChangeSets] <delta deleted> %u:%u", GetPropertyDictionaryKey(*set_it), GetPropertySchemaHandle(*set_it));
+    for (std::set<PropertyPathHandle>::iterator set_it = deletedDiff.begin(); set_it != deletedDiff.end(); ++set_it)
+    {
+        WeaveLogDetail(DataManagement, "[TestTdmSink::ValidateChangeSets] <delta deleted> %u:%u", GetPropertyDictionaryKey(*set_it),
+                       GetPropertySchemaHandle(*set_it));
         match = false;
     }
 
-    for (std::set <PropertyPathHandle>::iterator set_it = replacedDiff.begin(); set_it != replacedDiff.end(); ++set_it) {
-        WeaveLogDetail(DataManagement, "[TestTdmSink::ValidateChangeSets] <delta replaced> %u:%u", GetPropertyDictionaryKey(*set_it), GetPropertySchemaHandle(*set_it));
+    for (std::set<PropertyPathHandle>::iterator set_it = replacedDiff.begin(); set_it != replacedDiff.end(); ++set_it)
+    {
+        WeaveLogDetail(DataManagement, "[TestTdmSink::ValidateChangeSets] <delta replaced> %u:%u",
+                       GetPropertyDictionaryKey(*set_it), GetPropertySchemaHandle(*set_it));
         match = false;
     }
 
     return match;
 }
 
-WEAVE_ERROR TestTdmSink::OnEvent(uint16_t aType, void *aInParam)
+WEAVE_ERROR TestTdmSink::OnEvent(uint16_t aType, void * aInParam)
 {
-    InEventParam *inParam = static_cast<InEventParam *>(aInParam);
+    InEventParam * inParam = static_cast<InEventParam *>(aInParam);
 
-    switch (aType) {
-        case kEventDictionaryItemDelete:
-            WeaveLogDetail(DataManagement, "[TestTdmSink::OnEvent] Deleting %u:%u", GetPropertyDictionaryKey(inParam->mDictionaryItemDelete.mTargetHandle), GetPropertySchemaHandle(inParam->mDictionaryItemDelete.mTargetHandle));
-            mDeletedHandles.insert(inParam->mDictionaryItemDelete.mTargetHandle);
-            break;
+    switch (aType)
+    {
+    case kEventDictionaryItemDelete:
+        WeaveLogDetail(DataManagement, "[TestTdmSink::OnEvent] Deleting %u:%u",
+                       GetPropertyDictionaryKey(inParam->mDictionaryItemDelete.mTargetHandle),
+                       GetPropertySchemaHandle(inParam->mDictionaryItemDelete.mTargetHandle));
+        mDeletedHandles.insert(inParam->mDictionaryItemDelete.mTargetHandle);
+        break;
 
-        case kEventDictionaryItemModifyBegin:
-            WeaveLogDetail(DataManagement, "[TestTdmSink::OnEvent] Adding/Modifying %u:%u", GetPropertyDictionaryKey(inParam->mDictionaryItemModifyBegin.mTargetHandle), GetPropertySchemaHandle(inParam->mDictionaryItemModifyBegin.mTargetHandle));
-            break;
+    case kEventDictionaryItemModifyBegin:
+        WeaveLogDetail(DataManagement, "[TestTdmSink::OnEvent] Adding/Modifying %u:%u",
+                       GetPropertyDictionaryKey(inParam->mDictionaryItemModifyBegin.mTargetHandle),
+                       GetPropertySchemaHandle(inParam->mDictionaryItemModifyBegin.mTargetHandle));
+        break;
 
-        case kEventDictionaryReplaceBegin:
-            WeaveLogDetail(DataManagement, "[TestTdmSink::OnEvent] Replacing %u:%u", GetPropertyDictionaryKey(inParam->mDictionaryReplaceBegin.mTargetHandle), GetPropertySchemaHandle(inParam->mDictionaryReplaceBegin.mTargetHandle));
-            mReplacedDictionaries.insert(inParam->mDictionaryReplaceBegin.mTargetHandle);
-            break;
+    case kEventDictionaryReplaceBegin:
+        WeaveLogDetail(DataManagement, "[TestTdmSink::OnEvent] Replacing %u:%u",
+                       GetPropertyDictionaryKey(inParam->mDictionaryReplaceBegin.mTargetHandle),
+                       GetPropertySchemaHandle(inParam->mDictionaryReplaceBegin.mTargetHandle));
+        mReplacedDictionaries.insert(inParam->mDictionaryReplaceBegin.mTargetHandle);
+        break;
     }
 
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR TestTdmSink::SetLeafData(PropertyPathHandle aHandle, TLVReader &aReader)
+WEAVE_ERROR TestTdmSink::SetLeafData(PropertyPathHandle aHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t val;
@@ -676,14 +734,16 @@ WEAVE_ERROR TestTdmSink::SetLeafData(PropertyPathHandle aHandle, TLVReader &aRea
     err = aReader.Get(val);
     SuccessOrExit(err);
 
-    WeaveLogDetail(DataManagement, "[TestTdmSink::SetLeafData] << %u:%u = %u", GetPropertyDictionaryKey(aHandle), GetPropertySchemaHandle(aHandle), val);
+    WeaveLogDetail(DataManagement, "[TestTdmSink::SetLeafData] << %u:%u = %u", GetPropertyDictionaryKey(aHandle),
+                   GetPropertySchemaHandle(aHandle), val);
     mModifiedHandles[aHandle] = val;
 
 exit:
     return err;
 }
 
-class TestTdm {
+class TestTdm
+{
 public:
     TestTdm();
 
@@ -692,58 +752,58 @@ public:
     int Reset();
     int BuildAndProcessNotify();
 
-    void TestTdmStatic_SingleLeafHandle(nlTestSuite *inSuite);
-    void TestTdmStatic_SingleLevelMerge(nlTestSuite *inSuite);
-    void TestTdmStatic_SingleLevelMergeDeep(nlTestSuite *inSuite);
-    void TestTdmStatic_DirtyStruct(nlTestSuite *inSuite);
-    void TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite *inSuite);
-    void TestTdmStatic_MergeHandleSetOverflow(nlTestSuite *inSuite);
-    void TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite *inSuite);
+    void TestTdmStatic_SingleLeafHandle(nlTestSuite * inSuite);
+    void TestTdmStatic_SingleLevelMerge(nlTestSuite * inSuite);
+    void TestTdmStatic_SingleLevelMergeDeep(nlTestSuite * inSuite);
+    void TestTdmStatic_DirtyStruct(nlTestSuite * inSuite);
+    void TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite * inSuite);
+    void TestTdmStatic_MergeHandleSetOverflow(nlTestSuite * inSuite);
+    void TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite * inSuite);
 
-    void TestTdmStatic_TestNullableLeaf(nlTestSuite *inSuite);
-    void TestTdmStatic_TestNullableStruct(nlTestSuite *inSuite);
-    void TestTdmStatic_TestNonNullableLeaf(nlTestSuite *inSuite);
+    void TestTdmStatic_TestNullableLeaf(nlTestSuite * inSuite);
+    void TestTdmStatic_TestNullableStruct(nlTestSuite * inSuite);
+    void TestTdmStatic_TestNonNullableLeaf(nlTestSuite * inSuite);
 
-    void TestTdmStatic_TestEphemeralLeaf(nlTestSuite *inSuite);
-    void TestTdmStatic_TestEphemeralStruct(nlTestSuite *inSuite);
+    void TestTdmStatic_TestEphemeralLeaf(nlTestSuite * inSuite);
+    void TestTdmStatic_TestEphemeralStruct(nlTestSuite * inSuite);
 
-    void TestTdmStatic_TestIsParent(nlTestSuite *inSuite);
+    void TestTdmStatic_TestIsParent(nlTestSuite * inSuite);
 
-    void TestTdmMismatched_PathInDataElement(nlTestSuite *inSuite);
-    void TestTdmMismatched_TopLevelPOD(nlTestSuite *inSuite);
-    void TestTdmMismatched_NestedStruct(nlTestSuite *inSuite);
-    void TestTdmMismatched_TopLevelStruct(nlTestSuite *inSuite);
-    void TestTdmMismatched_SetLeafDataMismatch(nlTestSuite *inSuite);
+    void TestTdmMismatched_PathInDataElement(nlTestSuite * inSuite);
+    void TestTdmMismatched_TopLevelPOD(nlTestSuite * inSuite);
+    void TestTdmMismatched_NestedStruct(nlTestSuite * inSuite);
+    void TestTdmMismatched_TopLevelStruct(nlTestSuite * inSuite);
+    void TestTdmMismatched_SetLeafDataMismatch(nlTestSuite * inSuite);
 
-    void TestTdmDictionary_DictionaryEntryAddition(nlTestSuite *inSuite);
-    void TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite *inSuite);
-    void TestTdmDictionary_ReplaceDictionary(nlTestSuite *inSuite);
+    void TestTdmDictionary_DictionaryEntryAddition(nlTestSuite * inSuite);
+    void TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite * inSuite);
+    void TestTdmDictionary_ReplaceDictionary(nlTestSuite * inSuite);
 
-    void TestTdmDictionary_DeleteSingle(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteMultiple(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite *inSuite);
-    void TestTdmDictionary_AddDeleteDifferent(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite *inSuite);
-    void TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite *inSuite);
-    void TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite *inSuite);
-    void TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite *inSuite);
-    void TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite *inSuite);
-    void TestTdmDictionary_DeleteEntryTwice(nlTestSuite *inSuite);
+    void TestTdmDictionary_DeleteSingle(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteMultiple(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite * inSuite);
+    void TestTdmDictionary_AddDeleteDifferent(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite * inSuite);
+    void TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite * inSuite);
+    void TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite * inSuite);
+    void TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite * inSuite);
+    void TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite * inSuite);
+    void TestTdmDictionary_DeleteEntryTwice(nlTestSuite * inSuite);
 
-    void TestRandomizedDataVersions(nlTestSuite *inSuite);
+    void TestRandomizedDataVersions(nlTestSuite * inSuite);
 
-    void TestTdmStatic_MultiInstance(nlTestSuite *inSuite);
+    void TestTdmStatic_MultiInstance(nlTestSuite * inSuite);
 
-    void CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite);
+    void CheckAllocateRightSizedBufferForNotifications(nlTestSuite * inSuite);
 
 private:
-    SubscriptionHandler *mSubHandler;
-    SubscriptionClient *mSubClient;
-    NotificationEngine *mNotificationEngine;
+    SubscriptionHandler * mSubHandler;
+    SubscriptionClient * mSubClient;
+    NotificationEngine * mNotificationEngine;
 
     SubscriptionEngine mSubscriptionEngine;
     WeaveExchangeManager mExchangeMgr;
@@ -762,17 +822,16 @@ private:
     TestBTraitDataSource mTestBSource;
     TestBTraitDataSink mTestBSink;
 
-    Binding *mClientBinding;
+    Binding * mClientBinding;
 
     uint32_t mTestCase;
 
     WEAVE_ERROR AllocateBuffer(uint32_t desiredSize, uint32_t minSize);
 };
 
-TestTdm::TestTdm()
-    : mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, 5),
-      mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore, 5),
-      mClientBinding(NULL)
+TestTdm::TestTdm() :
+    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, 5),
+    mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore, 5), mClientBinding(NULL)
 {
     mTestCase = 0;
 }
@@ -787,7 +846,7 @@ int TestTdm::Setup()
     TraitDataHandle testMismatchedCSourceHandle;
     TraitDataHandle testCSinkHandle;
     TraitDataHandle testBSourceHandle, testBSinkHandle;
-    SubscriptionHandler::TraitInstanceInfo *traitInstance = NULL;
+    SubscriptionHandler::TraitInstanceInfo * traitInstance = NULL;
 
     gSubscriptionEngine = &mSubscriptionEngine;
 
@@ -826,13 +885,13 @@ int TestTdm::Setup()
 
     mSinkCatalog.Add(3, &mTestBSink, testBSinkHandle);
 
-    traitInstance = mSubscriptionEngine.mTraitInfoPool;
+    traitInstance                   = mSubscriptionEngine.mTraitInfoPool;
     mSubHandler->mTraitInstanceList = traitInstance;
     mSubHandler->mNumTraitInstances++;
     ++(SubscriptionEngine::GetInstance()->mNumTraitInfosInPool);
 
     traitInstance->Init();
-    traitInstance->mTraitDataHandle = testTdmSourceHandle;
+    traitInstance->mTraitDataHandle  = testTdmSourceHandle;
     traitInstance->mRequestedVersion = 1;
 
     traitInstance = mSubscriptionEngine.mTraitInfoPool + 1;
@@ -840,7 +899,7 @@ int TestTdm::Setup()
     ++(SubscriptionEngine::GetInstance()->mNumTraitInfosInPool);
 
     traitInstance->Init();
-    traitInstance->mTraitDataHandle = testTdmSourceHandle1;
+    traitInstance->mTraitDataHandle  = testTdmSourceHandle1;
     traitInstance->mRequestedVersion = 1;
 
     traitInstance = mSubscriptionEngine.mTraitInfoPool + 2;
@@ -848,7 +907,7 @@ int TestTdm::Setup()
     ++(SubscriptionEngine::GetInstance()->mNumTraitInfosInPool);
 
     traitInstance->Init();
-    traitInstance->mTraitDataHandle = testMismatchedCSourceHandle;
+    traitInstance->mTraitDataHandle  = testMismatchedCSourceHandle;
     traitInstance->mRequestedVersion = 1;
 
     traitInstance = mSubscriptionEngine.mTraitInfoPool + 3;
@@ -856,11 +915,12 @@ int TestTdm::Setup()
     ++(SubscriptionEngine::GetInstance()->mNumTraitInfosInPool);
 
     traitInstance->Init();
-    traitInstance->mTraitDataHandle = testBSourceHandle;
+    traitInstance->mTraitDataHandle  = testBSourceHandle;
     traitInstance->mRequestedVersion = 1;
 
 exit:
-    if (err != WEAVE_NO_ERROR) {
+    if (err != WEAVE_NO_ERROR)
+    {
         WeaveLogError(DataManagement, "Error setting up test: %d", err);
     }
 
@@ -907,14 +967,14 @@ int TestTdm::BuildAndProcessNotify()
     bool isSubscriptionClean;
     NotificationEngine::NotifyRequestBuilder notifyRequest;
     NotificationRequest::Parser notify;
-    PacketBuffer *buf = NULL;
+    PacketBuffer * buf = NULL;
     TLVWriter writer;
     TLVReader reader;
     TLVType dummyType1, dummyType2;
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool neWriteInProgress = false;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    bool neWriteInProgress       = false;
     uint32_t maxNotificationSize = 0;
-    uint32_t maxPayloadSize = 0;
+    uint32_t maxPayloadSize      = 0;
 
     maxNotificationSize = mSubHandler->GetMaxNotificationSize();
 
@@ -967,17 +1027,18 @@ int TestTdm::BuildAndProcessNotify()
     }
 
 exit:
-    if (buf) {
+    if (buf)
+    {
         PacketBuffer::Free(buf);
     }
 
     return err;
 }
 
-void TestTdm::TestTdmStatic_MultiInstance(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_MultiInstance(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -987,24 +1048,20 @@ void TestTdm::TestTdmStatic_MultiInstance(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 2 } },
-                                                { },
-                                                { } );
+    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 2 } }, { }, { });
     VerifyOrExit(testPass, );
 
-    testPass = mTestTdmSink1.ValidateChangeSets( { { TestHTrait::kPropertyHandle_B, 2 } },
-                                                { },
-                                                { } );
+    testPass = mTestTdmSink1.ValidateChangeSets( { { TestHTrait::kPropertyHandle_B, 2 } }, { }, { });
     VerifyOrExit(testPass, );
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_SingleLeafHandle(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_SingleLeafHandle(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
     mTestTdmSource.SetValue(TestHTrait::kPropertyHandle_A, 2);
@@ -1012,18 +1069,16 @@ void TestTdm::TestTdmStatic_SingleLeafHandle(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 2 } },
-                                                { },
-                                                { } );
+    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 2 } }, { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_SingleLevelMerge(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_SingleLevelMerge(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
     mTestTdmSource.SetValue(TestHTrait::kPropertyHandle_B, 2);
@@ -1032,17 +1087,16 @@ void TestTdm::TestTdmStatic_SingleLevelMerge(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_B, 2 }, { TestHTrait::kPropertyHandle_A, 2 } },
-                                                { },
-                                                { });
+    testPass =
+        mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_B, 2 }, { TestHTrait::kPropertyHandle_A, 2 } }, { }, { });
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_SingleLevelMergeDeep(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_SingleLevelMergeDeep(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1053,17 +1107,16 @@ void TestTdm::TestTdmStatic_SingleLevelMergeDeep(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_K_Sb, 2 }, { TestHTrait::kPropertyHandle_K_Sc, 2 } },
-                                                { },
-                                                { });
+                                               { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_DirtyStruct(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_DirtyStruct(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1073,17 +1126,16 @@ void TestTdm::TestTdmStatic_DirtyStruct(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_K_Sb, 1 }, { TestHTrait::kPropertyHandle_K_Sc, 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_K_Sa });
+                                               { }, { TestHTrait::kPropertyHandle_K_Sa });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1093,20 +1145,18 @@ void TestTdm::TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 1 }, { TestHTrait::kPropertyHandle_K_Sb, 1 },
-                                                  { TestHTrait::kPropertyHandle_K_Sc, 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_K_Sa } );
+    testPass = mTestTdmSink.ValidateChangeSets(
+        { { TestHTrait::kPropertyHandle_A, 1 }, { TestHTrait::kPropertyHandle_K_Sb, 1 }, { TestHTrait::kPropertyHandle_K_Sc, 1 } },
+        { }, { TestHTrait::kPropertyHandle_K_Sa });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-
-void TestTdm::TestTdmStatic_MergeHandleSetOverflow(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_MergeHandleSetOverflow(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1122,23 +1172,28 @@ void TestTdm::TestTdmStatic_MergeHandleSetOverflow(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 1 }, { TestHTrait::kPropertyHandle_B, 1 },
-                                                  { TestHTrait::kPropertyHandle_C, 1 }, { TestHTrait::kPropertyHandle_D, 1 },
-                                                  { TestHTrait::kPropertyHandle_E, 1 }, { TestHTrait::kPropertyHandle_F, 1 },
-                                                  { TestHTrait::kPropertyHandle_G, 1 }, { TestHTrait::kPropertyHandle_H, 1 },
-                                                  { TestHTrait::kPropertyHandle_I, 1 }, { TestHTrait::kPropertyHandle_J, 1 },
-                                                  { TestHTrait::kPropertyHandle_K_Sb, 1 }, { TestHTrait::kPropertyHandle_K_Sc, 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_K_Sa, TestHTrait::kPropertyHandle_L });
+    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 1 },
+                                                 { TestHTrait::kPropertyHandle_B, 1 },
+                                                 { TestHTrait::kPropertyHandle_C, 1 },
+                                                 { TestHTrait::kPropertyHandle_D, 1 },
+                                                 { TestHTrait::kPropertyHandle_E, 1 },
+                                                 { TestHTrait::kPropertyHandle_F, 1 },
+                                                 { TestHTrait::kPropertyHandle_G, 1 },
+                                                 { TestHTrait::kPropertyHandle_H, 1 },
+                                                 { TestHTrait::kPropertyHandle_I, 1 },
+                                                 { TestHTrait::kPropertyHandle_J, 1 },
+                                                 { TestHTrait::kPropertyHandle_K_Sb, 1 },
+                                                 { TestHTrait::kPropertyHandle_K_Sc, 1 } },
+                                               { }, { TestHTrait::kPropertyHandle_K_Sa, TestHTrait::kPropertyHandle_L });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1148,15 +1203,13 @@ void TestTdm::TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 2 } },
-                                                { },
-                                                { } );
+    testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_A, 2 } }, { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmStatic_TestNullableLeaf(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_TestNullableLeaf(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Reset();
@@ -1180,9 +1233,9 @@ void TestTdm::TestTdmStatic_TestNullableLeaf(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mTestBSink.IsPathHandleSet(TestBTrait::kPropertyHandle_TaD_SaA));
 }
 
-void TestTdm::TestTdmStatic_TestNullableStruct(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_TestNullableStruct(nlTestSuite * inSuite)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
     bool anyChildrenSet = false;
     Reset();
 
@@ -1202,7 +1255,7 @@ void TestTdm::TestTdmStatic_TestNullableStruct(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, anyChildrenSet == false);
 }
 
-void TestTdm::TestTdmStatic_TestNonNullableLeaf(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_TestNonNullableLeaf(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1215,7 +1268,7 @@ void TestTdm::TestTdmStatic_TestNonNullableLeaf(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_WDM_SCHEMA_MISMATCH);
 }
 
-void TestTdm::TestTdmStatic_TestEphemeralLeaf(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_TestEphemeralLeaf(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Reset();
@@ -1229,9 +1282,9 @@ void TestTdm::TestTdmStatic_TestEphemeralLeaf(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mTestBSink.IsPathHandleSet(TestBTrait::kPropertyHandle_TaD_SaA) == false);
 }
 
-void TestTdm::TestTdmStatic_TestEphemeralStruct(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_TestEphemeralStruct(nlTestSuite * inSuite)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
     bool anyChildrenSet = false;
     Reset();
 
@@ -1249,9 +1302,9 @@ void TestTdm::TestTdmStatic_TestEphemeralStruct(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, anyChildrenSet == false);
 }
 
-void TestTdm::TestTdmStatic_TestIsParent(nlTestSuite *inSuite)
+void TestTdm::TestTdmStatic_TestIsParent(nlTestSuite * inSuite)
 {
-    const TraitSchemaEngine *se = mTestBSource.GetSchemaEngine();
+    const TraitSchemaEngine * se        = mTestBSource.GetSchemaEngine();
     PropertyPathHandle leafInDictionary = CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3);
 
     // Remember that here "parent" really means "ancestor"
@@ -1267,78 +1320,104 @@ void TestTdm::TestTdmStatic_TestIsParent(nlTestSuite *inSuite)
     // kPropertyHandle_TaD_SaA is a leaf inside TaD
     // kPropertyHandle_TaI and kPropertyHandle_TaJ are dictionaries
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(kRootPropertyPathHandle,
-                                                  kRootPropertyPathHandle));
+    NL_TEST_ASSERT(inSuite, false == se->IsParent(kRootPropertyPathHandle, kRootPropertyPathHandle));
 
-    NL_TEST_ASSERT(inSuite,          se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD_SaA),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD)));
+    NL_TEST_ASSERT(inSuite,
+                   se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD_SaA),
+                                CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD_SaA)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD_SaA)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(kRootPropertyPathHandle,
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD)));
+    NL_TEST_ASSERT(inSuite,
+                   false == se->IsParent(kRootPropertyPathHandle, CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD)));
 
-    NL_TEST_ASSERT(inSuite,          se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD),
-                                                  kRootPropertyPathHandle));
+    NL_TEST_ASSERT(inSuite, se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD), kRootPropertyPathHandle));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD_SaA),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaD_SaA),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(kNullPropertyPathHandle),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(kNullPropertyPathHandle),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA),
-                                                  CreatePropertyPathHandle(kNullPropertyPathHandle)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaA),
+                                    CreatePropertyPathHandle(kNullPropertyPathHandle)));
 
-    NL_TEST_ASSERT(inSuite,          se->IsParent(se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaI, 3),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI)));
+    NL_TEST_ASSERT(inSuite,
+                   se->IsParent(se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaI, 3),
+                                CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI),
-                                                  se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaI, 3)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI),
+                                    se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaI, 3)));
 
-    NL_TEST_ASSERT(inSuite,          se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value, 3)));
+    NL_TEST_ASSERT(inSuite,
+                   se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
+                                CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value, 3)));
 
     // the dictionary item structure with key 2 is not the parent of a leaf with key 3
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value, 2)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value, 2)));
 
     // Note that these two are the same:
-    NL_TEST_ASSERT(inSuite, CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value, 2) == se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaJ, 2));
-
+    NL_TEST_ASSERT(inSuite,
+                   CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value, 2) ==
+                       se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaJ, 2));
 
     // the dictionary item structure with key 0 is not the parent of a leaf with key 3
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value)));
 
-    NL_TEST_ASSERT(inSuite,          se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ)));
+    NL_TEST_ASSERT(inSuite,
+                   se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
+                                CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ)));
 
-    NL_TEST_ASSERT(inSuite,          se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
-                                                  kRootPropertyPathHandle));
+    NL_TEST_ASSERT(inSuite,
+                   se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3), kRootPropertyPathHandle));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI),
-                                                  se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaI, 3)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI),
+                                    se->GetDictionaryItemHandle(TestBTrait::kPropertyHandle_TaI, 3)));
 
-    NL_TEST_ASSERT(inSuite, false == se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
-                                                  CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI)));
+    NL_TEST_ASSERT(inSuite,
+                   false ==
+                       se->IsParent(CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaJ_Value_SaA, 3),
+                                    CreatePropertyPathHandle(TestBTrait::kPropertyHandle_TaI)));
 
     // Check all ancestors of a leaf in a dictionary:
-    for (PropertyPathHandle ancestor = se->GetParent(leafInDictionary); ancestor != kNullPropertyPathHandle; ancestor = se->GetParent(ancestor))
+    for (PropertyPathHandle ancestor = se->GetParent(leafInDictionary); ancestor != kNullPropertyPathHandle;
+         ancestor                    = se->GetParent(ancestor))
     {
         NL_TEST_ASSERT(inSuite, se->IsParent(leafInDictionary, ancestor));
         NL_TEST_ASSERT(inSuite, false == se->IsParent(ancestor, leafInDictionary));
     }
 }
 
-void TestTdm::TestTdmMismatched_PathInDataElement(nlTestSuite *inSuite)
+void TestTdm::TestTdmMismatched_PathInDataElement(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Reset();
@@ -1353,7 +1432,7 @@ void TestTdm::TestTdmMismatched_PathInDataElement(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mTestCSink.WasAnyPathHandleSet() == false);
 }
 
-void TestTdm::TestTdmMismatched_TopLevelPOD(nlTestSuite *inSuite)
+void TestTdm::TestTdmMismatched_TopLevelPOD(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Reset();
@@ -1370,7 +1449,7 @@ void TestTdm::TestTdmMismatched_TopLevelPOD(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mTestCSink.WasPathHandleSet(TestCTrait::kPropertyHandle_TcA));
 }
 
-void TestTdm::TestTdmMismatched_NestedStruct(nlTestSuite *inSuite)
+void TestTdm::TestTdmMismatched_NestedStruct(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Reset();
@@ -1387,7 +1466,7 @@ void TestTdm::TestTdmMismatched_NestedStruct(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mTestCSink.WasPathHandleSet(TestCTrait::kPropertyHandle_TcC_ScA));
 }
 
-void TestTdm::TestTdmMismatched_TopLevelStruct(nlTestSuite *inSuite)
+void TestTdm::TestTdmMismatched_TopLevelStruct(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Reset();
@@ -1403,7 +1482,7 @@ void TestTdm::TestTdmMismatched_TopLevelStruct(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mTestCSink.WasPathHandleSet(TestCTrait::kPropertyHandle_TcA));
 }
 
-void TestTdm::TestTdmMismatched_SetLeafDataMismatch(nlTestSuite *inSuite)
+void TestTdm::TestTdmMismatched_SetLeafDataMismatch(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TraitDataHandle mismatchedTestCSinkHandle;
@@ -1423,10 +1502,10 @@ void TestTdm::TestTdmMismatched_SetLeafDataMismatch(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mMismatchedTestCSink.WasPathHandleSet(TestMismatchedCTrait::kPropertyHandle_TcE_ScA));
 }
 
-void TestTdm::TestTdmDictionary_DictionaryEntryAddition(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DictionaryEntryAddition(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1437,19 +1516,18 @@ void TestTdm::TestTdmDictionary_DictionaryEntryAddition(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 0), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 0), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 0), 1 } },
-                                                { },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 0), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 0), 1 } },
+                                               { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1462,22 +1540,21 @@ void TestTdm::TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 2), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 2), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 2), 1 } },
-                                                { },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 2), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 2), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 2), 1 } },
+                                               { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_ReplaceDictionary(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_ReplaceDictionary(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1491,25 +1568,24 @@ void TestTdm::TestTdmDictionary_ReplaceDictionary(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 0), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 0), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 0), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 2), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 2), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 2), 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_L });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 0), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 0), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 2), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 2), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 2), 1 } },
+                                               { }, { TestHTrait::kPropertyHandle_L });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteSingle(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteSingle(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1525,18 +1601,16 @@ void TestTdm::TestTdmDictionary_DeleteSingle(nlTestSuite *inSuite)
 
     mTestTdmSink.DumpChangeSets();
 
-    testPass = mTestTdmSink.ValidateChangeSets( { },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2) },
-                                                { });
+    testPass = mTestTdmSink.ValidateChangeSets( { }, { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2) }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteMultiple(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteMultiple(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1553,17 +1627,18 @@ void TestTdm::TestTdmDictionary_DeleteMultiple(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2), CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1) },
-                                                { });
+                                               { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2),
+                                                 CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1) },
+                                               { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1589,19 +1664,16 @@ void TestTdm::TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_L });
+    testPass = mTestTdmSink.ValidateChangeSets( { }, { }, { TestHTrait::kPropertyHandle_L });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-
-void TestTdm::TestTdmDictionary_AddDeleteDifferent(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_AddDeleteDifferent(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1615,21 +1687,19 @@ void TestTdm::TestTdmDictionary_AddDeleteDifferent(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 } },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 0) },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 } },
+                                               { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 0) }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1644,19 +1714,18 @@ void TestTdm::TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_L });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 } },
+                                               { }, { TestHTrait::kPropertyHandle_L });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1672,19 +1741,18 @@ void TestTdm::TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_L });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 } },
+                                               { }, { TestHTrait::kPropertyHandle_L });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1699,20 +1767,19 @@ void TestTdm::TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { TestHTrait::kPropertyHandle_K_Sb, 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_K_Sa_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_K_Sa_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_K_Sa_Value_Dc, 1), 1 } },
-                                                { },
-                                                { TestHTrait::kPropertyHandle_K_Sa });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_K_Sa_Value_Da, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_K_Sa_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_K_Sa_Value_Dc, 1), 1 } },
+                                               { }, { TestHTrait::kPropertyHandle_K_Sa });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1727,19 +1794,16 @@ void TestTdm::TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1) },
-                                                { });
+    testPass = mTestTdmSink.ValidateChangeSets( { }, { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1) }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-
-void TestTdm::TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1755,18 +1819,16 @@ void TestTdm::TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite *inSuite)
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
-    testPass = mTestTdmSink.ValidateChangeSets( { },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1) },
-                                                { });
+    testPass = mTestTdmSink.ValidateChangeSets( { }, { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1) }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1778,25 +1840,23 @@ void TestTdm::TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite *inSuite)
 
     mTestTdmSource.mDictlValues[1] = { 2, 2, 2 };
     mTestTdmSource.SetDirty(CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1));
-
 
     err = BuildAndProcessNotify();
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 2 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 2 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 2 } },
-                                                { },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 2 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 2 } },
+                                               { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1813,19 +1873,18 @@ void TestTdm::TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite *inSuite)
     SuccessOrExit(err);
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 2 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 2 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 2 } },
-                                                { },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 2 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 2 } },
+                                               { }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1872,22 +1931,21 @@ void TestTdm::TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite *
     mTestTdmSink.DumpChangeSets();
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 2), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 2), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 2), 1 } },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 3) },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 1), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 2), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 2), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 2), 1 } },
+                                               { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 3) }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1948,19 +2006,20 @@ void TestTdm::TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite *i
     mTestTdmSink.DumpChangeSets();
 
     testPass = mTestTdmSink.ValidateChangeSets( { { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Da, 3), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 3), 1 },
-                                                  { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 3), 1 } },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1), CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2) },
-                                                { });
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Db, 3), 1 },
+                                                 { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value_Dc, 3), 1 } },
+                                               { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 1),
+                                                 CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2) },
+                                               { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestTdmDictionary_DeleteEntryTwice(nlTestSuite *inSuite)
+void TestTdm::TestTdmDictionary_DeleteEntryTwice(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool testPass = false;
+    bool testPass   = false;
 
     Reset();
 
@@ -1977,16 +2036,13 @@ void TestTdm::TestTdmDictionary_DeleteEntryTwice(nlTestSuite *inSuite)
 
     mTestTdmSink.DumpChangeSets();
 
-    testPass = mTestTdmSink.ValidateChangeSets( { },
-                                                { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2) },
-                                                { });
-
+    testPass = mTestTdmSink.ValidateChangeSets( { }, { CreatePropertyPathHandle(TestHTrait::kPropertyHandle_L_Value, 2) }, { });
 
 exit:
     NL_TEST_ASSERT(inSuite, testPass);
 }
 
-void TestTdm::TestRandomizedDataVersions(nlTestSuite *inSuite)
+void TestTdm::TestRandomizedDataVersions(nlTestSuite * inSuite)
 {
     TestEmptyDataSource dataSource1(&gEmptyTraitSchema);
     TestEmptyDataSource dataSource2(&gEmptyTraitSchema);
@@ -2010,10 +2066,9 @@ void TestTdm::TestRandomizedDataVersions(nlTestSuite *inSuite)
 
 WEAVE_ERROR TestTdm::AllocateBuffer(uint32_t desiredSize, uint32_t minSize)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
     uint32_t maxPayloadSize = 0;
-    PacketBuffer *buf = NULL;
-
+    PacketBuffer * buf      = NULL;
 
     err = mSubHandler->mBinding->AllocateRightSizedBuffer(buf, desiredSize, minSize, maxPayloadSize);
     SuccessOrExit(err);
@@ -2028,9 +2083,9 @@ exit:
     return err;
 }
 
-void TestTdm::CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite)
+void TestTdm::CheckAllocateRightSizedBufferForNotifications(nlTestSuite * inSuite)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
     uint32_t fakeMax = UINT16_MAX;
 
     err = AllocateBuffer(WDM_MAX_NOTIFICATION_SIZE, WDM_MIN_NOTIFICATION_SIZE);
@@ -2042,17 +2097,17 @@ void TestTdm::CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite
     NL_TEST_ASSERT(inSuite, err != WEAVE_NO_ERROR);
 }
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}
-}
-}
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
-TestTdm *gTestTdm;
+TestTdm * gTestTdm;
 
 /**
  *  Set up the test suite.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     static TestTdm testTdm;
     gTestTdm = &testTdm;
@@ -2063,196 +2118,196 @@ static int TestSetup(void *inContext)
 /**
  *  Tear down the test suite.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     return gTestTdm->Teardown();
 }
 
-static void TestTdmStatic_SingleLeafHandle(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_SingleLeafHandle(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_SingleLeafHandle(inSuite);
 }
 
-static void TestTdmStatic_SingleLevelMerge(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_SingleLevelMerge(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_SingleLevelMerge(inSuite);
 }
 
-static void TestTdmStatic_SingleLevelMergeDeep(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_SingleLevelMergeDeep(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_SingleLevelMergeDeep(inSuite);
 }
 
-static void TestTdmStatic_DirtyStruct(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_DirtyStruct(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_DirtyStruct(inSuite);
 }
 
-static void TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_DirtyLeafUnevenDepth(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_DirtyLeafUnevenDepth(inSuite);
 }
 
-static void TestTdmStatic_MergeHandleSetOverflow(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_MergeHandleSetOverflow(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_MergeHandleSetOverflow(inSuite);
 }
 
-static void TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_MarkLeafHandleDirtyTwice(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_MarkLeafHandleDirtyTwice(inSuite);
 }
 
-static void TestTdmStatic_TestNullableStruct(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_TestNullableStruct(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_TestNullableStruct(inSuite);
 }
 
-static void TestTdmStatic_TestNullableLeaf(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_TestNullableLeaf(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_TestNullableLeaf(inSuite);
 }
 
-static void TestTdmStatic_TestNonNullableLeaf(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_TestNonNullableLeaf(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_TestNonNullableLeaf(inSuite);
 }
 
-static void TestTdmStatic_TestEphemeralStruct(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_TestEphemeralStruct(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_TestEphemeralStruct(inSuite);
 }
 
-static void TestTdmStatic_TestIsParent(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_TestIsParent(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_TestIsParent(inSuite);
 }
 
-static void TestTdmStatic_TestEphemeralLeaf(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_TestEphemeralLeaf(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_TestEphemeralLeaf(inSuite);
 }
 
-static void TestTdmMismatched_PathInDataElement(nlTestSuite *inSuite, void *inContext)
+static void TestTdmMismatched_PathInDataElement(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmMismatched_PathInDataElement(inSuite);
 }
 
-static void TestTdmMismatched_TopLevelPOD(nlTestSuite *inSuite, void *inContext)
+static void TestTdmMismatched_TopLevelPOD(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmMismatched_TopLevelPOD(inSuite);
 }
 
-static void TestTdmMismatched_NestedStruct(nlTestSuite *inSuite, void *inContext)
+static void TestTdmMismatched_NestedStruct(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmMismatched_NestedStruct(inSuite);
 }
 
-static void TestTdmMismatched_TopLevelStruct(nlTestSuite *inSuite, void *inContext)
+static void TestTdmMismatched_TopLevelStruct(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmMismatched_TopLevelStruct(inSuite);
 }
 
-static void TestTdmMismatched_SetLeafDataMismatch(nlTestSuite *inSuite, void *inContext)
+static void TestTdmMismatched_SetLeafDataMismatch(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmMismatched_SetLeafDataMismatch(inSuite);
 }
-static void TestTdmDictionary_DictionaryEntryAddition(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DictionaryEntryAddition(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DictionaryEntryAddition(inSuite);
 }
 
-static void TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DictionaryEntriesAddition(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DictionaryEntriesAddition(inSuite);
 }
 
-static void TestTdmDictionary_ReplaceDictionary(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_ReplaceDictionary(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_ReplaceDictionary(inSuite);
 }
 
-static void TestTdmDictionary_DeleteSingle(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteSingle(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteSingle(inSuite);
 }
 
-static void TestTdmDictionary_DeleteMultiple(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteMultiple(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteMultiple(inSuite);
 }
 
-static void TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteHandleSetOverflow(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteHandleSetOverflow(inSuite);
 }
 
-static void TestTdmDictionary_AddDeleteDifferent(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_AddDeleteDifferent(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_AddDeleteDifferent(inSuite);
 }
 
-static void TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteAndMarkDirty(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteAndMarkDirty(inSuite);
 }
 
-static void TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_MarkDirtyAndDelete(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_MarkDirtyAndDelete(inSuite);
 }
 
-static void TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteAndMarkFarDirty(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteAndMarkFarDirty(inSuite);
 }
 
-static void TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_AddAndDeleteSimilar(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_AddAndDeleteSimilar(inSuite);
 }
 
-static void TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_ModifyAndDeleteSimilar(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_ModifyAndDeleteSimilar(inSuite);
 }
 
-static void TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteAndModifySimilar(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteAndModifySimilar(inSuite);
 }
 
-static void TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteAndModifyLeafSimilar(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteAndModifyLeafSimilar(inSuite);
 }
 
-static void TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteStoreOverflowAndItemAddition(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteStoreOverflowAndItemAddition(inSuite);
 }
 
-static void TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DirtyStoreOverflowAndItemDeletion(inSuite);
 }
 
-static void TestTdmDictionary_DeleteEntryTwice(nlTestSuite *inSuite, void *inContext)
+static void TestTdmDictionary_DeleteEntryTwice(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmDictionary_DeleteEntryTwice(inSuite);
 }
 
-static void  TestRandomizedDataVersions(nlTestSuite *inSuite, void *inContext)
+static void TestRandomizedDataVersions(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestRandomizedDataVersions(inSuite);
 }
 
-static void TestTdmStatic_MultiInstance(nlTestSuite *inSuite, void *inContext)
+static void TestTdmStatic_MultiInstance(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->TestTdmStatic_MultiInstance(inSuite);
 }
 
-static void CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite, void *inContext)
+static void CheckAllocateRightSizedBufferForNotifications(nlTestSuite * inSuite, void * inContext)
 {
     gTestTdm->CheckAllocateRightSizedBufferForNotifications(inSuite);
 }
@@ -2260,7 +2315,7 @@ static void CheckAllocateRightSizedBufferForNotifications(nlTestSuite *inSuite, 
 /**
  *  Main
  */
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);
@@ -2269,12 +2324,7 @@ int main(int argc, char *argv[])
     MockPlatform::gMockPlatformClocks.GetClock_RealTime = Private::GetClock_RealTime;
     MockPlatform::gMockPlatformClocks.SetClock_RealTime = Private::SetClock_RealTime;
 
-    nlTestSuite theSuite = {
-        "weave-tdm",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-tdm", &sTests[0], TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);

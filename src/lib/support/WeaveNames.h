@@ -25,9 +25,9 @@
 namespace nl {
 namespace Weave {
 
-const char *GetVendorName(uint16_t vendorId);
-const char *GetProfileName(uint32_t profileId);
-const char *GetMessageName(uint32_t profileId, uint8_t msgType);
+const char * GetVendorName(uint16_t vendorId);
+const char * GetProfileName(uint32_t profileId);
+const char * GetMessageName(uint32_t profileId, uint8_t msgType);
 
 } // namespace Weave
 } // namespace nl

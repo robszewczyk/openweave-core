@@ -45,18 +45,19 @@ namespace SecuritySupport {
 
 using namespace nl::Weave::Profiles::Security::Passcodes;
 
-jbyteArray PasscodeEncryptionSupport::encryptPasscode(JNIEnv *env, jclass cls, jint config, jint keyId, jlong nonce, jstring passcode, jbyteArray encKey,
-                                                      jbyteArray authKey, jbyteArray fingerprintKey)
+jbyteArray PasscodeEncryptionSupport::encryptPasscode(JNIEnv * env, jclass cls, jint config, jint keyId, jlong nonce,
+                                                      jstring passcode, jbyteArray encKey, jbyteArray authKey,
+                                                      jbyteArray fingerprintKey)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const char *passcodeStr = NULL;
-    const uint8_t *encKeyBufPtr = NULL;
-    const uint8_t *authKeyBufPtr = NULL;
-    const uint8_t *fingerprintKeyBufPtr = NULL;
-    jsize passcodeLen = 0;
-    jsize encKeyLen = 0;
-    jsize authKeyLen = 0;
-    jsize fingerprintKeyLen = 0;
+    WEAVE_ERROR err                      = WEAVE_NO_ERROR;
+    const char * passcodeStr             = NULL;
+    const uint8_t * encKeyBufPtr         = NULL;
+    const uint8_t * authKeyBufPtr        = NULL;
+    const uint8_t * fingerprintKeyBufPtr = NULL;
+    jsize passcodeLen                    = 0;
+    jsize encKeyLen                      = 0;
+    jsize authKeyLen                     = 0;
+    jsize fingerprintKeyLen              = 0;
     uint8_t encryptedPasscodeBuf[kPasscodeMaxEncryptedLen];
     size_t encryptedPasscodeLen;
     jbyteArray encryptedPasscode = NULL;
@@ -68,26 +69,26 @@ jbyteArray PasscodeEncryptionSupport::encryptPasscode(JNIEnv *env, jclass cls, j
 
     if (encKey != NULL)
     {
-        encKeyBufPtr = (uint8_t *)env->GetByteArrayElements(encKey, 0);
-        encKeyLen = env->GetArrayLength(encKey);
+        encKeyBufPtr = (uint8_t *) env->GetByteArrayElements(encKey, 0);
+        encKeyLen    = env->GetArrayLength(encKey);
         VerifyOrExit(encKeyLen == kPasscodeEncryptionKeyLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
     if (authKey != NULL)
     {
-        authKeyBufPtr = (uint8_t *)env->GetByteArrayElements(authKey, 0);
-        authKeyLen = env->GetArrayLength(authKey);
+        authKeyBufPtr = (uint8_t *) env->GetByteArrayElements(authKey, 0);
+        authKeyLen    = env->GetArrayLength(authKey);
         VerifyOrExit(authKeyLen == kPasscodeAuthenticationKeyLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
     if (fingerprintKey != NULL)
     {
-        fingerprintKeyBufPtr = (uint8_t *)env->GetByteArrayElements(fingerprintKey, 0);
-        fingerprintKeyLen = env->GetArrayLength(fingerprintKey);
+        fingerprintKeyBufPtr = (uint8_t *) env->GetByteArrayElements(fingerprintKey, 0);
+        fingerprintKeyLen    = env->GetArrayLength(fingerprintKey);
         VerifyOrExit(fingerprintKeyLen == kPasscodeFingerprintKeyLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
-    err = EncryptPasscode((uint8_t)config, (uint32_t)keyId, (uint32_t)nonce, (const uint8_t *)passcodeStr, (size_t)passcodeLen,
-                          encKeyBufPtr, authKeyBufPtr, fingerprintKeyBufPtr,
-                          encryptedPasscodeBuf, sizeof(encryptedPasscodeBuf), encryptedPasscodeLen);
+    err = EncryptPasscode((uint8_t) config, (uint32_t) keyId, (uint32_t) nonce, (const uint8_t *) passcodeStr, (size_t) passcodeLen,
+                          encKeyBufPtr, authKeyBufPtr, fingerprintKeyBufPtr, encryptedPasscodeBuf, sizeof(encryptedPasscodeBuf),
+                          encryptedPasscodeLen);
     SuccessOrExit(err);
 
     err = JNIUtils::N2J_ByteArray(env, encryptedPasscodeBuf, encryptedPasscodeLen, encryptedPasscode);
@@ -100,15 +101,15 @@ exit:
     }
     if (encKeyBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encKey, (jbyte *)encKeyBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encKey, (jbyte *) encKeyBufPtr, JNI_ABORT);
     }
     if (authKeyBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(authKey, (jbyte *)authKeyBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(authKey, (jbyte *) authKeyBufPtr, JNI_ABORT);
     }
     if (fingerprintKeyBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(fingerprintKey, (jbyte *)fingerprintKeyBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(fingerprintKey, (jbyte *) fingerprintKeyBufPtr, JNI_ABORT);
     }
 
     if (err != WEAVE_NO_ERROR)
@@ -119,69 +120,70 @@ exit:
     return encryptedPasscode;
 }
 
-jstring PasscodeEncryptionSupport::decryptPasscode(JNIEnv *env, jclass cls, jbyteArray encPasscode, jbyteArray encKey, jbyteArray authKey,
-                                                   jbyteArray fingerprintKey)
+jstring PasscodeEncryptionSupport::decryptPasscode(JNIEnv * env, jclass cls, jbyteArray encPasscode, jbyteArray encKey,
+                                                   jbyteArray authKey, jbyteArray fingerprintKey)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *encPasscodeBufPtr = NULL;
-    const uint8_t *encKeyBufPtr = NULL;
-    const uint8_t *authKeyBufPtr = NULL;
-    const uint8_t *fingerprintKeyBufPtr = NULL;
-    jsize encPasscodeLen = 0;
-    jsize encKeyLen = 0;
-    jsize authKeyLen = 0;
-    jsize fingerprintKeyLen = 0;
+    WEAVE_ERROR err                      = WEAVE_NO_ERROR;
+    const uint8_t * encPasscodeBufPtr    = NULL;
+    const uint8_t * encKeyBufPtr         = NULL;
+    const uint8_t * authKeyBufPtr        = NULL;
+    const uint8_t * fingerprintKeyBufPtr = NULL;
+    jsize encPasscodeLen                 = 0;
+    jsize encKeyLen                      = 0;
+    jsize authKeyLen                     = 0;
+    jsize fingerprintKeyLen              = 0;
     uint8_t passcodeBuf[kPasscodeMaxEncryptedLen + 1];
     size_t passcodeLen = 0;
-    jstring passcode = NULL;
+    jstring passcode   = NULL;
 
     VerifyOrExit(encPasscode != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    encPasscodeBufPtr = (uint8_t *)env->GetByteArrayElements(encPasscode, 0);
-    encPasscodeLen = env->GetArrayLength(encPasscode);
+    encPasscodeBufPtr = (uint8_t *) env->GetByteArrayElements(encPasscode, 0);
+    encPasscodeLen    = env->GetArrayLength(encPasscode);
 
     if (encKey != NULL)
     {
-        encKeyBufPtr = (uint8_t *)env->GetByteArrayElements(encKey, 0);
-        encKeyLen = env->GetArrayLength(encKey);
+        encKeyBufPtr = (uint8_t *) env->GetByteArrayElements(encKey, 0);
+        encKeyLen    = env->GetArrayLength(encKey);
         VerifyOrExit(encKeyLen == kPasscodeEncryptionKeyLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
     if (authKey != NULL)
     {
-        authKeyBufPtr = (uint8_t *)env->GetByteArrayElements(authKey, 0);
-        authKeyLen = env->GetArrayLength(authKey);
+        authKeyBufPtr = (uint8_t *) env->GetByteArrayElements(authKey, 0);
+        authKeyLen    = env->GetArrayLength(authKey);
         VerifyOrExit(authKeyLen == kPasscodeAuthenticationKeyLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
     if (fingerprintKey != NULL)
     {
-        fingerprintKeyBufPtr = (uint8_t *)env->GetByteArrayElements(fingerprintKey, 0);
-        fingerprintKeyLen = env->GetArrayLength(fingerprintKey);
+        fingerprintKeyBufPtr = (uint8_t *) env->GetByteArrayElements(fingerprintKey, 0);
+        fingerprintKeyLen    = env->GetArrayLength(fingerprintKey);
         VerifyOrExit(fingerprintKeyLen == kPasscodeFingerprintKeyLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
-    err = DecryptPasscode(encPasscodeBufPtr, encPasscodeLen, encKeyBufPtr, authKeyBufPtr, fingerprintKeyBufPtr, passcodeBuf, kPasscodeMaxEncryptedLen, passcodeLen);
+    err = DecryptPasscode(encPasscodeBufPtr, encPasscodeLen, encKeyBufPtr, authKeyBufPtr, fingerprintKeyBufPtr, passcodeBuf,
+                          kPasscodeMaxEncryptedLen, passcodeLen);
     SuccessOrExit(err);
 
     passcodeBuf[passcodeLen] = 0;
-    passcode = env->NewStringUTF((const char *)passcodeBuf);
+    passcode                 = env->NewStringUTF((const char *) passcodeBuf);
     VerifyOrExit(passcode != NULL, err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
 exit:
     if (encPasscodeBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encPasscode, (jbyte *)encPasscodeBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encPasscode, (jbyte *) encPasscodeBufPtr, JNI_ABORT);
     }
     if (encKeyBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encKey, (jbyte *)encKeyBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encKey, (jbyte *) encKeyBufPtr, JNI_ABORT);
     }
     if (authKeyBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(authKey, (jbyte *)authKeyBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(authKey, (jbyte *) authKeyBufPtr, JNI_ABORT);
     }
     if (fingerprintKeyBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(fingerprintKey, (jbyte *)fingerprintKeyBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(fingerprintKey, (jbyte *) fingerprintKeyBufPtr, JNI_ABORT);
     }
 
     if (err != WEAVE_NO_ERROR)
@@ -192,34 +194,34 @@ exit:
     return passcode;
 }
 
-jboolean PasscodeEncryptionSupport::isSupportedPasscodeEncryptionConfig(JNIEnv *env, jclass cls, jint config)
+jboolean PasscodeEncryptionSupport::isSupportedPasscodeEncryptionConfig(JNIEnv * env, jclass cls, jint config)
 {
     if (config < 0 || config > UINT8_MAX)
     {
         return JNI_FALSE;
     }
-    return IsSupportedPasscodeEncryptionConfig((uint8_t)config) ? JNI_TRUE : JNI_FALSE;
+    return IsSupportedPasscodeEncryptionConfig((uint8_t) config) ? JNI_TRUE : JNI_FALSE;
 }
 
-jint PasscodeEncryptionSupport::getEncryptedPasscodeConfig(JNIEnv *env, jclass cls, jbyteArray encryptedPasscode)
+jint PasscodeEncryptionSupport::getEncryptedPasscodeConfig(JNIEnv * env, jclass cls, jbyteArray encryptedPasscode)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *passcodeBufPtr = NULL;
+    WEAVE_ERROR err                = WEAVE_NO_ERROR;
+    const uint8_t * passcodeBufPtr = NULL;
     jsize passcodeBufArrayLen;
     uint8_t config = 0;
 
     VerifyOrExit(encryptedPasscode != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    passcodeBufPtr = (uint8_t *)env->GetByteArrayElements(encryptedPasscode, 0);
+    passcodeBufPtr      = (uint8_t *) env->GetByteArrayElements(encryptedPasscode, 0);
     passcodeBufArrayLen = env->GetArrayLength(encryptedPasscode);
 
-    err = GetEncryptedPasscodeConfig(passcodeBufPtr, (uint8_t)passcodeBufArrayLen, config);
+    err = GetEncryptedPasscodeConfig(passcodeBufPtr, (uint8_t) passcodeBufArrayLen, config);
     SuccessOrExit(err);
 
 exit:
     if (passcodeBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *)passcodeBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *) passcodeBufPtr, JNI_ABORT);
     }
 
     if (err != WEAVE_NO_ERROR)
@@ -227,28 +229,28 @@ exit:
         JNIUtils::ThrowError(env, err);
     }
 
-    return (jint)config;
+    return (jint) config;
 }
 
-jint PasscodeEncryptionSupport::getEncryptedPasscodeKeyId(JNIEnv *env, jclass cls, jbyteArray encryptedPasscode)
+jint PasscodeEncryptionSupport::getEncryptedPasscodeKeyId(JNIEnv * env, jclass cls, jbyteArray encryptedPasscode)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *passcodeBufPtr = NULL;
+    WEAVE_ERROR err                = WEAVE_NO_ERROR;
+    const uint8_t * passcodeBufPtr = NULL;
     jsize passcodeBufArrayLen;
     uint32_t keyId = 0;
 
     VerifyOrExit(encryptedPasscode != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    passcodeBufPtr = (uint8_t *)env->GetByteArrayElements(encryptedPasscode, 0);
+    passcodeBufPtr      = (uint8_t *) env->GetByteArrayElements(encryptedPasscode, 0);
     passcodeBufArrayLen = env->GetArrayLength(encryptedPasscode);
 
-    err = GetEncryptedPasscodeKeyId(passcodeBufPtr, (uint8_t)passcodeBufArrayLen, keyId);
+    err = GetEncryptedPasscodeKeyId(passcodeBufPtr, (uint8_t) passcodeBufArrayLen, keyId);
     SuccessOrExit(err);
 
 exit:
     if (passcodeBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *)passcodeBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *) passcodeBufPtr, JNI_ABORT);
     }
 
     if (err != WEAVE_NO_ERROR)
@@ -256,29 +258,29 @@ exit:
         JNIUtils::ThrowError(env, err);
     }
 
-    return (jint)keyId;
+    return (jint) keyId;
 }
 
-jlong PasscodeEncryptionSupport::getEncryptedPasscodeNonce(JNIEnv *env, jclass cls, jbyteArray encryptedPasscode)
+jlong PasscodeEncryptionSupport::getEncryptedPasscodeNonce(JNIEnv * env, jclass cls, jbyteArray encryptedPasscode)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *passcodeBufPtr = NULL;
+    WEAVE_ERROR err                = WEAVE_NO_ERROR;
+    const uint8_t * passcodeBufPtr = NULL;
     jsize passcodeBufArrayLen;
     uint32_t nonce = 0;
 
     VerifyOrExit(encryptedPasscode != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    passcodeBufPtr = (uint8_t *)env->GetByteArrayElements(encryptedPasscode, 0);
+    passcodeBufPtr      = (uint8_t *) env->GetByteArrayElements(encryptedPasscode, 0);
     passcodeBufArrayLen = env->GetArrayLength(encryptedPasscode);
 
     using nl::Weave::Profiles::Security::Passcodes::GetEncryptedPasscodeNonce;
-    err = GetEncryptedPasscodeNonce(passcodeBufPtr, (uint8_t)passcodeBufArrayLen, nonce);
+    err = GetEncryptedPasscodeNonce(passcodeBufPtr, (uint8_t) passcodeBufArrayLen, nonce);
     SuccessOrExit(err);
 
 exit:
     if (passcodeBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *)passcodeBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *) passcodeBufPtr, JNI_ABORT);
     }
 
     if (err != WEAVE_NO_ERROR)
@@ -286,13 +288,13 @@ exit:
         JNIUtils::ThrowError(env, err);
     }
 
-    return (jint)nonce;
+    return (jint) nonce;
 }
 
-jbyteArray PasscodeEncryptionSupport::getEncryptedPasscodeFingerprint(JNIEnv *env, jclass cls, jbyteArray encryptedPasscode)
+jbyteArray PasscodeEncryptionSupport::getEncryptedPasscodeFingerprint(JNIEnv * env, jclass cls, jbyteArray encryptedPasscode)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *passcodeBufPtr = NULL;
+    WEAVE_ERROR err                = WEAVE_NO_ERROR;
+    const uint8_t * passcodeBufPtr = NULL;
     jsize passcodeBufArrayLen;
     uint8_t fingerprintBuf[kPasscodeFingerprintLen];
     size_t fingerprintLen;
@@ -300,12 +302,12 @@ jbyteArray PasscodeEncryptionSupport::getEncryptedPasscodeFingerprint(JNIEnv *en
 
     VerifyOrExit(encryptedPasscode != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    passcodeBufPtr = (uint8_t *)env->GetByteArrayElements(encryptedPasscode, 0);
+    passcodeBufPtr      = (uint8_t *) env->GetByteArrayElements(encryptedPasscode, 0);
     passcodeBufArrayLen = env->GetArrayLength(encryptedPasscode);
 
     using nl::Weave::Profiles::Security::Passcodes::GetEncryptedPasscodeFingerprint;
-    err = GetEncryptedPasscodeFingerprint(passcodeBufPtr, (uint8_t)passcodeBufArrayLen,
-                                          fingerprintBuf, sizeof(fingerprintBuf), fingerprintLen);
+    err = GetEncryptedPasscodeFingerprint(passcodeBufPtr, (uint8_t) passcodeBufArrayLen, fingerprintBuf, sizeof(fingerprintBuf),
+                                          fingerprintLen);
     SuccessOrExit(err);
 
     err = JNIUtils::N2J_ByteArray(env, fingerprintBuf, fingerprintLen, fingerprint);
@@ -314,7 +316,7 @@ jbyteArray PasscodeEncryptionSupport::getEncryptedPasscodeFingerprint(JNIEnv *en
 exit:
     if (passcodeBufPtr != NULL)
     {
-        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *)passcodeBufPtr, JNI_ABORT);
+        env->ReleaseByteArrayElements(encryptedPasscode, (jbyte *) passcodeBufPtr, JNI_ABORT);
     }
 
     if (err != WEAVE_NO_ERROR)

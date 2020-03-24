@@ -40,8 +40,8 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // peer_devices
-    { kPropertyHandle_PeerDevices, 0 }, // value
+    { kPropertyHandle_Root, 1 },              // peer_devices
+    { kPropertyHandle_PeerDevices, 0 },       // value
     { kPropertyHandle_PeerDevices_Value, 1 }, // device_id
     { kPropertyHandle_PeerDevices_Value, 2 }, // resource_type_name
     { kPropertyHandle_PeerDevices_Value, 3 }, // vendor_id
@@ -54,75 +54,56 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsDictionary Table
 //
 
-uint8_t IsDictionaryTypeHandleBitfield[] = {
-        0x1
-};
+uint8_t IsDictionaryTypeHandleBitfield[] = { 0x1 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        3,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    3,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        IsDictionaryTypeHandleBitfield,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    IsDictionaryTypeHandleBitfield,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor PeerDeviceFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(PeerDevice, deviceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 1
-    },
+const nl::FieldDescriptor PeerDeviceFieldDescriptors[] = {
+    { NULL, offsetof(PeerDevice, deviceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 1 },
 
-    {
-        NULL, offsetof(PeerDevice, resourceTypeName), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 2
-    },
+    { NULL, offsetof(PeerDevice, resourceTypeName), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 2 },
 
-    {
-        NULL, offsetof(PeerDevice, vendorId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 3
-    },
+    { NULL, offsetof(PeerDevice, vendorId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 3 },
 
-    {
-        NULL, offsetof(PeerDevice, productId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 4
-    },
+    { NULL, offsetof(PeerDevice, productId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 4 },
 
-    {
-        NULL, offsetof(PeerDevice, softwareVersion), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 5
-    },
+    { NULL, offsetof(PeerDevice, softwareVersion), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 5 },
 
-    {
-        NULL, offsetof(PeerDevice, deviceReady), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 6
-    },
+    { NULL, offsetof(PeerDevice, deviceReady), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 6 },
 
 };
 
-const nl::SchemaFieldDescriptor PeerDevice::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(PeerDeviceFieldDescriptors)/sizeof(PeerDeviceFieldDescriptors[0]),
-    .mFields = PeerDeviceFieldDescriptors,
-    .mSize = sizeof(PeerDevice)
-};
+const nl::SchemaFieldDescriptor PeerDevice::FieldSchema = { .mNumFieldDescriptorElements = sizeof(PeerDeviceFieldDescriptors) /
+                                                                sizeof(PeerDeviceFieldDescriptors[0]),
+                                                            .mFields = PeerDeviceFieldDescriptors,
+                                                            .mSize   = sizeof(PeerDevice) };
 
 } // namespace PeerDevicesTrait
 } // namespace Peerdevices

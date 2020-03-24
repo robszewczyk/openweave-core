@@ -38,11 +38,11 @@
 // When WEAVE_CONFIG_DRBG_RESEED_INTERVAL = 0, DRBG reseeds every Generate
 // request, which is equivalent to Prediction Resistance mode of DRBG.
 #ifndef WEAVE_CONFIG_DRBG_RESEED_INTERVAL
-    #define WEAVE_CONFIG_DRBG_RESEED_INTERVAL        128
+#define WEAVE_CONFIG_DRBG_RESEED_INTERVAL 128
 #endif
 
 #ifndef WEAVE_CONFIG_DRBG_MAX_ENTROPY_LENGTH
-    #define WEAVE_CONFIG_DRBG_MAX_ENTROPY_LENGTH     64
+#define WEAVE_CONFIG_DRBG_MAX_ENTROPY_LENGTH 64
 #endif
 
 namespace nl {
@@ -51,35 +51,33 @@ namespace Platform {
 namespace Security {
 class AES128BlockCipherEnc;
 }
-}
-}
-}
+} // namespace Platform
+} // namespace Weave
+} // namespace nl
 
 namespace nl {
 namespace Weave {
 namespace Crypto {
 
-template <class BlockCipher>
-class NL_DLL_EXPORT CTR_DRBG
+template <class BlockCipher> class NL_DLL_EXPORT CTR_DRBG
 {
 public:
     enum
     {
-        kKeyLength             = BlockCipher::kKeyLength,
-        kBlockLength           = BlockCipher::kBlockLength,
-        kSeedLength            = kKeyLength + kBlockLength,
-        kRoundedSeedLength     = (kSeedLength + kBlockLength - 1) / kBlockLength * kBlockLength,
-        kSecurityStrength      = kKeyLength,
+        kKeyLength         = BlockCipher::kKeyLength,
+        kBlockLength       = BlockCipher::kBlockLength,
+        kSeedLength        = kKeyLength + kBlockLength,
+        kRoundedSeedLength = (kSeedLength + kBlockLength - 1) / kBlockLength * kBlockLength,
+        kSecurityStrength  = kKeyLength,
     };
 
     CTR_DRBG(void);
     ~CTR_DRBG(void);
 
-    WEAVE_ERROR Instantiate(EntropyFunct entropyFunct, uint16_t entropyLen,
-                            const uint8_t *personalizationData, uint16_t perDataLen);
-    WEAVE_ERROR Reseed(const uint8_t *addData = NULL, uint16_t addDataLen = 0);
-    WEAVE_ERROR Generate(uint8_t *outData, uint16_t outDataLen,
-                         const uint8_t *addData = NULL, uint16_t addDataLen = 0);
+    WEAVE_ERROR Instantiate(EntropyFunct entropyFunct, uint16_t entropyLen, const uint8_t * personalizationData,
+                            uint16_t perDataLen);
+    WEAVE_ERROR Reseed(const uint8_t * addData = NULL, uint16_t addDataLen = 0);
+    WEAVE_ERROR Generate(uint8_t * outData, uint16_t outDataLen, const uint8_t * addData = NULL, uint16_t addDataLen = 0);
     void Uninstantiate(void);
 
     WEAVE_ERROR SelfTest(int verbose);
@@ -91,12 +89,11 @@ private:
     uint16_t mEntropyLen;
     uint8_t mCounter[kBlockLength];
 
-    void Update(const uint8_t *data);
+    void Update(const uint8_t * data);
     void IncrementCounter(void);
-    void DerivationFunction(uint8_t *seed, const uint8_t *data2, uint16_t data2Len,
-                            const uint8_t *data1 = NULL, uint16_t data1Len = 0);
-    WEAVE_ERROR GenerateInternal(uint8_t *outData, uint16_t outDataLen,
-                                 const uint8_t *addData, uint16_t addDataLen);
+    void DerivationFunction(uint8_t * seed, const uint8_t * data2, uint16_t data2Len, const uint8_t * data1 = NULL,
+                            uint16_t data1Len = 0);
+    WEAVE_ERROR GenerateInternal(uint8_t * outData, uint16_t outDataLen, const uint8_t * addData, uint16_t addDataLen);
 };
 
 typedef CTR_DRBG<Platform::Security::AES128BlockCipherEnc> AES128CTRDRBG;

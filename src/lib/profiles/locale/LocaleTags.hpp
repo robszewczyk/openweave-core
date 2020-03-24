@@ -39,12 +39,13 @@ namespace Locale {
 //                                Number     Category          Type           Constraints   Disposition  Readability  Writability
 //                                -----------------------------------------------------------------------------------------------
 
-enum {
+enum
+{
 
-    kTag_ActiveLocale           = 0x0001, // Profile-specific  UTF-8 String   IETF BCP 47-  Required     Any          Any
-                                          //                                  Formatted
-    kTag_AvailableLocales       = 0x0002, // Profile-specific  Array of UTF-  IETF BCP 47-  Required     Any          -
-                                          //                   8 Strings      Formatted
+    kTag_ActiveLocale = 0x0001,     // Profile-specific  UTF-8 String   IETF BCP 47-  Required     Any          Any
+                                    //                                  Formatted
+    kTag_AvailableLocales = 0x0002, // Profile-specific  Array of UTF-  IETF BCP 47-  Required     Any          -
+                                    //                   8 Strings      Formatted
 
 };
 

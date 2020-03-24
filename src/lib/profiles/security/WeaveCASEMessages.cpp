@@ -40,7 +40,6 @@
 #include <Weave/Support/crypto/EllipticCurve.h>
 #include <Weave/Support/CodeUtils.h>
 
-
 namespace nl {
 namespace Weave {
 namespace Profiles {
@@ -52,13 +51,12 @@ using namespace nl::Weave::Crypto;
 using namespace nl::Weave::Encoding;
 using namespace nl::Weave::TLV;
 
-
 // Encode the initial portion of Weave CASE BeginSessionRequest message, not including the DH public key,
 // the certificate info, the payload or the signature.
-WEAVE_ERROR BeginSessionRequestContext::EncodeHead(PacketBuffer *msgBuf)
+WEAVE_ERROR BeginSessionRequestContext::EncodeHead(PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = msgBuf->Start();
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
+    uint8_t * p      = msgBuf->Start();
     uint16_t bufSize = msgBuf->MaxDataLength();
 
     VerifyOrExit(AlternateConfigCount < kMaxAlternateProtocolConfigs, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -68,8 +66,7 @@ WEAVE_ERROR BeginSessionRequestContext::EncodeHead(PacketBuffer *msgBuf)
     VerifyOrExit(bufSize > HeadLength(), err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     // Encode the control header.
-    *p++ = (EncryptionType & kCASEHeader_EncryptionTypeMask) |
-           ((PerformKeyConfirm()) ? kCASEHeader_PerformKeyConfirmFlag : 0);
+    *p++ = (EncryptionType & kCASEHeader_EncryptionTypeMask) | ((PerformKeyConfirm()) ? kCASEHeader_PerformKeyConfirmFlag : 0);
 
     // Encode the alternate config count, alternate curve count and DH public key length.
     *p++ = AlternateConfigCount;
@@ -104,10 +101,10 @@ exit:
 }
 
 // Decode the initial portion of a Weave CASE BeginSessionRequest message.
-WEAVE_ERROR BeginSessionRequestContext::DecodeHead(PacketBuffer *msgBuf)
+WEAVE_ERROR BeginSessionRequestContext::DecodeHead(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = msgBuf->Start();
+    uint8_t * p     = msgBuf->Start();
     uint16_t msgLen = msgBuf->DataLength();
     uint32_t msgLenWithoutSig;
     uint8_t controlHeader;
@@ -116,7 +113,7 @@ WEAVE_ERROR BeginSessionRequestContext::DecodeHead(PacketBuffer *msgBuf)
     VerifyOrExit(msgLen > 18, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
 
     // Parse and decode the control header.
-    controlHeader = *p++;
+    controlHeader  = *p++;
     EncryptionType = controlHeader & kCASEHeader_EncryptionTypeMask;
     SetPerformKeyConfirm((controlHeader & kCASEHeader_PerformKeyConfirmFlag) != 0);
     VerifyOrExit((controlHeader & kCASEHeader_ControlHeaderUnusedBits) == 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -169,7 +166,7 @@ WEAVE_ERROR BeginSessionRequestContext::DecodeHead(PacketBuffer *msgBuf)
     p += PayloadLength;
 
     // Save a pointer to the signature and compute the signature length.
-    Signature = p;
+    Signature       = p;
     SignatureLength = msgLen - msgLenWithoutSig;
 
 exit:
@@ -186,11 +183,11 @@ bool BeginSessionRequestContext::IsAltConfig(uint32_t config) const
 }
 
 // Encode the initial portion of a Weave CASE BeginSessionResponse message.
-WEAVE_ERROR BeginSessionResponseContext::EncodeHead(PacketBuffer *msgBuf)
+WEAVE_ERROR BeginSessionResponseContext::EncodeHead(PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = msgBuf->Start();
-    uint16_t bufSize = msgBuf->MaxDataLength();
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    uint8_t * p           = msgBuf->Start();
+    uint16_t bufSize      = msgBuf->MaxDataLength();
     uint8_t controlHeader = 0;
 
     // Verify we have enough room to do our job.
@@ -202,14 +199,9 @@ WEAVE_ERROR BeginSessionResponseContext::EncodeHead(PacketBuffer *msgBuf)
     {
         switch (KeyConfirmHashLength)
         {
-        case 20:
-            controlHeader |= kCASEKeyConfirmHashLength_20Bytes;
-            break;
-        case 32:
-            controlHeader |= kCASEKeyConfirmHashLength_32Bytes;
-            break;
-        default:
-            ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+        case 20: controlHeader |= kCASEKeyConfirmHashLength_20Bytes; break;
+        case 32: controlHeader |= kCASEKeyConfirmHashLength_32Bytes; break;
+        default: ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
         }
     }
 
@@ -230,11 +222,11 @@ exit:
 }
 
 // Decode a Weave CASE BeginSessionResponse message.
-WEAVE_ERROR BeginSessionResponseContext::DecodeHead(PacketBuffer *msgBuf)
+WEAVE_ERROR BeginSessionResponseContext::DecodeHead(PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *p = msgBuf->Start();
-    uint16_t msgLen = msgBuf->DataLength();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    const uint8_t * p = msgBuf->Start();
+    uint16_t msgLen   = msgBuf->DataLength();
     uint16_t msgLenWithoutSig;
     uint8_t controlHeader;
 
@@ -247,8 +239,8 @@ WEAVE_ERROR BeginSessionResponseContext::DecodeHead(PacketBuffer *msgBuf)
 
     // Parse the various length fields.
     ECDHPublicKey.ECPointLen = *p++;
-    CertInfoLength = LittleEndian::Read16(p);
-    PayloadLength = LittleEndian::Read16(p);
+    CertInfoLength           = LittleEndian::Read16(p);
+    PayloadLength            = LittleEndian::Read16(p);
 
     // Determine the length of the key confirmation hash field, if present.
     switch (controlHeader & kCASEHeader_KeyConfirmHashLengthMask)
@@ -265,8 +257,7 @@ WEAVE_ERROR BeginSessionResponseContext::DecodeHead(PacketBuffer *msgBuf)
         SetPerformKeyConfirm(true);
         KeyConfirmHashLength = 32;
         break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     // Verify the overall message length is consistent with the claimed field sizes.
@@ -277,7 +268,7 @@ WEAVE_ERROR BeginSessionResponseContext::DecodeHead(PacketBuffer *msgBuf)
     SignatureLength = msgLen - msgLenWithoutSig;
 
     // Save a pointer to the DH public key.
-    ECDHPublicKey.ECPoint = (uint8_t *)p;
+    ECDHPublicKey.ECPoint = (uint8_t *) p;
     p += ECDHPublicKey.ECPointLen;
 
     // Save a pointer to the initiator's certificate information.
@@ -299,10 +290,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ReconfigureContext::Encode(PacketBuffer *msgBuf)
+WEAVE_ERROR ReconfigureContext::Encode(PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = msgBuf->Start();
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
+    uint8_t * p      = msgBuf->Start();
     uint16_t bufSize = msgBuf->MaxDataLength();
 
     // Verify we have enough room to do our job.
@@ -321,23 +312,22 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ReconfigureContext::Decode(PacketBuffer *msgBuf, ReconfigureContext& msg)
+WEAVE_ERROR ReconfigureContext::Decode(PacketBuffer * msgBuf, ReconfigureContext & msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *p = msgBuf->Start();
-    uint16_t msgLen = msgBuf->DataLength();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    const uint8_t * p = msgBuf->Start();
+    uint16_t msgLen   = msgBuf->DataLength();
 
     // Verify the size of the message.
     VerifyOrExit(msgLen >= 8, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
     VerifyOrExit(msgLen == 8, err = WEAVE_ERROR_MESSAGE_TOO_LONG);
 
     msg.ProtocolConfig = LittleEndian::Read32(p);
-    msg.CurveId = LittleEndian::Read32(p);
+    msg.CurveId        = LittleEndian::Read32(p);
 
 exit:
     return err;
 }
-
 
 } // namespace CASE
 } // namespace Security

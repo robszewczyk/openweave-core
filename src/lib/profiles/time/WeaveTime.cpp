@@ -41,14 +41,12 @@ using namespace nl::Weave::Encoding;
 
 using namespace nl::Weave::Profiles::Time;
 
-TimeChangeNotification::TimeChangeNotification(void)
-{
-}
+TimeChangeNotification::TimeChangeNotification(void) { }
 
-WEAVE_ERROR TimeChangeNotification::Encode(PacketBuffer* const aMsg)
+WEAVE_ERROR TimeChangeNotification::Encode(PacketBuffer * const aMsg)
 {
     // note that we assume the buffer is big enough for this message
-    uint8_t *cursor = aMsg->Start();
+    uint8_t * cursor = aMsg->Start();
 
     // write stuff into the message body
     // 16 reserved bits, all set to 0
@@ -59,7 +57,7 @@ WEAVE_ERROR TimeChangeNotification::Encode(PacketBuffer* const aMsg)
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR TimeChangeNotification::Decode(TimeChangeNotification * const aObject, PacketBuffer* const aMsg)
+WEAVE_ERROR TimeChangeNotification::Decode(TimeChangeNotification * const aObject, PacketBuffer * const aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -71,16 +69,15 @@ WEAVE_ERROR TimeChangeNotification::Decode(TimeChangeNotification * const aObjec
     }
 
     {
-        const uint8_t *cursor = aMsg->Start();
-        const uint16_t status = LittleEndian::Read16(cursor);
+        const uint8_t * cursor = aMsg->Start();
+        const uint16_t status  = LittleEndian::Read16(cursor);
 
         // non-zero reserved bits indicate the message has some extension that we are not aware of
 
         if (status != 0)
         {
-            WeaveLogDetail(TimeService,
-                "TimeSyncRequestAdvisory unknown extension, as reserved bits are not all 0s (0x%X)",
-                status);
+            WeaveLogDetail(TimeService, "TimeSyncRequestAdvisory unknown extension, as reserved bits are not all 0s (0x%X)",
+                           status);
         }
     }
 
@@ -90,18 +87,15 @@ exit:
     return err;
 }
 
-TimeSyncRequest::TimeSyncRequest(void) :
-    mLikelihoodForResponse(kLikelihoodForResponse_Min)
-{
-}
+TimeSyncRequest::TimeSyncRequest(void) : mLikelihoodForResponse(kLikelihoodForResponse_Min) { }
 
 void TimeSyncRequest::Init(const uint8_t aLikelihood, const bool aIsTimeCoordinator)
 {
     mLikelihoodForResponse = aLikelihood;
-    mIsTimeCoordinator = aIsTimeCoordinator;
+    mIsTimeCoordinator     = aIsTimeCoordinator;
 }
 
-WEAVE_ERROR TimeSyncRequest::Encode(PacketBuffer* const aMsg)
+WEAVE_ERROR TimeSyncRequest::Encode(PacketBuffer * const aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -120,7 +114,7 @@ WEAVE_ERROR TimeSyncRequest::Encode(PacketBuffer* const aMsg)
 
         // write stuff into the message body
         // note that we assume the buffer is big enough for this message
-        uint8_t *cursor = aMsg->Start();
+        uint8_t * cursor = aMsg->Start();
         LittleEndian::Write16(cursor, status);
 
         // calculate the message length again
@@ -133,7 +127,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TimeSyncRequest::Decode(TimeSyncRequest * const aObject, PacketBuffer* const aMsg)
+WEAVE_ERROR TimeSyncRequest::Decode(TimeSyncRequest * const aObject, PacketBuffer * const aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -145,8 +139,8 @@ WEAVE_ERROR TimeSyncRequest::Decode(TimeSyncRequest * const aObject, PacketBuffe
     }
 
     {
-        const uint8_t *cursor = aMsg->Start();
-        const uint16_t status = LittleEndian::Read16(cursor);
+        const uint8_t * cursor = aMsg->Start();
+        const uint16_t status  = LittleEndian::Read16(cursor);
 
         // lowest 1-bit
         aObject->mIsTimeCoordinator = status & 0x1;
@@ -165,8 +159,7 @@ WEAVE_ERROR TimeSyncRequest::Decode(TimeSyncRequest * const aObject, PacketBuffe
         // non-zero reserved bits indicate the message has some extension that we are not aware of
         if ((status >> 6) != 0)
         {
-            WeaveLogDetail(TimeService, "TimeSyncRequest unknown extension, as reserved bits are not all 0s (0x%X)",
-                status);
+            WeaveLogDetail(TimeService, "TimeSyncRequest unknown extension, as reserved bits are not all 0s (0x%X)", status);
         }
     }
 
@@ -176,17 +169,14 @@ exit:
     return err;
 }
 
-TimeSyncResponse::TimeSyncResponse(void)
-{
-}
+TimeSyncResponse::TimeSyncResponse(void) { }
 
-void TimeSyncResponse::Init(const TimeSyncRole aRole, const timesync_t aTimeOfRequest,
-    const timesync_t aTimeOfResponse,
-    const uint8_t aNumContributorInLastLocalSync, const uint16_t aTimeSinceLastSyncWithServer_min)
+void TimeSyncResponse::Init(const TimeSyncRole aRole, const timesync_t aTimeOfRequest, const timesync_t aTimeOfResponse,
+                            const uint8_t aNumContributorInLastLocalSync, const uint16_t aTimeSinceLastSyncWithServer_min)
 {
     mIsTimeCoordinator = (kTimeSyncRole_Coordinator == aRole) ? true : false;
-    mTimeOfRequest = aTimeOfRequest;
-    mTimeOfResponse = aTimeOfResponse;
+    mTimeOfRequest     = aTimeOfRequest;
+    mTimeOfResponse    = aTimeOfResponse;
 
     mNumContributorInLastLocalSync = aNumContributorInLastLocalSync;
     // clamp the number of contacts to kNumberOfContact_Max
@@ -205,17 +195,17 @@ void TimeSyncResponse::Init(const TimeSyncRole aRole, const timesync_t aTimeOfRe
     }
 }
 
-WEAVE_ERROR TimeSyncResponse::Encode(PacketBuffer* const aMsg)
+WEAVE_ERROR TimeSyncResponse::Encode(PacketBuffer * const aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Compose the 16-bit status
-    const uint16_t status = uint16_t(((mNumContributorInLastLocalSync & 0x1F) << 1) | (mIsTimeCoordinator ? 1 : 0));
+    const uint16_t status    = uint16_t(((mNumContributorInLastLocalSync & 0x1F) << 1) | (mIsTimeCoordinator ? 1 : 0));
     const uint16_t freshness = uint16_t(mTimeSinceLastSyncWithServer_min & 0xFFF);
 
     // write stuff into the message body
     // note that we assume the buffer is big enough for this message
-    uint8_t *cursor = aMsg->Start();
+    uint8_t * cursor = aMsg->Start();
 
     LittleEndian::Write16(cursor, status);
     LittleEndian::Write64(cursor, mTimeOfRequest);
@@ -230,7 +220,7 @@ WEAVE_ERROR TimeSyncResponse::Encode(PacketBuffer* const aMsg)
     return err;
 }
 
-WEAVE_ERROR TimeSyncResponse::Decode(TimeSyncResponse * const aObject, PacketBuffer* const aMsg)
+WEAVE_ERROR TimeSyncResponse::Decode(TimeSyncResponse * const aObject, PacketBuffer * const aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -242,11 +232,11 @@ WEAVE_ERROR TimeSyncResponse::Decode(TimeSyncResponse * const aObject, PacketBuf
     }
 
     {
-        const uint8_t *cursor = aMsg->Start();
-        const uint16_t status = LittleEndian::Read16(cursor);
+        const uint8_t * cursor = aMsg->Start();
+        const uint16_t status  = LittleEndian::Read16(cursor);
 
-        aObject->mTimeOfRequest = LittleEndian::Read64(cursor);
-        aObject->mTimeOfResponse = LittleEndian::Read64(cursor);
+        aObject->mTimeOfRequest                   = LittleEndian::Read64(cursor);
+        aObject->mTimeOfResponse                  = LittleEndian::Read64(cursor);
         aObject->mTimeSinceLastSyncWithServer_min = (LittleEndian::Read16(cursor) & 0xFFF);
 
         if (aObject->mTimeOfRequest & MASK_INVALID_TIMESYNC)
@@ -269,8 +259,7 @@ WEAVE_ERROR TimeSyncResponse::Decode(TimeSyncResponse * const aObject, PacketBuf
         // non-zero reserved bits indicate the message has some extension that we are not aware of
         if ((status >> 6) != 0)
         {
-            WeaveLogDetail(TimeService, "TimeSyncResponse unknown extension, as reserved bits are not all 0s (0x%X)",
-                status);
+            WeaveLogDetail(TimeService, "TimeSyncResponse unknown extension, as reserved bits are not all 0s (0x%X)", status);
         }
     }
 
@@ -280,15 +269,9 @@ exit:
     return err;
 }
 
-_TimeSyncNodeBase::_TimeSyncNodeBase(void) :
-    FabricState(NULL),
-    ExchangeMgr(NULL)
-{
+_TimeSyncNodeBase::_TimeSyncNodeBase(void) : FabricState(NULL), ExchangeMgr(NULL) { }
 
-}
-
-void _TimeSyncNodeBase::Init(WeaveFabricState * const aFabricState,
-    WeaveExchangeManager * const aExchangeMgr)
+void _TimeSyncNodeBase::Init(WeaveFabricState * const aFabricState, WeaveExchangeManager * const aExchangeMgr)
 {
     FabricState = aFabricState;
     ExchangeMgr = aExchangeMgr;
@@ -296,25 +279,25 @@ void _TimeSyncNodeBase::Init(WeaveFabricState * const aFabricState,
 
 timesync_t _TimeSyncNodeBase::GetClock_Monotonic(void)
 {
-    return (timesync_t)System::Layer::GetClock_Monotonic();
+    return (timesync_t) System::Layer::GetClock_Monotonic();
 }
 
 timesync_t _TimeSyncNodeBase::GetClock_MonotonicHiRes(void)
 {
-    return (timesync_t)System::Layer::GetClock_MonotonicHiRes();
+    return (timesync_t) System::Layer::GetClock_MonotonicHiRes();
 }
 
 WEAVE_ERROR _TimeSyncNodeBase::GetClock_RealTime(timesync_t & curTime)
 {
     uint64_t curTimeUnsigned;
     System::Error err = System::Layer::GetClock_RealTime(curTimeUnsigned);
-    curTime = (timesync_t)curTimeUnsigned;
+    curTime           = (timesync_t) curTimeUnsigned;
     return err;
 }
 
 WEAVE_ERROR _TimeSyncNodeBase::SetClock_RealTime(timesync_t newCurTime)
 {
-    return System::Layer::SetClock_RealTime((uint64_t)newCurTime);
+    return System::Layer::SetClock_RealTime((uint64_t) newCurTime);
 }
 
 #endif // WEAVE_CONFIG_TIME

@@ -92,7 +92,7 @@ using namespace ::nl::Weave::Profiles::StatusReporting;
  *  @param[in] a An array, which we need to know the size of.
  *
  */
-#define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 /**
  *  @brief
@@ -105,9 +105,9 @@ using namespace ::nl::Weave::Profiles::StatusReporting;
  *  @param[in] aError An Weave error code indicating if there was any error
  *    during connection setup.
  */
-static void handleSDConnectionComplete(WeaveConnection *aConnection, WEAVE_ERROR aError)
+static void handleSDConnectionComplete(WeaveConnection * aConnection, WEAVE_ERROR aError)
 {
-    WeaveServiceManager *manager = (WeaveServiceManager *)aConnection->AppState;
+    WeaveServiceManager * manager = (WeaveServiceManager *) aConnection->AppState;
 
     WeaveLogProgress(ServiceDirectory, "handleSDConnectionComplete() <= %s", nl::ErrorStr(aError));
 
@@ -126,9 +126,9 @@ static void handleSDConnectionComplete(WeaveConnection *aConnection, WEAVE_ERROR
  *  @param[in] aError An Weave error code indicating if there was any error
  *    during connection setup.
  */
-static void handleAppConnectionComplete(WeaveConnection *aConnection, WEAVE_ERROR aError)
+static void handleAppConnectionComplete(WeaveConnection * aConnection, WEAVE_ERROR aError)
 {
-    WeaveServiceManager::ConnectRequest *request = (WeaveServiceManager::ConnectRequest *)aConnection->AppState;
+    WeaveServiceManager::ConnectRequest * request = (WeaveServiceManager::ConnectRequest *) aConnection->AppState;
 
     WeaveLogProgress(ServiceDirectory, "handleAppConnectionComplete() <= %s", nl::ErrorStr(aError));
 
@@ -149,7 +149,7 @@ static void handleAppConnectionComplete(WeaveConnection *aConnection, WEAVE_ERRO
  *  @param[in] aError An Weave error code indicating if there was any error
  *    causing the connection to be closed.
  */
-static void handleConnectionClosed(WeaveConnection *aConnection, WEAVE_ERROR aError)
+static void handleConnectionClosed(WeaveConnection * aConnection, WEAVE_ERROR aError)
 {
     aConnection->Close();
 
@@ -170,11 +170,9 @@ static void handleConnectionClosed(WeaveConnection *aConnection, WEAVE_ERROR aEr
  *  @param[in] aError An Weave error code indicating if there was any error
  *    causing the connection to be closed.
  */
-static void ecHandleConnectionClosed(ExchangeContext *aExchangeCtx,
-                                   WeaveConnection *aConnection,
-                                   WEAVE_ERROR aError)
+static void ecHandleConnectionClosed(ExchangeContext * aExchangeCtx, WeaveConnection * aConnection, WEAVE_ERROR aError)
 {
-    WeaveServiceManager *manager = (WeaveServiceManager *)aConnection->AppState;
+    WeaveServiceManager * manager = (WeaveServiceManager *) aConnection->AppState;
 
     /*
      * Connection is just closed by peer, which is not really
@@ -213,14 +211,10 @@ static void ecHandleConnectionClosed(ExchangeContext *aExchangeCtx,
  *  @param[in] aMsgType     The profile-specific type of this message.
  *  @param[in] aMsg         A pointer to a buffer with the content of this message.
  */
-static void handleResponseMsg(ExchangeContext *aExchangeCtx,
-                              const IPPacketInfo *anAddrInfo,
-                              const WeaveMessageInfo *aMsgInfo,
-                              uint32_t aProfileId,
-                              uint8_t aMsgType,
-                              PacketBuffer *aMsg)
+static void handleResponseMsg(ExchangeContext * aExchangeCtx, const IPPacketInfo * anAddrInfo, const WeaveMessageInfo * aMsgInfo,
+                              uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
-    WeaveServiceManager *manager = (WeaveServiceManager *)aExchangeCtx->AppState;
+    WeaveServiceManager * manager = (WeaveServiceManager *) aExchangeCtx->AppState;
 
     WeaveLogProgress(ServiceDirectory, "handleResponseMsg()");
 
@@ -236,9 +230,9 @@ static void handleResponseMsg(ExchangeContext *aExchangeCtx,
  *  @param[in] aExchangeCtx A pointer to the exchange context object which
  *    is associated with this conversation.
  */
-static void handleResponseTimeout(ExchangeContext *aExchangeCtx)
+static void handleResponseTimeout(ExchangeContext * aExchangeCtx)
 {
-    WeaveServiceManager *manager = (WeaveServiceManager *)aExchangeCtx->AppState;
+    WeaveServiceManager * manager = (WeaveServiceManager *) aExchangeCtx->AppState;
 
     WeaveLogProgress(ServiceDirectory, "handleResponseTimeout()");
 
@@ -255,12 +249,12 @@ static void handleResponseTimeout(ExchangeContext *aExchangeCtx)
  */
 WeaveServiceManager::WeaveServiceManager()
 {
-    mExchangeManager = NULL;
-    mCache.base = NULL;
-    mCache.length = 0;
-    mConnection = NULL;
-    mExchangeContext = NULL;
-    mServiceEndpointQueryBegin = NULL;
+    mExchangeManager                     = NULL;
+    mCache.base                          = NULL;
+    mCache.length                        = 0;
+    mConnection                          = NULL;
+    mExchangeContext                     = NULL;
+    mServiceEndpointQueryBegin           = NULL;
     mServiceEndpointQueryEndWithTimeInfo = NULL;
 
     freeConnectRequests();
@@ -274,10 +268,10 @@ WeaveServiceManager::WeaveServiceManager()
  */
 WeaveServiceManager::~WeaveServiceManager()
 {
-    mExchangeManager = NULL;
-    mCache.base = NULL;
-    mCache.length = 0;
-    mServiceEndpointQueryBegin = NULL;
+    mExchangeManager                     = NULL;
+    mCache.base                          = NULL;
+    mCache.length                        = 0;
+    mServiceEndpointQueryBegin           = NULL;
     mServiceEndpointQueryEndWithTimeInfo = NULL;
 
     reset();
@@ -328,11 +322,8 @@ WeaveServiceManager::~WeaveServiceManager()
  *  @return #WEAVE_ERROR_INVALID_ARGUMENT if a function
  *    argument is invalid; otherwise, #WEAVE_NO_ERROR.
  */
-WEAVE_ERROR WeaveServiceManager::init(WeaveExchangeManager *aExchangeMgr,
-                                      uint8_t *aCache,
-                                      uint16_t aCacheLen,
-                                      RootDirectoryAccessor aAccessor,
-                                      WeaveAuthMode aDirAuthMode,
+WEAVE_ERROR WeaveServiceManager::init(WeaveExchangeManager * aExchangeMgr, uint8_t * aCache, uint16_t aCacheLen,
+                                      RootDirectoryAccessor aAccessor, WeaveAuthMode aDirAuthMode,
                                       OnServiceEndpointQueryBegin aServiceEndpointQueryBegin,
                                       OnServiceEndpointQueryEndWithTimeInfo aServiceEndpointQueryEndWithTimeInfo,
                                       OnConnectBegin aConnectBegin)
@@ -343,16 +334,16 @@ WEAVE_ERROR WeaveServiceManager::init(WeaveExchangeManager *aExchangeMgr,
 
     VerifyOrExit(aExchangeMgr && aCache && aCacheLen > 0 && aAccessor, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    mExchangeManager = aExchangeMgr;
-    mCache.base = aCache;
-    mCache.length = aCacheLen;
+    mExchangeManager     = aExchangeMgr;
+    mCache.base          = aCache;
+    mCache.length        = aCacheLen;
     mDirAndSuffTableSize = 0;
 
-    mAccessor = aAccessor;
-    mDirAuthMode = aDirAuthMode;
-    mServiceEndpointQueryBegin = aServiceEndpointQueryBegin;
+    mAccessor                            = aAccessor;
+    mDirAuthMode                         = aDirAuthMode;
+    mServiceEndpointQueryBegin           = aServiceEndpointQueryBegin;
     mServiceEndpointQueryEndWithTimeInfo = aServiceEndpointQueryEndWithTimeInfo;
-    mConnectBegin = aConnectBegin;
+    mConnectBegin                        = aConnectBegin;
 
     cleanupExchangeContext();
 
@@ -370,14 +361,12 @@ WEAVE_ERROR WeaveServiceManager::init(WeaveExchangeManager *aExchangeMgr,
         {
             Platform::ClearPersistentServiceDir();
             WeaveLogProgress(ServiceDirectory, "Restore error, persistent service directory cleared");
-
         }
         else
         {
             mCacheState = kServiceMgrState_Resolved;
             WeaveLogProgress(ServiceDirectory, "Persistent service directory successfully restored");
         }
-
     }
 
 #endif // WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
@@ -428,16 +417,13 @@ exit:
  *
  *  @return #WEAVE_NO_ERROR on success; otherwise, a respective error code.
  */
-WEAVE_ERROR WeaveServiceManager::connect(uint64_t aServiceEp,
-                                         WeaveAuthMode aAuthMode,
-                                         void *aAppState,
+WEAVE_ERROR WeaveServiceManager::connect(uint64_t aServiceEp, WeaveAuthMode aAuthMode, void * aAppState,
                                          StatusHandler aStatusHandler,
                                          WeaveConnection::ConnectionCompleteFunct aConnectionCompleteHandler,
-                                         const uint32_t aConnectTimeoutMsecs,
-                                         const InterfaceId aConnectIntf)
+                                         const uint32_t aConnectTimeoutMsecs, const InterfaceId aConnectIntf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ConnectRequest *req = NULL;
+    WEAVE_ERROR err      = WEAVE_NO_ERROR;
+    ConnectRequest * req = NULL;
 
     WeaveLogProgress(ServiceDirectory, "connect(%llx...)", aServiceEp);
 
@@ -459,7 +445,7 @@ WEAVE_ERROR WeaveServiceManager::connect(uint64_t aServiceEp,
         err = mAccessor(mCache.base, mCache.length);
         SuccessOrExit(err);
 
-        mDirectory.base = mCache.base;
+        mDirectory.base   = mCache.base;
         mDirectory.length = 1;
 
         mCacheState = kServiceMgrState_Resolving;
@@ -478,11 +464,7 @@ WEAVE_ERROR WeaveServiceManager::connect(uint64_t aServiceEp,
         mConnection = mExchangeManager->MessageLayer->NewConnection();
         VerifyOrExit(mConnection, err = WEAVE_ERROR_NO_MEMORY);
 
-        err = lookupAndConnect(mConnection,
-                               kServiceEndpoint_Directory,
-                               mDirAuthMode,
-                               this,
-                               handleSDConnectionComplete,
+        err = lookupAndConnect(mConnection, kServiceEndpoint_Directory, mDirAuthMode, this, handleSDConnectionComplete,
                                WEAVE_CONFIG_SERVICE_DIR_CONNECT_TIMEOUT_MSECS);
         SuccessOrExit(err);
         /*
@@ -520,13 +502,7 @@ WEAVE_ERROR WeaveServiceManager::connect(uint64_t aServiceEp,
     req = getAvailableRequest();
     VerifyOrExit(req, err = WEAVE_ERROR_WELL_EMPTY);
 
-    err = req->init(this,
-                    aServiceEp,
-                    aAuthMode,
-                    aAppState,
-                    aStatusHandler,
-                    aConnectionCompleteHandler,
-                    aConnectTimeoutMsecs,
+    err = req->init(this, aServiceEp, aAuthMode, aAppState, aStatusHandler, aConnectionCompleteHandler, aConnectTimeoutMsecs,
                     aConnectIntf);
     SuccessOrExit(err);
 
@@ -539,20 +515,14 @@ WEAVE_ERROR WeaveServiceManager::connect(uint64_t aServiceEp,
     {
         WeaveLogProgress(ServiceDirectory, "resolved");
 
-        err = lookupAndConnect(req->mConnection,
-                               req->mServiceEp,
-                               req->mAuthMode,
-                               req,
-                               handleAppConnectionComplete,
-                               req->mConnectTimeoutMsecs,
-                               req->mConnIntf);
+        err = lookupAndConnect(req->mConnection, req->mServiceEp, req->mAuthMode, req, handleAppConnectionComplete,
+                               req->mConnectTimeoutMsecs, req->mConnIntf);
     }
 
     else
     {
         err = WEAVE_ERROR_INCORRECT_STATE;
     }
-
 
 exit:
 
@@ -605,12 +575,12 @@ exit:
  *   unknown directory entry type.
  */
 
-WEAVE_ERROR WeaveServiceManager::lookup(uint64_t aServiceEp, HostPortList *outHostPortList)
+WEAVE_ERROR WeaveServiceManager::lookup(uint64_t aServiceEp, HostPortList * outHostPortList)
 {
     WEAVE_ERROR err;
     uint8_t itemCount;
     uint8_t ctrlByte;
-    uint8_t* entry = NULL;
+    uint8_t * entry = NULL;
 
     VerifyOrExit(outHostPortList != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -621,7 +591,7 @@ WEAVE_ERROR WeaveServiceManager::lookup(uint64_t aServiceEp, HostPortList *outHo
 
     itemCount = ctrlByte & kMask_HostPortListLen;
 
-    new (outHostPortList) HostPortList(entry, itemCount,  mSuffixTable.base, mSuffixTable.length);
+    new (outHostPortList) HostPortList(entry, itemCount, mSuffixTable.base, mSuffixTable.length);
 
 exit:
     return err;
@@ -655,24 +625,23 @@ exit:
  * @retval #WEAVE_ERROR_INVALID_DIRECTORY_ENTRY_TYPE if directory contains an
  *   unknown directory entry type.
  */
-WEAVE_ERROR WeaveServiceManager::lookup(uint64_t aServiceEp, uint8_t *aControlByte, uint8_t **aDirectoryEntry)
+WEAVE_ERROR WeaveServiceManager::lookup(uint64_t aServiceEp, uint8_t * aControlByte, uint8_t ** aDirectoryEntry)
 {
-    WEAVE_ERROR err = WEAVE_ERROR_INVALID_SERVICE_EP;
-    uint8_t *p = mDirectory.base;
+    WEAVE_ERROR err   = WEAVE_ERROR_INVALID_SERVICE_EP;
+    uint8_t * p       = mDirectory.base;
     uint16_t entryLen = 0;
-    bool found = false;
-    *aControlByte = 0;
-    *aDirectoryEntry = NULL;
+    bool found        = false;
+    *aControlByte     = 0;
+    *aDirectoryEntry  = NULL;
 
     WeaveLogProgress(ServiceDirectory, "lookup()");
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_ServiceManager_Lookup,
-                       memset(&aServiceEp, 0x0F, sizeof(aServiceEp)));
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_ServiceManager_Lookup, memset(&aServiceEp, 0x0F, sizeof(aServiceEp)));
 
     for (uint8_t i = 0; i < mDirectory.length; i++)
     {
-        uint8_t  entryCtrlByte = Read8(p);
-        uint64_t svcEp = Read64(p);
+        uint8_t entryCtrlByte = Read8(p);
+        uint64_t svcEp        = Read64(p);
 
         if (svcEp == aServiceEp)
         {
@@ -681,11 +650,11 @@ WEAVE_ERROR WeaveServiceManager::lookup(uint64_t aServiceEp, uint8_t *aControlBy
 
             WeaveLogProgress(ServiceDirectory, "found [%x,%llx]", entryCtrlByte, svcEp);
 
-            *aControlByte = entryCtrlByte;
+            *aControlByte    = entryCtrlByte;
             *aDirectoryEntry = p;
 
             found = true;
-            err = WEAVE_NO_ERROR;
+            err   = WEAVE_NO_ERROR;
 
             break;
         }
@@ -713,21 +682,19 @@ exit:
  *  Add the overriding directory entry of a hostname and port id at the beginning
  *  of the directory list.
  */
-WEAVE_ERROR WeaveServiceManager::replaceOrAddCacheEntry(uint16_t port,
-                                                        const char *hostName,
-                                                        uint8_t hostLen,
+WEAVE_ERROR WeaveServiceManager::replaceOrAddCacheEntry(uint16_t port, const char * hostName, uint8_t hostLen,
                                                         uint64_t serviceEndpointId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = mDirectory.base;
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
+    uint8_t * p      = mDirectory.base;
     uint8_t listCtrl = 0;
     uint8_t itemCtrl = 0;
     // Parameters for lookup.
     uint8_t ctrlByte;
-    uint8_t *entry = NULL;
-    uint16_t entryLength = 0;
+    uint8_t * entry          = NULL;
+    uint16_t entryLength     = 0;
     uint8_t bottomPortionLen = 0;
-    bool newEntryAdded = false;
+    bool newEntryAdded       = false;
 
     // Byte length for the overriding entry that needs to be inserted at the beginning of directory.
     // 1(host/port list length byte) + 8(Service Endpoint Id) + 1(hostId type byte) + 1(string len)
@@ -736,17 +703,14 @@ WEAVE_ERROR WeaveServiceManager::replaceOrAddCacheEntry(uint16_t port,
 
     // Inject a fault to return an error while replacing a directory entry.
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_ServiceDirectoryReplaceError,
-                       ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
-                       );
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_ServiceDirectoryReplaceError, ExitNow(err = WEAVE_ERROR_INCORRECT_STATE); );
 
     // Return if the cache state is not in the kServiceMgrState_Resolved state.
     // This is to avoid having to add an entry into the cache when it has been
     // reset thereby clearing the cache state and, avoid interfering with the
     // FSM if a query to the service-directory is in progress.
 
-    VerifyOrExit(mCacheState == kServiceMgrState_Resolved,
-                 err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(mCacheState == kServiceMgrState_Resolved, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // Perform lookup of the Service endpoint to replace an existing entry.
 
@@ -760,12 +724,11 @@ WEAVE_ERROR WeaveServiceManager::replaceOrAddCacheEntry(uint16_t port,
 
         entryLength += 9; // Add the entry ctrl byte(1) and the endpoint id(8) bytes
                           // to the entryLength.
-        entry -= 9; // Retract the entry start to the beginning of its control byte.
+        entry -= 9;       // Retract the entry start to the beginning of its control byte.
 
         // Add a check for the length incorporating the new entry.
 
-        VerifyOrExit(overrideEntryTotalLen + mDirAndSuffTableSize - entryLength < mCache.length,
-                     err = WEAVE_ERROR_NO_MEMORY);
+        VerifyOrExit(overrideEntryTotalLen + mDirAndSuffTableSize - entryLength < mCache.length, err = WEAVE_ERROR_NO_MEMORY);
 
         // Delete entry by moving up everything after the replaced entry to fill the created gap.
         bottomPortionLen = mDirAndSuffTableSize - (entry + entryLength - p);
@@ -850,10 +813,10 @@ exit:
  * @param [in] anAppState   A pointer to the app state object given to the
  *   connect() call.
  */
-void WeaveServiceManager::cancel(uint64_t aServiceEp, void *aAppState)
+void WeaveServiceManager::cancel(uint64_t aServiceEp, void * aAppState)
 {
     int activeRequests = 0;
-    ConnectRequest *req;
+    ConnectRequest * req;
 
     WeaveLogProgress(ServiceDirectory, "cancel()");
 
@@ -934,7 +897,7 @@ void WeaveServiceManager::unresolve(void)
 
 #if WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
         Platform::ClearPersistentServiceDir();
-#endif //WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
+#endif // WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
 
         cleanupExchangeContext();
 
@@ -984,7 +947,7 @@ void WeaveServiceManager::reset(void)
 
 #if WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
     Platform::ClearPersistentServiceDir();
-#endif //WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
+#endif // WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
 
     finalizeConnectRequests();
 }
@@ -1054,8 +1017,8 @@ void WeaveServiceManager::relocate(void)
  */
 void WeaveServiceManager::onConnectionComplete(WEAVE_ERROR aError)
 {
-    WEAVE_ERROR err = aError;
-    PacketBuffer *buf = NULL;
+    WEAVE_ERROR err    = aError;
+    PacketBuffer * buf = NULL;
 
     WeaveLogProgress(ServiceDirectory, "onConnectionComplete() <= %s", ErrorStr(aError));
 
@@ -1081,15 +1044,13 @@ void WeaveServiceManager::onConnectionComplete(WEAVE_ERROR aError)
 
     mConnection->OnConnectionClosed = handleConnectionClosed;
 
-    mExchangeContext->AppState = this;
-    mExchangeContext->OnMessageReceived = handleResponseMsg;
+    mExchangeContext->AppState           = this;
+    mExchangeContext->OnMessageReceived  = handleResponseMsg;
     mExchangeContext->OnConnectionClosed = ecHandleConnectionClosed;
-    mExchangeContext->OnResponseTimeout = handleResponseTimeout;
-    mExchangeContext->ResponseTimeout = kWeave_DefaultSendTimeout;
+    mExchangeContext->OnResponseTimeout  = handleResponseTimeout;
+    mExchangeContext->ResponseTimeout    = kWeave_DefaultSendTimeout;
 
-    err = mExchangeContext->SendMessage(kWeaveProfile_ServiceDirectory,
-                                        kMsgType_ServiceEndpointQuery,
-                                        buf,
+    err = mExchangeContext->SendMessage(kWeaveProfile_ServiceDirectory, kMsgType_ServiceEndpointQuery, buf,
                                         ExchangeContext::kSendFlag_ExpectResponse);
     buf = NULL;
 
@@ -1125,7 +1086,7 @@ void WeaveServiceManager::onConnectionClosed(WEAVE_ERROR aError)
  *  @param [in] aMsgType     The profile-specific type for this message.
  *  @param [in] aMsg         The content of this message.
  */
-void WeaveServiceManager::onResponseReceived(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aMsg)
+void WeaveServiceManager::onResponseReceived(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
@@ -1181,9 +1142,7 @@ void WeaveServiceManager::onResponseReceived(uint32_t aProfileId, uint8_t aMsgTy
         if (!redir)
         {
             WeaveLogProgress(ServiceDirectory, "Persisting service directory response");
-            err = Platform::StorePersistentServiceDir(aMsg->Start(),
-                                                      aMsg->DataLength(),
-                                                      kPersistedServiceDirVersion);
+            err = Platform::StorePersistentServiceDir(aMsg->Start(), aMsg->DataLength(), kPersistedServiceDirVersion);
             SuccessOrExit(err);
         }
 #endif // WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
@@ -1205,11 +1164,7 @@ void WeaveServiceManager::onResponseReceived(uint32_t aProfileId, uint8_t aMsgTy
 
             WeaveLogProgress(ServiceDirectory, "onResponseReceived(): redirecting");
 
-            err = lookupAndConnect(mConnection,
-                                   kServiceEndpoint_Directory,
-                                   mDirAuthMode,
-                                   this,
-                                   handleSDConnectionComplete,
+            err = lookupAndConnect(mConnection, kServiceEndpoint_Directory, mDirAuthMode, this, handleSDConnectionComplete,
                                    WEAVE_CONFIG_SERVICE_DIR_CONNECT_TIMEOUT_MSECS);
         }
 
@@ -1232,21 +1187,16 @@ void WeaveServiceManager::onResponseReceived(uint32_t aProfileId, uint8_t aMsgTy
                  */
 
                 WEAVE_ERROR conErr;
-                ConnectRequest *req = &mConnectRequestPool[j];
+                ConnectRequest * req  = &mConnectRequestPool[j];
                 StatusHandler handler = req->mStatusHandler;
-                void *appState = req->mAppState;
+                void * appState       = req->mAppState;
 
                 if (req->mServiceEp != 0)
                 {
                     WeaveLogProgress(ServiceDirectory, "onResponseReceived() txn = %llx", req->mServiceEp);
 
-                    conErr = lookupAndConnect(req->mConnection,
-                                              req->mServiceEp,
-                                              req->mAuthMode,
-                                              req,
-                                              handleAppConnectionComplete,
-                                              req->mConnectTimeoutMsecs,
-                                              req->mConnIntf);
+                    conErr = lookupAndConnect(req->mConnection, req->mServiceEp, req->mAuthMode, req, handleAppConnectionComplete,
+                                              req->mConnectTimeoutMsecs, req->mConnIntf);
 
                     if (conErr != WEAVE_NO_ERROR)
                     {
@@ -1306,14 +1256,10 @@ void WeaveServiceManager::onResponseTimeout(void)
  *
  *  @return #WEAVE_NO_ERROR on success; otherwise, a respective error code.
  */
-WEAVE_ERROR WeaveServiceManager::ConnectRequest::init(WeaveServiceManager *aManager,
-                                                      const uint64_t &aServiceEp,
-                                                      WeaveAuthMode aAuthMode,
-                                                      void *aAppState,
-                                                      StatusHandler aStatusHandler,
+WEAVE_ERROR WeaveServiceManager::ConnectRequest::init(WeaveServiceManager * aManager, const uint64_t & aServiceEp,
+                                                      WeaveAuthMode aAuthMode, void * aAppState, StatusHandler aStatusHandler,
                                                       WeaveConnection::ConnectionCompleteFunct aCompleteHandler,
-                                                      const uint32_t aConnectTimeoutMsecs,
-                                                      const InterfaceId aConnIntf)
+                                                      const uint32_t aConnectTimeoutMsecs, const InterfaceId aConnIntf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1322,13 +1268,13 @@ WEAVE_ERROR WeaveServiceManager::ConnectRequest::init(WeaveServiceManager *aMana
     mConnection = aManager->mExchangeManager->MessageLayer->NewConnection();
     VerifyOrExit(mConnection, err = WEAVE_ERROR_NO_MEMORY);
 
-    mServiceEp = aServiceEp;
-    mAuthMode = aAuthMode;
-    mAppState = aAppState;
-    mStatusHandler = aStatusHandler;
+    mServiceEp                 = aServiceEp;
+    mAuthMode                  = aAuthMode;
+    mAppState                  = aAppState;
+    mStatusHandler             = aStatusHandler;
     mConnectionCompleteHandler = aCompleteHandler;
-    mConnectTimeoutMsecs = aConnectTimeoutMsecs;
-    mConnIntf = aConnIntf;
+    mConnectTimeoutMsecs       = aConnectTimeoutMsecs;
+    mConnIntf                  = aConnIntf;
 
 exit:
 
@@ -1353,7 +1299,7 @@ void WeaveServiceManager::ConnectRequest::free(void)
  */
 void WeaveServiceManager::ConnectRequest::finalize(void)
 {
-    WeaveConnection *con = mConnection;
+    WeaveConnection * con = mConnection;
 
     free();
 
@@ -1367,7 +1313,7 @@ void WeaveServiceManager::ConnectRequest::finalize(void)
  */
 void WeaveServiceManager::ConnectRequest::onConnectionComplete(WEAVE_ERROR aError)
 {
-    WeaveConnection *con = mConnection;
+    WeaveConnection * con                            = mConnection;
     WeaveConnection::ConnectionCompleteFunct handler = mConnectionCompleteHandler;
 
     con->AppState = mAppState;
@@ -1394,7 +1340,7 @@ void WeaveServiceManager::finalizeConnectRequests(void)
 {
     for (int i = 0; i < kConnectRequestPoolSize; i++)
     {
-        ConnectRequest &r = mConnectRequestPool[i];
+        ConnectRequest & r = mConnectRequestPool[i];
 
         r.finalize();
     }
@@ -1412,9 +1358,9 @@ void WeaveServiceManager::finalizeConnectRequests(void)
  *  @return A pointer to an uninitialized instance of ConnectRequest on success;
  *    NULL otherwise.
  */
-WeaveServiceManager::ConnectRequest *WeaveServiceManager::getAvailableRequest(void)
+WeaveServiceManager::ConnectRequest * WeaveServiceManager::getAvailableRequest(void)
 {
-    WeaveServiceManager::ConnectRequest *retval = NULL;
+    WeaveServiceManager::ConnectRequest * retval = NULL;
 
     WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_ServiceManager_ConnectRequestNew, return retval);
 
@@ -1431,23 +1377,19 @@ WeaveServiceManager::ConnectRequest *WeaveServiceManager::getAvailableRequest(vo
     return retval;
 }
 
-WEAVE_ERROR WeaveServiceManager::calculateEntryLength(uint8_t *entryStart,
-                                                      uint8_t entryCtrlByte,
-                                                      uint16_t *entryLen)
+WEAVE_ERROR WeaveServiceManager::calculateEntryLength(uint8_t * entryStart, uint8_t entryCtrlByte, uint16_t * entryLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t listLen = entryCtrlByte & kMask_HostPortListLen;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint8_t listLen   = entryCtrlByte & kMask_HostPortListLen;
     uint8_t entryType = entryCtrlByte & kMask_DirectoryEntryType;
-    uint8_t *p = entryStart;
+    uint8_t * p       = entryStart;
 
     *entryLen = 0;
 
     switch (entryType)
     {
-      case kDirectoryEntryType_SingleNode:
-        *entryLen += 8;
-        break;
-      case kDirectoryEntryType_HostPortList:
+    case kDirectoryEntryType_SingleNode: *entryLen += 8; break;
+    case kDirectoryEntryType_HostPortList:
         for (uint8_t j = 0; j < listLen; j++)
         {
             uint8_t itemCtrlByte = Read8(p);
@@ -1468,7 +1410,7 @@ WEAVE_ERROR WeaveServiceManager::calculateEntryLength(uint8_t *entryStart,
                 *entryLen += 2;
         }
         break;
-      default:
+    default:
         // don't know what to do about other entry types
         err = WEAVE_ERROR_INVALID_DIRECTORY_ENTRY_TYPE;
         break;
@@ -1477,21 +1419,13 @@ WEAVE_ERROR WeaveServiceManager::calculateEntryLength(uint8_t *entryStart,
     return err;
 }
 
-ServiceConnectBeginArgs::ServiceConnectBeginArgs(
-    uint64_t inServiceEndpoint,
-    WeaveConnection *inConnection,
-    HostPortList *inEndpointHostPortList,
-    InterfaceId inConnectIntf,
-    WeaveAuthMode inAuthMode,
-    uint8_t inDNSOptions) :
+ServiceConnectBeginArgs::ServiceConnectBeginArgs(uint64_t inServiceEndpoint, WeaveConnection * inConnection,
+                                                 HostPortList * inEndpointHostPortList, InterfaceId inConnectIntf,
+                                                 WeaveAuthMode inAuthMode, uint8_t inDNSOptions) :
     ServiceEndpoint(inServiceEndpoint),
-    Connection(inConnection),
-    EndpointHostPortList(inEndpointHostPortList),
-    ConnectIntf(inConnectIntf),
-    AuthMode(inAuthMode),
+    Connection(inConnection), EndpointHostPortList(inEndpointHostPortList), ConnectIntf(inConnectIntf), AuthMode(inAuthMode),
     DNSOptions(inDNSOptions)
-{
-}
+{ }
 
 /**
  *  @brief
@@ -1500,13 +1434,9 @@ ServiceConnectBeginArgs::ServiceConnectBeginArgs(
  *
  *  @return #WEAVE_NO_ERROR on success; otherwise, a respective error code.
  */
-WEAVE_ERROR WeaveServiceManager::lookupAndConnect(WeaveConnection *aConnection,
-                                                  uint64_t aServiceEp,
-                                                  WeaveAuthMode aAuthMode,
-                                                  void *aAppState,
-                                                  WeaveConnection::ConnectionCompleteFunct aHandler,
-                                                  const uint32_t aConnectTimeoutMsecs,
-                                                  const InterfaceId aConnectIntf)
+WEAVE_ERROR WeaveServiceManager::lookupAndConnect(WeaveConnection * aConnection, uint64_t aServiceEp, WeaveAuthMode aAuthMode,
+                                                  void * aAppState, WeaveConnection::ConnectionCompleteFunct aHandler,
+                                                  const uint32_t aConnectTimeoutMsecs, const InterfaceId aConnectIntf)
 {
     WEAVE_ERROR err;
 
@@ -1516,35 +1446,26 @@ WEAVE_ERROR WeaveServiceManager::lookupAndConnect(WeaveConnection *aConnection,
     err = lookup(aServiceEp, &hostPortList);
     SuccessOrExit(err);
 
-    aConnection->AppState = aAppState;
+    aConnection->AppState             = aAppState;
     aConnection->OnConnectionComplete = aHandler;
 
     aConnection->SetConnectTimeout(aConnectTimeoutMsecs);
 
     {
-        ServiceConnectBeginArgs connectBeginArgs
-            (
-            aServiceEp,
-            aConnection,
-            &hostPortList,
-            aConnectIntf,
-            aAuthMode,
+        ServiceConnectBeginArgs connectBeginArgs(aServiceEp, aConnection, &hostPortList, aConnectIntf, aAuthMode,
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
-            ::nl::Inet::kDNSOption_Default
+                                                 ::nl::Inet::kDNSOption_Default
 #else
-            0
+                                                 0
 #endif
-            );
+        );
 
         if (mConnectBegin != NULL)
         {
             mConnectBegin(connectBeginArgs);
         }
 
-        err = aConnection->Connect(aServiceEp,
-                                   connectBeginArgs.AuthMode,
-                                   hostPortList,
-                                   connectBeginArgs.DNSOptions,
+        err = aConnection->Connect(aServiceEp, connectBeginArgs.AuthMode, hostPortList, connectBeginArgs.DNSOptions,
                                    connectBeginArgs.ConnectIntf);
         SuccessOrExit(err);
     }
@@ -1564,15 +1485,12 @@ exit:
  */
 WEAVE_ERROR WeaveServiceManager::loadPersistentServiceDirIntoCache()
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer* msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
     uint16_t len;
 
     msgBuf = PacketBuffer::New();
-    err = Platform::LoadPersistentServiceDir(msgBuf->Start(),
-                                             msgBuf->AvailableDataLength(),
-                                             len,
-                                             kPersistedServiceDirVersion);
+    err    = Platform::LoadPersistentServiceDir(msgBuf->Start(), msgBuf->AvailableDataLength(), len, kPersistedServiceDirVersion);
     SuccessOrExit(err);
 
     msgBuf->SetDataLength(len);
@@ -1587,7 +1505,7 @@ exit:
 
     return err;
 }
-#endif //WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
+#endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
 
 /**
  *  @brief
@@ -1597,7 +1515,7 @@ exit:
  *  @param [in] useTimeInfo If need to handle time info
  *  @param [in] redir        Return whether need to redirect
  */
-WEAVE_ERROR WeaveServiceManager::unpackPacketBuffer(PacketBuffer *aMsg, bool useTimeInfo, bool *redir)
+WEAVE_ERROR WeaveServiceManager::unpackPacketBuffer(PacketBuffer * aMsg, bool useTimeInfo, bool * redir)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1608,7 +1526,7 @@ WEAVE_ERROR WeaveServiceManager::unpackPacketBuffer(PacketBuffer *aMsg, bool use
 
         uint16_t msgLen = aMsg->DataLength();
         uint8_t dirCtrl;
-        uint8_t *writePtr;
+        uint8_t * writePtr;
         uint8_t dirLen;
         bool suffixesPresent;
         uint8_t aLength;
@@ -1619,10 +1537,10 @@ WEAVE_ERROR WeaveServiceManager::unpackPacketBuffer(PacketBuffer *aMsg, bool use
         dirLen = dirCtrl & kMask_DirectoryLen;
         if (redir != NULL)
         {
-          *redir = (dirCtrl & kMask_Redirect) != 0;
+            *redir = (dirCtrl & kMask_Redirect) != 0;
         }
         suffixesPresent = (dirCtrl & kMask_SuffixTablePresent) != 0;
-        timePresent = (dirCtrl & kMask_TimeFieldsPresent) != 0;
+        timePresent     = (dirCtrl & kMask_TimeFieldsPresent) != 0;
 
         if (((msgLen > mCache.length) && !timePresent) || (msgLen > (mCache.length + (sizeof(uint64_t) + sizeof(uint32_t)))))
         {
@@ -1663,7 +1581,7 @@ WEAVE_ERROR WeaveServiceManager::unpackPacketBuffer(PacketBuffer *aMsg, bool use
         else
         {
             mSuffixTable.length = 0;
-            mSuffixTable.base = NULL;
+            mSuffixTable.base   = NULL;
         }
 
         if (timePresent && useTimeInfo)
@@ -1695,10 +1613,10 @@ exit:
  *
  *  @return #WEAVE_NO_ERROR on success; otherwise, a respective error code.
  */
-WEAVE_ERROR WeaveServiceManager::cacheDirectory(MessageIterator &aIterator, uint8_t aLength, uint8_t *&aWritePtr)
+WEAVE_ERROR WeaveServiceManager::cacheDirectory(MessageIterator & aIterator, uint8_t aLength, uint8_t *& aWritePtr)
 {
-    WEAVE_ERROR retval = WEAVE_NO_ERROR;
-    uint8_t *startWritePtr = aWritePtr;
+    WEAVE_ERROR retval      = WEAVE_NO_ERROR;
+    uint8_t * startWritePtr = aWritePtr;
 
     for (int index = 0; index < aLength; index++)
     {
@@ -1710,12 +1628,12 @@ WEAVE_ERROR WeaveServiceManager::cacheDirectory(MessageIterator &aIterator, uint
             break;
 
         uint8_t listCtrl = *aWritePtr;
-        uint8_t listLen = listCtrl & kMask_HostPortListLen;
+        uint8_t listLen  = listCtrl & kMask_HostPortListLen;
 
         aWritePtr++;
 
         // and the service EP
-        retval = aIterator.read64((uint64_t *)aWritePtr);
+        retval = aIterator.read64((uint64_t *) aWritePtr);
 
         if (retval != WEAVE_NO_ERROR)
             break;
@@ -1727,7 +1645,7 @@ WEAVE_ERROR WeaveServiceManager::cacheDirectory(MessageIterator &aIterator, uint
             // flags are zero
             // this means we're looking at a single node ID
 
-            retval = aIterator.read64((uint64_t *)aWritePtr);
+            retval = aIterator.read64((uint64_t *) aWritePtr);
 
             if (retval != WEAVE_NO_ERROR)
                 break;
@@ -1783,7 +1701,7 @@ WEAVE_ERROR WeaveServiceManager::cacheDirectory(MessageIterator &aIterator, uint
 
                 if ((itemCtrl & kMask_PortIdPresent) != 0)
                 {
-                    retval = aIterator.read16((uint16_t *)aWritePtr);
+                    retval = aIterator.read16((uint16_t *) aWritePtr);
 
                     if (retval != WEAVE_NO_ERROR)
                         break;
@@ -1816,10 +1734,10 @@ WEAVE_ERROR WeaveServiceManager::cacheDirectory(MessageIterator &aIterator, uint
  *
  *  @return #WEAVE_NO_ERROR on success; otherwise, a respective error code.
  */
-WEAVE_ERROR WeaveServiceManager::cacheSuffixes(MessageIterator &aIterator, uint8_t aLength, uint8_t *&aWritePtr)
+WEAVE_ERROR WeaveServiceManager::cacheSuffixes(MessageIterator & aIterator, uint8_t aLength, uint8_t *& aWritePtr)
 {
-    WEAVE_ERROR retval = WEAVE_NO_ERROR;
-    uint8_t *startWritePtr = aWritePtr;
+    WEAVE_ERROR retval      = WEAVE_NO_ERROR;
+    uint8_t * startWritePtr = aWritePtr;
 
     for (uint8_t i = 0; i < aLength; i++)
     {
@@ -1884,10 +1802,10 @@ void WeaveServiceManager::transactionsErrorOut(WEAVE_ERROR aError)
 {
     for (size_t i = 0; i < ARRAY_SIZE(mConnectRequestPool); i++)
     {
-        ConnectRequest *req = &mConnectRequestPool[i];
+        ConnectRequest * req = &mConnectRequestPool[i];
 
         StatusHandler statusHndlr = req->mStatusHandler;
-        void *appState = req->mAppState;
+        void * appState           = req->mAppState;
 
         req->finalize();
 
@@ -1905,14 +1823,14 @@ void WeaveServiceManager::transactionsErrorOut(WEAVE_ERROR aError)
  *
  *  @param[in] aReport A reference to a status report received from a connection.
  */
-void WeaveServiceManager::transactionsReportStatus(StatusReport &aReport)
+void WeaveServiceManager::transactionsReportStatus(StatusReport & aReport)
 {
     for (size_t i = 0; i < ARRAY_SIZE(mConnectRequestPool); i++)
     {
-        ConnectRequest *req = &mConnectRequestPool[i];
+        ConnectRequest * req = &mConnectRequestPool[i];
 
         StatusHandler statusHndlr = req->mStatusHandler;
-        void *appState = req->mAppState;
+        void * appState           = req->mAppState;
 
         req->finalize();
 
@@ -1975,10 +1893,10 @@ void WeaveServiceManager::cleanupExchangeContext(void)
  */
 void WeaveServiceManager::clearWorkingState(void)
 {
-    mDirectory.length = 0;
-    mDirectory.base = NULL;
-    mSuffixTable.length = 0;
-    mSuffixTable.base = NULL;
+    mDirectory.length    = 0;
+    mDirectory.base      = NULL;
+    mSuffixTable.length  = 0;
+    mSuffixTable.base    = NULL;
     mDirAndSuffTableSize = 0;
 }
 
@@ -1996,7 +1914,7 @@ void WeaveServiceManager::clearWorkingState(void)
  *  @retval #WEAVE_ERROR_BUFFER_TOO_SMALL if the parsing fails because of
  *    buffer underrun
  */
-WEAVE_ERROR WeaveServiceManager::handleTimeInfo(MessageIterator &itMsg)
+WEAVE_ERROR WeaveServiceManager::handleTimeInfo(MessageIterator & itMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint64_t timeQueryReceiptMsec;
@@ -2035,4 +1953,4 @@ void WeaveServiceManager::clearCache(void)
 #endif
     }
 }
-#endif //WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
+#endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY

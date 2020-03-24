@@ -47,11 +47,9 @@ using namespace nl::Weave::Profiles::DeviceControl;
 extern MockNetworkProvisioningServer MockNPServer;
 extern MockServiceProvisioningServer MockSPServer;
 
-MockDeviceControlServer::MockDeviceControlServer()
-{
-}
+MockDeviceControlServer::MockDeviceControlServer() { }
 
-WEAVE_ERROR MockDeviceControlServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockDeviceControlServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -69,8 +67,7 @@ WEAVE_ERROR MockDeviceControlServer::Shutdown()
     return this->DeviceControlServer::Shutdown();
 }
 
-bool
-MockDeviceControlServer::ShouldCloseConBeforeResetConfig(uint16_t resetFlags)
+bool MockDeviceControlServer::ShouldCloseConBeforeResetConfig(uint16_t resetFlags)
 {
     return false;
 }
@@ -171,8 +168,8 @@ WEAVE_ERROR MockDeviceControlServer::OnSystemTestStopped()
     return WEAVE_NO_ERROR;
 }
 
-void MockDeviceControlServer::EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void MockDeviceControlServer::EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                   const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     if (sSuppressAccessControls)
     {
@@ -192,8 +189,9 @@ WEAVE_ERROR MockDeviceControlServer::SendStatusReport(uint32_t statusProfileId, 
     if (statusProfileId == kWeaveProfile_Common && statusCode == Common::kStatus_Success)
         printf("Sending StatusReport: Success\n");
     else if (sysError == WEAVE_NO_ERROR)
-        printf("Sending StatusReport: Status code = %u, Status profile = %lu\n", statusCode, (unsigned long)statusProfileId);
+        printf("Sending StatusReport: Status code = %u, Status profile = %lu\n", statusCode, (unsigned long) statusProfileId);
     else
-        printf("Sending StatusReport: Status code = %u, Status profile = %lu, System error = %d\n", statusCode, (unsigned long)statusProfileId, sysError);
+        printf("Sending StatusReport: Status code = %u, Status profile = %lu, System error = %d\n", statusCode,
+               (unsigned long) statusProfileId, sysError);
     return this->DeviceControlServer::SendStatusReport(statusProfileId, statusCode, sysError);
 }

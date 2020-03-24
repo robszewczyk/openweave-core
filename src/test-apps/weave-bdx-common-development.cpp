@@ -25,7 +25,6 @@
  * FILE API.
  */
 
-
 #include <inttypes.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -71,9 +70,9 @@ char TempFileLocation[FILENAME_MAX] = "/tmp/";
 // bdx-received files go here
 char ReceivedFileLocation[FILENAME_MAX] = "/tmp/";
 
-BdxAppState *NewAppState()
+BdxAppState * NewAppState()
 {
-    BdxAppState *appState;
+    BdxAppState * appState;
     for (int i = 0; i < WEAVE_CONFIG_BDX_MAX_NUM_TRANSFERS; i++)
     {
         appState = &mAppStatePool[i];
@@ -93,13 +92,13 @@ void ResetAppStates()
 {
     for (int i = 0; i < WEAVE_CONFIG_BDX_MAX_NUM_TRANSFERS; i++)
     {
-        mAppStatePool[i].mFile = NULL;
-        mAppStatePool[i].mDone = true;
+        mAppStatePool[i].mFile   = NULL;
+        mAppStatePool[i].mDone   = true;
         mAppStatePool[i].mBuffer = NULL;
     }
 }
 
-void SetReceivedFileLocation(const char *path)
+void SetReceivedFileLocation(const char * path)
 {
     strncpy(ReceivedFileLocation, path, sizeof(ReceivedFileLocation));
     ReceivedFileLocation[sizeof(ReceivedFileLocation) - 1] = '\0';
@@ -112,7 +111,7 @@ void SetReceivedFileLocation(const char *path)
     ReceivedFileLocation[sizeof(ReceivedFileLocation) - 1] = '\0';
 }
 
-void SetTempLocation(const char *path)
+void SetTempLocation(const char * path)
 {
     strncpy(TempFileLocation, path, sizeof(TempFileLocation));
     TempFileLocation[sizeof(TempFileLocation) - 1] = '\0';
@@ -126,7 +125,7 @@ void SetTempLocation(const char *path)
 }
 
 /** Helper function for use by libcurl. */
-size_t WriteData(void *aPtr, size_t aSize, size_t aNmemb, FILE *aStream)
+size_t WriteData(void * aPtr, size_t aSize, size_t aNmemb, FILE * aStream)
 {
     size_t written = fwrite(aPtr, aSize, aNmemb, aStream);
     return written;
@@ -136,7 +135,7 @@ size_t WriteData(void *aPtr, size_t aSize, size_t aNmemb, FILE *aStream)
  * need the while loop in here (this code was inherited from an older branch).
  * Perhaps for handling streams that are being added to as we consume from them?
  */
-size_t ReadData(char *aPtr, size_t aSize, size_t aNmemb, FILE *aStream)
+size_t ReadData(char * aPtr, size_t aSize, size_t aNmemb, FILE * aStream)
 {
     int nread = 0, left = aNmemb;
 
@@ -172,16 +171,16 @@ size_t ReadData(char *aPtr, size_t aSize, size_t aNmemb, FILE *aStream)
  *   If you want to get a local file, specify the file:// protocol
  */
 #if HAVE_CURL_CURL_H && HAVE_CURL_EASY_H
-int DownloadFile(char *aFileDesignator, size_t aFileDesignatorBufferSize)
+int DownloadFile(char * aFileDesignator, size_t aFileDesignatorBufferSize)
 {
-    CURL *curl = NULL;
-    FILE *fp;
+    CURL * curl = NULL;
+    FILE * fp;
     CURLcode res = CURLE_FAILED_INIT;
     char *pch = NULL, *file_name = NULL;
-    char *downloadURL = (char*)malloc(1 + strlen(aFileDesignator));
+    char * downloadURL = (char *) malloc(1 + strlen(aFileDesignator));
     char outfilename[FILENAME_MAX];
     char fileTemplate[] = "/tmp/fileXXXXXX";
-    int retval = 0;
+    int retval          = 0;
 
     strncpy(outfilename, TempFileLocation, sizeof(outfilename));
     outfilename[sizeof(outfilename) - 1] = '\0';
@@ -193,10 +192,10 @@ int DownloadFile(char *aFileDesignator, size_t aFileDesignatorBufferSize)
     while (pch != NULL)
     {
         file_name = pch;
-        pch = strtok(NULL, "/");
+        pch       = strtok(NULL, "/");
     }
 
-    strncat(outfilename, file_name, FILENAME_MAX-1);
+    strncat(outfilename, file_name, FILENAME_MAX - 1);
 
     if (mkstemp(fileTemplate) != -1)
     {
@@ -234,8 +233,8 @@ int DownloadFile(char *aFileDesignator, size_t aFileDesignatorBufferSize)
                 WeaveLogError(BDX, "BDX: Failed to rename the temporary file to %s\n", outfilename);
             }
 
-            strncpy(aFileDesignator, outfilename, aFileDesignatorBufferSize-1);
-            aFileDesignator[aFileDesignatorBufferSize-1] = '\0';
+            strncpy(aFileDesignator, outfilename, aFileDesignatorBufferSize - 1);
+            aFileDesignator[aFileDesignatorBufferSize - 1] = '\0';
         }
     }
     else
@@ -247,7 +246,7 @@ int DownloadFile(char *aFileDesignator, size_t aFileDesignatorBufferSize)
     free(downloadURL);
     downloadURL = NULL;
 
-    return (int)res;
+    return (int) res;
 }
 #endif // HAVE_CURL_CURL_H && HAVE_CURL_EASY_H
 
@@ -258,21 +257,18 @@ int DownloadFile(char *aFileDesignator, size_t aFileDesignatorBufferSize)
  *
  * @err  #kStatus_ServerBadState        If the file to be written to couldn't be opened
  */
-uint16_t BdxSendInitHandler(BDXTransfer *aXfer, SendInit *aSendInitMsg)
+uint16_t BdxSendInitHandler(BDXTransfer * aXfer, SendInit * aSendInitMsg)
 {
-    uint16_t err = kStatus_NoError;
-    BDXHandlers handlers =
-    {
-        NULL, NULL, NULL, NULL,
-        BdxPutBlockHandler, BdxXferErrorHandler, BdxXferDoneHandler, BdxErrorHandler
-    };
+    uint16_t err         = kStatus_NoError;
+    BDXHandlers handlers = { NULL, NULL, NULL, NULL, BdxPutBlockHandler, BdxXferErrorHandler, BdxXferDoneHandler, BdxErrorHandler };
 
     // Copy file name onto C-string
     // NOTE: the original string is not NUL terminated, but we know its length.
     // TODO: put this in the aXfer's fileDesignator
     char fileDesignator[aSendInitMsg->mFileDesignator.theLength + strlen(ReceivedFileLocation) + 1];
     memcpy(fileDesignator, ReceivedFileLocation, strlen(ReceivedFileLocation));
-    memcpy(fileDesignator + strlen(ReceivedFileLocation), aSendInitMsg->mFileDesignator.theString, aSendInitMsg->mFileDesignator.theLength);
+    memcpy(fileDesignator + strlen(ReceivedFileLocation), aSendInitMsg->mFileDesignator.theString,
+           aSendInitMsg->mFileDesignator.theLength);
     fileDesignator[aSendInitMsg->mFileDesignator.theLength + strlen(ReceivedFileLocation)] = '\0';
 
     WeaveLogDetail(BDX, "Send request for file: %s", fileDesignator);
@@ -286,12 +282,12 @@ uint16_t BdxSendInitHandler(BDXTransfer *aXfer, SendInit *aSendInitMsg)
     mAppState->mFile = fopen(fileDesignator, "w");
     VerifyOrExit(mAppState->mFile != NULL, err = kStatus_ServerBadState);
 
-    //TODO: shouldn't be using dynamic memory allocation, but how to do that with dynamically negotiated maxBlockSize???
-    //perhaps just go ahead and allocate our maximum size since we know the transfer won't go above that?
-    mAppState->mBuffer = (uint8_t *)malloc(aSendInitMsg->mMaxBlockSize);
+    // TODO: shouldn't be using dynamic memory allocation, but how to do that with dynamically negotiated maxBlockSize???
+    // perhaps just go ahead and allocate our maximum size since we know the transfer won't go above that?
+    mAppState->mBuffer = (uint8_t *) malloc(aSendInitMsg->mMaxBlockSize);
 
     // All seems good, so accept the transfer and set the handlers
-    aXfer->mIsAccepted = true;
+    aXfer->mIsAccepted   = true;
     aXfer->mTransferMode = aSendInitMsg->mSenderDriveSupported ? kMode_SenderDrive : kMode_ReceiverDrive;
 
     aXfer->SetHandlers(handlers);
@@ -307,28 +303,24 @@ exit:
  *
  * @err  #kStatus_UnknownFile    If the file couldn't be found
  */
-uint16_t BdxReceiveInitHandler(BDXTransfer *aXfer, ReceiveInit *aReceiveInit)
+uint16_t BdxReceiveInitHandler(BDXTransfer * aXfer, ReceiveInit * aReceiveInit)
 {
-    uint16_t err = kStatus_NoError;
-    int retval = 0;
+    uint16_t err  = kStatus_NoError;
+    int retval    = 0;
     long fileSize = 0;
-    BdxAppState *mAppState;
-    char *fileDesignator = NULL;
+    BdxAppState * mAppState;
+    char * fileDesignator = NULL;
 #if !defined(HAVE_CURL_CURL_H) || !defined(HAVE_CURL_EASY_H)
-    char *tempFileDesignator = NULL;
+    char * tempFileDesignator = NULL;
 #endif
-    FILE *targetFile = NULL;
+    FILE * targetFile = NULL;
 
-    BDXHandlers handlers =
-    {
-        NULL, NULL, NULL, BdxGetBlockHandler,
-        NULL, BdxXferErrorHandler, BdxXferDoneHandler, BdxErrorHandler
-    };
+    BDXHandlers handlers = { NULL, NULL, NULL, BdxGetBlockHandler, NULL, BdxXferErrorHandler, BdxXferDoneHandler, BdxErrorHandler };
 
     // TODO: put this in the aXfer's fileDesignator
     // Copy file name onto C-string
     // NOTE: the original string is not NUL terminated, but we know its length.
-    fileDesignator = (char *)malloc(FILENAME_MAX);
+    fileDesignator = (char *) malloc(FILENAME_MAX);
     VerifyOrExit(fileDesignator != NULL, err = kStatus_ServerBadState);
     memcpy(fileDesignator, aReceiveInit->mFileDesignator.theString, aReceiveInit->mFileDesignator.theLength);
     fileDesignator[aReceiveInit->mFileDesignator.theLength] = '\0';
@@ -340,9 +332,7 @@ uint16_t BdxReceiveInitHandler(BDXTransfer *aXfer, ReceiveInit *aReceiveInit)
     // NOTE: DownloadFile will mutate the fileDesignator to no longer be a URI
     retval = DownloadFile(fileDesignator, FILENAME_MAX);
 
-    VerifyOrExit(retval == CURLE_OK,
-                 err = kStatus_UnknownFile;
-                 WeaveLogError(BDX, "Unable to download the file : %d", err));
+    VerifyOrExit(retval == CURLE_OK, err = kStatus_UnknownFile; WeaveLogError(BDX, "Unable to download the file : %d", err));
 #else
     // If fileDesignator doesn't specify a local file with file:// and we
     // don't have curl, exit out.
@@ -354,7 +344,7 @@ uint16_t BdxReceiveInitHandler(BDXTransfer *aXfer, ReceiveInit *aReceiveInit)
     }
     else
     {
-        tempFileDesignator = (char *)malloc(strlen(fileDesignator));
+        tempFileDesignator = (char *) malloc(strlen(fileDesignator));
         VerifyOrExit(tempFileDesignator != NULL, err = kStatus_ServerBadState);
 
         strcpy(tempFileDesignator, fileDesignator + strlen("file://"));
@@ -371,9 +361,7 @@ uint16_t BdxReceiveInitHandler(BDXTransfer *aXfer, ReceiveInit *aReceiveInit)
     // The client already handles Setting transfer mode, max block size, and start sending
     // We just need to open the file and allocate a buffer for reading blocks
     targetFile = fopen(fileDesignator, "r");
-    VerifyOrExit(targetFile != NULL,
-                 err = kStatus_UnknownFile;
-                 WeaveLogError(BDX, "Error opening file %s", fileDesignator));
+    VerifyOrExit(targetFile != NULL, err = kStatus_UnknownFile; WeaveLogError(BDX, "Error opening file %s", fileDesignator));
     // Use fseek/ftell to find the size of the file.
     fseek(targetFile, 0, SEEK_END);
     // This will only work for files below 2 GB
@@ -394,15 +382,17 @@ uint16_t BdxReceiveInitHandler(BDXTransfer *aXfer, ReceiveInit *aReceiveInit)
     }
     else
     {
-        aXfer->mLength = (aReceiveInit->mLength + aReceiveInit->mStartOffset > static_cast<uint64_t>(fileSize)) ? (fileSize - aReceiveInit->mStartOffset) : (aReceiveInit->mLength);
+        aXfer->mLength = (aReceiveInit->mLength + aReceiveInit->mStartOffset > static_cast<uint64_t>(fileSize))
+            ? (fileSize - aReceiveInit->mStartOffset)
+            : (aReceiveInit->mLength);
     }
 
-    //TODO: shouldn't be using dynamic memory allocation, but how to do that with dynamically negotiated maxBlockSize???
-    //perhaps just go ahead and allocate our maximum size since we know the transfer won't go above that?
-    mAppState->mBuffer = (uint8_t *)malloc(aReceiveInit->mMaxBlockSize);
+    // TODO: shouldn't be using dynamic memory allocation, but how to do that with dynamically negotiated maxBlockSize???
+    // perhaps just go ahead and allocate our maximum size since we know the transfer won't go above that?
+    mAppState->mBuffer = (uint8_t *) malloc(aReceiveInit->mMaxBlockSize);
 
     // All seems good, so accept the transfer and set the handlers
-    aXfer->mIsAccepted = true;
+    aXfer->mIsAccepted   = true;
     aXfer->mTransferMode = aReceiveInit->mReceiverDriveSupported ? kMode_ReceiverDrive : kMode_SenderDrive;
     aXfer->SetHandlers(handlers);
 
@@ -426,11 +416,12 @@ exit:
  * the appropriate AppState for storing the file handle and sets the handlers for
  * the BDXTransfer.
  */
-WEAVE_ERROR BdxSendAcceptHandler(BDXTransfer *aXfer, SendAccept *aSendAcceptMsg)
+WEAVE_ERROR BdxSendAcceptHandler(BDXTransfer * aXfer, SendAccept * aSendAcceptMsg)
 {
-    WeaveLogDetail(BDX, "SendInit Accepted: %hd maxBlockSize, transfer mode is %hd", aSendAcceptMsg->mMaxBlockSize, aXfer->mTransferMode);
-    BdxAppState* bdxState = static_cast<BdxAppState*>(aXfer->mAppState);
-    WEAVE_ERROR error = WEAVE_NO_ERROR;
+    WeaveLogDetail(BDX, "SendInit Accepted: %hd maxBlockSize, transfer mode is %hd", aSendAcceptMsg->mMaxBlockSize,
+                   aXfer->mTransferMode);
+    BdxAppState * bdxState = static_cast<BdxAppState *>(aXfer->mAppState);
+    WEAVE_ERROR error      = WEAVE_NO_ERROR;
 
     // The client already handles Setting transfer mode, max block size, and start sending
     // We just need to open the file and allocate a buffer for reading blocks
@@ -441,9 +432,9 @@ WEAVE_ERROR BdxSendAcceptHandler(BDXTransfer *aXfer, SendAccept *aSendAcceptMsg)
         exit(-1);
     }
 
-    //TODO: shouldn't be using dynamic memory allocation, but how to do that with dynamically negotiated maxBlockSize???
-    //perhaps just go ahead and allocate our maximum size since we know the transfer won't go above that?
-    bdxState->mBuffer = (uint8_t*)malloc(aSendAcceptMsg->mMaxBlockSize);
+    // TODO: shouldn't be using dynamic memory allocation, but how to do that with dynamically negotiated maxBlockSize???
+    // perhaps just go ahead and allocate our maximum size since we know the transfer won't go above that?
+    bdxState->mBuffer = (uint8_t *) malloc(aSendAcceptMsg->mMaxBlockSize);
 
     return error;
 }
@@ -456,11 +447,12 @@ WEAVE_ERROR BdxSendAcceptHandler(BDXTransfer *aXfer, SendAccept *aSendAcceptMsg)
  * @note
  *   The file will be saved inside the ReceivedFileLocation directory
  */
-WEAVE_ERROR BdxReceiveAcceptHandler(BDXTransfer *aXfer, ReceiveAccept *aReceiveAcceptMsg)
+WEAVE_ERROR BdxReceiveAcceptHandler(BDXTransfer * aXfer, ReceiveAccept * aReceiveAcceptMsg)
 {
-    WeaveLogDetail(BDX, "ReceiveInit Accepted: %hd maxBlockSize, transfer mode is 0x%hx", aReceiveAcceptMsg->mMaxBlockSize, aXfer->mTransferMode);
-    BdxAppState* bdxState = static_cast<BdxAppState*>(aXfer->mAppState);
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WeaveLogDetail(BDX, "ReceiveInit Accepted: %hd maxBlockSize, transfer mode is 0x%hx", aReceiveAcceptMsg->mMaxBlockSize,
+                   aXfer->mTransferMode);
+    BdxAppState * bdxState = static_cast<BdxAppState *>(aXfer->mAppState);
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
 
     // The client already handles Setting transfer mode, max block size, and start sending
     // We just need to open the file and allocate a buffer for reading blocks
@@ -474,7 +466,7 @@ WEAVE_ERROR BdxReceiveAcceptHandler(BDXTransfer *aXfer, ReceiveAccept *aReceiveA
     }
     else
     {
-        filename++; //skip over '/'
+        filename++; // skip over '/'
     }
 
     char fileDesignator[strlen(ReceivedFileLocation) + strlen(filename) + 1];
@@ -499,24 +491,21 @@ WEAVE_ERROR BdxReceiveAcceptHandler(BDXTransfer *aXfer, ReceiveAccept *aReceiveA
 /** Example implementation of a RejectHandler, which simply logs the StatusReport
  * and sets the transfer as complete so the example client knows to exit.
  */
-void BdxRejectHandler(BDXTransfer *aXfer, StatusReport *aReport)
+void BdxRejectHandler(BDXTransfer * aXfer, StatusReport * aReport)
 {
     WeaveLogProgress(BDX, "BDX Init message rejected: %d", aReport->mStatusCode);
     // mark as done to close client
-    ((BdxAppState*)aXfer->mAppState)->mDone = true;
+    ((BdxAppState *) aXfer->mAppState)->mDone = true;
 }
 
 /** Example implementation of a GetBlockHandler that reads a block from the associated
  * open file handle, stores it in the AppState's buffer, and sets the parameters as
  * appropriate so the protocol can handle the block.
  */
-void BdxGetBlockHandler(BDXTransfer *aXfer,
-                        uint64_t *aLength,
-                        uint8_t **aDataBlock,
-                        bool *aIsLastBlock)
+void BdxGetBlockHandler(BDXTransfer * aXfer, uint64_t * aLength, uint8_t ** aDataBlock, bool * aIsLastBlock)
 {
-    BdxAppState* bdxState = static_cast<BdxAppState*>(aXfer->mAppState);
-    uint64_t blockSize = 0;
+    BdxAppState * bdxState = static_cast<BdxAppState *>(aXfer->mAppState);
+    uint64_t blockSize     = 0;
 
     if (aXfer->mLength != 0 && ((aXfer->mLength - aXfer->mBytesSent) < aXfer->mMaxBlockSize))
     {
@@ -527,7 +516,7 @@ void BdxGetBlockHandler(BDXTransfer *aXfer,
         blockSize = aXfer->mMaxBlockSize;
     }
 
-    *aLength = fread(bdxState->mBuffer, 1, blockSize, bdxState->mFile);
+    *aLength    = fread(bdxState->mBuffer, 1, blockSize, bdxState->mFile);
     *aDataBlock = bdxState->mBuffer;
     aXfer->mBytesSent += blockSize;
 
@@ -537,9 +526,9 @@ void BdxGetBlockHandler(BDXTransfer *aXfer,
 /** Example implementation of a PutBlockHandler that dumps the block to stdout for
  * debugging and then writes it to the file handle associated with the transfer.
  */
-void BdxPutBlockHandler(BDXTransfer *aXfer, uint64_t aLength, uint8_t *aDataBlock, bool aIsLastBlock)
+void BdxPutBlockHandler(BDXTransfer * aXfer, uint64_t aLength, uint8_t * aDataBlock, bool aIsLastBlock)
 {
-    BdxAppState* bdxState = static_cast<BdxAppState*>(aXfer->mAppState);
+    BdxAppState * bdxState = static_cast<BdxAppState *>(aXfer->mAppState);
 
     DumpMemory(aDataBlock, aLength, "--> ", 16);
 
@@ -555,11 +544,11 @@ void BdxPutBlockHandler(BDXTransfer *aXfer, uint64_t aLength, uint8_t *aDataBloc
  * A real implemenation on a platform should obviously try to handle the error in a more
  * intelligent manner rather than hard exiting.
  */
-//TODO: decide when we should be freeing any resources (esp. mallocs) associated with
-//a transfer, including freeing up the BdxAppState object.
-void BdxXferErrorHandler(BDXTransfer *aXfer, StatusReport *aXferError)
+// TODO: decide when we should be freeing any resources (esp. mallocs) associated with
+// a transfer, including freeing up the BdxAppState object.
+void BdxXferErrorHandler(BDXTransfer * aXfer, StatusReport * aXferError)
 {
-    BdxAppState *appState = (BdxAppState *)(aXfer->mAppState);
+    BdxAppState * appState = (BdxAppState *) (aXfer->mAppState);
 
     WeaveLogProgress(BDX, "Transfer error: %d", aXferError->mStatusCode);
 
@@ -589,10 +578,10 @@ void BdxXferErrorHandler(BDXTransfer *aXfer, StatusReport *aXferError)
  * AppState that the transfer is complete (so the client can shut down), and frees
  * any dynamically allocated resources for this transfer.
  */
-void BdxXferDoneHandler(BDXTransfer *aXfer)
+void BdxXferDoneHandler(BDXTransfer * aXfer)
 {
     WeaveLogDetail(BDX, "Transfer complete!");
-    BdxAppState *appState = (BdxAppState *)(aXfer->mAppState);
+    BdxAppState * appState = (BdxAppState *) (aXfer->mAppState);
     if (appState->mFile)
     {
         if (fclose(appState->mFile))
@@ -618,9 +607,9 @@ void BdxXferDoneHandler(BDXTransfer *aXfer)
 /** Example ErrorHandler that logs the error and shuts down the transfer as well as the
  * client.
  */
-void BdxErrorHandler(BDXTransfer *aXfer, WEAVE_ERROR aErrorCode)
+void BdxErrorHandler(BDXTransfer * aXfer, WEAVE_ERROR aErrorCode)
 {
-    BdxAppState *appState = static_cast<BdxAppState *>(aXfer->mAppState);
+    BdxAppState * appState = static_cast<BdxAppState *>(aXfer->mAppState);
 
     WeaveLogProgress(BDX, "BDX error: %s", ErrorStr(aErrorCode));
 
@@ -639,12 +628,11 @@ void BdxErrorHandler(BDXTransfer *aXfer, WEAVE_ERROR aErrorCode)
         appState->mBuffer = NULL;
     }
 
-
     aXfer->Shutdown();
 }
 
 // namespaces
-}
-}
-}
-}
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl

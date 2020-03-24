@@ -22,7 +22,6 @@
  *          time/clock functions that are suitable for use on the ESP32 platform.
  */
 
-
 #include <Weave/DeviceLayer/internal/WeaveDeviceLayerInternal.h>
 #include <Weave/Support/TimeUtils.h>
 #include <esp_timer.h>
@@ -83,9 +82,9 @@ Error GetClock_RealTimeMS(uint64_t & curTime)
 Error SetClock_RealTime(uint64_t newCurTime)
 {
     struct timeval tv;
-    tv.tv_sec = static_cast<time_t>(newCurTime / UINT64_C(1000000));
+    tv.tv_sec  = static_cast<time_t>(newCurTime / UINT64_C(1000000));
     tv.tv_usec = static_cast<long>(newCurTime % UINT64_C(1000000));
-    int res = settimeofday(&tv, NULL);
+    int res    = settimeofday(&tv, NULL);
     if (res != 0)
     {
         return (errno == EPERM) ? WEAVE_SYSTEM_ERROR_ACCESS_DENIED : MapErrorPOSIX(errno);
@@ -95,8 +94,10 @@ Error SetClock_RealTime(uint64_t newCurTime)
         uint16_t year;
         uint8_t month, dayOfMonth, hour, minute, second;
         SecondsSinceEpochToCalendarTime(tv.tv_sec, year, month, dayOfMonth, hour, minute, second);
-        WeaveLogProgress(DeviceLayer, "Real time clock set to %ld (%04" PRId16 "/%02" PRId8 "/%02" PRId8 " %02" PRId8 ":%02" PRId8 ":%02" PRId8 " UTC)",
-                 tv.tv_sec, year, month, dayOfMonth, hour, minute, second);
+        WeaveLogProgress(DeviceLayer,
+                         "Real time clock set to %ld (%04" PRId16 "/%02" PRId8 "/%02" PRId8 " %02" PRId8 ":%02" PRId8 ":%02" PRId8
+                         " UTC)",
+                         tv.tv_sec, year, month, dayOfMonth, hour, minute, second);
     }
 #endif // WEAVE_PROGRESS_LOGGING
     return WEAVE_SYSTEM_NO_ERROR;

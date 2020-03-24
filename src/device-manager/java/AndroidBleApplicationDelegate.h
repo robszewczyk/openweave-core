@@ -22,10 +22,9 @@
 
 typedef void (*NotifyWeaveConnectionClosedCallback)(BLE_CONNECTION_OBJECT connObj);
 
-class AndroidBleApplicationDelegate :
-    public nl::Ble::BleApplicationDelegate
+class AndroidBleApplicationDelegate : public nl::Ble::BleApplicationDelegate
 {
- public:
+public:
     NotifyWeaveConnectionClosedCallback NotifyWeaveConnectionClosedCb;
 
     // ctor

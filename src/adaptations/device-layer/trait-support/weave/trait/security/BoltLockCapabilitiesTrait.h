@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace BoltLockCapabilitiesTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe0aU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe0aU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -75,9 +75,10 @@ enum {
 // Enums
 //
 
-enum BoltLockCapabilitiesHandedness {
-    BOLT_LOCK_CAPABILITIES_HANDEDNESS_RIGHT = 1,
-    BOLT_LOCK_CAPABILITIES_HANDEDNESS_LEFT = 2,
+enum BoltLockCapabilitiesHandedness
+{
+    BOLT_LOCK_CAPABILITIES_HANDEDNESS_RIGHT         = 1,
+    BOLT_LOCK_CAPABILITIES_HANDEDNESS_LEFT          = 2,
     BOLT_LOCK_CAPABILITIES_HANDEDNESS_FIXED_UNKNOWN = 3,
 };
 

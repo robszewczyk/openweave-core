@@ -52,54 +52,63 @@ using namespace ::nl::Weave;
 class BulkDataTransferClient
 {
 public:
-	BulkDataTransferClient();
-	~BulkDataTransferClient();
+    BulkDataTransferClient();
+    ~BulkDataTransferClient();
 
-	WeaveExchangeManager *ExchangeMgr;		// [READ ONLY] Exchange manager object
-	const WeaveFabricState *FabricState;	// [READ ONLY] Fabric state object
-	uint8_t EncryptionType;                         // Encryption type to use when sending an Echo Request
-	uint16_t KeyId;                                 // Encryption key to use when sending an Echo Request
+    WeaveExchangeManager * ExchangeMgr;   // [READ ONLY] Exchange manager object
+    const WeaveFabricState * FabricState; // [READ ONLY] Fabric state object
+    uint8_t EncryptionType;               // Encryption type to use when sending an Echo Request
+    uint16_t KeyId;                       // Encryption key to use when sending an Echo Request
 
-	WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
-    void setCon(WeaveConnection *con);
-	WEAVE_ERROR Shutdown();
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
+    void setCon(WeaveConnection * con);
+    WEAVE_ERROR Shutdown();
 
-    WEAVE_ERROR SendFile(const char *DestFileName, WeaveConnection *con);
-    WEAVE_ERROR SendFile(const char *DestFileName, uint64_t nodeId, IPAddress nodeAddr);
-    WEAVE_ERROR ReceiveFile(const char *DestFileName, WeaveConnection *con);
-    WEAVE_ERROR ReceiveFile(const char *DestFileName, uint64_t nodeId, IPAddress nodeAddr);
+    WEAVE_ERROR SendFile(const char * DestFileName, WeaveConnection * con);
+    WEAVE_ERROR SendFile(const char * DestFileName, uint64_t nodeId, IPAddress nodeAddr);
+    WEAVE_ERROR ReceiveFile(const char * DestFileName, WeaveConnection * con);
+    WEAVE_ERROR ReceiveFile(const char * DestFileName, uint64_t nodeId, IPAddress nodeAddr);
 
-    WEAVE_ERROR SendReceiveInitRequest(WeaveConnection *con);
+    WEAVE_ERROR SendReceiveInitRequest(WeaveConnection * con);
     WEAVE_ERROR SendReceiveInitRequest(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendReceiveInitRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
-    WEAVE_ERROR SendSendInitRequest(WeaveConnection *con);
+    WEAVE_ERROR SendSendInitRequest(WeaveConnection * con);
     WEAVE_ERROR SendSendInitRequest(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendSendInitRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
-    WEAVE_ERROR SendBlockQueryRequest(WeaveConnection *con);
+    WEAVE_ERROR SendBlockQueryRequest(WeaveConnection * con);
     WEAVE_ERROR SendBlockQueryRequest(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendBlockQueryRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
-    WEAVE_ERROR SendBlockEOFAck(WeaveConnection *con);
+    WEAVE_ERROR SendBlockEOFAck(WeaveConnection * con);
     WEAVE_ERROR SendBlockEOFAck(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendBlockEOFAck(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
 private:
-	ExchangeContext *   mExchangeCtx; // The exchange context for the most recently started Echo exchange.
-    uint8_t             mBlockCounter;
-    uint16_t            mMaxBlockSize; // For the currently open transfer
-    WeaveConnection *   mCon;
-    FILE *              mDestFile;
-    uint8_t             mTransferMode;
+    ExchangeContext * mExchangeCtx; // The exchange context for the most recently started Echo exchange.
+    uint8_t mBlockCounter;
+    uint16_t mMaxBlockSize; // For the currently open transfer
+    WeaveConnection * mCon;
+    FILE * mDestFile;
+    uint8_t mTransferMode;
 
-	static WEAVE_ERROR HandleReceiveInitResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-	static WEAVE_ERROR HandleSendInitResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static WEAVE_ERROR HandleBlockAck(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleBlockEOFAck(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleBlockQueryResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleBlockQueryRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleBlockEOFAckResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static WEAVE_ERROR HandleReceiveInitResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                 const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                 PacketBuffer * payload);
+    static WEAVE_ERROR HandleSendInitResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                              const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                              PacketBuffer * payload);
+    static WEAVE_ERROR HandleBlockAck(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                      uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockEOFAck(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                  uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockQueryResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                         uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockQueryRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockEOFAckResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                          uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
     WEAVE_ERROR SendReceiveInitRequest();
     WEAVE_ERROR SendSendInitRequest();
@@ -111,11 +120,11 @@ private:
     bool IsSenderDriveMode();
     bool IsReceiverDriveMode();
 
-	BulkDataTransferClient(const BulkDataTransferClient&);   // not defined
+    BulkDataTransferClient(const BulkDataTransferClient &); // not defined
 };
 
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
 
-#endif //BULK_DATA_TRANSFER_CLIENT_H_
+#endif // BULK_DATA_TRANSFER_CLIENT_H_

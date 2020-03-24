@@ -32,7 +32,6 @@
 
 #include <weave/trait/security/UserNFCTokenMetadataTrait.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -41,15 +40,17 @@ namespace UserNFCTokensTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe11U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe11U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -76,17 +77,17 @@ struct UserNFCTokenData
     nl::SerializedByteString userId;
     uint64_t tokenDeviceId;
     bool enabled;
-    nl::SerializedFieldTypeUInt64_array  structureIds;
+    nl::SerializedFieldTypeUInt64_array structureIds;
     const char * label;
     Schema::Weave::Trait::Security::UserNFCTokenMetadataTrait::Metadata metadata;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct UserNFCTokenData_array {
+struct UserNFCTokenData_array
+{
     uint32_t num;
-    UserNFCTokenData *buf;
+    UserNFCTokenData * buf;
 };
 
 } // namespace UserNFCTokensTrait

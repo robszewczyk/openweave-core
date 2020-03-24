@@ -35,7 +35,6 @@ namespace Weave {
 namespace Profiles {
 namespace NetworkProvisioning {
 
-
 /**
  * A utility class for serializing and deserializing payloads
  * communicated via NetworkProvisioning profile: it encapsulates
@@ -61,7 +60,7 @@ public:
     // ---- WiFi-specific Fields ----
     /** The WiFi SSID, or NULL if not specified. It is a NUL-terminated, dynamically-allocated C-string, owned by the class.
      *  Destroyed on any condition that calls `Clear()` on the object. */
-    char *WiFiSSID;
+    char * WiFiSSID;
     /** The operating mode of the WiFi network.*/
     ::nl::Weave::Profiles::NetworkProvisioning::WiFiMode WiFiMode;
     /** The role played by the device on the WiFi network. */
@@ -70,30 +69,30 @@ public:
     ::nl::Weave::Profiles::NetworkProvisioning::WiFiSecurityType WiFiSecurityType;
     /** The WiFi key, or NULL if not specified. It is a dynamically allocated array of arbitrary octets, owned by the class, with
      *  length specified by `WiFiKeyLen`.  Destroyed on any condition that calls `Clear()` on the object. */
-    uint8_t *WiFiKey;
+    uint8_t * WiFiKey;
     /** The length in bytes of the WiFi key. */
     uint32_t WiFiKeyLen;
 
     // ---- Thread-specific Fields ----
     enum
     {
-        kThreadNetworkKeyLength = 16,
+        kThreadNetworkKeyLength    = 16,
         kThreadExtendedPANIdLength = 8,
-        kThreadPSKcLength = 16,
+        kThreadPSKcLength          = 16,
     };
 
     /** The name of the Thread network, or NULL if not specified. It is a NUL-terminated, dynamically-allocated C-string, owned by
      * the class.  Destroyed on any condition that calls `Clear()` on the object. */
-    char *ThreadNetworkName;
+    char * ThreadNetworkName;
     /** The Thread extended PAN ID. It is a dynamically allocated array of 8 octects, owned by the class.  Destroyed on any
      * condition that calls `Clear()` on the object. */
-    uint8_t *ThreadExtendedPANId;
+    uint8_t * ThreadExtendedPANId;
     /** The Thread master network key , or NULL if not specified. It is a dynamically allocated array of arbitrary octets, owned by
      * the class Destroyed on any condition that calls `Clear()` on the object. */
-    uint8_t *ThreadNetworkKey;
+    uint8_t * ThreadNetworkKey;
     /** Thread pre-shared key for commissioner, or NULL if not specified. It is a dynamically allocated array of arbitrary octets,
      * owned by the class Destroyed on any condition that calls `Clear()` on the object. */
-    uint8_t *ThreadPSKc;
+    uint8_t * ThreadPSKc;
     /** The 16-bit Thread PAN ID, or kThreadPANId_NotSpecified */
     uint32_t ThreadPANId;
     /** The current channel (currently [11..26]) on which the Thread network operates, or kThreadChannel_NotSpecified */
@@ -116,7 +115,7 @@ public:
      *
      * @retval #WEAVE_ERROR_NO_MEMORY On memory allocation failures.
      */
-    WEAVE_ERROR CopyTo(NetworkInfo& dest);
+    WEAVE_ERROR CopyTo(NetworkInfo & dest);
 
     /**
      * Merge the contents of this NetworkInfo object with the deep copy of the contents of the argument. All the
@@ -130,7 +129,7 @@ public:
      *
      * @retval #WEAVE_ERROR_NO_MEMORY On memory allocation failures.
      */
-    WEAVE_ERROR MergeTo(NetworkInfo& dest);
+    WEAVE_ERROR MergeTo(NetworkInfo & dest);
 
     /**
      * Reset to default and free all values within this NetworkInfo object
@@ -139,8 +138,8 @@ public:
 
     enum
     {
-        kEncodeFlag_EncodeCredentials   = ::nl::Weave::Profiles::NetworkProvisioning::kGetNetwork_IncludeCredentials,
-        kEncodeFlag_All                 = 0xFF
+        kEncodeFlag_EncodeCredentials = ::nl::Weave::Profiles::NetworkProvisioning::kGetNetwork_IncludeCredentials,
+        kEncodeFlag_All               = 0xFF
     };
 
     /**
@@ -152,7 +151,7 @@ public:
      *                     network provisioning profile, any of the TLV reader errors on incorrect decoding of
      *                     elements.
      */
-    WEAVE_ERROR Decode(nl::Weave::TLV::TLVReader& reader);
+    WEAVE_ERROR Decode(nl::Weave::TLV::TLVReader & reader);
 
     /**
      * Serialize the content of this NetworkInfo object into its TLV representation
@@ -166,7 +165,7 @@ public:
      * @returns #WEAVE_NO_ERROR On success, WEAVE_ERROR_INVALID_TLV_ELEMENT on any element not conforming to the
      *                   network provisioning profile, any of the TLV reader errors on incorrect decoding of elements.
      */
-    WEAVE_ERROR Encode(nl::Weave::TLV::TLVWriter& writer, uint8_t encodeFlags) const;
+    WEAVE_ERROR Encode(nl::Weave::TLV::TLVWriter & writer, uint8_t encodeFlags) const;
 
     /**
      * Deserialize a list of NetworkInfo elements from its TLV representation.
@@ -188,7 +187,7 @@ public:
      *
      * @retval other Errors returned from the `Decode()` function.
      */
-    static WEAVE_ERROR DecodeList(nl::Weave::TLV::TLVReader& reader, uint16_t& elemCount, NetworkInfo *& elemArray);
+    static WEAVE_ERROR DecodeList(nl::Weave::TLV::TLVReader & reader, uint16_t & elemCount, NetworkInfo *& elemArray);
 
     /**
      * Serialize an array of NetworkInfo objects into its TLV representation. The array will be an anonymous element
@@ -207,8 +206,8 @@ public:
      * @retval Other           Errors returned from the `Encode()` function.
      *
      */
-    static WEAVE_ERROR EncodeList(nl::Weave::TLV::TLVWriter& writer, uint16_t elemCount, const NetworkInfo *elemArray,
-        uint8_t encodeFlags);
+    static WEAVE_ERROR EncodeList(nl::Weave::TLV::TLVWriter & writer, uint16_t elemCount, const NetworkInfo * elemArray,
+                                  uint8_t encodeFlags);
     /**
      * Serialize an array of NetworkInfo objects into its TLV representation selecting only networks of a specific type.
      *
@@ -229,12 +228,13 @@ public:
      * @retval Other           Errors returned from the `Encode()` function.
      *
      */
-    static WEAVE_ERROR EncodeList(nl::Weave::TLV::TLVWriter& writer, uint16_t arrayLen, const NetworkInfo *elemArray,
-        ::nl::Weave::Profiles::NetworkProvisioning::NetworkType networkType, uint8_t encodeFlags, uint16_t& encodedElemCount);
+    static WEAVE_ERROR EncodeList(nl::Weave::TLV::TLVWriter & writer, uint16_t arrayLen, const NetworkInfo * elemArray,
+                                  ::nl::Weave::Profiles::NetworkProvisioning::NetworkType networkType, uint8_t encodeFlags,
+                                  uint16_t & encodedElemCount);
 };
 
 } // namespace NetworkProvisioning
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-#endif //NETWORKINFO_H
+#endif // NETWORKINFO_H

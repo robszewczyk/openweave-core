@@ -47,81 +47,63 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsOptional Table
 //
 
-uint8_t IsOptionalHandleBitfield[] = {
-        0x1
-};
+uint8_t IsOptionalHandleBitfield[] = { 0x1 };
 
 //
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0x1
-};
+uint8_t IsNullableHandleBitfield[] = { 0x1 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        &IsOptionalHandleBitfield[0],
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    &IsOptionalHandleBitfield[0],
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor TestFEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(TestFEvent, tfA), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt16, 0), 1
-    },
+const nl::FieldDescriptor TestFEventFieldDescriptors[] = {
+    { NULL, offsetof(TestFEvent, tfA), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt16, 0), 1 },
 
-    {
-        NULL, offsetof(TestFEvent, tfB), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt16, 0), 2
-    },
+    { NULL, offsetof(TestFEvent, tfB), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt16, 0), 2 },
 
-    {
-        NULL, offsetof(TestFEvent, tfC), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 3
-    },
+    { NULL, offsetof(TestFEvent, tfC), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 3 },
 
-    {
-        NULL, offsetof(TestFEvent, tfD), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt16, 0), 4
-    },
+    { NULL, offsetof(TestFEvent, tfD), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt16, 0), 4 },
 
 };
 
-const nl::SchemaFieldDescriptor TestFEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(TestFEventFieldDescriptors)/sizeof(TestFEventFieldDescriptors[0]),
-    .mFields = TestFEventFieldDescriptors,
-    .mSize = sizeof(TestFEvent)
-};
-const nl::Weave::Profiles::DataManagement::EventSchema TestFEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
-    .mDataSchemaVersion = 1,
+const nl::SchemaFieldDescriptor TestFEvent::FieldSchema = { .mNumFieldDescriptorElements = sizeof(TestFEventFieldDescriptors) /
+                                                                sizeof(TestFEventFieldDescriptors[0]),
+                                                            .mFields = TestFEventFieldDescriptors,
+                                                            .mSize   = sizeof(TestFEvent) };
+const nl::Weave::Profiles::DataManagement::EventSchema TestFEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::Production,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

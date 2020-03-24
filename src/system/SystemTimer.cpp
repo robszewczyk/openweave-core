@@ -103,7 +103,7 @@ Timer::Epoch Timer::GetCurrentEpoch(void)
  *
  *  @return true if the first param is earlier than the second, false otherwise.
  */
-bool Timer::IsEarlierEpoch(const Timer::Epoch &inFirst, const Timer::Epoch &inSecond)
+bool Timer::IsEarlierEpoch(const Timer::Epoch & inFirst, const Timer::Epoch & inSecond)
 {
     static const Epoch kMaxTime_2 = static_cast<Epoch>((static_cast<Epoch>(0) - static_cast<Epoch>(1)) / 2);
 
@@ -123,15 +123,15 @@ bool Timer::IsEarlierEpoch(const Timer::Epoch &inFirst, const Timer::Epoch &inSe
  *  @retval #WEAVE_SYSTEM_NO_ERROR Unconditionally.
  *
  */
-Error Timer::Start(uint32_t aDelayMilliseconds, OnCompleteFunct aOnComplete, void* aAppState)
+Error Timer::Start(uint32_t aDelayMilliseconds, OnCompleteFunct aOnComplete, void * aAppState)
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-    Layer& lLayer = this->SystemLayer();
+    Layer & lLayer = this->SystemLayer();
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
     WEAVE_SYSTEM_FAULT_INJECT(FaultInjection::kFault_TimeoutImmediate, aDelayMilliseconds = 0);
 
-    this->AppState = aAppState;
+    this->AppState     = aAppState;
     this->mAwakenEpoch = Timer::GetCurrentEpoch() + static_cast<Epoch>(aDelayMilliseconds);
     if (!__sync_bool_compare_and_swap(&this->OnComplete, NULL, aOnComplete))
     {
@@ -140,10 +140,9 @@ Error Timer::Start(uint32_t aDelayMilliseconds, OnCompleteFunct aOnComplete, voi
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     // add to the sorted list of timers. Earliest timer appears first.
-    if (lLayer.mTimerList == NULL ||
-        this->IsEarlierEpoch(this->mAwakenEpoch, lLayer.mTimerList->mAwakenEpoch))
+    if (lLayer.mTimerList == NULL || this->IsEarlierEpoch(this->mAwakenEpoch, lLayer.mTimerList->mAwakenEpoch))
     {
-        this->mNextTimer = lLayer.mTimerList;
+        this->mNextTimer  = lLayer.mTimerList;
         lLayer.mTimerList = this;
 
         // this is the new eariest timer and so the timer needs (re-)starting provided that
@@ -156,7 +155,7 @@ Error Timer::Start(uint32_t aDelayMilliseconds, OnCompleteFunct aOnComplete, voi
     }
     else
     {
-        Timer* lTimer = lLayer.mTimerList;
+        Timer * lTimer = lLayer.mTimerList;
 
         while (lTimer->mNextTimer)
         {
@@ -169,7 +168,7 @@ Error Timer::Start(uint32_t aDelayMilliseconds, OnCompleteFunct aOnComplete, voi
             lTimer = lTimer->mNextTimer;
         }
 
-        this->mNextTimer = lTimer->mNextTimer;
+        this->mNextTimer   = lTimer->mNextTimer;
         lTimer->mNextTimer = this;
     }
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
@@ -177,12 +176,12 @@ Error Timer::Start(uint32_t aDelayMilliseconds, OnCompleteFunct aOnComplete, voi
     return WEAVE_SYSTEM_NO_ERROR;
 }
 
-Error Timer::ScheduleWork(OnCompleteFunct aOnComplete, void* aAppState)
+Error Timer::ScheduleWork(OnCompleteFunct aOnComplete, void * aAppState)
 {
-    Error err = WEAVE_SYSTEM_NO_ERROR;
-    Layer& lLayer = this->SystemLayer();
+    Error err      = WEAVE_SYSTEM_NO_ERROR;
+    Layer & lLayer = this->SystemLayer();
 
-    this->AppState = aAppState;
+    this->AppState     = aAppState;
     this->mAwakenEpoch = Timer::GetCurrentEpoch();
     if (!__sync_bool_compare_and_swap(&this->OnComplete, NULL, aOnComplete))
     {
@@ -207,7 +206,7 @@ Error Timer::ScheduleWork(OnCompleteFunct aOnComplete, void* aAppState)
 Error Timer::Cancel()
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-    Layer& lLayer = this->SystemLayer();
+    Layer & lLayer = this->SystemLayer();
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
     OnCompleteFunct lOnComplete = this->OnComplete;
 
@@ -228,7 +227,7 @@ Error Timer::Cancel()
         }
         else
         {
-            Timer* lTimer = lLayer.mTimerList;
+            Timer * lTimer = lLayer.mTimerList;
 
             while (lTimer->mNextTimer)
             {
@@ -257,9 +256,9 @@ exit:
 void Timer::HandleComplete()
 {
     // Save information needed to perform the callback.
-    Layer& lLayer = this->SystemLayer();
+    Layer & lLayer                    = this->SystemLayer();
     const OnCompleteFunct lOnComplete = this->OnComplete;
-    void* lAppState = this->AppState;
+    void * lAppState                  = this->AppState;
 
     // Check if timer is armed
     VerifyOrExit(lOnComplete != NULL, );
@@ -293,7 +292,7 @@ exit:
  *  @return WEAVE_SYSTEM_NO_ERROR on success, error code otherwise.
  *
  */
-Error Timer::HandleExpiredTimers(Layer& aLayer)
+Error Timer::HandleExpiredTimers(Layer & aLayer)
 {
     size_t timersHandled = 0;
 
@@ -310,7 +309,7 @@ Error Timer::HandleExpiredTimers(Layer& aLayer)
         // The platform timer API has MSEC resolution so expire any timer with less than 1 msec remaining.
         if ((timersHandled < Timer::sPool.Size()) && Timer::IsEarlierEpoch(aLayer.mTimerList->mAwakenEpoch, currentEpoch + 1))
         {
-            Timer& lTimer = *aLayer.mTimerList;
+            Timer & lTimer    = *aLayer.mTimerList;
             aLayer.mTimerList = lTimer.mNextTimer;
             lTimer.mNextTimer = NULL;
 
@@ -333,10 +332,10 @@ Error Timer::HandleExpiredTimers(Layer& aLayer)
                 delayMilliseconds = aLayer.mTimerList->mAwakenEpoch - currentEpoch;
             }
             /*
-             * StartPlatformTimer() accepts a 32bit value in milliseconds.  Epochs are 64bit numbers.  The only way in which this could
-             * overflow is if time went backwards (e.g. as a result of a time adjustment from time synchronization).  Verify that the
-             * timer can still be executed (even if it is very late) and exit if that is the case.  Note: if the time sync ever ends up
-             * adjusting the clock, we should implement a method that deals with all the timers in the system.
+             * StartPlatformTimer() accepts a 32bit value in milliseconds.  Epochs are 64bit numbers.  The only way in which this
+             * could overflow is if time went backwards (e.g. as a result of a time adjustment from time synchronization).  Verify
+             * that the timer can still be executed (even if it is very late) and exit if that is the case.  Note: if the time sync
+             * ever ends up adjusting the clock, we should implement a method that deals with all the timers in the system.
              */
             VerifyOrDie(delayMilliseconds <= UINT32_MAX);
 

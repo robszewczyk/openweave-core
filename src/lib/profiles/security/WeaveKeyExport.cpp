@@ -43,11 +43,11 @@ using namespace nl::Weave::Platform::Security;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::ASN1;
 
-void WeaveKeyExport::Init(WeaveKeyExportDelegate *keyExportDelegate, GroupKeyStoreBase *groupKeyStore)
+void WeaveKeyExport::Init(WeaveKeyExportDelegate * keyExportDelegate, GroupKeyStoreBase * groupKeyStore)
 {
-    mState = kState_Reset;
+    mState            = kState_Reset;
     KeyExportDelegate = keyExportDelegate;
-    GroupKeyStore = groupKeyStore;
+    GroupKeyStore     = groupKeyStore;
     Reset();
 }
 
@@ -60,12 +60,12 @@ void WeaveKeyExport::Reset(void)
 {
     mState = kState_Reset;
     ClearSecretData(ECDHPrivateKey, sizeof(ECDHPrivateKey));
-    mKeyId = WeaveKeyId::kNone;
-    mMsgInfo = NULL;
-    mProtocolConfig = 0;
-    mAllowedConfigs = KeyExport::kKeyExportSupportedConfig_All;
+    mKeyId           = WeaveKeyId::kNone;
+    mMsgInfo         = NULL;
+    mProtocolConfig  = 0;
+    mAllowedConfigs  = KeyExport::kKeyExportSupportedConfig_All;
     mAltConfigsCount = 0;
-    mSignMessages = false;
+    mSignMessages    = false;
 }
 
 bool WeaveKeyExport::IsInitiator() const
@@ -148,25 +148,24 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::GenerateKeyExportRequest(uint8_t *buf, uint16_t bufSize, uint16_t& msgLen, uint8_t proposedConfig,
+WEAVE_ERROR WeaveKeyExport::GenerateKeyExportRequest(uint8_t * buf, uint16_t bufSize, uint16_t & msgLen, uint8_t proposedConfig,
                                                      uint32_t keyId, bool signMessages)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t controlHeader;
-    uint8_t *bufStart = buf;
+    uint8_t * bufStart = buf;
 
     // Verify correct state.
-    VerifyOrExit(mState == kState_Reset ||
-                 mState == kState_InitiatorReconfigureProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(mState == kState_Reset || mState == kState_InitiatorReconfigureProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // Set new protocol state.
     mState = kState_InitiatorGeneratingRequest;
 
     // Initialize Parameters.
-    mKeyId = keyId;
+    mKeyId          = keyId;
     mProtocolConfig = proposedConfig;
-    mSignMessages = signMessages;
-    mMsgInfo = NULL;
+    mSignMessages   = signMessages;
+    mMsgInfo        = NULL;
 
     // Generate list of alternate configs.
     err = GenerateAltConfigsList();
@@ -213,11 +212,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::ProcessKeyExportRequest(const uint8_t *buf, uint16_t msgSize, const WeaveMessageInfo *msgInfo)
+WEAVE_ERROR WeaveKeyExport::ProcessKeyExportRequest(const uint8_t * buf, uint16_t msgSize, const WeaveMessageInfo * msgInfo)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t controlHeader;
-    const uint8_t *bufStart = buf;
+    const uint8_t * bufStart = buf;
     uint16_t msgLen;
 
     // Verify correct state
@@ -311,18 +310,20 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::GenerateKeyExportResponse(uint8_t *buf, uint16_t bufSize, uint16_t& msgLen, const WeaveMessageInfo *msgInfo)
+WEAVE_ERROR WeaveKeyExport::GenerateKeyExportResponse(uint8_t * buf, uint16_t bufSize, uint16_t & msgLen,
+                                                      const WeaveMessageInfo * msgInfo)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t exportedKeyLen;
     uint8_t controlHeader;
-    uint8_t *bufStart = buf;
-    uint8_t *keyIdAndLenFields = buf + sizeof(uint8_t);
+    uint8_t * bufStart          = buf;
+    uint8_t * keyIdAndLenFields = buf + sizeof(uint8_t);
 
     // Verify correct state.
     VerifyOrExit(mState == kState_ResponderRequestProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    // Verify that message buffer has enough memory to store control header, key Id, key length and responder ECDH public key fields.
+    // Verify that message buffer has enough memory to store control header, key Id, key length and responder ECDH public key
+    // fields.
     msgLen = sizeof(uint8_t) + sizeof(uint32_t) + sizeof(uint16_t) + GetECDHPublicKeyLen();
     VerifyOrExit(msgLen <= bufSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
@@ -371,13 +372,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::ProcessKeyExportResponse(const uint8_t *buf, uint16_t msgSize, const WeaveMessageInfo *msgInfo,
-                                                     uint8_t *exportedKeyBuf, uint16_t exportedKeyBufSize, uint16_t &exportedKeyLen, uint32_t &exportedKeyId)
+WEAVE_ERROR WeaveKeyExport::ProcessKeyExportResponse(const uint8_t * buf, uint16_t msgSize, const WeaveMessageInfo * msgInfo,
+                                                     uint8_t * exportedKeyBuf, uint16_t exportedKeyBufSize,
+                                                     uint16_t & exportedKeyLen, uint32_t & exportedKeyId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t controlHeader;
     bool signMessages;
-    const uint8_t *bufStart = buf;
+    const uint8_t * bufStart = buf;
     uint16_t msgLen;
 
     // Verify correct state.
@@ -413,7 +415,8 @@ WEAVE_ERROR WeaveKeyExport::ProcessKeyExportResponse(const uint8_t *buf, uint16_
     {
         // Verify that received key Id matches requested logical current key type.
         VerifyOrExit(!WeaveKeyId::UsesCurrentEpochKey(exportedKeyId) &&
-                     (mKeyId == WeaveKeyId::ConvertToCurrentAppKeyId(exportedKeyId)), err = WEAVE_ERROR_INVALID_ARGUMENT);
+                         (mKeyId == WeaveKeyId::ConvertToCurrentAppKeyId(exportedKeyId)),
+                     err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
     // Otherwise, verify that received key Id matches requested key Id.
     else
@@ -462,7 +465,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::GenerateKeyExportReconfigure(uint8_t *buf, uint16_t bufSize, uint16_t& msgLen)
+WEAVE_ERROR WeaveKeyExport::GenerateKeyExportReconfigure(uint8_t * buf, uint16_t bufSize, uint16_t & msgLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -488,7 +491,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::ProcessKeyExportReconfigure(const uint8_t *buf, uint16_t msgSize, uint8_t &config)
+WEAVE_ERROR WeaveKeyExport::ProcessKeyExportReconfigure(const uint8_t * buf, uint16_t msgSize, uint8_t & config)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -519,11 +522,11 @@ WEAVE_ERROR WeaveKeyExport::AppendNewECDHKey(uint8_t *& buf)
 
     // Generate an ephemeral ECDH public/private key pair. Store the public key directly into
     // the message buffer and store the private key in the object variable.
-    ecdhPubKey.ECPoint = buf;
-    ecdhPubKey.ECPointLen = GetECDHPublicKeyLen();    // GenerateECDHKey() will update with the actual length.
-    ecdhPrivKey.PrivKey = ECDHPrivateKey;
-    ecdhPrivKey.PrivKeyLen = sizeof(ECDHPrivateKey);  // GenerateECDHKey() will update with the actual length.
-    err = GenerateECDHKey(GetCurveOID(), ecdhPubKey, ecdhPrivKey);
+    ecdhPubKey.ECPoint     = buf;
+    ecdhPubKey.ECPointLen  = GetECDHPublicKeyLen(); // GenerateECDHKey() will update with the actual length.
+    ecdhPrivKey.PrivKey    = ECDHPrivateKey;
+    ecdhPrivKey.PrivKeyLen = sizeof(ECDHPrivateKey); // GenerateECDHKey() will update with the actual length.
+    err                    = GenerateECDHKey(GetCurveOID(), ecdhPubKey, ecdhPrivKey);
     SuccessOrExit(err);
 
     // Update length of generated private key.
@@ -549,11 +552,9 @@ static void GenerateSHA256Hash(const uint8_t * msgStart, uint16_t msgLen, uint8_
 class KeyExportSignatureGenerator __FINAL : public WeaveSignatureGeneratorBase
 {
 public:
-
-    KeyExportSignatureGenerator(WeaveKeyExport * keyExportObj, WeaveCertificateSet & certSet)
-    : WeaveSignatureGeneratorBase(certSet), mKeyExportObj(keyExportObj)
-    {
-    }
+    KeyExportSignatureGenerator(WeaveKeyExport * keyExportObj, WeaveCertificateSet & certSet) :
+        WeaveSignatureGeneratorBase(certSet), mKeyExportObj(keyExportObj)
+    { }
 
     WEAVE_ERROR GenerateSignatureData(const uint8_t * msgHash, uint8_t msgHashLen, TLVWriter & writer) __OVERRIDE
     {
@@ -561,7 +562,6 @@ public:
     }
 
 private:
-
     WeaveKeyExport * mKeyExportObj;
 };
 
@@ -570,13 +570,12 @@ private:
 class KeyExportSignatureGenerator __FINAL : public WeaveSignatureGenerator
 {
 public:
+    KeyExportSignatureGenerator(WeaveKeyExport * keyExportObj, WeaveCertificateSet & certSet) :
+        WeaveSignatureGenerator(certSet, NULL, 0), mKeyExportObj(keyExportObj)
+    { }
 
-    KeyExportSignatureGenerator(WeaveKeyExport * keyExportObj, WeaveCertificateSet & certSet)
-    : WeaveSignatureGenerator(certSet, NULL, 0), mKeyExportObj(keyExportObj)
-    {
-    }
-
-    WEAVE_ERROR GenerateSignature(const uint8_t * msgHash, uint8_t msgHashLen, uint8_t * sigBuf, uint16_t sigBufSize, uint16_t & sigLen)
+    WEAVE_ERROR GenerateSignature(const uint8_t * msgHash, uint8_t msgHashLen, uint8_t * sigBuf, uint16_t sigBufSize,
+                                  uint16_t & sigLen)
     {
         WEAVE_ERROR err;
 
@@ -599,7 +598,6 @@ public:
     }
 
 private:
-
     WeaveKeyExport * mKeyExportObj;
 };
 
@@ -629,7 +627,7 @@ WEAVE_ERROR WeaveKeyExport::AppendSignature(uint8_t * msgStart, uint16_t msgBufS
 
         // Determine the location at which the signature should be encoded.
         uint8_t * const msgSigStart = msgStart + msgLen;
-        const uint16_t maxSigSize = msgBufSize - msgLen;
+        const uint16_t maxSigSize   = msgBufSize - msgLen;
         uint16_t msgSigLen;
 
         // Generate a WeaveSignature TLV structure containing a signature of the message hash and append
@@ -653,8 +651,8 @@ exit:
 }
 
 // Verify a key export message signature (for the message in the supplied buffer) against a given public key.
-WEAVE_ERROR WeaveKeyExport::VerifySignature(const uint8_t *msgStart, uint16_t msgBufSize, uint16_t& msgLen,
-                                            const WeaveMessageInfo *msgInfo)
+WEAVE_ERROR WeaveKeyExport::VerifySignature(const uint8_t * msgStart, uint16_t msgBufSize, uint16_t & msgLen,
+                                            const WeaveMessageInfo * msgInfo)
 {
     WEAVE_ERROR err;
     WeaveCertificateSet certSet;
@@ -677,12 +675,11 @@ WEAVE_ERROR WeaveKeyExport::VerifySignature(const uint8_t *msgStart, uint16_t ms
 
         // Determine the start and length of the signature.
         const uint8_t * msgSigStart = msgStart + msgLen;
-        uint16_t msgSigLen = msgBufSize - msgLen;
+        uint16_t msgSigLen          = msgBufSize - msgLen;
 
         // Verify the generated signature.
-        err = VerifyWeaveSignature(msgHash, sizeof(msgHash),
-                                   msgSigStart, msgSigLen, kOID_SigAlgo_ECDSAWithSHA256,
-                                   certSet, certValidCtx);
+        err = VerifyWeaveSignature(msgHash, sizeof(msgHash), msgSigStart, msgSigLen, kOID_SigAlgo_ECDSAWithSHA256, certSet,
+                                   certValidCtx);
         SuccessOrExit(err);
 
         // Update the overall message length to include the signature.
@@ -704,7 +701,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::EncryptExportedKey(uint8_t *& buf, uint16_t bufSize, uint16_t& msgLen, uint16_t& exportedKeyLen)
+WEAVE_ERROR WeaveKeyExport::EncryptExportedKey(uint8_t *& buf, uint16_t bufSize, uint16_t & msgLen, uint16_t & exportedKeyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveGroupKey groupKey;
@@ -749,7 +746,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::DecryptExportedKey(const uint8_t *& buf, uint8_t *exportedKey, uint16_t exportedKeyLen)
+WEAVE_ERROR WeaveKeyExport::DecryptExportedKey(const uint8_t *& buf, uint8_t * exportedKey, uint16_t exportedKeyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t authenticator[kExportedKeyAuthenticatorSize];
@@ -783,15 +780,15 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveKeyExport::ComputeSharedSecret(const uint8_t *peerPubKey)
+WEAVE_ERROR WeaveKeyExport::ComputeSharedSecret(const uint8_t * peerPubKey)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     EncodedECPrivateKey ecdhPrivKey;
     EncodedECPublicKey ecdhPubKey;
 
-    ecdhPubKey.ECPoint = (uint8_t *)peerPubKey;
-    ecdhPubKey.ECPointLen = GetECDHPublicKeyLen();
-    ecdhPrivKey.PrivKey = ECDHPrivateKey;
+    ecdhPubKey.ECPoint     = (uint8_t *) peerPubKey;
+    ecdhPubKey.ECPointLen  = GetECDHPublicKeyLen();
+    ecdhPrivKey.PrivKey    = ECDHPrivateKey;
     ecdhPrivKey.PrivKeyLen = ECDHPrivateKeyLen;
     err = ECDHComputeSharedSecret(GetCurveOID(), ecdhPubKey, ecdhPrivKey, SharedSecret, sizeof(SharedSecret), SharedSecretLen);
     SuccessOrExit(err);
@@ -813,9 +810,7 @@ WEAVE_ERROR WeaveKeyExport::DeriveKeyEncryptionKey(void)
     LittleEndian::Put32(keySalt + 2 * sizeof(uint8_t) + mAltConfigsCount, mKeyId);
 
     // Perform HKDF-based key expansion to produce the desired key data.
-    err = hkdf.DeriveKey(keySalt, kMinKeySaltSize + mAltConfigsCount,
-                         SharedSecret, SharedSecretLen,
-                         NULL, 0, NULL, 0,
+    err = hkdf.DeriveKey(keySalt, kMinKeySaltSize + mAltConfigsCount, SharedSecret, SharedSecretLen, NULL, 0, NULL, 0,
                          EncryptionAndAuthenticationKey, kEncryptionAndAuthenticationKeySize, kEncryptionAndAuthenticationKeySize);
     SuccessOrExit(err);
 
@@ -823,7 +818,7 @@ exit:
     return err;
 }
 
-void WeaveKeyExport::EncryptDecryptKey(const uint8_t *keyIn, uint8_t *keyOut, uint8_t keyLen)
+void WeaveKeyExport::EncryptDecryptKey(const uint8_t * keyIn, uint8_t * keyOut, uint8_t keyLen)
 {
     AES128CTRMode aes128CTR;
 
@@ -837,7 +832,7 @@ void WeaveKeyExport::EncryptDecryptKey(const uint8_t *keyIn, uint8_t *keyOut, ui
     aes128CTR.Reset();
 }
 
-void WeaveKeyExport::AuthenticateKey(const uint8_t *key, uint8_t keyLen, uint8_t* authenticator)
+void WeaveKeyExport::AuthenticateKey(const uint8_t * key, uint8_t keyLen, uint8_t * authenticator)
 {
     HMACSHA256 hmac;
 

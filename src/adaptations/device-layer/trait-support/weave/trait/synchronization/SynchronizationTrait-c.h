@@ -27,24 +27,18 @@
 #ifndef _WEAVE_TRAIT_SYNCHRONIZATION__SYNCHRONIZATION_TRAIT_C_H_
 #define _WEAVE_TRAIT_SYNCHRONIZATION__SYNCHRONIZATION_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // SyncronizationStatus
-    typedef enum
-    {
+// SyncronizationStatus
+typedef enum
+{
     SYNCRONIZATION_STATUS_SYNCHRONIZED = 1,
-    SYNCRONIZATION_STATUS_PENDING = 2,
-    SYNCRONIZATION_STATUS_TIMEOUT = 3,
+    SYNCRONIZATION_STATUS_PENDING      = 2,
+    SYNCRONIZATION_STATUS_TIMEOUT      = 3,
     SYNCRONIZATION_STATUS_FAILED_RETRY = 4,
     SYNCRONIZATION_STATUS_FAILED_FATAL = 5,
-    } schema_weave_synchronization_synchronization_trait_syncronization_status_t;
-
-
-
+} schema_weave_synchronization_synchronization_trait_syncronization_status_t;
 
 #endif // _WEAVE_TRAIT_SYNCHRONIZATION__SYNCHRONIZATION_TRAIT_C_H_

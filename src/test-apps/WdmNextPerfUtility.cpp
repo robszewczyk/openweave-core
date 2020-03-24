@@ -30,10 +30,9 @@
 #include <stdio.h>
 #include <sys/time.h>
 
+WdmNextPerfUtility * WdmNextPerfUtility::mInstance = 0;
 
-WdmNextPerfUtility *WdmNextPerfUtility::mInstance = 0;
-
-WdmNextPerfUtility *WdmNextPerfUtility::Instance()
+WdmNextPerfUtility * WdmNextPerfUtility::Instance()
 {
     if (mInstance)
         return mInstance;
@@ -61,17 +60,17 @@ WdmNextPerfUtility::~WdmNextPerfUtility() { }
  * This is the implementation to obtain time latency since last call and save current time.
  *
  */
-void WdmNextPerfUtility::operator()()
+void WdmNextPerfUtility::operator ()()
 {
     int status = gettimeofday(&mCurrentTime, NULL);
     if (status != 0)
         printf("gettimeofday error in WdmNextPerfUtility()\n");
-    mDeltaTime.tv_sec = mCurrentTime.tv_sec - mLastTime.tv_sec;
+    mDeltaTime.tv_sec  = mCurrentTime.tv_sec - mLastTime.tv_sec;
     mDeltaTime.tv_usec = mCurrentTime.tv_usec - mLastTime.tv_usec;
     if (mDeltaTime.tv_usec < 0)
     {
         mDeltaTime.tv_usec = -1 * mDeltaTime.tv_usec;
-        mDeltaTime.tv_sec = mDeltaTime.tv_sec - 1;
+        mDeltaTime.tv_sec  = mDeltaTime.tv_sec - 1;
     }
 
     mLastTime = mCurrentTime;
@@ -84,25 +83,25 @@ void WdmNextPerfUtility::operator()()
 void WdmNextPerfUtility::SetPerf()
 {
     mPerfData.vmsize = -1;
-    mPerfData.vmrss = -1;
+    mPerfData.vmrss  = -1;
 
-#if defined (__APPLE__) && defined (__MACH__)
+#if defined(__APPLE__) && defined(__MACH__)
 
     mMac_mem_info_count = TASK_BASIC_INFO_COUNT;
 
-    if (task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&mMac_mem_info, &mMac_mem_info_count) != KERN_SUCCESS)
+    if (task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t) &mMac_mem_info, &mMac_mem_info_count) != KERN_SUCCESS)
     {
         printf("task_info error in mac\n");
     }
     else
     {
-        mPerfData.vmsize = (size_t)mMac_mem_info.virtual_size;
-        mPerfData.vmrss = (size_t)mMac_mem_info.resident_size;
+        mPerfData.vmsize = (size_t) mMac_mem_info.virtual_size;
+        mPerfData.vmrss  = (size_t) mMac_mem_info.resident_size;
     }
 
-#elif defined (__unix__) || defined(__linux__)
+#elif defined(__unix__) || defined(__linux__)
 
-    FILE* filep = fopen("/proc/self/status", "r");
+    FILE * filep = fopen("/proc/self/status", "r");
     if (filep == NULL)
         printf("file /proc/self/status cannot be open");
     char scanned_line[256];
@@ -114,24 +113,24 @@ void WdmNextPerfUtility::SetPerf()
         {
             char * step = &scanned_line[0];
             step += 7;
-            while ( ! (*step < '9' && *step > '0'))
+            while (!(*step < '9' && *step > '0'))
             {
                 step += 1;
             }
             scanned_line[strlen(step) - 3] = '\0';
-            mPerfData.vmsize = (size_t)(atoi(step) * 1024);
+            mPerfData.vmsize               = (size_t)(atoi(step) * 1024);
         }
 
         if (strncmp(scanned_line, "VmRSS", 5) == 0)
         {
             char * step = &scanned_line[0];
             step += 7;
-            while ( ! (*step < '9' && *step > '0'))
+            while (!(*step < '9' && *step > '0'))
             {
                 step += 1;
             }
             scanned_line[strlen(step) - 3] = '\0';
-            mPerfData.vmrss = (size_t)(atoi(step) * 1024);
+            mPerfData.vmrss                = (size_t)(atoi(step) * 1024);
             break;
         }
     }
@@ -143,7 +142,7 @@ void WdmNextPerfUtility::SetPerf()
 
 #endif // defined (__APPLE__) && defined (__MACH__)
 
-    mPerfData.index = mAllData.size() + 1;
+    mPerfData.index   = mAllData.size() + 1;
     mPerfData.latency = mDeltaTime;
     mAllData.push_back(mPerfData);
 }
@@ -157,17 +156,18 @@ perfData WdmNextPerfUtility::GetPerf()
     return mPerfData;
 }
 
-
 /**
  * This is implementation to report the performance data in current run.
  *
  */
 void WdmNextPerfUtility::ReportPerf()
 {
-    printf("current perf data: index is %d, latency period = %d.%06d seconds, virtual memory is %zu Bytes, resident size is %zu Bytes \n",
-           mPerfData.index, static_cast<int>(mPerfData.latency.tv_sec), static_cast<int>(mPerfData.latency.tv_usec), mPerfData.vmsize, mPerfData.vmrss);
+    printf(
+        "current perf data: index is %d, latency period = %d.%06d seconds, virtual memory is %zu Bytes, resident size is %zu Bytes "
+        "\n",
+        mPerfData.index, static_cast<int>(mPerfData.latency.tv_sec), static_cast<int>(mPerfData.latency.tv_usec), mPerfData.vmsize,
+        mPerfData.vmrss);
 }
-
 
 /**
  * This is implementation to print all perf data so far.
@@ -176,18 +176,21 @@ void WdmNextPerfUtility::ReportPerf()
 void WdmNextPerfUtility::ReportAll()
 {
     for (std::vector<perfData>::iterator element = mAllData.begin(); element != mAllData.end(); ++element)
-        printf("All perf data: index is %d, latency period = %d.%06d seconds, virtual memory is %zu Bytes, resident size is %zu Bytes \n",
-        element->index, static_cast<int>(element->latency.tv_sec), static_cast<int>(element->latency.tv_usec), element->vmsize, element->vmrss);
+        printf(
+            "All perf data: index is %d, latency period = %d.%06d seconds, virtual memory is %zu Bytes, resident size is %zu Bytes "
+            "\n",
+            element->index, static_cast<int>(element->latency.tv_sec), static_cast<int>(element->latency.tv_usec), element->vmsize,
+            element->vmrss);
 }
 
 /**
  * This is implementation to get current timestamp.
  *
  */
-int WdmNextPerfUtility::GetCurrentTimestamp(char *buf, size_t num)
+int WdmNextPerfUtility::GetCurrentTimestamp(char * buf, size_t num)
 {
     struct timeval tv;
-    struct tm* time_ptr;
+    struct tm * time_ptr;
     char detailed_time[30] = { 0 };
     int64_t milliseconds;
     int status = 0;
@@ -231,11 +234,10 @@ void WdmNextPerfUtility::SaveToFile()
     for (std::vector<perfData>::iterator element = mAllData.begin(); element != mAllData.end(); ++element)
     {
         output_file << "All perf data: index is " << element->index
-        << ", latency period = " << static_cast<int>(element->latency.tv_sec) << "." <<
-        static_cast<int>(element->latency.tv_usec) << "seconds"
-        << ", virtual memory is " << element->vmsize
-        << ", resident size is " << element->vmrss << std::endl;
+                    << ", latency period = " << static_cast<int>(element->latency.tv_sec) << "."
+                    << static_cast<int>(element->latency.tv_usec) << "seconds"
+                    << ", virtual memory is " << element->vmsize << ", resident size is " << element->vmrss << std::endl;
     }
     output_file.close();
 }
-#endif //ENABLE_WDMPERFDATA
+#endif // ENABLE_WDMPERFDATA

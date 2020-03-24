@@ -46,25 +46,25 @@ using nl::Weave::System::PacketBuffer;
 System::Layer SystemLayer;
 InetLayer Inet;
 WeaveEchoClient EchoClient;
-uint64_t LastEchoTime = 0;
-int32_t EchoInterval = 100000;
-uint32_t EchoCount = 0;
-uint32_t MaxEchoCount = 50;
+uint64_t LastEchoTime     = 0;
+int32_t EchoInterval      = 100000;
+uint32_t EchoCount        = 0;
+uint32_t MaxEchoCount     = 50;
 bool EchoResponseReceived = false;
 
 static WEAVE_ERROR InitWeaveStack();
 static void ShutdownWeaveStack();
 static void ServiceNetwork(struct timeval sleepTime);
 static WEAVE_ERROR SendEchoRequest(const char * remoteAddr);
-static void HandleEchoResponse(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
+static void HandleEchoResponse(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
 static uint64_t Now();
 static uint64_t now_ms(void);
 extern WEAVE_ERROR PingNode(const char * remoteAddr);
 
-#define APP_ERROR_MIN                           0
+#define APP_ERROR_MIN 0
 
-#define ERROR_NO_RESPONSE_RECEVIED              (APP_ERROR_MIN + 1)
-#define ERROR_INVALID_ADDRESS                   (APP_ERROR_MIN + 2)
+#define ERROR_NO_RESPONSE_RECEVIED (APP_ERROR_MIN + 1)
+#define ERROR_INVALID_ADDRESS      (APP_ERROR_MIN + 2)
 
 #define LOG_TAG "NestWeave"
 
@@ -75,16 +75,15 @@ extern WEAVE_ERROR PingNode(const char * remoteAddr);
 
 #define printf(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 
-extern "C" jint
-Java_com_example_PingTest_PingWrapper_pingNode(JNIEnv* env, jobject object, jstring remoteAddr)
+extern "C" jint Java_com_example_PingTest_PingWrapper_pingNode(JNIEnv * env, jobject object, jstring remoteAddr)
 {
     const char * addrString = env->GetStringUTFChars(remoteAddr, 0);
-    int result = PingNode(addrString);
+    int result              = PingNode(addrString);
     env->ReleaseStringUTFChars(remoteAddr, addrString);
     return result;
 }
 
-WEAVE_ERROR PingNode(const char *remoteAddr)
+WEAVE_ERROR PingNode(const char * remoteAddr)
 {
     LOGV(LOG_TAG, "PingNode() started. MaxEchoCount: %d EchoInterval: %d EchoCount: %d", MaxEchoCount, EchoInterval, EchoCount);
     WEAVE_ERROR res;
@@ -97,7 +96,7 @@ WEAVE_ERROR PingNode(const char *remoteAddr)
     while (true)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -107,7 +106,8 @@ WEAVE_ERROR PingNode(const char *remoteAddr)
 
         if (Now() >= LastEchoTime + EchoInterval)
         {
-            LOGV(LOG_TAG, "Now() >= LastEchoTime + EchoInterval, MaxEchoCount: %d EchoInterval: %d EchoCount: %d", MaxEchoCount, EchoInterval, EchoCount);
+            LOGV(LOG_TAG, "Now() >= LastEchoTime + EchoInterval, MaxEchoCount: %d EchoInterval: %d EchoCount: %d", MaxEchoCount,
+                 EchoInterval, EchoCount);
 
             if (EchoCount == MaxEchoCount)
             {
@@ -137,30 +137,30 @@ WEAVE_ERROR SendEchoRequest(const char * remoteAddr)
 {
     IPAddress ipAddr;
     WEAVE_ERROR res;
-    
+
     if (!IPAddress::FromString(remoteAddr, ipAddr))
     {
         LOGV(LOG_TAG, "IPAddress::FromString returned %d. ERROR_INVALID_ADDRESS = %d", res, ERROR_INVALID_ADDRESS);
         return ERROR_INVALID_ADDRESS;
     }
 
-    PacketBuffer *payloadBuf = PacketBuffer::New();
+    PacketBuffer * payloadBuf = PacketBuffer::New();
     if (payloadBuf == NULL)
     {
         printf("Unable to allocate PacketBuffer\n");
         return WEAVE_ERROR_NO_MEMORY;
     }
 
-    char *p = (char *)payloadBuf->Start();
+    char * p = (char *) payloadBuf->Start();
     strcpy(p, "Echo Message\n");
-    payloadBuf->SetDataLength((uint16_t)strlen(p));
+    payloadBuf->SetDataLength((uint16_t) strlen(p));
 
     LastEchoTime = Now();
 
     res = EchoClient.SendEchoRequest(ipAddr.InterfaceId(), ipAddr, payloadBuf);
     if (res != WEAVE_NO_ERROR)
     {
-        printf("WeaveEchoClient.SendEchoRequest() failed: %ld\n", (long)res);
+        printf("WeaveEchoClient.SendEchoRequest() failed: %ld\n", (long) res);
         return res;
     }
 
@@ -169,7 +169,7 @@ WEAVE_ERROR SendEchoRequest(const char * remoteAddr)
     return WEAVE_NO_ERROR;
 }
 
-void HandleEchoResponse(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+void HandleEchoResponse(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     EchoResponseReceived = true;
 }
@@ -184,30 +184,30 @@ WEAVE_ERROR InitWeaveStack()
 
     res = SystemLayer.Init();
     if (res != WEAVE_SYSTEM_NO_ERROR)
-        printf("SystemLayer.Init failed: %ld\n", (long)res);
+        printf("SystemLayer.Init failed: %ld\n", (long) res);
 
     res = Inet.Init(SystemLayer);
     if (res != WEAVE_NO_ERROR)
-        printf("InetLayer.Init failed: %ld\n", (long)res);
+        printf("InetLayer.Init failed: %ld\n", (long) res);
 
     if (res == WEAVE_NO_ERROR)
     {
         // Initialize the FabricState object.
         res = FabricState.Init();
         if (res != WEAVE_NO_ERROR)
-          printf("FabricState.Init failed: %ld\n", (long)res);
+            printf("FabricState.Init failed: %ld\n", (long) res);
     }
 
     if (res == WEAVE_NO_ERROR)
     {
-        FabricState.FabricId = kFabricIdDefaultForTest;
-        FabricState.LocalNodeId = 1;
+        FabricState.FabricId      = kFabricIdDefaultForTest;
+        FabricState.LocalNodeId   = 1;
         FabricState.DefaultSubnet = 1;
 
         // Initialize the WeaveMessageLayer object.
         res = MessageLayer.Init(&Inet, &FabricState);
         if (res != WEAVE_NO_ERROR)
-            printf("WeaveMessageLayer.Init failed: %ld\n", (long)res);
+            printf("WeaveMessageLayer.Init failed: %ld\n", (long) res);
     }
 
     if (res == WEAVE_NO_ERROR)
@@ -215,7 +215,7 @@ WEAVE_ERROR InitWeaveStack()
         // Initialize the Exchange Manager object.
         res = ExchangeMgr.Init(&MessageLayer);
         if (res != WEAVE_NO_ERROR)
-            printf("WeaveExchangeManager.Init failed: %ld\n", (long)res);
+            printf("WeaveExchangeManager.Init failed: %ld\n", (long) res);
     }
 
     if (res == WEAVE_NO_ERROR)
@@ -223,7 +223,7 @@ WEAVE_ERROR InitWeaveStack()
         // Initialize the EchoClient application.
         res = EchoClient.Init(&ExchangeMgr);
         if (res != WEAVE_NO_ERROR)
-            printf("WeaveEchoClient.Init failed: %ld\n", (long)res);
+            printf("WeaveEchoClient.Init failed: %ld\n", (long) res);
     }
 
     // Arrange to get a callback whenever an Echo Response is received.
@@ -265,7 +265,7 @@ void ServiceNetwork(struct timeval sleepTime)
 
     int selectRes = select(numFDs, &readFDs, &writeFDs, &exceptFDs, &sleepTime);
     if (selectRes < 0)
-        printf("select failed: %ld\n", (long)(errno));
+        printf("select failed: %ld\n", (long) (errno));
 
     if (selectRes > 0 && Inet.State == InetLayer::kState_Initialized)
         Inet.HandleIO(&readFDs, &writeFDs, &exceptFDs);
@@ -275,15 +275,15 @@ uint64_t Now()
 {
     struct timeval now;
     gettimeofday(&now, NULL);
-    return ((uint64_t)now.tv_sec * 1000000) + (uint64_t)now.tv_usec;
+    return ((uint64_t) now.tv_sec * 1000000) + (uint64_t) now.tv_usec;
 }
 
-#ifdef DEFINE_MAIN 
+#ifdef DEFINE_MAIN
 
 int main()
 {
     WEAVE_ERROR err = PingNode(2);
-    printf("%ld\n", (long)err);
+    printf("%ld\n", (long) err);
 }
 
 #endif

@@ -43,7 +43,7 @@ using namespace ::nl::Weave::Profiles::Common;
 using namespace ::nl::Weave::Profiles::DataManagement;
 using namespace ::nl::Weave::Profiles::StatusReporting;
 
-uint8_t LookupFailureMode(ReferencedTLVData &aPathList)
+uint8_t LookupFailureMode(ReferencedTLVData & aPathList)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t mode;
@@ -133,17 +133,11 @@ uint8_t LookupFailureMode(ReferencedTLVData &aPathList)
 
     switch (instanceId)
     {
-        case kFailureInstance_CloseConnection:
-            mode = kFailureMode_CloseConnection;
-            break;
+    case kFailureInstance_CloseConnection: mode = kFailureMode_CloseConnection; break;
 
-        case kFailureInstance_NoResponse:
-            mode = kFailureMode_NoResponse;
-            break;
+    case kFailureInstance_NoResponse: mode = kFailureMode_NoResponse; break;
 
-        default:
-            mode = kFailureMode_Invalid;
-            break;
+    default: mode = kFailureMode_Invalid; break;
     }
 
 exit:
@@ -155,19 +149,19 @@ exit:
 
 TestProfileDB::TestData::TestData(void)
 {
-    mIntegerItem = 0;
+    mIntegerItem         = 0;
     mPreviousIntegerItem = 0;
-    mInstanceId = kInstanceIdNotSpecified;
+    mInstanceId          = kInstanceIdNotSpecified;
 }
 
 TestProfileDB::TestData::~TestData(void)
 {
-    mIntegerItem = 0;
+    mIntegerItem         = 0;
     mPreviousIntegerItem = 0;
-    mInstanceId = kInstanceIdNotSpecified;
+    mInstanceId          = kInstanceIdNotSpecified;
 }
 
-WEAVE_ERROR TestProfileDB::TestData::StoreItem(const uint64_t &aTag, TLVReader &aDataRdr)
+WEAVE_ERROR TestProfileDB::TestData::StoreItem(const uint64_t & aTag, TLVReader & aDataRdr)
 {
     WEAVE_ERROR err;
 
@@ -186,7 +180,7 @@ WEAVE_ERROR TestProfileDB::TestData::StoreItem(const uint64_t &aTag, TLVReader &
     return err;
 }
 
-WEAVE_ERROR TestProfileDB::TestData::Retrieve(TLVReader &aPathRdr, TLVWriter &aDataWrtr)
+WEAVE_ERROR TestProfileDB::TestData::Retrieve(TLVReader & aPathRdr, TLVWriter & aDataWrtr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint64_t tag;
@@ -210,12 +204,7 @@ WEAVE_ERROR TestProfileDB::TestData::Retrieve(TLVReader &aPathRdr, TLVWriter &aD
 
         // write the path
 
-        err = EncodePath(aDataWrtr,
-                         ContextTag(kTag_WDMDataListElementPath),
-                         kWeaveProfile_Test,
-                         mInstanceId,
-                         1,
-                         tag);
+        err = EncodePath(aDataWrtr, ContextTag(kTag_WDMDataListElementPath), kWeaveProfile_Test, mInstanceId, 1, tag);
         SuccessOrExit(err);
 
         // write the version
@@ -232,18 +221,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TestProfileDB::TestData::Retrieve(TLVWriter &aDataWrtr)
+WEAVE_ERROR TestProfileDB::TestData::Retrieve(TLVWriter & aDataWrtr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType structure;
 
     // write the path
 
-    err = EncodePath(aDataWrtr,
-                     ContextTag(kTag_WDMDataListElementPath),
-                     kWeaveProfile_Test,
-                     mInstanceId,
-                     0);
+    err = EncodePath(aDataWrtr, ContextTag(kTag_WDMDataListElementPath), kWeaveProfile_Test, mInstanceId, 0);
     SuccessOrExit(err);
 
     // write the version
@@ -259,7 +244,6 @@ WEAVE_ERROR TestProfileDB::TestData::Retrieve(TLVWriter &aDataWrtr)
     err = aDataWrtr.Put(ContextTag(kTag_IntegerItem), mIntegerItem);
     SuccessOrExit(err);
 
-
     err = aDataWrtr.EndContainer(structure);
     SuccessOrExit(err);
 
@@ -267,11 +251,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TestProfileDB::LookupProfileData(uint32_t aProfileId, TLVReader *aInstanceIdReader, ProfileData **aResult)
+WEAVE_ERROR TestProfileDB::LookupProfileData(uint32_t aProfileId, TLVReader * aInstanceIdReader, ProfileData ** aResult)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    ProfileData *data = static_cast<ProfileData *>(&mTestData);
+    ProfileData * data = static_cast<ProfileData *>(&mTestData);
 
     // we ignore the instance ID here
 

@@ -74,18 +74,18 @@ void BDXTransfer::Shutdown(void)
  */
 void BDXTransfer::Reset(void)
 {
-    mExchangeContext                = NULL;
-    mIsInitiated                    = false;
-    mIsAccepted                     = false;
-    mFirstQuery                     = true;
-    mMaxBlockSize                   = DEFAULT_MAX_BLOCK_SIZE;
-    mStartOffset                    = 0;
-    mLength                         = 0;
-    mBytesSent                      = 0;
-    mBlockCounter                   = 0;
-    mIsWideRange                    = false;
-    mIsCompletedSuccessfully        = false;
-    mAmInitiator                    = false;
+    mExchangeContext         = NULL;
+    mIsInitiated             = false;
+    mIsAccepted              = false;
+    mFirstQuery              = true;
+    mMaxBlockSize            = DEFAULT_MAX_BLOCK_SIZE;
+    mStartOffset             = 0;
+    mLength                  = 0;
+    mBytesSent               = 0;
+    mBlockCounter            = 0;
+    mIsWideRange             = false;
+    mIsCompletedSuccessfully = false;
+    mAmInitiator             = false;
 
     mHandlers.mSendAcceptHandler    = NULL;
     mHandlers.mReceiveAcceptHandler = NULL;
@@ -119,8 +119,7 @@ bool BDXTransfer::IsAsync(void)
  */
 bool BDXTransfer::IsDriver(void)
 {
-    return ((mAmSender && (mTransferMode & kMode_SenderDrive)) ||
-            (!mAmSender && (mTransferMode & kMode_ReceiverDrive)));
+    return ((mAmSender && (mTransferMode & kMode_SenderDrive)) || (!mAmSender && (mTransferMode & kMode_ReceiverDrive)));
 }
 
 /**
@@ -151,8 +150,7 @@ void BDXTransfer::SetHandlers(BDXHandlers aHandlers)
  */
 uint16_t BDXTransfer::GetDefaultFlags(bool aExpectResponse)
 {
-    return ((aExpectResponse ? ExchangeContext::kSendFlag_ExpectResponse : 0) |
-            (GetBDXAckFlag(mExchangeContext)));
+    return ((aExpectResponse ? ExchangeContext::kSendFlag_ExpectResponse : 0) | (GetBDXAckFlag(mExchangeContext)));
 }
 
 /**
@@ -163,7 +161,7 @@ uint16_t BDXTransfer::GetDefaultFlags(bool aExpectResponse)
  *
  * @return an error value
  */
-WEAVE_ERROR BDXTransfer::DispatchReceiveAccept(ReceiveAccept *aReceiveAcceptMsg)
+WEAVE_ERROR BDXTransfer::DispatchReceiveAccept(ReceiveAccept * aReceiveAcceptMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     if (mHandlers.mReceiveAcceptHandler)
@@ -181,7 +179,7 @@ WEAVE_ERROR BDXTransfer::DispatchReceiveAccept(ReceiveAccept *aReceiveAcceptMsg)
  *
  * @return an error value
  */
-WEAVE_ERROR BDXTransfer::DispatchSendAccept(SendAccept *aSendAcceptMsg)
+WEAVE_ERROR BDXTransfer::DispatchSendAccept(SendAccept * aSendAcceptMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     if (mHandlers.mSendAcceptHandler)
@@ -198,7 +196,7 @@ WEAVE_ERROR BDXTransfer::DispatchSendAccept(SendAccept *aSendAcceptMsg)
  *
  * @param[in]   aReport             StatusReport message to be processed
  */
-void BDXTransfer::DispatchRejectHandler(StatusReport *aReport)
+void BDXTransfer::DispatchRejectHandler(StatusReport * aReport)
 {
     if (mHandlers.mRejectHandler)
     {
@@ -210,7 +208,6 @@ void BDXTransfer::DispatchRejectHandler(StatusReport *aReport)
     }
 }
 
-
 /**
  * @brief
  *  If the put block handler has been set, call it.
@@ -219,9 +216,7 @@ void BDXTransfer::DispatchRejectHandler(StatusReport *aReport)
  * @param[in]   aDataBlock          Pointer to the data block
  * @param[in]   aLastBlock          True if this is the last block in the transfer
  */
-void BDXTransfer::DispatchPutBlockHandler(uint64_t aLength,
-                                          uint8_t *aDataBlock,
-                                          bool aLastBlock)
+void BDXTransfer::DispatchPutBlockHandler(uint64_t aLength, uint8_t * aDataBlock, bool aLastBlock)
 {
     if (mHandlers.mPutBlockHandler)
     {
@@ -237,9 +232,7 @@ void BDXTransfer::DispatchPutBlockHandler(uint64_t aLength,
  * @param[in]   aDataBlock          Pointer to the data block
  * @param[in]   aLastBlock          True if this is the last block in the transfer
  */
-void BDXTransfer::DispatchGetBlockHandler(uint64_t *aLength,
-                                          uint8_t **aDataBlock,
-                                          bool *aLastBlock)
+void BDXTransfer::DispatchGetBlockHandler(uint64_t * aLength, uint8_t ** aDataBlock, bool * aLastBlock)
 {
     if (mHandlers.mGetBlockHandler)
     {
@@ -273,7 +266,7 @@ void BDXTransfer::DispatchErrorHandler(WEAVE_ERROR anErrorCode)
  *
  * @param[in]   aXferError          Status report of an error to be processed
  */
-void BDXTransfer::DispatchXferErrorHandler(StatusReport *aXferError)
+void BDXTransfer::DispatchXferErrorHandler(StatusReport * aXferError)
 {
     if (mHandlers.mXferErrorHandler)
     {
@@ -302,7 +295,7 @@ void BDXTransfer::DispatchXferDoneHandler(void)
     }
 }
 
-} // namespace BulkDataTransfer
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

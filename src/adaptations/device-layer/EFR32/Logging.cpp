@@ -52,13 +52,12 @@
 #define LOG_RTT_BUFFER_SIZE 256
 #endif
 
-#define LOG_ERROR "<error > "
-#define LOG_WARN "<warn  > "
-#define LOG_INFO "<info  > "
+#define LOG_ERROR  "<error > "
+#define LOG_WARN   "<warn  > "
+#define LOG_INFO   "<info  > "
 #define LOG_DETAIL "<detail> "
-#define LOG_LWIP "<lwip  > "
-#define LOG_EFR32 "<efr32 > "
-
+#define LOG_LWIP   "<lwip  > "
+#define LOG_EFR32  "<efr32 > "
 
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
 #include <openthread/platform/logging.h>
@@ -68,23 +67,23 @@ using namespace ::nl::Weave;
 using namespace ::nl::Weave::DeviceLayer;
 using namespace ::nl::Weave::DeviceLayer::Internal;
 
-static bool          sLogInitialized = false;
-static uint8_t       sLogBuffer[LOG_RTT_BUFFER_SIZE];
+static bool sLogInitialized = false;
+static uint8_t sLogBuffer[LOG_RTT_BUFFER_SIZE];
 
 /**
  * Print a log message to RTT
  */
-static void PrintLog(const char *msg)
-{    
+static void PrintLog(const char * msg)
+{
 #if EFR32_LOG_ENABLED
     if (sLogInitialized)
     {
         size_t sz;
         sz = strlen(msg);
-        SEGGER_RTT_WriteNoLock(0, msg, sz);        
+        SEGGER_RTT_WriteNoLock(0, msg, sz);
 
-        const char *newline = "\r\n";
-        sz = strlen(newline);
+        const char * newline = "\r\n";
+        sz                   = strlen(newline);
         SEGGER_RTT_WriteNoLock(0, newline, sz);
     }
 #endif // EFR32_LOG_ENABLED
@@ -107,7 +106,7 @@ extern "C" int efr32LogInit(void)
 /**
  * General-purpose logging function
  */
-extern "C" void efr32Log(const char *aFormat, ...)
+extern "C" void efr32Log(const char * aFormat, ...)
 {
     va_list v;
 
@@ -132,7 +131,7 @@ extern "C" void efr32Log(const char *aFormat, ...)
 
 namespace {
 
-void GetModuleName(char *buf, uint8_t module)
+void GetModuleName(char * buf, uint8_t module)
 {
     if (module == ::nl::Weave::Logging::kLogModule_DeviceLayer)
     {
@@ -156,9 +155,7 @@ namespace DeviceLayer {
  * This function is intended be overridden by the application to, e.g.,
  * schedule output of queued log entries.
  */
-void __attribute__((weak)) OnLogOutput(void)
-{
-}
+void __attribute__((weak)) OnLogOutput(void) { }
 
 } // namespace DeviceLayer
 } // namespace Weave
@@ -171,15 +168,15 @@ namespace Logging {
 /**
  * OpenWeave log output function.
  */
-void Log(uint8_t module, uint8_t category, const char *aFormat, ...)
+void Log(uint8_t module, uint8_t category, const char * aFormat, ...)
 {
-    va_list    v;
+    va_list v;
 
     va_start(v, aFormat);
 #if EFR32_LOG_ENABLED && _WEAVE_USE_LOGGING
     if (IsCategoryEnabled(category))
     {
-        char   formattedMsg[WEAVE_DEVICE_CONFIG_LOG_MESSAGE_MAX_SIZE];
+        char formattedMsg[WEAVE_DEVICE_CONFIG_LOG_MESSAGE_MAX_SIZE];
         size_t formattedMsgLen;
 
         constexpr size_t maxPrefixLen = nlWeaveLoggingModuleNameLen + 3;
@@ -187,17 +184,11 @@ void Log(uint8_t module, uint8_t category, const char *aFormat, ...)
 
         switch (category)
         {
-        case kLogCategory_Error:
-            strcpy(formattedMsg, LOG_ERROR);
-            break;
+        case kLogCategory_Error: strcpy(formattedMsg, LOG_ERROR); break;
         case kLogCategory_Progress:
         case kLogCategory_Retain:
-        default:
-            strcpy(formattedMsg, LOG_INFO);
-            break;
-        case kLogCategory_Detail:
-            strcpy(formattedMsg, LOG_DETAIL);
-            break;
+        default: strcpy(formattedMsg, LOG_INFO); break;
+        case kLogCategory_Detail: strcpy(formattedMsg, LOG_DETAIL); break;
         }
 
         formattedMsgLen = strlen(formattedMsg);
@@ -215,7 +206,7 @@ void Log(uint8_t module, uint8_t category, const char *aFormat, ...)
         {
             formattedMsg[sizeof formattedMsg - 1] = '\0';
         }
-        
+
         PrintLog(formattedMsg);
     }
 
@@ -232,7 +223,7 @@ void Log(uint8_t module, uint8_t category, const char *aFormat, ...)
 /**
  * LwIP log output function.
  */
-extern "C" void LwIPLog(const char *aFormat, ...)
+extern "C" void LwIPLog(const char * aFormat, ...)
 {
     va_list v;
 
@@ -260,10 +251,10 @@ extern "C" void LwIPLog(const char *aFormat, ...)
  * Platform logging function for OpenThread
  */
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
-extern "C" void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, ...)
+extern "C" void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char * aFormat, ...)
 {
     IgnoreUnusedVariable(aLogRegion);
-    va_list    v;
+    va_list v;
 
     va_start(v, aFormat);
 #if EFR32_LOG_ENABLED
@@ -273,24 +264,12 @@ extern "C" void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const ch
     {
         switch (aLogLevel)
         {
-        case OT_LOG_LEVEL_CRIT:
-            strcpy(formattedMsg, LOG_ERROR "[ot] ");
-            break;
-        case OT_LOG_LEVEL_WARN:
-            strcpy(formattedMsg, LOG_WARN "[ot] ");
-            break;
-        case OT_LOG_LEVEL_NOTE:
-            strcpy(formattedMsg, LOG_INFO "[ot] ");
-            break;
-        case OT_LOG_LEVEL_INFO:
-            strcpy(formattedMsg, LOG_INFO "[ot] ");
-            break;
-        case OT_LOG_LEVEL_DEBG:
-            strcpy(formattedMsg, LOG_DETAIL "[ot] ");
-            break;
-        default:
-            strcpy(formattedMsg, LOG_DETAIL "[ot] ");
-            break;
+        case OT_LOG_LEVEL_CRIT: strcpy(formattedMsg, LOG_ERROR "[ot] "); break;
+        case OT_LOG_LEVEL_WARN: strcpy(formattedMsg, LOG_WARN "[ot] "); break;
+        case OT_LOG_LEVEL_NOTE: strcpy(formattedMsg, LOG_INFO "[ot] "); break;
+        case OT_LOG_LEVEL_INFO: strcpy(formattedMsg, LOG_INFO "[ot] "); break;
+        case OT_LOG_LEVEL_DEBG: strcpy(formattedMsg, LOG_DETAIL "[ot] "); break;
+        default: strcpy(formattedMsg, LOG_DETAIL "[ot] "); break;
         }
 
         size_t prefixLen = strlen(formattedMsg);
@@ -316,21 +295,21 @@ extern "C" void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const ch
 /**
  * Log register contents to UART when a hard fault occurs.
  */
-extern "C" void debugHardfault(uint32_t *sp)
+extern "C" void debugHardfault(uint32_t * sp)
 {
     uint32_t cfsr  = SCB->CFSR;
     uint32_t hfsr  = SCB->HFSR;
     uint32_t mmfar = SCB->MMFAR;
     uint32_t bfar  = SCB->BFAR;
-    uint32_t r0  = sp[0];
-    uint32_t r1  = sp[1];
-    uint32_t r2  = sp[2];
-    uint32_t r3  = sp[3];
-    uint32_t r12 = sp[4];
-    uint32_t lr  = sp[5];
-    uint32_t pc  = sp[6];
-    uint32_t psr = sp[7];
-    char     formattedMsg[32];
+    uint32_t r0    = sp[0];
+    uint32_t r1    = sp[1];
+    uint32_t r2    = sp[2];
+    uint32_t r3    = sp[3];
+    uint32_t r12   = sp[4];
+    uint32_t lr    = sp[5];
+    uint32_t pc    = sp[6];
+    uint32_t psr   = sp[7];
+    char formattedMsg[32];
 
     if (sLogInitialized == false)
     {
@@ -347,7 +326,7 @@ extern "C" void debugHardfault(uint32_t *sp)
     PrintLog(formattedMsg);
     snprintf(formattedMsg, sizeof formattedMsg, "SCB->BFAR   0x%08lx", bfar);
     PrintLog(formattedMsg);
-    snprintf(formattedMsg, sizeof formattedMsg, "SP          0x%08lx", (uint32_t)sp);
+    snprintf(formattedMsg, sizeof formattedMsg, "SP          0x%08lx", (uint32_t) sp);
     PrintLog(formattedMsg);
     snprintf(formattedMsg, sizeof formattedMsg, "R0          0x%08lx\n", r0);
     PrintLog(formattedMsg);
@@ -375,13 +354,14 @@ extern "C" void debugHardfault(uint32_t *sp)
  */
 extern "C" __attribute__((naked)) void HardFault_Handler(void)
 {
-    __asm volatile("tst lr, #4                                    \n"
-                   "ite eq                                        \n"
-                   "mrseq r0, msp                                 \n"
-                   "mrsne r0, psp                                 \n"
-                   "ldr r1, debugHardfault_address                \n"
-                   "bx r1                                         \n"
-                   "debugHardfault_address: .word debugHardfault  \n");
+    __asm volatile(
+        "tst lr, #4                                    \n"
+        "ite eq                                        \n"
+        "mrseq r0, msp                                 \n"
+        "mrsne r0, psp                                 \n"
+        "ldr r1, debugHardfault_address                \n"
+        "bx r1                                         \n"
+        "debugHardfault_address: .word debugHardfault  \n");
 }
 
 #endif // HARD_FAULT_LOG_ENABLE && EFR32_LOG_ENABLED

@@ -41,61 +41,42 @@ using namespace nl::Weave::TLV;
 
 #define CMD_NAME "weave print-tlv"
 
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static void _DumpWriter(const char *aFormat, ...);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static void _DumpWriter(const char * aFormat, ...);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "base64", kNoArgument, 'b' },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "base64", kNoArgument, 'b' }, { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "   -b, --base64\n"
     "\n"
     "       The file containing the TLV should be parsed as base64.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
-{
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [<options...>] <tlv-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Print a Weave TLV encoding in human readable form.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <tlv-file>\n"
-    "\n"
-    "       A file containing an encoded Weave TLV element. The element\n"
-    "       must be in raw TLV format or base-64 with -b option.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [<options...>] <tlv-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Print a Weave TLV encoding in human readable form.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <tlv-file>\n"
+                                "\n"
+                                "       A file containing an encoded Weave TLV element. The element\n"
+                                "       must be in raw TLV format or base-64 with -b option.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
 
-static const char *gFileName = NULL;
+static const char * gFileName  = NULL;
 static bool gUseBase64Decoding = false;
 
-bool Cmd_PrintTLV(int argc, char *argv[])
+bool Cmd_PrintTLV(int argc, char * argv[])
 {
-    bool res = true;
-    uint8_t *map = NULL;
-    uint8_t *raw = NULL;
+    bool res      = true;
+    uint8_t * map = NULL;
+    uint8_t * raw = NULL;
     int fd;
     struct stat st;
     TLVReader reader;
@@ -134,8 +115,8 @@ bool Cmd_PrintTLV(int argc, char *argv[])
 
     if (gUseBase64Decoding)
     {
-        raw = (uint8_t *)malloc(st.st_size);
-        len = nl::Base64Decode((const char *)map, st.st_size, raw);
+        raw = (uint8_t *) malloc(st.st_size);
+        len = nl::Base64Decode((const char *) map, st.st_size, raw);
     }
     else
     {
@@ -161,7 +142,7 @@ exit:
     return res;
 }
 
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {
@@ -180,7 +161,7 @@ static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-static void _DumpWriter(const char *aFormat, ...)
+static void _DumpWriter(const char * aFormat, ...)
 {
     va_list args;
 
@@ -191,17 +172,13 @@ static void _DumpWriter(const char *aFormat, ...)
     va_end(args);
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'b':
-        gUseBase64Decoding = true;
-        break;
+    case 'b': gUseBase64Decoding = true; break;
 
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

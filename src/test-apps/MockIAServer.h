@@ -42,20 +42,20 @@ class MockImageAnnounceServer : private WeaveImageAnnounceServer, private IWeave
 public:
     MockImageAnnounceServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
-    typedef void (*MessageReceivedFnct)(ExchangeContext *ec);
+    typedef void (*MessageReceivedFnct)(ExchangeContext * ec);
     MessageReceivedFnct OnImageAnnounceReceived;
 
-    WEAVE_ERROR CreateExchangeCtx(WeaveConnection *con);
-    WEAVE_ERROR CreateExchangeCtx(const uint64_t &peerNodeId, const IPAddress &peerAddr);
+    WEAVE_ERROR CreateExchangeCtx(WeaveConnection * con);
+    WEAVE_ERROR CreateExchangeCtx(const uint64_t & peerNodeId, const IPAddress & peerAddr);
 
 protected:
-    virtual void OnImageAnnounce(ExchangeContext* ec);
+    virtual void OnImageAnnounce(ExchangeContext * ec);
 
 private:
-    ExchangeContext *mCurServerOp;
+    ExchangeContext * mCurServerOp;
     void CloseExistingExchangeCtx();
 };
 

@@ -85,7 +85,6 @@ inline void WeaveTelemetryBase::sHandleTimer(nl::Weave::System::Layer * aLayer, 
     static_cast<WeaveTelemetryBase *>(aAppState)->HandleTimer();
 }
 
-
 #if WEAVE_DEVICE_CONFIG_ENABLE_WIFI_TELEMETRY
 class WiFiTelemetry : public WeaveTelemetryBase
 {
@@ -93,7 +92,6 @@ protected:
     virtual void GetTelemetryStatsAndLogEvent(void);
 };
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_WIFI_TELEMETRY
-
 
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD_TELEMETRY
 class ThreadTelemetry : public WeaveTelemetryBase
@@ -109,7 +107,6 @@ protected:
 };
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_THREAD_TELEMETRY
 
-
 #if WEAVE_DEVICE_CONFIG_ENABLE_TUNNEL_TELEMETRY
 class TunnelTelemetry : public WeaveTelemetryBase
 {
@@ -117,7 +114,6 @@ protected:
     virtual void GetTelemetryStatsAndLogEvent(void);
 };
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_TUNNEL_TELEMETRY
-
 
 class NetworkTelemetryManager
 {

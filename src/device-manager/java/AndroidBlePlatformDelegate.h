@@ -23,17 +23,17 @@
 
 using namespace nl::Ble;
 
-typedef bool (*SendWriteRequestCallback)(BLE_CONNECTION_OBJECT connObj, const uint8_t *svcId, const uint8_t *charId, const uint8_t *data, uint32_t dataLen);
-typedef bool (*SubscribeCharacteristicCallback)(BLE_CONNECTION_OBJECT connObj, const uint8_t *svcId, const uint8_t *charId);
-typedef bool (*UnsubscribeCharacteristicCallback)(BLE_CONNECTION_OBJECT connObj, const uint8_t *svcId, const uint8_t *charId);
+typedef bool (*SendWriteRequestCallback)(BLE_CONNECTION_OBJECT connObj, const uint8_t * svcId, const uint8_t * charId,
+                                         const uint8_t * data, uint32_t dataLen);
+typedef bool (*SubscribeCharacteristicCallback)(BLE_CONNECTION_OBJECT connObj, const uint8_t * svcId, const uint8_t * charId);
+typedef bool (*UnsubscribeCharacteristicCallback)(BLE_CONNECTION_OBJECT connObj, const uint8_t * svcId, const uint8_t * charId);
 typedef bool (*CloseConnectionCallback)(BLE_CONNECTION_OBJECT connObj);
 typedef uint16_t (*GetMTUCallback)(BLE_CONNECTION_OBJECT connObj);
 
-class AndroidBlePlatformDelegate :
-    public nl::Ble::BlePlatformDelegate
+class AndroidBlePlatformDelegate : public nl::Ble::BlePlatformDelegate
 {
 public:
-    BleLayer *Ble;
+    BleLayer * Ble;
     SendWriteRequestCallback SendWriteRequestCb;
     SubscribeCharacteristicCallback SubscribeCharacteristicCb;
     UnsubscribeCharacteristicCallback UnsubscribeCharacteristicCb;
@@ -41,17 +41,23 @@ public:
     GetMTUCallback GetMTUCb;
 
     // ctor
-    AndroidBlePlatformDelegate(BleLayer *ble);
+    AndroidBlePlatformDelegate(BleLayer * ble);
 
     // Virtuals from BlePlatformDelegate:
-    bool SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId);
-    bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId);
+    bool SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                 const nl::Ble::WeaveBleUUID * charId);
+    bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                   const nl::Ble::WeaveBleUUID * charId);
     uint16_t GetMTU(BLE_CONNECTION_OBJECT connObj) const;
     bool CloseConnection(BLE_CONNECTION_OBJECT connObj);
-    bool SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, PacketBuffer *pBuf);
-    bool SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, PacketBuffer *pBuf);
-    bool SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, PacketBuffer *pBuf);
-    bool SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId);
+    bool SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId,
+                        PacketBuffer * pBuf);
+    bool SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId,
+                          PacketBuffer * pBuf);
+    bool SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId,
+                         PacketBuffer * pBuf);
+    bool SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext,
+                          const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId);
 
     void SetSendWriteRequestCallback(SendWriteRequestCallback cb);
     void SetSubscribeCharacteristicCallback(SubscribeCharacteristicCallback cb);

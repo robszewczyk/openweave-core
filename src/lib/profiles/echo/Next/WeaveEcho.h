@@ -34,26 +34,24 @@ namespace nl {
 namespace Weave {
 namespace Profiles {
 
-namespace Echo_Next { }
+namespace Echo_Next {
+}
 namespace Echo = Echo_Next;
 
 namespace Echo_Next {
-
 
 /**
  * Weave Echo Profile Message Types
  */
 enum
 {
-	kEchoMessageType_EchoRequest			        = 1,    ///< Weave Echo Request message type
-	kEchoMessageType_EchoResponse			        = 2     ///< Weave Echo Response message type
+    kEchoMessageType_EchoRequest  = 1, ///< Weave Echo Request message type
+    kEchoMessageType_EchoResponse = 2  ///< Weave Echo Response message type
 };
-
 
 } // namespace Echo_Next
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_ECHO_NEXT_H_

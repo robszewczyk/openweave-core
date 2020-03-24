@@ -54,56 +54,46 @@ using namespace nl::Weave::Encoding;
 
 #define COPYRIGHT_STRING "Copyright (c) 2013-2017 Nest Labs, Inc.\nAll rights reserved.\n"
 
-static bool HandleEncodeOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleDecodeArg(const char *progName, int argc, char *argv[]);
-static bool ParseDate(const char *dateStr, uint16_t& year, uint8_t& month, uint8_t& day);
-static void PrintDeviceDescriptor(const WeaveDeviceDescriptor& deviceDesc, const char *prefix);
+static bool HandleEncodeOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleDecodeArg(const char * progName, int argc, char * argv[]);
+static bool ParseDate(const char * dateStr, uint16_t & year, uint8_t & month, uint8_t & day);
+static void PrintDeviceDescriptor(const WeaveDeviceDescriptor & deviceDesc, const char * prefix);
 
-static HelpOptions gGeneralHelpOptions(
-    TOOL_NAME,
-    "Usage: weave-device-descriptor <operation> [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Tool for encoding and decoding Weave device descriptors.\n"
-    "\n"
-    "OPERATIONS:\n"
-    "\n"
-    "  encode\n"
-    "       Encode a weave device descriptor given information supplied on\n"
-    "       the command line.\n"
-    "\n"
-    "  decode\n"
-    "       Decode and print a weave device descriptor read from stdin.\n"
-    "\n"
-    "Type 'weave-device-descriptor <operation> --help' for help on a particular\n"
-    "operation.\n"
-    "\n"
-);
+static HelpOptions gGeneralHelpOptions(TOOL_NAME, "Usage: weave-device-descriptor <operation> [<options...>]\n",
+                                       WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                       "Tool for encoding and decoding Weave device descriptors.\n"
+                                       "\n"
+                                       "OPERATIONS:\n"
+                                       "\n"
+                                       "  encode\n"
+                                       "       Encode a weave device descriptor given information supplied on\n"
+                                       "       the command line.\n"
+                                       "\n"
+                                       "  decode\n"
+                                       "       Decode and print a weave device descriptor read from stdin.\n"
+                                       "\n"
+                                       "Type 'weave-device-descriptor <operation> --help' for help on a particular\n"
+                                       "operation.\n"
+                                       "\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gGeneralHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gGeneralHelpOptions, NULL };
 
-static OptionDef gEncodeOptionDefs[] =
-{
-    { "vendor",             kArgumentRequired, 'V' },
-    { "product",            kArgumentRequired, 'p' },
-    { "revision",           kArgumentRequired, 'r' },
-    { "mfg-date",           kArgumentRequired, 'm' },
-    { "802-15-4-mac",       kArgumentRequired, '8' },
-    { "wifi-mac",           kArgumentRequired, 'w' },
-    { "serial-num",         kArgumentRequired, 's' },
-    { "device-id",          kArgumentRequired, 'd' },
-    { "ssid",               kArgumentRequired, 'S' },
-    { "ssid-suffix",        kArgumentRequired, 'H' },
-    { "pairing-code",       kArgumentRequired, 'P' },
-    { "software-version",   kArgumentRequired, 'n' },
-    { "tlv",                kNoArgument,       'T' },
-    { }
-};
+static OptionDef gEncodeOptionDefs[] = { { "vendor", kArgumentRequired, 'V' },
+                                         { "product", kArgumentRequired, 'p' },
+                                         { "revision", kArgumentRequired, 'r' },
+                                         { "mfg-date", kArgumentRequired, 'm' },
+                                         { "802-15-4-mac", kArgumentRequired, '8' },
+                                         { "wifi-mac", kArgumentRequired, 'w' },
+                                         { "serial-num", kArgumentRequired, 's' },
+                                         { "device-id", kArgumentRequired, 'd' },
+                                         { "ssid", kArgumentRequired, 'S' },
+                                         { "ssid-suffix", kArgumentRequired, 'H' },
+                                         { "pairing-code", kArgumentRequired, 'P' },
+                                         { "software-version", kArgumentRequired, 'n' },
+                                         { "tlv", kNoArgument, 'T' },
+                                         { } };
 
-static const char *const gEncodeOptionHelp =
+static const char * const gEncodeOptionHelp =
     "  -V, --vendor <num> | nest\n"
     "       The device vendor id, or 'nest' for the Nest vendor id.\n"
     "\n"
@@ -143,48 +133,34 @@ static const char *const gEncodeOptionHelp =
     "       Encode the descriptor in TLV format, instead of text format.\n"
     "\n";
 
-static OptionSet gEncodeOptions =
-{
+static OptionSet gEncodeOptions = {
     HandleEncodeOption,
     gEncodeOptionDefs,
     "ENCODE OPTIONS",
     gEncodeOptionHelp,
 };
 
-static HelpOptions gEncodeHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " encode [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Encode a weave device descriptor given information supplied on the command line.\n"
-);
+static HelpOptions gEncodeHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " encode [<options...>]\n",
+                                      WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                      "Encode a weave device descriptor given information supplied on the command line.\n");
 
-static OptionSet *gEncodeOptionSets[] =
-{
-    &gEncodeOptions,
-    &gEncodeHelpOptions,
-    NULL
-};
+static OptionSet * gEncodeOptionSets[] = { &gEncodeOptions, &gEncodeHelpOptions, NULL };
 
-static HelpOptions gDecodeHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " decode [<options...>]\n"
-    "       " TOOL_NAME " decode [<options...>] <text-device-descriptor>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Decode and print a weave device descriptor read from stdin or the command line.\n"
-);
+static HelpOptions gDecodeHelpOptions(TOOL_NAME,
+                                      "Usage: " TOOL_NAME
+                                      " decode [<options...>]\n"
+                                      "       " TOOL_NAME " decode [<options...>] <text-device-descriptor>\n",
+                                      WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                      "Decode and print a weave device descriptor read from stdin or the command line.\n");
 
-static OptionSet *gDecodeOptionSets[] =
-{
-    &gDecodeHelpOptions,
-    NULL
-};
+static OptionSet * gDecodeOptionSets[] = { &gDecodeHelpOptions, NULL };
 
-const char *Operation = NULL;
+const char * Operation = NULL;
 WeaveDeviceDescriptor DeviceDesc;
-bool UseTLV = false;
-const char *DecodeArg = NULL;
+bool UseTLV            = false;
+const char * DecodeArg = NULL;
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -205,7 +181,7 @@ int main(int argc, char *argv[])
 
         argv[1] = argv[0];
 
-        if (!ParseArgs(TOOL_NAME "(encode)", argc-1, argv+1, gEncodeOptionSets))
+        if (!ParseArgs(TOOL_NAME "(encode)", argc - 1, argv + 1, gEncodeOptionSets))
         {
             exit(EXIT_FAILURE);
         }
@@ -213,10 +189,10 @@ int main(int argc, char *argv[])
         if (UseTLV)
             err = WeaveDeviceDescriptor::EncodeTLV(DeviceDesc, encodeBuf, sizeof(encodeBuf), encodedLen);
         else
-            err = WeaveDeviceDescriptor::EncodeText(DeviceDesc, (char *)encodeBuf, sizeof(encodeBuf), encodedLen);
+            err = WeaveDeviceDescriptor::EncodeText(DeviceDesc, (char *) encodeBuf, sizeof(encodeBuf), encodedLen);
         FAIL_ERROR(err, "Encode failed");
 
-        if (write(STDOUT_FILENO, encodeBuf, (size_t)encodedLen) != (ssize_t)encodedLen ||
+        if (write(STDOUT_FILENO, encodeBuf, (size_t) encodedLen) != (ssize_t) encodedLen ||
             (!UseTLV && write(STDOUT_FILENO, "\n", 1) != 1))
         {
             perror("Output error");
@@ -233,20 +209,21 @@ int main(int argc, char *argv[])
 
         argv[1] = argv[0];
 
-        if (!ParseArgs(TOOL_NAME "(decode)", argc-1, argv+1, gDecodeOptionSets, HandleDecodeArg))
+        if (!ParseArgs(TOOL_NAME "(decode)", argc - 1, argv + 1, gDecodeOptionSets, HandleDecodeArg))
         {
             exit(EXIT_FAILURE);
         }
 
         if (DecodeArg != NULL)
         {
-            strncpy((char *)readBuf, DecodeArg, sizeof(readBuf));
+            strncpy((char *) readBuf, DecodeArg, sizeof(readBuf));
             encodedLen = strlen(DecodeArg);
         }
 
         else
         {
-            while ((readRes = read(STDIN_FILENO, readBuf + lenRead, sizeof(readBuf) - lenRead)) > 0) {
+            while ((readRes = read(STDIN_FILENO, readBuf + lenRead, sizeof(readBuf) - lenRead)) > 0)
+            {
                 lenRead += readRes;
                 if (lenRead == sizeof(readBuf))
                 {
@@ -280,7 +257,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleEncodeOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleEncodeOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     int32_t val;
     uint32_t len;
@@ -319,7 +296,8 @@ bool HandleEncodeOption(const char *progName, OptionSet *optSet, int id, const c
         DeviceDesc.ProductRevision = val;
         break;
     case 'm':
-        if (!ParseDate(arg, DeviceDesc.ManufacturingDate.Year, DeviceDesc.ManufacturingDate.Month, DeviceDesc.ManufacturingDate.Day))
+        if (!ParseDate(arg, DeviceDesc.ManufacturingDate.Year, DeviceDesc.ManufacturingDate.Month,
+                       DeviceDesc.ManufacturingDate.Day))
         {
             PrintArgError("%s: Invalid value specified for manufacturing date: %s\n", progName, arg);
             return false;
@@ -396,18 +374,14 @@ bool HandleEncodeOption(const char *progName, OptionSet *optSet, int id, const c
         }
         strcpy(DeviceDesc.PairingCode, arg);
         break;
-    case 'T':
-        UseTLV = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'T': UseTLV = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-static bool HandleDecodeArg(const char *progName, int argc, char *argv[])
+static bool HandleDecodeArg(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -426,7 +400,7 @@ static bool HandleDecodeArg(const char *progName, int argc, char *argv[])
     return true;
 }
 
-bool ParseDate(const char *dateStr, uint16_t& year, uint8_t& month, uint8_t& day)
+bool ParseDate(const char * dateStr, uint16_t & year, uint8_t & month, uint8_t & day)
 {
     struct tm date;
 
@@ -442,14 +416,14 @@ bool ParseDate(const char *dateStr, uint16_t& year, uint8_t& month, uint8_t& day
     if (date.tm_year < 2001 || date.tm_year > 2099)
         return false;
 
-    year = date.tm_year;
+    year  = date.tm_year;
     month = date.tm_mon + 1;
-    day = date.tm_mday;
+    day   = date.tm_mday;
 
     return true;
 }
 
-void PrintDeviceDescriptor(const WeaveDeviceDescriptor& deviceDesc, const char *prefix)
+void PrintDeviceDescriptor(const WeaveDeviceDescriptor & deviceDesc, const char * prefix)
 {
     if (DeviceDesc.DeviceId != 0)
         printf("%sDevice Id: %016" PRIX64 "\n", prefix, DeviceDesc.DeviceId);

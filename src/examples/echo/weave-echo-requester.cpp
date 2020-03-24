@@ -33,23 +33,23 @@
 #include <Weave/Support/ErrorStr.h>
 
 // Max number of times, the client will try to connect to the server.
-#define MAX_CONNECT_ATTEMPTS      (5)
+#define MAX_CONNECT_ATTEMPTS (5)
 
 // Max value for the number of EchoRequests sent.
-#define MAX_ECHO_COUNT            (3)
+#define MAX_ECHO_COUNT (3)
 
 using namespace nl::Inet;
 using namespace nl::Weave;
 using namespace nl::Weave::Profiles;
 
 // Callback handler when a Weave EchoResponse is received.
-static void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
+static void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
 
 // Callback handler when a connection attempt has been completed
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
 
 // Callback handler when the TCP connection is closed by the peer.
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
 // The number of connection attempts performed by this Weave EchoClient.
 static int32_t gConnectAttempts = 0;
@@ -74,7 +74,7 @@ static uint64_t gEchoRespCount = 0;
 static WeaveEchoClient gEchoClient;
 
 // A pointer to a Weave TCP connection object.
-static WeaveConnection *gCon = NULL;
+static WeaveConnection * gCon = NULL;
 
 // True, if client is still connecting to the server, false otherwise.
 static bool gClientConInProgress = false;
@@ -86,7 +86,7 @@ static void StartClientConnection();
 static void CloseClientConnection();
 static void SendEchoRequest();
 static bool EchoIntervalExpired();
-static void FormulateEchoRequestBuffer(PacketBuffer*& payloadBuf);
+static void FormulateEchoRequestBuffer(PacketBuffer *& payloadBuf);
 
 bool EchoIntervalExpired(void)
 {
@@ -100,7 +100,7 @@ bool EchoIntervalExpired(void)
     }
 }
 
-void FormulateEchoRequestBuffer(PacketBuffer*& payloadBuf)
+void FormulateEchoRequestBuffer(PacketBuffer *& payloadBuf)
 {
     payloadBuf = PacketBuffer::New();
     if (payloadBuf == NULL)
@@ -110,18 +110,17 @@ void FormulateEchoRequestBuffer(PacketBuffer*& payloadBuf)
     }
 
     // Add some application payload data in the buffer.
-    char *p = (char *) payloadBuf->Start();
+    char * p    = (char *) payloadBuf->Start();
     int32_t len = sprintf(p, "Echo Message %" PRIu64 "\n", gEchoCount);
 
     // Set the datalength in the buffer appropriately.
     payloadBuf->SetDataLength((uint16_t) len);
-
 }
 
 void SendEchoRequest(void)
 {
     WEAVE_ERROR err;
-    PacketBuffer *payloadBuf = NULL;
+    PacketBuffer * payloadBuf = NULL;
 
     gLastEchoTime = Now();
 
@@ -151,9 +150,9 @@ void SendEchoRequest(void)
     }
 }
 
-void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
-    uint32_t respTime = Now();
+    uint32_t respTime    = Now();
     uint32_t transitTime = respTime - gLastEchoTime;
 
     gWaitingForEchoResp = false;
@@ -163,9 +162,8 @@ void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffe
 
     WeaveNodeAddrToStr(msgNodeAddrStr, sizeof(msgNodeAddrStr) - 1, nodeId, &nodeAddr, gDestPort, gCon);
 
-    printf("Echo Response from node %s : %" PRIu64 "/%" PRIu64 "(%.2f%%) len=%u time=%.3fms\n", msgNodeAddrStr,
-            gEchoRespCount, gEchoCount, ((double) gEchoRespCount) * 100 / gEchoCount, payload->DataLength(),
-            ((double) transitTime) / 1000);
+    printf("Echo Response from node %s : %" PRIu64 "/%" PRIu64 "(%.2f%%) len=%u time=%.3fms\n", msgNodeAddrStr, gEchoRespCount,
+           gEchoCount, ((double) gEchoRespCount) * 100 / gEchoCount, payload->DataLength(), ((double) transitTime) / 1000);
 }
 
 void StartClientConnection()
@@ -187,7 +185,7 @@ void StartClientConnection()
     }
 
     gCon->OnConnectionComplete = HandleConnectionComplete;
-    gCon->OnConnectionClosed = HandleConnectionClosed;
+    gCon->OnConnectionClosed   = HandleConnectionClosed;
 
     // Attempt to connect to the peer.
     err = gCon->Connect(gDestNodeId, gDestv6Addr, gDestPort);
@@ -203,7 +201,6 @@ void StartClientConnection()
     gClientConInProgress = true;
 }
 
-
 void CloseClientConnection(void)
 {
     if (gCon)
@@ -213,10 +210,10 @@ void CloseClientConnection(void)
         printf("Connection closed\n");
     }
     gClientConEstablished = false;
-    gClientConInProgress = false;
+    gClientConInProgress  = false;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char msgNodeAddrStr[WEAVE_MAX_MESSAGE_SOURCE_STR_LENGTH];
 
@@ -238,10 +235,10 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     con->OnConnectionClosed = HandleConnectionClosed;
 
     gClientConEstablished = true;
-    gClientConInProgress = false;
+    gClientConInProgress  = false;
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char msgNodeAddrStr[WEAVE_MAX_MESSAGE_SOURCE_STR_LENGTH];
 
@@ -260,7 +257,7 @@ void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 

@@ -30,7 +30,7 @@
  * a specific crypto name is passed as an argument.
  * Use this function to call from a shell command line interface.
  */
-int WeaveCryptoTests(int argc, char *argv[]);
+int WeaveCryptoTests(int argc, char * argv[]);
 
 /*
  * Test function for SHA cryptography.

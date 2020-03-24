@@ -27,10 +27,4 @@
 #ifndef _NEST_TEST_TRAIT__TEST_D_TRAIT_C_H_
 #define _NEST_TEST_TRAIT__TEST_D_TRAIT_C_H_
 
-
-
-
-
-
-
 #endif // _NEST_TEST_TRAIT__TEST_D_TRAIT_C_H_

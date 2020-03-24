@@ -65,7 +65,7 @@ using namespace ::nl::Weave::Profiles::Common;
  *  of the expected tag forms for the given tag number.
  */
 
-bool CheckWDMTag(uint32_t aTagNum, nl::Weave::TLV::TLVReader &aReader)
+bool CheckWDMTag(uint32_t aTagNum, nl::Weave::TLV::TLVReader & aReader)
 {
     bool returnVal;
     uint64_t tag = aReader.GetTag();
@@ -76,37 +76,29 @@ bool CheckWDMTag(uint32_t aTagNum, nl::Weave::TLV::TLVReader &aReader)
     case kTag_WDMPathProfile:
     case kTag_WDMPathArrayIndexSelector:
     case kTag_WDMPathArrayValueSelector:
-    case kTag_WDMDataList:
-
-        returnVal = (tag == CommonTag(aTagNum) || tag == ProfileTag(kWeaveProfile_WDM, aTagNum));
-
-        break;
+    case kTag_WDMDataList: returnVal = (tag == CommonTag(aTagNum) || tag == ProfileTag(kWeaveProfile_WDM, aTagNum)); break;
     case kTag_WDMPathProfileId:
 
         returnVal = (tag == CommonTag(kTag_WDMPathProfileId_Deprecated) ||
-                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMPathProfileId_Deprecated) ||
-                     tag == ContextTag(aTagNum));
+                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMPathProfileId_Deprecated) || tag == ContextTag(aTagNum));
 
         break;
     case kTag_WDMPathProfileInstance:
 
         returnVal = (tag == CommonTag(kTag_WDMPathProfileInstance_Deprecated) ||
-                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMPathProfileInstance_Deprecated) ||
-                     tag == ContextTag(aTagNum));
+                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMPathProfileInstance_Deprecated) || tag == ContextTag(aTagNum));
 
         break;
     case kTag_WDMDataListElementPath:
 
         returnVal = (tag == CommonTag(kTag_WDMDataListElementPath_Deprecated) ||
-                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMDataListElementPath_Deprecated) ||
-                     tag == ContextTag(aTagNum));
+                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMDataListElementPath_Deprecated) || tag == ContextTag(aTagNum));
 
         break;
     case kTag_WDMDataListElementVersion:
 
         returnVal = (tag == CommonTag(kTag_WDMDataListElementVersion_Deprecated) ||
-                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMDataListElementVersion_Deprecated) ||
-                     tag == ContextTag(aTagNum));
+                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMDataListElementVersion_Deprecated) || tag == ContextTag(aTagNum));
 
         break;
     case kTag_WDMDataListElementData:
@@ -122,21 +114,13 @@ bool CheckWDMTag(uint32_t aTagNum, nl::Weave::TLV::TLVReader &aReader)
          */
 
         returnVal = (tag == CommonTag(kTag_WDMDataListElementData_Deprecated) ||
-                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMDataListElementData_Deprecated) ||
-                     tag == ContextTag(aTagNum) ||
-                     tag == ProfileTag(kWeaveProfile_NestProtect, 0) ||
-                     tag == ProfileTag(kWeaveProfile_Occupancy, 0) ||
-                     tag == ProfileTag(kWeaveProfile_Structure, 0) ||
-                     tag == ProfileTag(kWeaveProfile_Safety, 0) ||
-                     tag == ProfileTag(kWeaveProfile_SafetySummary, 0) ||
-                     tag == ProfileTag(kWeaveProfile_NestThermostat, 0));
+                     tag == ProfileTag(kWeaveProfile_WDM, kTag_WDMDataListElementData_Deprecated) || tag == ContextTag(aTagNum) ||
+                     tag == ProfileTag(kWeaveProfile_NestProtect, 0) || tag == ProfileTag(kWeaveProfile_Occupancy, 0) ||
+                     tag == ProfileTag(kWeaveProfile_Structure, 0) || tag == ProfileTag(kWeaveProfile_Safety, 0) ||
+                     tag == ProfileTag(kWeaveProfile_SafetySummary, 0) || tag == ProfileTag(kWeaveProfile_NestThermostat, 0));
 
         break;
-    default:
-
-        returnVal = false;
-
-        break;
+    default: returnVal = false; break;
     }
 
     return returnVal;
@@ -167,7 +151,7 @@ bool CheckWDMTag(uint32_t aTagNum, nl::Weave::TLV::TLVReader &aReader)
  *  validate the relevant tags and types.
  */
 
-WEAVE_ERROR OpenPathList(ReferencedTLVData &aPathList, nl::Weave::TLV::TLVReader &aReader)
+WEAVE_ERROR OpenPathList(ReferencedTLVData & aPathList, nl::Weave::TLV::TLVReader & aReader)
 {
     WEAVE_ERROR err;
     TLVType container;
@@ -217,7 +201,7 @@ exit:
  *  validate the relevant tags and types.
  */
 
-WEAVE_ERROR OpenDataList(ReferencedTLVData &aDataList, nl::Weave::TLV::TLVReader &aReader)
+WEAVE_ERROR OpenDataList(ReferencedTLVData & aDataList, nl::Weave::TLV::TLVReader & aReader)
 {
     WEAVE_ERROR err;
     TLVType container;
@@ -268,7 +252,7 @@ exit:
  *  associated with opening and reading the data list element.
  */
 
-WEAVE_ERROR OpenDataListElement(nl::Weave::TLV::TLVReader &aReader, nl::Weave::TLV::TLVReader &aPathReader, uint64_t &aVersion)
+WEAVE_ERROR OpenDataListElement(nl::Weave::TLV::TLVReader & aReader, nl::Weave::TLV::TLVReader & aPathReader, uint64_t & aVersion)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType elementContainer;
@@ -345,11 +329,8 @@ exit:
  *   This is the latest version for encoding a path.
  */
 
-static WEAVE_ERROR StartEncodePath(TLVWriter &aWriter,
-                                   const uint64_t &aTag,
-                                   uint32_t aProfileId,
-                                   TLVType &mOuterContainer,
-                                   TLVType &mPath)
+static WEAVE_ERROR StartEncodePath(TLVWriter & aWriter, const uint64_t & aTag, uint32_t aProfileId, TLVType & mOuterContainer,
+                                   TLVType & mPath)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -364,12 +345,12 @@ static WEAVE_ERROR StartEncodePath(TLVWriter &aWriter,
     err = aWriter.Put(ContextTag(kTag_WDMPathProfileId), aProfileId);
     SuccessOrExit(err);
 
-    exit:
+exit:
 
     return err;
 }
 
-static WEAVE_ERROR EndEncodePath(TLVWriter &aWriter, TLVType &mOuterContainer, WEAVE_ERROR mError)
+static WEAVE_ERROR EndEncodePath(TLVWriter & aWriter, TLVType & mOuterContainer, WEAVE_ERROR mError)
 {
     WEAVE_ERROR retErr = aWriter.EndContainer(mOuterContainer);
 
@@ -425,12 +406,8 @@ static WEAVE_ERROR EndEncodePath(TLVWriter &aWriter, TLVType &mOuterContainer, W
  *  #WEAVE_ERROR reflecting an inability to format the given path.
  */
 
-WEAVE_ERROR EncodePath(TLVWriter &aWriter,
-                       const uint64_t &aTag,
-                       uint32_t aProfileId,
-                       const uint64_t &aInstanceId,
-                       uint32_t aPathLen,
-                       ...)
+WEAVE_ERROR EncodePath(TLVWriter & aWriter, const uint64_t & aTag, uint32_t aProfileId, const uint64_t & aInstanceId,
+                       uint32_t aPathLen, ...)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     va_list pathTags;
@@ -512,13 +489,8 @@ exit:
  *  #WEAVE_ERROR reflecting an inability to format the given path.
  */
 
-WEAVE_ERROR EncodePath(TLVWriter &aWriter,
-                       const uint64_t &aTag,
-                       uint32_t aProfileId,
-                       const uint32_t aInstanceIdLen,
-                       const uint8_t *aInstanceId,
-                       uint32_t aPathLen,
-                       ...)
+WEAVE_ERROR EncodePath(TLVWriter & aWriter, const uint64_t & aTag, uint32_t aProfileId, const uint32_t aInstanceIdLen,
+                       const uint8_t * aInstanceId, uint32_t aPathLen, ...)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     va_list pathTags;
@@ -594,11 +566,7 @@ exit:
  *  #WEAVE_ERROR reflecting an inability to format the given path.
  */
 
-WEAVE_ERROR EncodePath(TLVWriter &aWriter,
-                       const uint64_t &aTag,
-                       uint32_t aProfileId,
-                       const char *aInstanceId,
-                       uint32_t aPathLen,
+WEAVE_ERROR EncodePath(TLVWriter & aWriter, const uint64_t & aTag, uint32_t aProfileId, const char * aInstanceId, uint32_t aPathLen,
                        ...)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -675,12 +643,8 @@ exit:
  *  #WEAVE_ERROR reflecting an inability to format the given path.
  */
 
-WEAVE_ERROR EncodeDeprecatedPath(TLVWriter &aWriter,
-                                 const uint64_t &aTag,
-                                 uint32_t aProfileId,
-                                 const uint64_t &aInstanceId,
-                                 uint32_t aPathLen,
-                                 ...)
+WEAVE_ERROR EncodeDeprecatedPath(TLVWriter & aWriter, const uint64_t & aTag, uint32_t aProfileId, const uint64_t & aInstanceId,
+                                 uint32_t aPathLen, ...)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     va_list pathTags;
@@ -764,12 +728,8 @@ exit:
  *  #WEAVE_ERROR reflecting an inability to format the given path.
  */
 
-WEAVE_ERROR EncodeDeprecatedPath(TLVWriter &aWriter,
-                                 const uint64_t &aTag,
-                                 uint32_t aProfileId,
-                                 const char *aInstanceId,
-                                 uint32_t aPathLen,
-                                 ...)
+WEAVE_ERROR EncodeDeprecatedPath(TLVWriter & aWriter, const uint64_t & aTag, uint32_t aProfileId, const char * aInstanceId,
+                                 uint32_t aPathLen, ...)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     va_list pathTags;
@@ -869,7 +829,7 @@ ProfileDatabase::ProfileData::~ProfileData(void)
  *  #WEAVE_ERROR indicating a failure to store the data of interest.
  */
 
-WEAVE_ERROR ProfileDatabase::ProfileData::Store(TLVReader &aPathReader, uint64_t aVersion, TLVReader &aDataReader)
+WEAVE_ERROR ProfileDatabase::ProfileData::Store(TLVReader & aPathReader, uint64_t aVersion, TLVReader & aDataReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType container;
@@ -945,7 +905,7 @@ exit:
  *  #WEAVE_ERROR indicating a failure to store the data of interest.
  */
 
-WEAVE_ERROR ProfileDatabase::Store(ReferencedTLVData &aDataList)
+WEAVE_ERROR ProfileDatabase::Store(ReferencedTLVData & aDataList)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader dataRdr;
@@ -999,7 +959,7 @@ exit:
  *  interest.
  */
 
-WEAVE_ERROR ProfileDatabase::Retrieve(ReferencedTLVData &aPathList, ReferencedTLVData &aDataList)
+WEAVE_ERROR ProfileDatabase::Retrieve(ReferencedTLVData & aPathList, ReferencedTLVData & aDataList)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1040,11 +1000,11 @@ exit:
  *  out the data list of interest.
  */
 
-WEAVE_ERROR ProfileDatabase::Retrieve(ReferencedTLVData &aPathList, TLVWriter &aWriter)
+WEAVE_ERROR ProfileDatabase::Retrieve(ReferencedTLVData & aPathList, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader rdr;
-    ProfileData *profileData;
+    ProfileData * profileData;
 
     // aPathList is copied at here into rdr, and then left alone, so
     // it stays constant no matter what will happen
@@ -1138,7 +1098,7 @@ exit:
  *  ProfileData object.
  */
 
-WEAVE_ERROR ProfileDatabase::LookupDataFromProfileDescriptor(nl::Weave::TLV::TLVReader &aDescReader, ProfileData **aProfileData)
+WEAVE_ERROR ProfileDatabase::LookupDataFromProfileDescriptor(nl::Weave::TLV::TLVReader & aDescReader, ProfileData ** aProfileData)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1243,7 +1203,7 @@ exit:
  *  ProfileData object.
  */
 
-WEAVE_ERROR ProfileDatabase::LookupProfileData(TLVReader &aPathReader, ProfileData **aProfileData)
+WEAVE_ERROR ProfileDatabase::LookupProfileData(TLVReader & aPathReader, ProfileData ** aProfileData)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType pathContainer;
@@ -1271,10 +1231,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ProfileDatabase::StoreInternal(TLVReader &aPathReader, uint64_t aVersion, TLVReader &aDataReader)
+WEAVE_ERROR ProfileDatabase::StoreInternal(TLVReader & aPathReader, uint64_t aVersion, TLVReader & aDataReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ProfileData *profileData;
+    ProfileData * profileData;
     TLVType containerTypeDataElem;
 
     err = aPathReader.EnterContainer(containerTypeDataElem);
@@ -1295,7 +1255,7 @@ exit:
     return err;
 }
 
-}; // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Legacy)
-}; // Profiles
-}; // Weave
-}; // nl
+}; // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Legacy)
+}; // namespace Profiles
+}; // namespace Weave
+}; // namespace nl

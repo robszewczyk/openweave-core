@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace UserNFCTokenMetadataTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe12U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe12U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -86,12 +86,12 @@ struct Metadata
     const char * tagNumber;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct Metadata_array {
+struct Metadata_array
+{
     uint32_t num;
-    Metadata *buf;
+    Metadata * buf;
 };
 
 } // namespace UserNFCTokenMetadataTrait

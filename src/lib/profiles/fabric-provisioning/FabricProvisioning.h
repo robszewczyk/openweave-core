@@ -163,8 +163,8 @@ public:
      *                          is expected to represent the final assessment of access control policy for the
      *                          message.
      */
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 
     /**
      * Called to determine if the device is currently paired to an account.
@@ -173,35 +173,34 @@ public:
     virtual bool IsPairedToAccount() const;
 };
 
-
 /**
  * Server class for implementing the Fabric Provisioning profile.
  */
-// TODO: Additional documentation detail required (i.e. expected class usage, number in the system, instantiation requirements, lifetime).
+// TODO: Additional documentation detail required (i.e. expected class usage, number in the system, instantiation requirements,
+// lifetime).
 class NL_DLL_EXPORT FabricProvisioningServer : public WeaveServerBase
 {
 public:
     FabricProvisioningServer(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    void SetDelegate(FabricProvisioningDelegate *delegate);
+    void SetDelegate(FabricProvisioningDelegate * delegate);
 
     virtual WEAVE_ERROR SendSuccessResponse(void);
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
 protected:
-    FabricProvisioningDelegate *mDelegate;
-    ExchangeContext *mCurClientOp;
+    FabricProvisioningDelegate * mDelegate;
+    ExchangeContext * mCurClientOp;
 
 private:
-    static void HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-            uint8_t msgType, PacketBuffer *payload);
+    static void HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-    FabricProvisioningServer(const FabricProvisioningServer&);   // not defined
+    FabricProvisioningServer(const FabricProvisioningServer &); // not defined
 };
-
 
 } // namespace FabricProvisioning
 } // namespace Profiles

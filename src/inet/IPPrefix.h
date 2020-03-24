@@ -30,8 +30,8 @@
 
 #include <InetLayer/IPAddress.h>
 
-#define NL_INET_IPV6_DEFAULT_PREFIX_LEN               (64)
-#define NL_INET_IPV6_MAX_PREFIX_LEN                   (128)
+#define NL_INET_IPV6_DEFAULT_PREFIX_LEN (64)
+#define NL_INET_IPV6_MAX_PREFIX_LEN     (128)
 
 namespace nl {
 namespace Inet {
@@ -47,7 +47,7 @@ class IPPrefix
 {
 public:
     /** An IPv6 or IPv4 address. */
-    IPAddress    IPAddr;
+    IPAddress IPAddr;
 
     /**
      * @brief  Length of the prefix.
@@ -58,7 +58,7 @@ public:
      *  \c kIPAddressType_IPv4 and <tt>Length <= 128</tt> where the type of
      *  \c IPAddr is \c kIPAddressType_IPv6.
      */
-    uint8_t      Length;
+    uint8_t Length;
 
     /**
      * A distinguished object where the type of \c IPAddr is
@@ -86,7 +86,7 @@ public:
      *
      * @return  \c true if equivalent, else \c false.
      */
-    bool operator ==(const IPPrefix& other) const;
+    bool operator ==(const IPPrefix & other) const;
 
     /**
      * @brief   Compares the prefix with another for inequivalence.
@@ -97,7 +97,7 @@ public:
      *
      * @return  \c false if equivalent, else \c false.
      */
-    bool operator !=(const IPPrefix& other) const;
+    bool operator !=(const IPPrefix & other) const;
 
     /**
      * @brief   Conventional assignment operator.
@@ -106,7 +106,7 @@ public:
      *
      * @return  a reference to this object.
      */
-    IPPrefix& operator =(const IPPrefix& other);
+    IPPrefix & operator =(const IPPrefix & other);
 
     /**
      * @brief   Test if an address matches the prefix.
@@ -115,7 +115,7 @@ public:
      *
      * @return  \c true if \c addr has the prefix, else \c false.
      */
-    bool MatchAddress(const IPAddress& addr) const;
+    bool MatchAddress(const IPAddress & addr) const;
 };
 
 } // namespace Inet

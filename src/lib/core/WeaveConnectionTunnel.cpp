@@ -31,7 +31,7 @@
 namespace nl {
 namespace Weave {
 
-void WeaveConnectionTunnel::Init(WeaveMessageLayer *messageLayer)
+void WeaveConnectionTunnel::Init(WeaveMessageLayer * messageLayer)
 {
     // Die if tunnel already initialized.
     VerifyOrDie(mMessageLayer == NULL);
@@ -39,12 +39,12 @@ void WeaveConnectionTunnel::Init(WeaveMessageLayer *messageLayer)
     mMessageLayer = messageLayer;
 }
 
-WEAVE_ERROR WeaveConnectionTunnel::MakeTunnelConnected(TCPEndPoint *endPointOne, TCPEndPoint *endPointTwo)
+WEAVE_ERROR WeaveConnectionTunnel::MakeTunnelConnected(TCPEndPoint * endPointOne, TCPEndPoint * endPointTwo)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit(mMessageLayer != NULL && endPointOne != NULL && endPointTwo != NULL && endPointOne != endPointTwo,
-            err = WEAVE_ERROR_INCORRECT_STATE);
+                 err = WEAVE_ERROR_INCORRECT_STATE);
 
     mEPOne = endPointOne;
     mEPTwo = endPointTwo;
@@ -53,19 +53,19 @@ WEAVE_ERROR WeaveConnectionTunnel::MakeTunnelConnected(TCPEndPoint *endPointOne,
     mEPTwo->AppState = this;
 
     // Hang callbacks on TCPEndPoints to set up data and connection closure forwarding between both ends of the tunnel.
-    mEPOne->OnDataReceived = HandleTunnelDataReceived;
+    mEPOne->OnDataReceived     = HandleTunnelDataReceived;
     mEPOne->OnConnectionClosed = HandleTunnelConnectionClosed;
-    mEPOne->OnPeerClose = HandleReceiveShutdown;
+    mEPOne->OnPeerClose        = HandleReceiveShutdown;
 
-    mEPTwo->OnDataReceived = HandleTunnelDataReceived;
+    mEPTwo->OnDataReceived     = HandleTunnelDataReceived;
     mEPTwo->OnConnectionClosed = HandleTunnelConnectionClosed;
-    mEPTwo->OnPeerClose = HandleReceiveShutdown;
+    mEPTwo->OnPeerClose        = HandleReceiveShutdown;
 
 exit:
     return err;
 }
 
-void WeaveConnectionTunnel::CloseEndPoint(TCPEndPoint **endPoint)
+void WeaveConnectionTunnel::CloseEndPoint(TCPEndPoint ** endPoint)
 {
     // Close and free specified TCPEndPoint.
     if (*endPoint != NULL)
@@ -89,8 +89,7 @@ void WeaveConnectionTunnel::CloseEndPoint(TCPEndPoint **endPoint)
  */
 void WeaveConnectionTunnel::Shutdown()
 {
-     WeaveLogProgress(ExchangeManager, "Shutting down tunnel %04X with EP (%04X, %04X)", LogId(),
-            mEPOne->LogId(), mEPTwo->LogId());
+    WeaveLogProgress(ExchangeManager, "Shutting down tunnel %04X with EP (%04X, %04X)", LogId(), mEPOne->LogId(), mEPTwo->LogId());
 
     // Die if tunnel uninitialized.
     VerifyOrDie(mMessageLayer != NULL);
@@ -107,7 +106,8 @@ void WeaveConnectionTunnel::Shutdown()
     mMessageLayer = NULL;
 }
 
-static void PrintTunnelInfo(const WeaveConnectionTunnel &tun, const TCPEndPoint &fromEndPoint, const TCPEndPoint &toEndPoint, const PacketBuffer &data)
+static void PrintTunnelInfo(const WeaveConnectionTunnel & tun, const TCPEndPoint & fromEndPoint, const TCPEndPoint & toEndPoint,
+                            const PacketBuffer & data)
 {
     IPAddress addr;
     uint16_t port;
@@ -124,17 +124,18 @@ static void PrintTunnelInfo(const WeaveConnectionTunnel &tun, const TCPEndPoint 
 
     addr.ToString(toIpAddrStr, sizeof(toIpAddrStr));
 
-    WeaveLogDetail(ExchangeManager, "Forwarding %u bytes on tunnel %04X from %s -> %s\n", data.DataLength(), tun.LogId(), fromIpAddrStr, toIpAddrStr);
+    WeaveLogDetail(ExchangeManager, "Forwarding %u bytes on tunnel %04X from %s -> %s\n", data.DataLength(), tun.LogId(),
+                   fromIpAddrStr, toIpAddrStr);
 
 exit:
     return;
 }
 
-void WeaveConnectionTunnel::HandleTunnelDataReceived(TCPEndPoint *fromEndPoint, PacketBuffer *data)
+void WeaveConnectionTunnel::HandleTunnelDataReceived(TCPEndPoint * fromEndPoint, PacketBuffer * data)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveConnectionTunnel *tun = (WeaveConnectionTunnel *)fromEndPoint->AppState;
-    TCPEndPoint *toEndPoint;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WeaveConnectionTunnel * tun = (WeaveConnectionTunnel *) fromEndPoint->AppState;
+    TCPEndPoint * toEndPoint;
 
     if (tun == NULL || (fromEndPoint != tun->mEPOne && fromEndPoint != tun->mEPTwo))
     {
@@ -151,7 +152,7 @@ void WeaveConnectionTunnel::HandleTunnelDataReceived(TCPEndPoint *fromEndPoint, 
     SuccessOrExit(err);
 
     // Forward received data to other end of the tunnel.
-    err = toEndPoint->Send(data, true);
+    err  = toEndPoint->Send(data, true);
     data = NULL;
     SuccessOrExit(err);
 
@@ -165,9 +166,9 @@ exit:
     }
 }
 
-void WeaveConnectionTunnel::HandleTunnelConnectionClosed(TCPEndPoint *endPoint, INET_ERROR err)
+void WeaveConnectionTunnel::HandleTunnelConnectionClosed(TCPEndPoint * endPoint, INET_ERROR err)
 {
-    WeaveConnectionTunnel *tun = (WeaveConnectionTunnel *)endPoint->AppState;
+    WeaveConnectionTunnel * tun = (WeaveConnectionTunnel *) endPoint->AppState;
 
     if (tun == NULL || (endPoint != tun->mEPOne && endPoint != tun->mEPTwo))
     {
@@ -179,9 +180,9 @@ void WeaveConnectionTunnel::HandleTunnelConnectionClosed(TCPEndPoint *endPoint, 
     tun->Shutdown();
 }
 
-void WeaveConnectionTunnel::HandleReceiveShutdown(TCPEndPoint *endPoint)
+void WeaveConnectionTunnel::HandleReceiveShutdown(TCPEndPoint * endPoint)
 {
-    WeaveConnectionTunnel *tun = (WeaveConnectionTunnel *)endPoint->AppState;
+    WeaveConnectionTunnel * tun = (WeaveConnectionTunnel *) endPoint->AppState;
 
     if (tun == NULL)
     {
@@ -189,8 +190,7 @@ void WeaveConnectionTunnel::HandleReceiveShutdown(TCPEndPoint *endPoint)
         return;
     }
 
-    WeaveLogProgress(ExchangeManager, "Forwarding half-closure on tunnel %04X from EP %04X", tun->LogId(),
-            endPoint->LogId());
+    WeaveLogProgress(ExchangeManager, "Forwarding half-closure on tunnel %04X from EP %04X", tun->LogId(), endPoint->LogId());
 
     // Reflect half-closure on other end of tunnel.
     if (endPoint == tun->mEPOne)
@@ -203,11 +203,10 @@ void WeaveConnectionTunnel::HandleReceiveShutdown(TCPEndPoint *endPoint)
     }
     else
     {
-        WeaveLogDetail(ExchangeManager, "Got half-close on tunnel %04X for unknown endpoint %04X", tun->LogId(),
-                endPoint->LogId());
+        WeaveLogDetail(ExchangeManager, "Got half-close on tunnel %04X for unknown endpoint %04X", tun->LogId(), endPoint->LogId());
         return;
     }
 }
 
-} // namespace nl
 } // namespace Weave
+} // namespace nl

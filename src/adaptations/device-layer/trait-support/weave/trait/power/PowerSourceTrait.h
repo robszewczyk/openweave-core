@@ -32,7 +32,6 @@
 
 #include <weave/trait/power/PowerSourceCapabilitiesTrait.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -41,15 +40,17 @@ namespace PowerSourceTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x19U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x19U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -57,7 +58,7 @@ enum {
     //---------------------------------------------------------------------------------------------------------------------------//
 
     //
-    //  type                                weave.trait.power.PowerSourceCapabilitiesTrait.PowerSourceType int               NO              NO
+    //  type                                weave.trait.power.PowerSourceCapabilitiesTrait.PowerSourceType int               NO NO
     //
     kPropertyHandle_Type = 2,
 
@@ -108,32 +109,35 @@ struct PowerSourceChangedEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x19U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x19U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct PowerSourceChangedEvent_array {
+struct PowerSourceChangedEvent_array
+{
     uint32_t num;
-    PowerSourceChangedEvent *buf;
+    PowerSourceChangedEvent * buf;
 };
-
 
 //
 // Enums
 //
 
-enum PowerSourceCondition {
-    POWER_SOURCE_CONDITION_NOMINAL = 1,
+enum PowerSourceCondition
+{
+    POWER_SOURCE_CONDITION_NOMINAL  = 1,
     POWER_SOURCE_CONDITION_CRITICAL = 2,
 };
 
-enum PowerSourceStatus {
-    POWER_SOURCE_STATUS_ACTIVE = 1,
-    POWER_SOURCE_STATUS_STANDBY = 2,
+enum PowerSourceStatus
+{
+    POWER_SOURCE_STATUS_ACTIVE   = 1,
+    POWER_SOURCE_STATUS_STANDBY  = 2,
     POWER_SOURCE_STATUS_INACTIVE = 3,
 };
 

@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <errno.h>
 
-
 #include <Weave/Core/WeaveCore.h>
 #include <Weave/Support/CodeUtils.h>
 #include <Weave/Core/WeaveEncoding.h>
@@ -39,22 +38,22 @@ using namespace nl::Weave::TLV;
 
 NetworkInfo::NetworkInfo()
 {
-    NetworkType = kNetworkType_NotSpecified;
-    NetworkId = -1;
-    WiFiSSID = NULL;
-    WiFiMode = kWiFiMode_NotSpecified;
-    WiFiRole = kWiFiRole_NotSpecified;
-    WiFiSecurityType = kWiFiSecurityType_NotSpecified;
-    WiFiKey = NULL;
-    WiFiKeyLen = 0;
-    Hidden = false;
-    ThreadNetworkName = NULL;
-    ThreadExtendedPANId = NULL;
-    ThreadNetworkKey = NULL;
-    ThreadPSKc = NULL;
+    NetworkType            = kNetworkType_NotSpecified;
+    NetworkId              = -1;
+    WiFiSSID               = NULL;
+    WiFiMode               = kWiFiMode_NotSpecified;
+    WiFiRole               = kWiFiRole_NotSpecified;
+    WiFiSecurityType       = kWiFiSecurityType_NotSpecified;
+    WiFiKey                = NULL;
+    WiFiKeyLen             = 0;
+    Hidden                 = false;
+    ThreadNetworkName      = NULL;
+    ThreadExtendedPANId    = NULL;
+    ThreadNetworkKey       = NULL;
+    ThreadPSKc             = NULL;
     WirelessSignalStrength = INT16_MIN;
-    ThreadPANId = kThreadPANId_NotSpecified;
-    ThreadChannel = kThreadChannel_NotSpecified;
+    ThreadPANId            = kThreadPANId_NotSpecified;
+    ThreadChannel          = kThreadChannel_NotSpecified;
 }
 
 NetworkInfo::~NetworkInfo()
@@ -62,7 +61,7 @@ NetworkInfo::~NetworkInfo()
     Clear();
 }
 
-static WEAVE_ERROR ReplaceValue(char *& dest, const char *src)
+static WEAVE_ERROR ReplaceValue(char *& dest, const char * src)
 {
 #if HAVE_MALLOC && HAVE_STRDUP && HAVE_FREE
     if (dest != NULL)
@@ -82,7 +81,7 @@ static WEAVE_ERROR ReplaceValue(char *& dest, const char *src)
 #endif
 }
 
-static WEAVE_ERROR ReplaceValue(uint8_t *& dest, uint32_t& destLen, const uint8_t *src, uint32_t srcLen)
+static WEAVE_ERROR ReplaceValue(uint8_t *& dest, uint32_t & destLen, const uint8_t * src, uint32_t srcLen)
 {
 #if HAVE_MALLOC && HAVE_STRDUP && HAVE_FREE
     if (dest != NULL)
@@ -98,7 +97,7 @@ static WEAVE_ERROR ReplaceValue(uint8_t *& dest, uint32_t& destLen, const uint8_
     }
     else
     {
-        dest = NULL;
+        dest    = NULL;
         destLen = 0;
         return WEAVE_NO_ERROR;
     }
@@ -107,19 +106,19 @@ static WEAVE_ERROR ReplaceValue(uint8_t *& dest, uint32_t& destLen, const uint8_
 #endif
 }
 
-WEAVE_ERROR NetworkInfo::CopyTo(NetworkInfo& dest)
+WEAVE_ERROR NetworkInfo::CopyTo(NetworkInfo & dest)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t unused;
 
     dest.NetworkType = NetworkType;
-    dest.NetworkId = NetworkId;
-    err = ReplaceValue(dest.WiFiSSID, WiFiSSID);
+    dest.NetworkId   = NetworkId;
+    err              = ReplaceValue(dest.WiFiSSID, WiFiSSID);
     SuccessOrExit(err);
-    dest.WiFiMode = WiFiMode;
-    dest.WiFiRole = WiFiRole;
+    dest.WiFiMode         = WiFiMode;
+    dest.WiFiRole         = WiFiRole;
     dest.WiFiSecurityType = WiFiSecurityType;
-    err = ReplaceValue(dest.WiFiKey, dest.WiFiKeyLen, WiFiKey, WiFiKeyLen);
+    err                   = ReplaceValue(dest.WiFiKey, dest.WiFiKeyLen, WiFiKey, WiFiKeyLen);
     SuccessOrExit(err);
     err = ReplaceValue(dest.ThreadNetworkName, ThreadNetworkName);
     SuccessOrExit(err);
@@ -130,14 +129,14 @@ WEAVE_ERROR NetworkInfo::CopyTo(NetworkInfo& dest)
     err = ReplaceValue(dest.ThreadPSKc, unused, ThreadPSKc, kThreadPSKcLength);
     SuccessOrExit(err);
     dest.WirelessSignalStrength = WirelessSignalStrength;
-    dest.ThreadChannel = ThreadChannel;
-    dest.ThreadPANId = ThreadPANId;
+    dest.ThreadChannel          = ThreadChannel;
+    dest.ThreadPANId            = ThreadPANId;
 
 exit:
     return err;
 }
 
-WEAVE_ERROR NetworkInfo::MergeTo(NetworkInfo& dest)
+WEAVE_ERROR NetworkInfo::MergeTo(NetworkInfo & dest)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t unused;
@@ -193,7 +192,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR NetworkInfo::Decode(nl::Weave::TLV::TLVReader& reader)
+WEAVE_ERROR NetworkInfo::Decode(nl::Weave::TLV::TLVReader & reader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType outerContainer;
@@ -313,14 +312,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR NetworkInfo::Encode(nl::Weave::TLV::TLVWriter& writer, uint8_t encodeFlags) const
+WEAVE_ERROR NetworkInfo::Encode(nl::Weave::TLV::TLVWriter & writer, uint8_t encodeFlags) const
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType outerContainer;
 
-    uint64_t tag =
-            (writer.GetContainerType() == kTLVType_Array) ?
-                    AnonymousTag : ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_NetworkInformation);
+    uint64_t tag = (writer.GetContainerType() == kTLVType_Array)
+        ? AnonymousTag
+        : ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_NetworkInformation);
 
     err = writer.StartContainer(tag, kTLVType_Structure, outerContainer);
     SuccessOrExit(err);
@@ -357,15 +356,13 @@ WEAVE_ERROR NetworkInfo::Encode(nl::Weave::TLV::TLVWriter& writer, uint8_t encod
 
     if (WiFiSecurityType != kWiFiSecurityType_NotSpecified)
     {
-        err = writer.Put(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_WiFiSecurityType),
-                (uint32_t) WiFiSecurityType);
+        err = writer.Put(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_WiFiSecurityType), (uint32_t) WiFiSecurityType);
         SuccessOrExit(err);
     }
 
     if (WiFiKey != NULL && (encodeFlags & kEncodeFlag_EncodeCredentials) != 0)
     {
-        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_WiFiPreSharedKey), WiFiKey,
-                WiFiKeyLen);
+        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_WiFiPreSharedKey), WiFiKey, WiFiKeyLen);
         SuccessOrExit(err);
     }
 
@@ -397,21 +394,19 @@ WEAVE_ERROR NetworkInfo::Encode(nl::Weave::TLV::TLVWriter& writer, uint8_t encod
     if (ThreadNetworkKey != NULL && (encodeFlags & kEncodeFlag_EncodeCredentials) != 0)
     {
         err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadNetworkKey), ThreadNetworkKey,
-                kThreadNetworkKeyLength);
+                              kThreadNetworkKeyLength);
         SuccessOrExit(err);
     }
 
     if (ThreadPSKc != NULL)
     {
-        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadPSKc), ThreadPSKc,
-                kThreadPSKcLength);
+        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadPSKc), ThreadPSKc, kThreadPSKcLength);
         SuccessOrExit(err);
     }
 
     if (WirelessSignalStrength != INT16_MIN)
     {
-        err = writer.Put(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_WirelessSignalStrength),
-                WirelessSignalStrength);
+        err = writer.Put(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_WirelessSignalStrength), WirelessSignalStrength);
         SuccessOrExit(err);
     }
 
@@ -424,15 +419,15 @@ exit:
 
 void NetworkInfo::Clear()
 {
-    NetworkType = kNetworkType_NotSpecified;
-    NetworkId = -1;
-    WiFiMode = kWiFiMode_NotSpecified;
-    WiFiRole = kWiFiRole_NotSpecified;
-    WiFiSecurityType = kWiFiSecurityType_NotSpecified;
-    WiFiKeyLen = 0;
+    NetworkType            = kNetworkType_NotSpecified;
+    NetworkId              = -1;
+    WiFiMode               = kWiFiMode_NotSpecified;
+    WiFiRole               = kWiFiRole_NotSpecified;
+    WiFiSecurityType       = kWiFiSecurityType_NotSpecified;
+    WiFiKeyLen             = 0;
     WirelessSignalStrength = INT16_MIN;
-    ThreadPANId = kThreadPANId_NotSpecified;
-    ThreadChannel = kThreadChannel_NotSpecified;
+    ThreadPANId            = kThreadPANId_NotSpecified;
+    ThreadChannel          = kThreadChannel_NotSpecified;
 
 #if HAVE_MALLOC && HAVE_FREE
     if (WiFiSSID != NULL)
@@ -447,32 +442,32 @@ void NetworkInfo::Clear()
     }
     if (ThreadNetworkName != NULL)
     {
-        free((void *)ThreadNetworkName);
+        free((void *) ThreadNetworkName);
         ThreadNetworkName = NULL;
     }
     if (ThreadExtendedPANId != NULL)
     {
-        free((void *)ThreadExtendedPANId);
+        free((void *) ThreadExtendedPANId);
         ThreadExtendedPANId = NULL;
     }
     if (ThreadNetworkKey != NULL)
     {
-        free((void *)ThreadNetworkKey);
+        free((void *) ThreadNetworkKey);
         ThreadNetworkKey = NULL;
     }
     if (ThreadPSKc != NULL)
     {
-        free((void *)ThreadPSKc);
+        free((void *) ThreadPSKc);
         ThreadPSKc = NULL;
     }
 
-#endif //HAVE_MALLOC && HAVE_FREE
+#endif // HAVE_MALLOC && HAVE_FREE
 }
 
-WEAVE_ERROR NetworkInfo::DecodeList(nl::Weave::TLV::TLVReader& reader, uint16_t& elemCount, NetworkInfo *& elemArray)
+WEAVE_ERROR NetworkInfo::DecodeList(nl::Weave::TLV::TLVReader & reader, uint16_t & elemCount, NetworkInfo *& elemArray)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    NetworkInfo *newArray = NULL;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    NetworkInfo * newArray = NULL;
     TLVType arrayOuter;
     int i;
 
@@ -516,7 +511,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR NetworkInfo::EncodeList(nl::Weave::TLV::TLVWriter& writer, uint16_t elemCount, const NetworkInfo *elemArray, uint8_t encodeFlags)
+WEAVE_ERROR NetworkInfo::EncodeList(nl::Weave::TLV::TLVWriter & writer, uint16_t elemCount, const NetworkInfo * elemArray,
+                                    uint8_t encodeFlags)
 {
     WEAVE_ERROR err;
     TLVType outerContainerType;
@@ -537,8 +533,9 @@ exit:
     return err;
 }
 
-WEAVE_ERROR NetworkInfo::EncodeList(nl::Weave::TLV::TLVWriter& writer, uint16_t arrayLen, const NetworkInfo *elemArray,
-                                    ::nl::Weave::Profiles::NetworkProvisioning::NetworkType networkType, uint8_t encodeFlags, uint16_t& encodedElemCount)
+WEAVE_ERROR NetworkInfo::EncodeList(nl::Weave::TLV::TLVWriter & writer, uint16_t arrayLen, const NetworkInfo * elemArray,
+                                    ::nl::Weave::Profiles::NetworkProvisioning::NetworkType networkType, uint8_t encodeFlags,
+                                    uint16_t & encodedElemCount)
 {
     WEAVE_ERROR err;
     TLVType outerContainerType;
@@ -564,7 +561,7 @@ exit:
     return err;
 }
 
-} // NetworkProvisioning
+} // namespace NetworkProvisioning
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

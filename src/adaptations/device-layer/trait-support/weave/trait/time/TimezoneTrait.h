@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace TimezoneTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1103U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1103U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -81,12 +81,12 @@ struct UtcOffsetStruct
     int32_t offsetMinutes;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct UtcOffsetStruct_array {
+struct UtcOffsetStruct_array
+{
     uint32_t num;
-    UtcOffsetStruct *buf;
+    UtcOffsetStruct * buf;
 };
 
 } // namespace TimezoneTrait

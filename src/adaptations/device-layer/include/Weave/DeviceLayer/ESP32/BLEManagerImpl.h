@@ -39,11 +39,10 @@ namespace Internal {
 /**
  * Concrete implementation of the NetworkProvisioningServer singleton object for the ESP32 platform.
  */
-class BLEManagerImpl final
-    : public BLEManager,
-      private ::nl::Ble::BleLayer,
-      private BlePlatformDelegate,
-      private BleApplicationDelegate
+class BLEManagerImpl final : public BLEManager,
+                             private ::nl::Ble::BleLayer,
+                             private BlePlatformDelegate,
+                             private BleApplicationDelegate
 {
     // Allow the BLEManager interface class to delegate method calls to
     // the implementation methods provided by this class.
@@ -71,10 +70,14 @@ class BLEManagerImpl final
     bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId) override;
     bool CloseConnection(BLE_CONNECTION_OBJECT conId) override;
     uint16_t GetMTU(BLE_CONNECTION_OBJECT conId) const override;
-    bool SendIndication(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId, PacketBuffer * pBuf) override;
-    bool SendWriteRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId, PacketBuffer * pBuf) override;
-    bool SendReadRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId, PacketBuffer * pBuf) override;
-    bool SendReadResponse(BLE_CONNECTION_OBJECT conId, BLE_READ_REQUEST_CONTEXT requestContext, const WeaveBleUUID * svcId, const WeaveBleUUID * charId) override;
+    bool SendIndication(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                        PacketBuffer * pBuf) override;
+    bool SendWriteRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                          PacketBuffer * pBuf) override;
+    bool SendReadRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                         PacketBuffer * pBuf) override;
+    bool SendReadResponse(BLE_CONNECTION_OBJECT conId, BLE_READ_REQUEST_CONTEXT requestContext, const WeaveBleUUID * svcId,
+                          const WeaveBleUUID * charId) override;
 
     // ===== Members that implement virtual methods on BleApplicationDelegate.
 
@@ -91,23 +94,23 @@ class BLEManagerImpl final
 
     enum
     {
-        kFlag_AsyncInitCompleted        = 0x0001, /**< One-time asynchronous initialization actions have been performed. */
-        kFlag_ESPBLELayerInitialized    = 0x0002, /**< The ESP BLE layer has been initialized. */
-        kFlag_AppRegistered             = 0x0004, /**< The WoBLE application has been registered with the ESP BLE layer. */
-        kFlag_AttrsRegistered           = 0x0008, /**< The WoBLE GATT attributes have been registered with the ESP BLE layer. */
-        kFlag_GATTServiceStarted        = 0x0010, /**< The WoBLE GATT service has been started. */
-        kFlag_AdvertisingConfigured     = 0x0020, /**< WoBLE advertising has been configured in the ESP BLE layer. */
-        kFlag_Advertising               = 0x0040, /**< The system is currently WoBLE advertising. */
-        kFlag_ControlOpInProgress       = 0x0080, /**< An async control operation has been issued to the ESP BLE layer. */
-        kFlag_AdvertisingEnabled        = 0x0100, /**< The application has enabled WoBLE advertising. */
-        kFlag_FastAdvertisingEnabled    = 0x0200, /**< The application has enabled fast advertising. */
-        kFlag_UseCustomDeviceName       = 0x0400, /**< The application has configured a custom BLE device name. */
-        kFlag_AdvertisingRefreshNeeded  = 0x0800, /**< The advertising configuration/state in ESP BLE layer needs to be updated. */
+        kFlag_AsyncInitCompleted       = 0x0001, /**< One-time asynchronous initialization actions have been performed. */
+        kFlag_ESPBLELayerInitialized   = 0x0002, /**< The ESP BLE layer has been initialized. */
+        kFlag_AppRegistered            = 0x0004, /**< The WoBLE application has been registered with the ESP BLE layer. */
+        kFlag_AttrsRegistered          = 0x0008, /**< The WoBLE GATT attributes have been registered with the ESP BLE layer. */
+        kFlag_GATTServiceStarted       = 0x0010, /**< The WoBLE GATT service has been started. */
+        kFlag_AdvertisingConfigured    = 0x0020, /**< WoBLE advertising has been configured in the ESP BLE layer. */
+        kFlag_Advertising              = 0x0040, /**< The system is currently WoBLE advertising. */
+        kFlag_ControlOpInProgress      = 0x0080, /**< An async control operation has been issued to the ESP BLE layer. */
+        kFlag_AdvertisingEnabled       = 0x0100, /**< The application has enabled WoBLE advertising. */
+        kFlag_FastAdvertisingEnabled   = 0x0200, /**< The application has enabled fast advertising. */
+        kFlag_UseCustomDeviceName      = 0x0400, /**< The application has configured a custom BLE device name. */
+        kFlag_AdvertisingRefreshNeeded = 0x0800, /**< The advertising configuration/state in ESP BLE layer needs to be updated. */
     };
 
     enum
     {
-        kMaxConnections = BLE_LAYER_NUM_BLE_ENDPOINTS,
+        kMaxConnections      = BLE_LAYER_NUM_BLE_ENDPOINTS,
         kMaxDeviceNameLength = 16
     };
 
@@ -175,7 +178,7 @@ inline BLEManagerImpl & BLEMgrImpl(void)
 
 inline ::nl::Ble::BleLayer * BLEManagerImpl::_GetBleLayer() const
 {
-    return (BleLayer *)(this);
+    return (BleLayer *) (this);
 }
 
 inline BLEManager::WoBLEServiceMode BLEManagerImpl::_GetWoBLEServiceMode(void)

@@ -50,7 +50,6 @@ namespace CertProvisioning {
 class WeaveNodeOpAuthDelegate
 {
 public:
-
     // ===== Abstract Interface methods
 
     /**
@@ -93,7 +92,6 @@ public:
 class WeaveNodeMfrAttestDelegate
 {
 public:
-
     // ===== Abstract Interface methods
 
     /**
@@ -140,7 +138,6 @@ public:
 class NL_DLL_EXPORT WeaveCertProvEngine
 {
 public:
-
     struct InEventParam;
     struct OutEventParam;
 
@@ -178,13 +175,14 @@ public:
      *  @param[in]  inParam     Reference of input event parameters passed by the event callback.
      *  @param[in]  outParam    Reference of output event parameters passed by the event callback.
      */
-    typedef void (* EventCallback)(void * appState, EventType eventType, const InEventParam & inParam, OutEventParam & outParam);
+    typedef void (*EventCallback)(void * appState, EventType eventType, const InEventParam & inParam, OutEventParam & outParam);
 
-    void * AppState;                                        /**< A pointer to application-specific data. */
+    void * AppState; /**< A pointer to application-specific data. */
 
     WeaveCertProvEngine(void);
 
-    WEAVE_ERROR Init(Binding * binding, WeaveNodeOpAuthDelegate * opAuthDelegate, WeaveNodeMfrAttestDelegate * mfrAttestDelegate, EventCallback eventCallback, void * appState = NULL);
+    WEAVE_ERROR Init(Binding * binding, WeaveNodeOpAuthDelegate * opAuthDelegate, WeaveNodeMfrAttestDelegate * mfrAttestDelegate,
+                     EventCallback eventCallback, void * appState = NULL);
     void Shutdown(void);
 
     WEAVE_ERROR StartCertificateProvisioning(uint8_t reqType, bool doMfrAttest);
@@ -209,12 +207,11 @@ public:
     WEAVE_ERROR ProcessGetCertificateResponse(PacketBuffer * msgBuf);
 
 private:
-
     uint8_t mReqType;
     bool mDoMfrAttest;
     Binding * mBinding;
-    WeaveNodeOpAuthDelegate *mOpAuthDelegate;
-    WeaveNodeMfrAttestDelegate *mMfrAttestDelegate;
+    WeaveNodeOpAuthDelegate * mOpAuthDelegate;
+    WeaveNodeMfrAttestDelegate * mMfrAttestDelegate;
     EventCallback mEventCallback;
     ExchangeContext * mEC;
     State mState;
@@ -233,7 +230,7 @@ private:
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     static void HandleSendError(ExchangeContext * ec, WEAVE_ERROR sendErr, void * msgCtxt);
     static void HandleKeyError(ExchangeContext * ec, WEAVE_ERROR keyErr);
-    static void HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
+    static void HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
 };
 
 /**
@@ -306,9 +303,7 @@ struct WeaveCertProvEngine::OutEventParam
  * Documentation for these functions can be found at the end of the .cpp file.
  */
 
-inline WeaveCertProvEngine::WeaveCertProvEngine(void)
-{
-}
+inline WeaveCertProvEngine::WeaveCertProvEngine(void) { }
 
 inline void WeaveCertProvEngine::AbortCertificateProvisioning(void)
 {
@@ -325,7 +320,7 @@ inline uint8_t WeaveCertProvEngine::GetReqType(void) const
     return mReqType;
 }
 
-inline Binding *WeaveCertProvEngine::GetBinding(void) const
+inline Binding * WeaveCertProvEngine::GetBinding(void) const
 {
     return mBinding;
 }

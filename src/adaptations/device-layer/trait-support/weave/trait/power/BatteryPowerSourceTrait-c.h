@@ -27,22 +27,16 @@
 #ifndef _WEAVE_TRAIT_POWER__BATTERY_POWER_SOURCE_TRAIT_C_H_
 #define _WEAVE_TRAIT_POWER__BATTERY_POWER_SOURCE_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // BatteryReplacementIndicator
-    typedef enum
-    {
-    BATTERY_REPLACEMENT_INDICATOR_NOT_AT_ALL = 1,
-    BATTERY_REPLACEMENT_INDICATOR_SOON = 2,
+// BatteryReplacementIndicator
+typedef enum
+{
+    BATTERY_REPLACEMENT_INDICATOR_NOT_AT_ALL  = 1,
+    BATTERY_REPLACEMENT_INDICATOR_SOON        = 2,
     BATTERY_REPLACEMENT_INDICATOR_IMMEDIATELY = 3,
-    } schema_weave_power_battery_power_source_trait_battery_replacement_indicator_t;
-
-
-
+} schema_weave_power_battery_power_source_trait_battery_replacement_indicator_t;
 
 #endif // _WEAVE_TRAIT_POWER__BATTERY_POWER_SOURCE_TRAIT_C_H_

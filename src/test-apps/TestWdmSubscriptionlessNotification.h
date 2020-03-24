@@ -31,31 +31,28 @@
 #include "MockSourceTraits.h"
 #include "MockSinkTraits.h"
 
-#define TEST_TRAIT_INSTANCE_ID       (1)
-#define TEST_SCHEMA_MAX_VER          (4)
-#define TEST_SCHEMA_MIN_VER          (1)
+#define TEST_TRAIT_INSTANCE_ID (1)
+#define TEST_SCHEMA_MAX_VER    (4)
+#define TEST_SCHEMA_MIN_VER    (1)
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
 
 class TestWdmSubscriptionlessNotificationSender
 {
 public:
-
     TestWdmSubscriptionlessNotificationSender();
 
-    static TestWdmSubscriptionlessNotificationSender * GetInstance ();
+    static TestWdmSubscriptionlessNotificationSender * GetInstance();
 
-    WEAVE_ERROR Init (nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                      const uint16_t destSubnetId,
-                      const uint64_t destNodeId);
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, const uint16_t destSubnetId, const uint64_t destNodeId);
 
     WEAVE_ERROR SendSubscriptionlessNotify(void);
 
     WEAVE_ERROR Shutdown(void);
 
 private:
-    nl::Weave::WeaveExchangeManager *mExchangeMgr;
-    Binding *mBinding;
+    nl::Weave::WeaveExchangeManager * mExchangeMgr;
+    Binding * mBinding;
 
     nl::Weave::Profiles::DataManagement::SingleResourceSourceTraitCatalog mSourceCatalog;
     nl::Weave::Profiles::DataManagement::SingleResourceSourceTraitCatalog::CatalogItem mSourceCatalogStore[8];
@@ -75,34 +72,30 @@ private:
     nl::Weave::Profiles::DataManagement::TraitPath mTraitPaths[4];
     uint32_t mNumPaths;
 
-    static void EngineEventCallback (void * const aAppState,
-                                     nl::Weave::Profiles::DataManagement::SubscriptionEngine::EventID aEvent,
-                                     const nl::Weave::Profiles::DataManagement::SubscriptionEngine::InEventParam & aInParam,
-                                     nl::Weave::Profiles::DataManagement::SubscriptionEngine::OutEventParam & aOutParam);
+    static void EngineEventCallback(void * const aAppState, nl::Weave::Profiles::DataManagement::SubscriptionEngine::EventID aEvent,
+                                    const nl::Weave::Profiles::DataManagement::SubscriptionEngine::InEventParam & aInParam,
+                                    nl::Weave::Profiles::DataManagement::SubscriptionEngine::OutEventParam & aOutParam);
 
-    static void BindingEventCallback (void * const apAppState,
-            const nl::Weave::Binding::EventType aEvent,
-            const nl::Weave::Binding::InEventParam & aInParam,
-            nl::Weave::Binding::OutEventParam & aOutParam);
-
+    static void BindingEventCallback(void * const apAppState, const nl::Weave::Binding::EventType aEvent,
+                                     const nl::Weave::Binding::InEventParam & aInParam,
+                                     nl::Weave::Binding::OutEventParam & aOutParam);
 };
 
 class TestWdmSubscriptionlessNotificationReceiver
 {
 public:
-
     TestWdmSubscriptionlessNotificationReceiver();
 
-    static TestWdmSubscriptionlessNotificationReceiver * GetInstance ();
+    static TestWdmSubscriptionlessNotificationReceiver * GetInstance();
 
-    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *aExchangeMgr);
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr);
 
-    typedef void(*HandleTestCompleteFunct)();
+    typedef void (*HandleTestCompleteFunct)();
     HandleTestCompleteFunct OnTestComplete;
     HandleTestCompleteFunct OnError;
 
 private:
-    nl::Weave::WeaveExchangeManager *mExchangeMgr;
+    nl::Weave::WeaveExchangeManager * mExchangeMgr;
     nl::Weave::Profiles::DataManagement::SingleResourceSinkTraitCatalog mSinkCatalog;
     nl::Weave::Profiles::DataManagement::SingleResourceSinkTraitCatalog::CatalogItem mSinkCatalogStore[8];
 
@@ -110,10 +103,9 @@ private:
     TestATraitDataSink mTestATraitDataSink1;
     TestATraitDataSink mTestATraitDataSink2;
 
-    static void EngineEventCallback (void * const aAppState,
-                                     nl::Weave::Profiles::DataManagement::SubscriptionEngine::EventID aEvent,
-                                     const nl::Weave::Profiles::DataManagement::SubscriptionEngine::InEventParam & aInParam,
-                                     nl::Weave::Profiles::DataManagement::SubscriptionEngine::OutEventParam & aOutParam);
+    static void EngineEventCallback(void * const aAppState, nl::Weave::Profiles::DataManagement::SubscriptionEngine::EventID aEvent,
+                                    const nl::Weave::Profiles::DataManagement::SubscriptionEngine::InEventParam & aInParam,
+                                    nl::Weave::Profiles::DataManagement::SubscriptionEngine::OutEventParam & aOutParam);
 };
 
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION

@@ -29,8 +29,6 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Common {
@@ -45,15 +43,15 @@ struct EventId
 #endif
     int32_t importance;
     uint64_t id;
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct EventId_array {
+struct EventId_array
+{
     uint32_t num;
-    EventId *buf;
+    EventId * buf;
 };
 
 inline void EventId::SetResourceIdNull(void)
@@ -72,7 +70,6 @@ inline bool EventId::IsResourceIdPresent(void)
     return (!GET_FIELD_NULLIFIED_BIT(__nullified_fields__, 0));
 }
 #endif
-
 
 } // namespace Common
 } // namespace Weave

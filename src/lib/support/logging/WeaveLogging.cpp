@@ -91,18 +91,18 @@ static const char ModuleNames[] =
 
 #define ModuleNamesCount ((sizeof(ModuleNames) - 1) / nlWeaveLoggingModuleNameLen)
 
-#define WeavePrefix "WEAVE:"
+#define WeavePrefix          "WEAVE:"
 #define WeavePrefixSeparator ": "
-#define WeaveMessageTrailer "\n"
+#define WeaveMessageTrailer  "\n"
 
-void GetModuleName(char *buf, uint8_t module)
+void GetModuleName(char * buf, uint8_t module)
 {
-    const char *moduleNamePtr = ModuleNames + ((module < ModuleNamesCount) ? module * nlWeaveLoggingModuleNameLen : 0);
+    const char * moduleNamePtr = ModuleNames + ((module < ModuleNamesCount) ? module * nlWeaveLoggingModuleNameLen : 0);
     memcpy(buf, moduleNamePtr, nlWeaveLoggingModuleNameLen);
     buf[nlWeaveLoggingModuleNameLen] = 0;
 }
 
-void GetMessageWithPrefix(char *buf, uint8_t bufSize, uint8_t module, const char *msg)
+void GetMessageWithPrefix(char * buf, uint8_t bufSize, uint8_t module, const char * msg)
 {
     char moduleName[nlWeaveLoggingModuleNameLen + 1];
 
@@ -117,7 +117,7 @@ void PrintMessagePrefix(uint8_t module)
 
 #if WEAVE_LOGGING_STYLE_STDIO_WITH_TIMESTAMPS
     struct timeval tv;
-    struct tm* time_ptr;
+    struct tm * time_ptr;
     char detailed_time[30];
     int64_t milliseconds;
     int status;
@@ -193,7 +193,7 @@ uint8_t gLogFilter = kLogCategory_Max;
 #define __WEAVE_LOGGING_LINK_ATTRIBUTE
 #endif
 
-NL_DLL_EXPORT __WEAVE_LOGGING_LINK_ATTRIBUTE void Log(uint8_t module, uint8_t category, const char *msg, ...)
+NL_DLL_EXPORT __WEAVE_LOGGING_LINK_ATTRIBUTE void Log(uint8_t module, uint8_t category, const char * msg, ...)
 {
     va_list v;
 
@@ -222,7 +222,6 @@ NL_DLL_EXPORT __WEAVE_LOGGING_LINK_ATTRIBUTE void Log(uint8_t module, uint8_t ca
 #error "Undefined platform-specific implementation for non-externnal Weave logging style!"
 
 #endif /* WEAVE_LOGGING_STYLE_ANDROID */
-
     }
 
     va_end(v);

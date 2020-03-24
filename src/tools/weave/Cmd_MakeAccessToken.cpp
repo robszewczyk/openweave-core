@@ -41,48 +41,41 @@ using namespace ::nl::Weave::Profiles::Security;
 
 #define CMD_NAME "weave make-access-token"
 
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static WEAVE_ERROR EncodeAccessToken(const uint8_t *cert, uint16_t certLen, const uint8_t *privKey, uint16_t privKeyLen,
-                                     uint8_t *outBuf, uint32_t& outLen);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static WEAVE_ERROR EncodeAccessToken(const uint8_t * cert, uint16_t certLen, const uint8_t * privKey, uint16_t privKeyLen,
+                                     uint8_t * outBuf, uint32_t & outLen);
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ] <cert-file-name> <priv-key-file-name>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Make a Weave access token object."
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <cert-file-name>\n"
-    "\n"
-    "       File containing the Weave certificate to be included in the access token.\n"
-    "\n"
-    "  <priv-key-file-name>\n"
-    "\n"
-    "       File containing the Weave private key to be included in the access token.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ] <cert-file-name> <priv-key-file-name>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Make a Weave access token object."
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <cert-file-name>\n"
+                                "\n"
+                                "       File containing the Weave certificate to be included in the access token.\n"
+                                "\n"
+                                "  <priv-key-file-name>\n"
+                                "\n"
+                                "       File containing the Weave private key to be included in the access token.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gHelpOptions, NULL };
 
-static const char *gCertFileName = NULL;
-static const char *gPrivKeyFileName = NULL;
+static const char * gCertFileName    = NULL;
+static const char * gPrivKeyFileName = NULL;
 
-bool Cmd_MakeAccessToken(int argc, char *argv[])
+bool Cmd_MakeAccessToken(int argc, char * argv[])
 {
     bool res = true;
     WEAVE_ERROR err;
-    uint8_t *certBuf = NULL;
+    uint8_t * certBuf = NULL;
     uint32_t certLen;
-    uint8_t *privKeyBuf = NULL;
+    uint8_t * privKeyBuf = NULL;
     uint32_t privKeyLen;
-    uint8_t *accessTokenBuf = NULL;
+    uint8_t * accessTokenBuf = NULL;
     uint32_t accessTokenLen;
-    uint8_t *b64AccessTokenBuf = NULL;
+    uint8_t * b64AccessTokenBuf = NULL;
     uint32_t b64AccessTokenLen;
 
     if (argc == 1)
@@ -103,7 +96,7 @@ bool Cmd_MakeAccessToken(int argc, char *argv[])
         ExitNow(res = false);
 
     accessTokenLen = certLen + privKeyLen + 64;
-    accessTokenBuf = (uint8_t *)malloc(accessTokenLen);
+    accessTokenBuf = (uint8_t *) malloc(accessTokenLen);
     if (accessTokenBuf == NULL)
     {
         fprintf(stderr, "weave: Memory allocation failed.\n");
@@ -136,7 +129,7 @@ exit:
     return res;
 }
 
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {
@@ -156,14 +149,14 @@ static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    gCertFileName = argv[0];
+    gCertFileName    = argv[0];
     gPrivKeyFileName = argv[1];
 
     return true;
 }
 
-static WEAVE_ERROR EncodeAccessToken(const uint8_t *cert, uint16_t certLen, const uint8_t *privKey, uint16_t privKeyLen,
-                                     uint8_t *outBuf, uint32_t& outLen)
+static WEAVE_ERROR EncodeAccessToken(const uint8_t * cert, uint16_t certLen, const uint8_t * privKey, uint16_t privKeyLen,
+                                     uint8_t * outBuf, uint32_t & outLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVWriter writer;

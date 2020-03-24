@@ -32,7 +32,6 @@
 
 #include <nest/test/trait/TestCTrait.h>
 
-
 namespace Schema {
 namespace Nest {
 namespace Test {
@@ -41,15 +40,17 @@ namespace TestDTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0xfe05U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0xfe05U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//

@@ -46,7 +46,7 @@ SoftwareUpdateClient::~SoftwareUpdateClient()
     ExchangeMgr = NULL;
 }
 
-WEAVE_ERROR SoftwareUpdateClient::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR SoftwareUpdateClient::Init(WeaveExchangeManager * exchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
@@ -66,7 +66,7 @@ WEAVE_ERROR SoftwareUpdateClient::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR SoftwareUpdateClient::SendImageQueryRequest(WeaveConnection *con)
+WEAVE_ERROR SoftwareUpdateClient::SendImageQueryRequest(WeaveConnection * con)
 {
     // Discard any existing exchange context.
     // Effectively we can only have one SWU exchange with a single node at any one time.
@@ -116,7 +116,7 @@ WEAVE_ERROR SoftwareUpdateClient::SendImageQueryRequest()
 
     // Configure the encryption and signature types to be used to send the request.
     ExchangeCtx->EncryptionType = EncryptionType;
-    ExchangeCtx->KeyId = KeyId;
+    ExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     ExchangeCtx->OnMessageReceived = HandleImageQueryResponse;
@@ -140,13 +140,13 @@ WEAVE_ERROR SoftwareUpdateClient::SendImageQueryRequest()
     aSchemeList.init(sizeof(updateSchemeList), updateSchemeList);
 
     ImageQuery imageQuery;
-    imageQuery.init(aProductSpec, aVersion, aTypeList, aSchemeList,
-                    NULL /*package*/, NULL /*locale*/, 0 /*target node id*/, NULL /*metadata*/);
-    PacketBuffer* imageQueryPayload = PacketBuffer::New();
+    imageQuery.init(aProductSpec, aVersion, aTypeList, aSchemeList, NULL /*package*/, NULL /*locale*/, 0 /*target node id*/,
+                    NULL /*metadata*/);
+    PacketBuffer * imageQueryPayload = PacketBuffer::New();
     imageQuery.pack(imageQueryPayload);
 
     // Send an ImageQuery Request message. Discard the exchange context if the send fails.
-    WEAVE_ERROR err = ExchangeCtx->SendMessage(kWeaveProfile_SWU, kMsgType_ImageQuery, imageQueryPayload);
+    WEAVE_ERROR err   = ExchangeCtx->SendMessage(kWeaveProfile_SWU, kMsgType_ImageQuery, imageQueryPayload);
     imageQueryPayload = NULL;
     if (err != WEAVE_NO_ERROR)
     {
@@ -159,12 +159,14 @@ WEAVE_ERROR SoftwareUpdateClient::SendImageQueryRequest()
     return err;
 }
 
-//ImageQuery response received
-void SoftwareUpdateClient::HandleImageQueryResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payloadImageQueryResponse)
+// ImageQuery response received
+void SoftwareUpdateClient::HandleImageQueryResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                    const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                    PacketBuffer * payloadImageQueryResponse)
 {
     printf("0 HandleImageQueryResponse entering\n");
 
-    SoftwareUpdateClient *swuApp = (SoftwareUpdateClient *)ec->AppState;
+    SoftwareUpdateClient * swuApp = (SoftwareUpdateClient *) ec->AppState;
 
     // Verify that the message is an ImageQuery Response.
     if (profileId != kWeaveProfile_SWU)
@@ -197,7 +199,7 @@ void SoftwareUpdateClient::HandleImageQueryResponse(ExchangeContext *ec, const I
         return;
     }
 
-    //print the contents of the ImageQuery response
+    // print the contents of the ImageQuery response
     ImageQueryResponse imageQueryResponse;
     printf("err: %d\n", imageQueryResponse.parse(payloadImageQueryResponse, imageQueryResponse));
     printf("====\n");
@@ -226,7 +228,7 @@ void SoftwareUpdateClient::HandleImageQueryResponse(ExchangeContext *ec, const I
 }
 
 // Set the exchange context for the most recently started SWU exchange.
-void SoftwareUpdateClient::SetExchangeCtx(ExchangeContext *ec)
+void SoftwareUpdateClient::SetExchangeCtx(ExchangeContext * ec)
 {
     ExchangeCtx = ec;
 }

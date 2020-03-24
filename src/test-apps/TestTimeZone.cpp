@@ -35,7 +35,7 @@ void Abort()
     abort();
 }
 
-void TestError(WEAVE_ERROR err, const char *msg)
+void TestError(WEAVE_ERROR err, const char * msg)
 {
     if (err != WEAVE_NO_ERROR)
     {
@@ -44,7 +44,7 @@ void TestError(WEAVE_ERROR err, const char *msg)
     }
 }
 
-void TestAssert(bool assert, const char *msg)
+void TestAssert(bool assert, const char * msg)
 {
     if (!assert)
     {
@@ -63,15 +63,15 @@ void TestCase1(void)
         uint8_t buffer[TimeZoneUtcOffset::BufferSizeForEncoding] = { 0 };
         TimeZoneUtcOffset utc_offset_enc;
         TimeZoneUtcOffset utc_offset_dec;
-        uint32_t size = sizeof(buffer);
-        utc_offset_enc.mSize = 4;
-        utc_offset_enc.mUtcOffsetRecord[0].mBeginAt_usec = 1394355600000000LL; // 3/9/2014 2AM PST
+        uint32_t size                                     = sizeof(buffer);
+        utc_offset_enc.mSize                              = 4;
+        utc_offset_enc.mUtcOffsetRecord[0].mBeginAt_usec  = 1394355600000000LL; // 3/9/2014 2AM PST
         utc_offset_enc.mUtcOffsetRecord[0].mUtcOffset_sec = -3600 * 7;
-        utc_offset_enc.mUtcOffsetRecord[1].mBeginAt_usec = 1414922400000000LL; // 11/2/2014 2AM PDT
+        utc_offset_enc.mUtcOffsetRecord[1].mBeginAt_usec  = 1414922400000000LL; // 11/2/2014 2AM PDT
         utc_offset_enc.mUtcOffsetRecord[1].mUtcOffset_sec = -3600 * 8;
-        utc_offset_enc.mUtcOffsetRecord[2].mBeginAt_usec = 1425805200000000LL; // 3/8/2015 2AM PST
+        utc_offset_enc.mUtcOffsetRecord[2].mBeginAt_usec  = 1425805200000000LL; // 3/8/2015 2AM PST
         utc_offset_enc.mUtcOffsetRecord[2].mUtcOffset_sec = -3600 * 7;
-        utc_offset_enc.mUtcOffsetRecord[3].mBeginAt_usec = 1446372000000000LL; // 11/2/2015 2AM PDT
+        utc_offset_enc.mUtcOffsetRecord[3].mBeginAt_usec  = 1446372000000000LL; // 11/2/2015 2AM PDT
         utc_offset_enc.mUtcOffsetRecord[3].mUtcOffset_sec = -3600 * 8;
 
         WeaveLogProgress(TimeService, "TimeZone Unit Test Case 1: normal case");
@@ -86,7 +86,7 @@ void TestCase1(void)
         for (int i = 0; i < utc_offset_dec.mSize; ++i)
         {
             WeaveLogProgress(TimeService, "[%d] timestamp usec: %ld, offset sec %d", i,
-                utc_offset_dec.mUtcOffsetRecord[i].mBeginAt_usec, utc_offset_dec.mUtcOffsetRecord[i].mUtcOffset_sec);
+                             utc_offset_dec.mUtcOffsetRecord[i].mBeginAt_usec, utc_offset_dec.mUtcOffsetRecord[i].mUtcOffset_sec);
         }
 
         {
@@ -127,15 +127,15 @@ void TestCase2(void)
         uint8_t buffer[TimeZoneUtcOffset::BufferSizeForEncoding] = { 0 };
         TimeZoneUtcOffset utc_offset_enc;
         TimeZoneUtcOffset utc_offset_dec;
-        uint32_t size = sizeof(buffer);
-        utc_offset_enc.mSize = 4;
-        utc_offset_enc.mUtcOffsetRecord[0].mBeginAt_usec = 1394355600000000LL; //
+        uint32_t size                                     = sizeof(buffer);
+        utc_offset_enc.mSize                              = 4;
+        utc_offset_enc.mUtcOffsetRecord[0].mBeginAt_usec  = 1394355600000000LL; //
         utc_offset_enc.mUtcOffsetRecord[0].mUtcOffset_sec = -3600 * 11;
-        utc_offset_enc.mUtcOffsetRecord[1].mBeginAt_usec = 1414922400000000LL; //
+        utc_offset_enc.mUtcOffsetRecord[1].mBeginAt_usec  = 1414922400000000LL; //
         utc_offset_enc.mUtcOffsetRecord[1].mUtcOffset_sec = +3600 * 13;
-        utc_offset_enc.mUtcOffsetRecord[2].mBeginAt_usec = 1425805200000000LL; //
+        utc_offset_enc.mUtcOffsetRecord[2].mBeginAt_usec  = 1425805200000000LL; //
         utc_offset_enc.mUtcOffsetRecord[2].mUtcOffset_sec = +3600 * 14;
-        utc_offset_enc.mUtcOffsetRecord[3].mBeginAt_usec = 1446372000000000LL; //
+        utc_offset_enc.mUtcOffsetRecord[3].mBeginAt_usec  = 1446372000000000LL; //
         utc_offset_enc.mUtcOffsetRecord[3].mUtcOffset_sec = +3600 * 13;
 
         WeaveLogProgress(TimeService, "TimeZone Unit Test Case 2: huge offset changes");
@@ -150,7 +150,7 @@ void TestCase2(void)
         for (int i = 0; i < utc_offset_dec.mSize; ++i)
         {
             WeaveLogProgress(TimeService, "[%d] timestamp usec: %ld, offset sec %d", i,
-                utc_offset_dec.mUtcOffsetRecord[i].mBeginAt_usec, utc_offset_dec.mUtcOffsetRecord[i].mUtcOffset_sec);
+                             utc_offset_dec.mUtcOffsetRecord[i].mBeginAt_usec, utc_offset_dec.mUtcOffsetRecord[i].mUtcOffset_sec);
         }
 
         WeaveLogProgress(TimeService, "TimeZone Unit Test Case 2: succeeded");
@@ -174,9 +174,9 @@ void TestCase3(void)
         uint8_t buffer[TimeZoneUtcOffset::BufferSizeForEncoding] = { 0 };
         TimeZoneUtcOffset utc_offset_enc;
         TimeZoneUtcOffset utc_offset_dec;
-        uint32_t size = sizeof(buffer);
-        utc_offset_enc.mSize = 1;
-        utc_offset_enc.mUtcOffsetRecord[0].mBeginAt_usec = 0; //
+        uint32_t size                                     = sizeof(buffer);
+        utc_offset_enc.mSize                              = 1;
+        utc_offset_enc.mUtcOffsetRecord[0].mBeginAt_usec  = 0; //
         utc_offset_enc.mUtcOffsetRecord[0].mUtcOffset_sec = +3600 * 7;
 
         WeaveLogProgress(TimeService, "TimeZone Unit Test Case 3: no DST case, single UTC offset");
@@ -191,7 +191,7 @@ void TestCase3(void)
         for (int i = 0; i < utc_offset_dec.mSize; ++i)
         {
             WeaveLogProgress(TimeService, "[%d] timestamp usec: %ld, offset sec %d", i,
-                utc_offset_dec.mUtcOffsetRecord[i].mBeginAt_usec, utc_offset_dec.mUtcOffsetRecord[i].mUtcOffset_sec);
+                             utc_offset_dec.mUtcOffsetRecord[i].mBeginAt_usec, utc_offset_dec.mUtcOffsetRecord[i].mUtcOffset_sec);
         }
 
         {

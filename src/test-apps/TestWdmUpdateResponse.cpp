@@ -45,22 +45,17 @@
 #include <lwip/init.h>
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-
 #define PRINT_TEST_NAME() printf("\n%s\n", __func__);
-
-
 
 using namespace nl;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles::DataManagement;
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // System/Platform definitions
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 namespace nl {
 namespace Weave {
@@ -69,28 +64,28 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
 
 SubscriptionEngine * SubscriptionEngine::GetInstance()
 {
-    static SubscriptionEngine *gSubscriptionEngine = NULL;
+    static SubscriptionEngine * gSubscriptionEngine = NULL;
     return gSubscriptionEngine;
 }
 
 namespace Platform {
-    // For unit tests, a dummy critical section is sufficient.
-    void CriticalSectionEnter()
-    {
-        return;
-    }
+// For unit tests, a dummy critical section is sufficient.
+void CriticalSectionEnter()
+{
+    return;
+}
 
-    void CriticalSectionExit()
-    {
-        return;
-    }
+void CriticalSectionExit()
+{
+    return;
+}
 
-} // Platform
+} // namespace Platform
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-} // Profiles
-} // Weave
-} // nl
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING && WEAVE_CONFIG_ENABLE_WDM_UPDATE
 namespace nl {
@@ -98,42 +93,42 @@ namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current) {
 
-class WdmUpdateResponseTest {
-    public:
-        WdmUpdateResponseTest() { }
-        ~WdmUpdateResponseTest() { }
+class WdmUpdateResponseTest
+{
+public:
+    WdmUpdateResponseTest() { }
+    ~WdmUpdateResponseTest() { }
 
-        // Tests
-        void SetupTest();
-        void TearDownTest();
+    // Tests
+    void SetupTest();
+    void TearDownTest();
 
-        void TestVersionList(nlTestSuite *inSuite, void *inContext);
-        void TestStatusList(nlTestSuite *inSuite, void *inContext, bool aUseDeprecatedFormat);
-        void TestStatusList(nlTestSuite *inSuite, void *inContext);
-        void TestDeprecatedStatusList(nlTestSuite *inSuite, void *inContext);
-        void TestUpdateResponse(nlTestSuite *inSuite, void *inContext);
-        void TestCompactResponse(nlTestSuite *inSuite, void *inContext);
+    void TestVersionList(nlTestSuite * inSuite, void * inContext);
+    void TestStatusList(nlTestSuite * inSuite, void * inContext, bool aUseDeprecatedFormat);
+    void TestStatusList(nlTestSuite * inSuite, void * inContext);
+    void TestDeprecatedStatusList(nlTestSuite * inSuite, void * inContext);
+    void TestUpdateResponse(nlTestSuite * inSuite, void * inContext);
+    void TestCompactResponse(nlTestSuite * inSuite, void * inContext);
 
-    private:
-        // Objects under test
-        VersionList::Builder mVersionListBuilder;
-        VersionList::Parser mVersionListParser;
-        StatusList::Builder mStatusListBuilder;
-        StatusList::Parser mStatusListParser;
-        UpdateResponse::Builder mUpdateResponseBuilder;
-        UpdateResponse::Parser mUpdateResponseParser;
+private:
+    // Objects under test
+    VersionList::Builder mVersionListBuilder;
+    VersionList::Parser mVersionListParser;
+    StatusList::Builder mStatusListBuilder;
+    StatusList::Parser mStatusListParser;
+    UpdateResponse::Builder mUpdateResponseBuilder;
+    UpdateResponse::Parser mUpdateResponseParser;
 
+    // These are here for convenience
+    uint8_t mBuf[1024];
+    Weave::TLV::TLVWriter mWriter;
+    Weave::TLV::TLVReader mReader;
 
-        // These are here for convenience
-        uint8_t mBuf[1024];
-        Weave::TLV::TLVWriter mWriter;
-        Weave::TLV::TLVReader mReader;
-
-        // Test support functions
-        static WEAVE_ERROR WriteVersionList(VersionList::Builder &aBuilder);
-        static WEAVE_ERROR WriteStatusList(StatusList::Builder &aBuilder);
-        static void VerifyVersionList(nlTestSuite *inSuite, VersionList::Parser &aParser);
-        static void VerifyStatusList(nlTestSuite *inSuite, StatusList::Parser &aParser);
+    // Test support functions
+    static WEAVE_ERROR WriteVersionList(VersionList::Builder & aBuilder);
+    static WEAVE_ERROR WriteStatusList(StatusList::Builder & aBuilder);
+    static void VerifyVersionList(nlTestSuite * inSuite, VersionList::Parser & aParser);
+    static void VerifyStatusList(nlTestSuite * inSuite, StatusList::Parser & aParser);
 };
 
 void WdmUpdateResponseTest::SetupTest()
@@ -141,11 +136,9 @@ void WdmUpdateResponseTest::SetupTest()
     memset(mBuf, 0, sizeof(mBuf));
 }
 
-void WdmUpdateResponseTest::TearDownTest()
-{
-}
+void WdmUpdateResponseTest::TearDownTest() { }
 
-WEAVE_ERROR WdmUpdateResponseTest::WriteVersionList(VersionList::Builder &aBuilder)
+WEAVE_ERROR WdmUpdateResponseTest::WriteVersionList(VersionList::Builder & aBuilder)
 {
     uint64_t version;
 
@@ -159,7 +152,7 @@ WEAVE_ERROR WdmUpdateResponseTest::WriteVersionList(VersionList::Builder &aBuild
     return aBuilder.GetError();
 }
 
-WEAVE_ERROR WdmUpdateResponseTest::WriteStatusList(StatusList::Builder &aBuilder)
+WEAVE_ERROR WdmUpdateResponseTest::WriteStatusList(StatusList::Builder & aBuilder)
 {
     aBuilder.AddStatus(0x1, 0x2);
 
@@ -170,7 +163,7 @@ WEAVE_ERROR WdmUpdateResponseTest::WriteStatusList(StatusList::Builder &aBuilder
     return aBuilder.GetError();
 }
 
-void WdmUpdateResponseTest::VerifyVersionList(nlTestSuite *inSuite, VersionList::Parser &aParser)
+void WdmUpdateResponseTest::VerifyVersionList(nlTestSuite * inSuite, VersionList::Parser & aParser)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint64_t version;
@@ -192,7 +185,7 @@ void WdmUpdateResponseTest::VerifyVersionList(nlTestSuite *inSuite, VersionList:
     NL_TEST_ASSERT(inSuite, err == WEAVE_END_OF_TLV);
 }
 
-void WdmUpdateResponseTest::VerifyStatusList(nlTestSuite *inSuite, StatusList::Parser &aParser)
+void WdmUpdateResponseTest::VerifyStatusList(nlTestSuite * inSuite, StatusList::Parser & aParser)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t profile;
@@ -218,7 +211,7 @@ void WdmUpdateResponseTest::VerifyStatusList(nlTestSuite *inSuite, StatusList::P
     NL_TEST_ASSERT(inSuite, err == WEAVE_END_OF_TLV);
 }
 
-void WdmUpdateResponseTest::TestVersionList(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest::TestVersionList(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -271,11 +264,13 @@ void WdmUpdateResponseTest::TestVersionList(nlTestSuite *inSuite, void *inContex
 
         // Note that CheckSchemaValidity succeeds if it can parse out the last StatusCode.
         // It does not care if the containers are not terminated properly at the end.
-        NL_TEST_ASSERT(inSuite, WEAVE_END_OF_TLV == err || WEAVE_ERROR_WDM_MALFORMED_STATUS_ELEMENT == err || WEAVE_ERROR_TLV_UNDERRUN == err || WEAVE_NO_ERROR == err);
+        NL_TEST_ASSERT(inSuite,
+                       WEAVE_END_OF_TLV == err || WEAVE_ERROR_WDM_MALFORMED_STATUS_ELEMENT == err ||
+                           WEAVE_ERROR_TLV_UNDERRUN == err || WEAVE_NO_ERROR == err);
     }
 }
 
-void WdmUpdateResponseTest::TestStatusList(nlTestSuite *inSuite, void *inContext, bool aUseDeprecatedFormat)
+void WdmUpdateResponseTest::TestStatusList(nlTestSuite * inSuite, void * inContext, bool aUseDeprecatedFormat)
 {
     WEAVE_ERROR err;
 
@@ -340,21 +335,23 @@ void WdmUpdateResponseTest::TestStatusList(nlTestSuite *inSuite, void *inContext
 
         // Note that CheckSchemaValidity succeeds if it can parse out the last StatusCode.
         // It does not care if the containers are not terminated properly at the end.
-        NL_TEST_ASSERT(inSuite, WEAVE_END_OF_TLV == err || WEAVE_ERROR_WDM_MALFORMED_STATUS_ELEMENT == err || WEAVE_ERROR_TLV_UNDERRUN == err || WEAVE_NO_ERROR == err);
+        NL_TEST_ASSERT(inSuite,
+                       WEAVE_END_OF_TLV == err || WEAVE_ERROR_WDM_MALFORMED_STATUS_ELEMENT == err ||
+                           WEAVE_ERROR_TLV_UNDERRUN == err || WEAVE_NO_ERROR == err);
     }
 }
 
-void WdmUpdateResponseTest::TestStatusList(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest::TestStatusList(nlTestSuite * inSuite, void * inContext)
 {
     TestStatusList(inSuite, inContext, false);
 }
 
-void WdmUpdateResponseTest::TestDeprecatedStatusList(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest::TestDeprecatedStatusList(nlTestSuite * inSuite, void * inContext)
 {
     TestStatusList(inSuite, inContext, true);
 }
 
-void WdmUpdateResponseTest::TestUpdateResponse(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest::TestUpdateResponse(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -365,7 +362,7 @@ void WdmUpdateResponseTest::TestUpdateResponse(nlTestSuite *inSuite, void *inCon
     err = mUpdateResponseBuilder.Init(&mWriter);
     NL_TEST_ASSERT(inSuite, WEAVE_NO_ERROR == err);
 
-    VersionList::Builder &lVLBuilder = mUpdateResponseBuilder.CreateVersionListBuilder();
+    VersionList::Builder & lVLBuilder = mUpdateResponseBuilder.CreateVersionListBuilder();
 
     err = WriteVersionList(lVLBuilder);
     NL_TEST_ASSERT(inSuite, WEAVE_NO_ERROR == err);
@@ -373,7 +370,7 @@ void WdmUpdateResponseTest::TestUpdateResponse(nlTestSuite *inSuite, void *inCon
     uint32_t lenWritten = mWriter.GetLengthWritten();
     printf("After VersionList, lenWritten: %" PRIu32 "\n", lenWritten);
 
-    StatusList::Builder &lSLBuilder = mUpdateResponseBuilder.CreateStatusListBuilder();
+    StatusList::Builder & lSLBuilder = mUpdateResponseBuilder.CreateStatusListBuilder();
 
     err = WriteStatusList(lSLBuilder);
     NL_TEST_ASSERT(inSuite, WEAVE_NO_ERROR == err);
@@ -417,11 +414,11 @@ void WdmUpdateResponseTest::TestUpdateResponse(nlTestSuite *inSuite, void *inCon
 
         mUpdateResponseBuilder.Init(&mWriter);
 
-        VersionList::Builder &lTmpVLBuilder = mUpdateResponseBuilder.CreateVersionListBuilder();
+        VersionList::Builder & lTmpVLBuilder = mUpdateResponseBuilder.CreateVersionListBuilder();
 
         WriteVersionList(lTmpVLBuilder);
 
-        StatusList::Builder &lTmpSLBuilder = mUpdateResponseBuilder.CreateStatusListBuilder();
+        StatusList::Builder & lTmpSLBuilder = mUpdateResponseBuilder.CreateStatusListBuilder();
 
         WriteStatusList(lTmpSLBuilder);
 
@@ -446,14 +443,16 @@ void WdmUpdateResponseTest::TestUpdateResponse(nlTestSuite *inSuite, void *inCon
 
         // Note that CheckSchemaValidity succeeds if it can parse out the last StatusCode.
         // It does not care if the containers are not terminated properly at the end.
-        NL_TEST_ASSERT(inSuite, WEAVE_END_OF_TLV == err || WEAVE_ERROR_WDM_MALFORMED_STATUS_ELEMENT == err || WEAVE_ERROR_TLV_UNDERRUN == err || WEAVE_NO_ERROR == err);
+        NL_TEST_ASSERT(inSuite,
+                       WEAVE_END_OF_TLV == err || WEAVE_ERROR_WDM_MALFORMED_STATUS_ELEMENT == err ||
+                           WEAVE_ERROR_TLV_UNDERRUN == err || WEAVE_NO_ERROR == err);
     }
 }
 
 /**
  * If the whole update is successful, the publisher can send an empty StatusList
  */
-void WdmUpdateResponseTest::TestCompactResponse(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest::TestCompactResponse(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -464,7 +463,7 @@ void WdmUpdateResponseTest::TestCompactResponse(nlTestSuite *inSuite, void *inCo
     err = mUpdateResponseBuilder.Init(&mWriter);
     NL_TEST_ASSERT(inSuite, WEAVE_NO_ERROR == err);
 
-    VersionList::Builder &lVLBuilder = mUpdateResponseBuilder.CreateVersionListBuilder();
+    VersionList::Builder & lVLBuilder = mUpdateResponseBuilder.CreateVersionListBuilder();
 
     err = WriteVersionList(lVLBuilder);
     NL_TEST_ASSERT(inSuite, WEAVE_NO_ERROR == err);
@@ -472,7 +471,7 @@ void WdmUpdateResponseTest::TestCompactResponse(nlTestSuite *inSuite, void *inCo
     uint32_t lenWritten = mWriter.GetLengthWritten();
     printf("After VersionList, lenWritten: %" PRIu32 "\n", lenWritten);
 
-    StatusList::Builder &lSLBuilder = mUpdateResponseBuilder.CreateStatusListBuilder();
+    StatusList::Builder & lSLBuilder = mUpdateResponseBuilder.CreateStatusListBuilder();
 
     lSLBuilder.EndOfStatusList();
 
@@ -517,37 +516,34 @@ void WdmUpdateResponseTest::TestCompactResponse(nlTestSuite *inSuite, void *inCo
     NL_TEST_ASSERT(inSuite, WEAVE_NO_ERROR != err);
 }
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}
-}
-}
-
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 WdmUpdateResponseTest gWdmUpdateResponseTest;
 
-
-
-void WdmUpdateResponseTest_VersionList(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest_VersionList(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateResponseTest.TestVersionList(inSuite, inContext);
 }
 
-void WdmUpdateResponseTest_StatusList(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest_StatusList(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateResponseTest.TestStatusList(inSuite, inContext);
 }
 
-void WdmUpdateResponseTest_DeprecatedStatusList(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest_DeprecatedStatusList(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateResponseTest.TestDeprecatedStatusList(inSuite, inContext);
 }
 
-void WdmUpdateResponseTest_UpdateResponse(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest_UpdateResponse(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateResponseTest.TestUpdateResponse(inSuite, inContext);
 }
 
-void WdmUpdateResponseTest_CompactResponse(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateResponseTest_CompactResponse(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateResponseTest.TestCompactResponse(inSuite, inContext);
 }
@@ -556,20 +552,18 @@ void WdmUpdateResponseTest_CompactResponse(nlTestSuite *inSuite, void *inContext
 /**
  *  Test Suite that lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("VersionList",  WdmUpdateResponseTest_VersionList),
-    NL_TEST_DEF("StatusList",  WdmUpdateResponseTest_StatusList),
-    NL_TEST_DEF("DeprecatedStatusList",  WdmUpdateResponseTest_DeprecatedStatusList),
-    NL_TEST_DEF("UpdateResponse",  WdmUpdateResponseTest_UpdateResponse),
-    NL_TEST_DEF("Compact UpdateResponse",  WdmUpdateResponseTest_CompactResponse),
+static const nlTest sTests[] = { NL_TEST_DEF("VersionList", WdmUpdateResponseTest_VersionList),
+                                 NL_TEST_DEF("StatusList", WdmUpdateResponseTest_StatusList),
+                                 NL_TEST_DEF("DeprecatedStatusList", WdmUpdateResponseTest_DeprecatedStatusList),
+                                 NL_TEST_DEF("UpdateResponse", WdmUpdateResponseTest_UpdateResponse),
+                                 NL_TEST_DEF("Compact UpdateResponse", WdmUpdateResponseTest_CompactResponse),
 
-    NL_TEST_SENTINEL()
-};
+                                 NL_TEST_SENTINEL() };
 
 /**
  *  Set up the test suite.
  */
-static int SuiteSetup(void *inContext)
+static int SuiteSetup(void * inContext)
 {
     return 0;
 }
@@ -577,7 +571,7 @@ static int SuiteSetup(void *inContext)
 /**
  *  Tear down the test suite.
  */
-static int SuiteTeardown(void *inContext)
+static int SuiteTeardown(void * inContext)
 {
     return 0;
 }
@@ -585,7 +579,7 @@ static int SuiteTeardown(void *inContext)
 /**
  *  Set up each test.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     gWdmUpdateResponseTest.SetupTest();
 
@@ -595,31 +589,23 @@ static int TestSetup(void *inContext)
 /**
  *  Tear down each test.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     gWdmUpdateResponseTest.TearDownTest();
 
     return 0;
 }
 
-
 /**
  *  Main
  */
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-    nlTestSuite theSuite = {
-        "weave-WdmUpdateResponse",
-        &sTests[0],
-        SuiteSetup,
-        SuiteTeardown,
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-WdmUpdateResponse", &sTests[0], SuiteSetup, SuiteTeardown, TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);
@@ -630,9 +616,9 @@ int main(int argc, char *argv[])
     return nlTestRunnerStats(&theSuite);
 }
 
-#else  // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING && WEAVE_CONFIG_ENABLE_WDM_UPDATE
+#else // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING && WEAVE_CONFIG_ENABLE_WDM_UPDATE
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     return 0;
 }

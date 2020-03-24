@@ -25,7 +25,6 @@
 #ifndef MOCKWDMSUBSCRIPTIONINITIATOR_H_
 #define MOCKWDMSUBSCRIPTIONINITIATOR_H_
 
-
 #include <Weave/Core/WeaveExchangeMgr.h>
 #include "ToolCommonOptions.h"
 #include "MockWdmNodeOptions.h"
@@ -36,23 +35,20 @@ public:
     static MockWdmSubscriptionInitiator * GetInstance();
     static uint32_t GetNumUpdatableTraits(void);
 
-    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                             uint32_t aKeyId,
-                             uint32_t aTestSecurityMode,
-                             const MockWdmNodeOptions &aConfig) = 0;
+    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, uint32_t aKeyId, uint32_t aTestSecurityMode,
+                             const MockWdmNodeOptions & aConfig) = 0;
 
     virtual WEAVE_ERROR StartTesting(const uint64_t aPublisherNodeId, const uint16_t aSubnetId) = 0;
 
     virtual int32_t GetNumFaultInjectionEventsAvailable(void) = 0;
 
-    typedef void(*HandleCompleteTestFunct)();
+    typedef void (*HandleCompleteTestFunct)();
     HandleCompleteTestFunct onCompleteTest;
     HandleCompleteTestFunct onError;
 
-    virtual void PrintVersionsLog() = 0;
+    virtual void PrintVersionsLog()       = 0;
     virtual void ClearDataSinkState(void) = 0;
     virtual void Cleanup() { return; }
 };
-
 
 #endif /* MOCKWDMSUBSCRIPTIONINITIATOR_H_ */

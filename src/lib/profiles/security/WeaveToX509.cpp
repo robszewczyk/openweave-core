@@ -61,7 +61,7 @@ inline bool IsCertificateExtensionTag(uint64_t tag)
         return false;
 }
 
-static WEAVE_ERROR DecodeConvertDN(TLVReader& reader, ASN1Writer& writer, WeaveDN& dn)
+static WEAVE_ERROR DecodeConvertDN(TLVReader & reader, ASN1Writer & writer, WeaveDN & dn)
 {
     WEAVE_ERROR err;
     TLVType outerContainer;
@@ -70,7 +70,7 @@ static WEAVE_ERROR DecodeConvertDN(TLVReader& reader, ASN1Writer& writer, WeaveD
     uint32_t tlvTagNum;
     OID attrOID;
     uint32_t asn1Tag;
-    const uint8_t *asn1AttrVal;
+    const uint8_t * asn1AttrVal;
     uint32_t asn1AttrValLen;
     uint8_t weaveIdStr[17];
 
@@ -124,8 +124,8 @@ static WEAVE_ERROR DecodeConvertDN(TLVReader& reader, ASN1Writer& writer, WeaveD
 
         // Generate the string representation of the id that will appear in the ASN.1 attribute.
         // For weave ids the string representation is *always* 16 uppercase hex characters.
-        snprintf((char *)weaveIdStr, sizeof(weaveIdStr), "%016llX", (unsigned long long)weaveId);
-        asn1AttrVal = weaveIdStr;
+        snprintf((char *) weaveIdStr, sizeof(weaveIdStr), "%016llX", (unsigned long long) weaveId);
+        asn1AttrVal    = weaveIdStr;
         asn1AttrValLen = 16;
 
         // The ASN.1 tag for Weave id attributes is always UTF8String.
@@ -161,7 +161,7 @@ static WEAVE_ERROR DecodeConvertDN(TLVReader& reader, ASN1Writer& writer, WeaveD
 
         // Save the string value in the caller's DN structure.
         dn.AttrValue.String.Value = asn1AttrVal;
-        dn.AttrValue.String.Len = asn1AttrValLen;
+        dn.AttrValue.String.Len   = asn1AttrValLen;
     }
 
     // Verify that there are no further elements in the DN.
@@ -174,13 +174,16 @@ static WEAVE_ERROR DecodeConvertDN(TLVReader& reader, ASN1Writer& writer, WeaveD
     // Write the ASN.1 representation of the DN...
 
     // RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // RelativeDistinguishedName ::= SET SIZE (1..MAX) OF AttributeTypeAndValue
-        ASN1_START_SET {
+        ASN1_START_SET
+        {
 
             // AttributeTypeAndValue ::= SEQUENCE
-            ASN1_START_SEQUENCE {
+            ASN1_START_SEQUENCE
+            {
 
                 // type AttributeType
                 // AttributeType ::= OBJECT IDENTIFIER
@@ -188,33 +191,34 @@ static WEAVE_ERROR DecodeConvertDN(TLVReader& reader, ASN1Writer& writer, WeaveD
 
                 // value AttributeValue
                 // AttributeValue ::= ANY -- DEFINED BY AttributeType
-                err = writer.PutString(asn1Tag, (const char *)asn1AttrVal, asn1AttrValLen);
+                err = writer.PutString(asn1Tag, (const char *) asn1AttrVal, asn1AttrValLen);
                 SuccessOrExit(err);
-
-            } ASN1_END_SEQUENCE;
-
-        } ASN1_END_SET;
-
-    } ASN1_END_SEQUENCE;
+            }
+            ASN1_END_SEQUENCE;
+        }
+        ASN1_END_SET;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertValidity(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertValidity(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     ASN1UniversalTime asn1Time;
     uint32_t packedTime;
 
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         err = reader.Next(kTLVType_UnsignedInteger, ContextTag(kTag_NotBefore));
         SuccessOrExit(err);
         err = reader.Get(packedTime);
         SuccessOrExit(err);
         certData.NotBeforeDate = PackedCertTimeToDate(packedTime);
-        err = UnpackCertTime(packedTime, asn1Time);
+        err                    = UnpackCertTime(packedTime, asn1Time);
         SuccessOrExit(err);
 
         ASN1_ENCODE_TIME(asn1Time);
@@ -224,18 +228,18 @@ static WEAVE_ERROR DecodeConvertValidity(TLVReader& reader, ASN1Writer& writer, 
         err = reader.Get(packedTime);
         SuccessOrExit(err);
         certData.NotAfterDate = PackedCertTimeToDate(packedTime);
-        err = UnpackCertTime(packedTime, asn1Time);
+        err                   = UnpackCertTime(packedTime, asn1Time);
         SuccessOrExit(err);
 
         ASN1_ENCODE_TIME(asn1Time);
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     OID pubKeyAlgoOID, pubKeyCurveOID = kOID_NotSpecified;
@@ -246,11 +250,10 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
     err = reader.Get(weavePubKeyAlgoId);
     SuccessOrExit(err);
 
-    pubKeyAlgoOID = (OID)(kOIDCategory_PubKeyAlgo | weavePubKeyAlgoId);
+    pubKeyAlgoOID          = (OID)(kOIDCategory_PubKeyAlgo | weavePubKeyAlgoId);
     certData.PubKeyAlgoOID = pubKeyAlgoOID;
 
-    if (pubKeyAlgoOID == kOID_PubKeyAlgo_ECPublicKey ||
-        pubKeyAlgoOID == kOID_PubKeyAlgo_ECDH ||
+    if (pubKeyAlgoOID == kOID_PubKeyAlgo_ECPublicKey || pubKeyAlgoOID == kOID_PubKeyAlgo_ECDH ||
         pubKeyAlgoOID == kOID_PubKeyAlgo_ECMQV)
     {
         err = reader.Next(kTLVType_UnsignedInteger, ContextTag(kTag_EllipticCurveIdentifier));
@@ -263,18 +266,20 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
             weaveCurveId |= (kWeaveVendor_NestLabs << 16);
 
         certData.PubKeyCurveId = weaveCurveId;
-        pubKeyCurveOID = WeaveCurveIdToOID(certData.PubKeyCurveId);
+        pubKeyCurveOID         = WeaveCurveIdToOID(certData.PubKeyCurveId);
     }
 
     else
         VerifyOrExit(pubKeyAlgoOID == kOID_PubKeyAlgo_RSAEncryption, err = WEAVE_ERROR_UNSUPPORTED_CERT_FORMAT);
 
     // subjectPublicKeyInfo SubjectPublicKeyInfo,
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // algorithm AlgorithmIdentifier,
         // AlgorithmIdentifier ::= SEQUENCE
-        ASN1_START_SEQUENCE {
+        ASN1_START_SEQUENCE
+        {
 
             // algorithm OBJECT IDENTIFIER,
             ASN1_ENCODE_OBJECT_ID(pubKeyAlgoOID);
@@ -296,8 +301,8 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
                 //
                 ASN1_ENCODE_OBJECT_ID(pubKeyCurveOID);
             }
-
-        } ASN1_END_SEQUENCE;
+        }
+        ASN1_END_SEQUENCE;
 
         // subjectPublicKey BIT STRING
         if (pubKeyAlgoOID == kOID_PubKeyAlgo_RSAEncryption)
@@ -311,10 +316,12 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
 
             // Per RFC3279, RSA public key is an encapsulated DER encoding of RSAPublicKey within
             // the subjectPublicKey BitString
-            ASN1_START_BIT_STRING_ENCAPSULATED {
+            ASN1_START_BIT_STRING_ENCAPSULATED
+            {
 
                 // RSAPublicKey ::= SEQUENCE
-                ASN1_START_SEQUENCE {
+                ASN1_START_SEQUENCE
+                {
 
                     // modulus INTEGER
                     err = reader.Next(kTLVType_ByteString, ContextTag(kTag_RSAPublicKey_Modulus));
@@ -330,10 +337,10 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
                     SuccessOrExit(err);
                     err = writer.PutInteger(exp);
                     SuccessOrExit(err);
-
-                } ASN1_END_SEQUENCE;
-
-            } ASN1_END_ENCAPSULATED;
+                }
+                ASN1_END_SEQUENCE;
+            }
+            ASN1_END_ENCAPSULATED;
 
             err = reader.ExitContainer(pubKeyOuterContainer);
             SuccessOrExit(err);
@@ -346,7 +353,7 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
             err = reader.Next(kTLVType_ByteString, ContextTag(kTag_EllipticCurvePublicKey));
             SuccessOrExit(err);
 
-            err = reader.GetDataPtr((const uint8_t *&)certData.PublicKey.EC.ECPoint);
+            err = reader.GetDataPtr((const uint8_t *&) certData.PublicKey.EC.ECPoint);
             SuccessOrExit(err);
 
             len = reader.GetLength();
@@ -355,17 +362,18 @@ static WEAVE_ERROR DecodeConvertSubjectPublicKeyInfo(TLVReader& reader, ASN1Writ
             certData.PublicKey.EC.ECPointLen = len;
 
             // For EC certs, the subjectPublicKey BIT STRING contains the X9.62 encoded EC point.
-            err = writer.PutBitString(0, certData.PublicKey.EC.ECPoint, (uint16_t)certData.PublicKey.EC.ECPointLen);
+            err = writer.PutBitString(0, certData.PublicKey.EC.ECPoint, (uint16_t) certData.PublicKey.EC.ECPointLen);
             SuccessOrExit(err);
         }
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertAuthorityKeyIdentifierExtension(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertAuthorityKeyIdentifierExtension(TLVReader & reader, ASN1Writer & writer,
+                                                                WeaveCertificateData & certData)
 {
     WEAVE_ERROR err, nextRes;
     uint32_t len;
@@ -373,7 +381,8 @@ static WEAVE_ERROR DecodeConvertAuthorityKeyIdentifierExtension(TLVReader& reade
     certData.CertFlags |= kCertFlag_ExtPresent_AuthKeyId;
 
     // AuthorityKeyIdentifier ::= SEQUENCE
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // keyIdentifier [0] IMPLICIT KeyIdentifier OPTIONAL,
         // KeyIdentifier ::= OCTET STRING
@@ -397,14 +406,15 @@ static WEAVE_ERROR DecodeConvertAuthorityKeyIdentifierExtension(TLVReader& reade
         }
 
         // NOTE: kTag_AuthorityKeyIdentifier_Issuer and kTag_AuthorityKeyIdentifier_SerialNumber currently unsupported.
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertSubjectKeyIdentifierExtension(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertSubjectKeyIdentifierExtension(TLVReader & reader, ASN1Writer & writer,
+                                                              WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     uint32_t len;
@@ -431,7 +441,7 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertKeyUsageExtension(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertKeyUsageExtension(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     uint16_t keyUsageBits;
@@ -450,14 +460,15 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertBasicConstraintsExtension(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertBasicConstraintsExtension(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err, nextRes;
 
     certData.CertFlags |= kCertFlag_ExtPresent_BasicConstraints;
 
     // BasicConstraints ::= SEQUENCE
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // cA BOOLEAN DEFAULT FALSE
         if (reader.GetTag() == ContextTag(kTag_BasicConstraints_IsCA))
@@ -485,20 +496,20 @@ static WEAVE_ERROR DecodeConvertBasicConstraintsExtension(TLVReader& reader, ASN
             err = reader.Get(pathLenConstraint);
             SuccessOrExit(err);
 
-            ASN1_ENCODE_INTEGER((int64_t)pathLenConstraint);
+            ASN1_ENCODE_INTEGER((int64_t) pathLenConstraint);
 
             certData.PathLenConstraint = pathLenConstraint;
 
             certData.CertFlags |= kCertFlag_PathLenConstPresent;
         }
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertExtendedKeyUsageExtension(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertExtendedKeyUsageExtension(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err, nextRes;
     TLVType outerContainer;
@@ -506,7 +517,8 @@ static WEAVE_ERROR DecodeConvertExtendedKeyUsageExtension(TLVReader& reader, ASN
     certData.CertFlags |= kCertFlag_ExtPresent_ExtendedKeyUsage;
 
     // ExtKeyUsageSyntax ::= SEQUENCE SIZE (1..MAX) OF KeyPurposeId
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         VerifyOrExit(reader.GetTag() == ContextTag(kTag_ExtendedKeyUsage_KeyPurposes), err = WEAVE_ERROR_WRONG_TLV_TYPE);
         VerifyOrExit(reader.GetType() == kTLVType_Array, err = WEAVE_ERROR_WRONG_TLV_TYPE);
@@ -531,14 +543,13 @@ static WEAVE_ERROR DecodeConvertExtendedKeyUsageExtension(TLVReader& reader, ASN
 
             switch (keyPurposeOID)
             {
-            case kOID_KeyPurpose_ServerAuth:       certData.KeyPurposeFlags |= kKeyPurposeFlag_ServerAuth;      break;
-            case kOID_KeyPurpose_ClientAuth:       certData.KeyPurposeFlags |= kKeyPurposeFlag_ClientAuth;      break;
-            case kOID_KeyPurpose_CodeSigning:      certData.KeyPurposeFlags |= kKeyPurposeFlag_CodeSigning;     break;
-            case kOID_KeyPurpose_EmailProtection:  certData.KeyPurposeFlags |= kKeyPurposeFlag_EmailProtection; break;
-            case kOID_KeyPurpose_TimeStamping:     certData.KeyPurposeFlags |= kKeyPurposeFlag_TimeStamping;    break;
-            case kOID_KeyPurpose_OCSPSigning:      certData.KeyPurposeFlags |= kKeyPurposeFlag_OCSPSigning;     break;
-            default:
-                break;
+            case kOID_KeyPurpose_ServerAuth: certData.KeyPurposeFlags |= kKeyPurposeFlag_ServerAuth; break;
+            case kOID_KeyPurpose_ClientAuth: certData.KeyPurposeFlags |= kKeyPurposeFlag_ClientAuth; break;
+            case kOID_KeyPurpose_CodeSigning: certData.KeyPurposeFlags |= kKeyPurposeFlag_CodeSigning; break;
+            case kOID_KeyPurpose_EmailProtection: certData.KeyPurposeFlags |= kKeyPurposeFlag_EmailProtection; break;
+            case kOID_KeyPurpose_TimeStamping: certData.KeyPurposeFlags |= kKeyPurposeFlag_TimeStamping; break;
+            case kOID_KeyPurpose_OCSPSigning: certData.KeyPurposeFlags |= kKeyPurposeFlag_OCSPSigning; break;
+            default: break;
             }
         }
 
@@ -546,14 +557,14 @@ static WEAVE_ERROR DecodeConvertExtendedKeyUsageExtension(TLVReader& reader, ASN
 
         err = reader.ExitContainer(outerContainer);
         SuccessOrExit(err);
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertExtension(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertExtension(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err, nextRes;
     TLVType outerContainer;
@@ -577,7 +588,8 @@ static WEAVE_ERROR DecodeConvertExtension(TLVReader& reader, ASN1Writer& writer,
     SuccessOrExit(err);
 
     // Extension ::= SEQUENCE
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // extnID OBJECT IDENTIFIER,
         ASN1_ENCODE_OBJECT_ID(extensionOID);
@@ -601,7 +613,8 @@ static WEAVE_ERROR DecodeConvertExtension(TLVReader& reader, ASN1Writer& writer,
         //           -- contains the DER encoding of an ASN.1 value
         //           -- corresponding to the extension type identified
         //           -- by extnID
-        ASN1_START_OCTET_STRING_ENCAPSULATED {
+        ASN1_START_OCTET_STRING_ENCAPSULATED
+        {
 
             if (extensionTagNum == kTag_AuthorityKeyIdentifier)
                 err = DecodeConvertAuthorityKeyIdentifierExtension(reader, writer, certData);
@@ -616,10 +629,10 @@ static WEAVE_ERROR DecodeConvertExtension(TLVReader& reader, ASN1Writer& writer,
             else
                 err = WEAVE_ERROR_UNSUPPORTED_CERT_FORMAT;
             SuccessOrExit(err);
-
-        } ASN1_END_ENCAPSULATED;
-
-    } ASN1_END_SEQUENCE;
+        }
+        ASN1_END_ENCAPSULATED;
+    }
+    ASN1_END_SEQUENCE;
 
     // Verify that all elements in the extension structure were consumed.
     err = reader.VerifyEndOfContainer();
@@ -632,16 +645,18 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertExtensions(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertExtensions(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     uint64_t tag;
 
     // extensions [3] EXPLICIT Extensions OPTIONAL
-    ASN1_START_CONSTRUCTED(kASN1TagClass_ContextSpecific, 3) {
+    ASN1_START_CONSTRUCTED(kASN1TagClass_ContextSpecific, 3)
+    {
 
         // Extensions ::= SEQUENCE SIZE (1..MAX) OF Extension
-        ASN1_START_SEQUENCE {
+        ASN1_START_SEQUENCE
+        {
 
             while (true)
             {
@@ -655,16 +670,16 @@ static WEAVE_ERROR DecodeConvertExtensions(TLVReader& reader, ASN1Writer& writer
                 if (!IsCertificateExtensionTag(tag))
                     break;
             }
-
-        } ASN1_END_SEQUENCE;
-
-    } ASN1_END_CONSTRUCTED;
+        }
+        ASN1_END_SEQUENCE;
+    }
+    ASN1_END_CONSTRUCTED;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertRSASignature(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertRSASignature(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
 
@@ -678,10 +693,10 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertECDSASignature(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertECDSASignature(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
-    EncodedECDSASignature& encodedSig = certData.Signature.EC;
+    EncodedECDSASignature & encodedSig = certData.Signature.EC;
 
     VerifyOrExit(reader.GetTag() == ContextTag(kTag_ECDSASignature), err = WEAVE_ERROR_UNEXPECTED_TLV_ELEMENT);
 
@@ -690,10 +705,12 @@ static WEAVE_ERROR DecodeConvertECDSASignature(TLVReader& reader, ASN1Writer& wr
 
     // signatureValue BIT STRING
     // Per RFC3279, the ECDSA signature value is encoded in DER encapsulated in the signatureValue BIT STRING.
-    ASN1_START_BIT_STRING_ENCAPSULATED {
+    ASN1_START_BIT_STRING_ENCAPSULATED
+    {
 
         // Ecdsa-Sig-Value ::= SEQUENCE
-        ASN1_START_SEQUENCE {
+        ASN1_START_SEQUENCE
+        {
 
             // r INTEGER
             err = writer.PutValue(kASN1TagClass_Universal, kASN1UniversalTag_Integer, false, encodedSig.R, encodedSig.RLen);
@@ -702,16 +719,16 @@ static WEAVE_ERROR DecodeConvertECDSASignature(TLVReader& reader, ASN1Writer& wr
             // s INTEGER
             err = writer.PutValue(kASN1TagClass_Universal, kASN1UniversalTag_Integer, false, encodedSig.S, encodedSig.SLen);
             SuccessOrExit(err);
-
-        } ASN1_END_SEQUENCE;
-
-    } ASN1_END_ENCAPSULATED;
+        }
+        ASN1_END_SEQUENCE;
+    }
+    ASN1_END_ENCAPSULATED;
 
 exit:
     return err;
 }
 
-WEAVE_ERROR DecodeConvertTBSCert(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+WEAVE_ERROR DecodeConvertTBSCert(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     uint64_t tag;
@@ -720,15 +737,17 @@ WEAVE_ERROR DecodeConvertTBSCert(TLVReader& reader, ASN1Writer& writer, WeaveCer
 
     // tbsCertificate TBSCertificate,
     // TBSCertificate ::= SEQUENCE
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // version [0] EXPLICIT Version DEFAULT v1
-        ASN1_START_CONSTRUCTED(kASN1TagClass_ContextSpecific, 0) {
+        ASN1_START_CONSTRUCTED(kASN1TagClass_ContextSpecific, 0)
+        {
 
             // Version ::= INTEGER { v1(0), v2(1), v3(2) }
             ASN1_ENCODE_INTEGER(2);
-
-        } ASN1_END_CONSTRUCTED;
+        }
+        ASN1_END_CONSTRUCTED;
 
         err = reader.Next(kTLVType_ByteString, ContextTag(kTag_SerialNumber));
         SuccessOrExit(err);
@@ -740,7 +759,8 @@ WEAVE_ERROR DecodeConvertTBSCert(TLVReader& reader, ASN1Writer& writer, WeaveCer
 
         // signature AlgorithmIdentifier
         // AlgorithmIdentifier ::= SEQUENCE
-        ASN1_START_SEQUENCE {
+        ASN1_START_SEQUENCE
+        {
 
             err = reader.Next(kTLVType_UnsignedInteger, ContextTag(kTag_SignatureAlgorithm));
             SuccessOrExit(err);
@@ -753,16 +773,15 @@ WEAVE_ERROR DecodeConvertTBSCert(TLVReader& reader, ASN1Writer& writer, WeaveCer
 
             // parameters ANY DEFINED BY algorithm OPTIONAL
             // Per RFC3279, parameters for RSA must be NULL, parameters for ECDSAWithSHA1 must be absent.
-            if (sigAlgoOID == kOID_SigAlgo_MD2WithRSAEncryption ||
-                sigAlgoOID == kOID_SigAlgo_MD5WithRSAEncryption ||
+            if (sigAlgoOID == kOID_SigAlgo_MD2WithRSAEncryption || sigAlgoOID == kOID_SigAlgo_MD5WithRSAEncryption ||
                 sigAlgoOID == kOID_SigAlgo_SHA1WithRSAEncryption)
             {
                 ASN1_ENCODE_NULL;
             }
 
             certData.SigAlgoOID = sigAlgoOID;
-
-        } ASN1_END_SEQUENCE;
+        }
+        ASN1_END_SEQUENCE;
 
         // issuer Name
         //
@@ -806,14 +825,14 @@ WEAVE_ERROR DecodeConvertTBSCert(TLVReader& reader, ASN1Writer& writer, WeaveCer
             err = DecodeConvertExtensions(reader, writer, certData);
             SuccessOrExit(err);
         }
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
 exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeConvertCert(TLVReader& reader, ASN1Writer& writer, WeaveCertificateData& certData)
+static WEAVE_ERROR DecodeConvertCert(TLVReader & reader, ASN1Writer & writer, WeaveCertificateData & certData)
 {
     WEAVE_ERROR err;
     uint64_t tag;
@@ -836,7 +855,8 @@ static WEAVE_ERROR DecodeConvertCert(TLVReader& reader, ASN1Writer& writer, Weav
     SuccessOrExit(err);
 
     // Certificate ::= SEQUENCE
-    ASN1_START_SEQUENCE {
+    ASN1_START_SEQUENCE
+    {
 
         // tbsCertificate TBSCertificate,
         err = DecodeConvertTBSCert(reader, writer, certData);
@@ -844,9 +864,10 @@ static WEAVE_ERROR DecodeConvertCert(TLVReader& reader, ASN1Writer& writer, Weav
 
         // signatureAlgorithm   AlgorithmIdentifier
         // AlgorithmIdentifier ::= SEQUENCE
-        ASN1_START_SEQUENCE {
+        ASN1_START_SEQUENCE
+        {
 
-            ASN1_ENCODE_OBJECT_ID((OID)certData.SigAlgoOID);
+            ASN1_ENCODE_OBJECT_ID((OID) certData.SigAlgoOID);
 
             // parameters ANY DEFINED BY algorithm OPTIONAL
             // Per RFC3279, parameters for RSA must be NULL, parameters for ECDSAWithSHA1 must be absent.
@@ -856,12 +877,11 @@ static WEAVE_ERROR DecodeConvertCert(TLVReader& reader, ASN1Writer& writer, Weav
             {
                 ASN1_ENCODE_NULL;
             }
-
-        } ASN1_END_SEQUENCE;
+        }
+        ASN1_END_SEQUENCE;
 
         // signatureValue BIT STRING
-        if (certData.SigAlgoOID == kOID_SigAlgo_MD2WithRSAEncryption ||
-            certData.SigAlgoOID == kOID_SigAlgo_MD5WithRSAEncryption ||
+        if (certData.SigAlgoOID == kOID_SigAlgo_MD2WithRSAEncryption || certData.SigAlgoOID == kOID_SigAlgo_MD5WithRSAEncryption ||
             certData.SigAlgoOID == kOID_SigAlgo_SHA1WithRSAEncryption)
         {
             err = DecodeConvertRSASignature(reader, writer, certData);
@@ -873,8 +893,8 @@ static WEAVE_ERROR DecodeConvertCert(TLVReader& reader, ASN1Writer& writer, Weav
             err = DecodeConvertECDSASignature(reader, writer, certData);
             SuccessOrExit(err);
         }
-
-    } ASN1_END_SEQUENCE;
+    }
+    ASN1_END_SEQUENCE;
 
     // Verify no more elements in certificate.
     err = reader.VerifyEndOfContainer();
@@ -887,7 +907,8 @@ exit:
     return err;
 }
 
-NL_DLL_EXPORT WEAVE_ERROR ConvertWeaveCertToX509Cert(const uint8_t *weaveCert, uint32_t weaveCertLen, uint8_t *x509CertBuf, uint32_t x509CertBufSize, uint32_t& x509CertLen)
+NL_DLL_EXPORT WEAVE_ERROR ConvertWeaveCertToX509Cert(const uint8_t * weaveCert, uint32_t weaveCertLen, uint8_t * x509CertBuf,
+                                                     uint32_t x509CertBufSize, uint32_t & x509CertLen)
 {
     WEAVE_ERROR err;
     TLVReader reader;
@@ -912,7 +933,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DecodeWeaveCert(const uint8_t *weaveCert, uint32_t weaveCertLen, WeaveCertificateData& certData)
+WEAVE_ERROR DecodeWeaveCert(const uint8_t * weaveCert, uint32_t weaveCertLen, WeaveCertificateData & certData)
 {
     TLVReader reader;
 
@@ -920,7 +941,7 @@ WEAVE_ERROR DecodeWeaveCert(const uint8_t *weaveCert, uint32_t weaveCertLen, Wea
     return DecodeWeaveCert(reader, certData);
 }
 
-WEAVE_ERROR DecodeWeaveCert(TLVReader& reader, WeaveCertificateData& certData)
+WEAVE_ERROR DecodeWeaveCert(TLVReader & reader, WeaveCertificateData & certData)
 {
     ASN1Writer writer;
 
@@ -929,7 +950,7 @@ WEAVE_ERROR DecodeWeaveCert(TLVReader& reader, WeaveCertificateData& certData)
     return DecodeConvertCert(reader, writer, certData);
 }
 
-WEAVE_ERROR DecodeWeaveDN(TLVReader& reader, WeaveDN& dn)
+WEAVE_ERROR DecodeWeaveDN(TLVReader & reader, WeaveDN & dn)
 {
     ASN1Writer writer;
 
@@ -937,7 +958,6 @@ WEAVE_ERROR DecodeWeaveDN(TLVReader& reader, WeaveDN& dn)
     memset(&dn, 0, sizeof(dn));
     return DecodeConvertDN(reader, writer, dn);
 }
-
 
 } // namespace Security
 } // namespace Profiles

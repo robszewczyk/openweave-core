@@ -35,40 +35,41 @@ using namespace nl::Weave::Crypto;
 
 #define DEBUG_PRINT_ENABLE 0
 
-#define VerifyOrFail(TST, MSG) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        exit(-1); \
-    } \
-} while (0)
+#define VerifyOrFail(TST, MSG)                                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrFail(ERR, MSG) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        fputs(ErrorStr(ERR), stderr); \
-        fputs("\n", stderr); \
-        exit(-1); \
-    } \
-} while (0)
+#define SuccessOrFail(ERR, MSG)                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            fputs(ErrorStr(ERR), stderr);                                                                                          \
+            fputs("\n", stderr);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-
-static uint8_t *TestEntropy = NULL;
+static uint8_t * TestEntropy = NULL;
 static size_t TestEntropyLen = 0;
 
 // DefaultEntropy() function is compiled out to eliminate compiler warning.
 // This function can be used later in case we need to do more testing of DRBG
 // engine, where we collect entropy from real source.
 #if WEAVE_CONFIG_TEST_DRBG_ENTROPY_COLLECTION
-static int DefaultEntropy(uint8_t *entropy, size_t entropyLen)
+static int DefaultEntropy(uint8_t * entropy, size_t entropyLen)
 {
     int randomVal;
-    uint8_t *pRandomVal;
+    uint8_t * pRandomVal;
     size_t idx;
 
     if (entropyLen > 0 && !entropy)
@@ -78,18 +79,17 @@ static int DefaultEntropy(uint8_t *entropy, size_t entropyLen)
     {
         randomVal = rand();
 
-        pRandomVal = (uint8_t *)&randomVal;
+        pRandomVal = (uint8_t *) &randomVal;
 
         for (idx = 0; (idx < sizeof(int)) && (entropyLen > 0); idx++, entropyLen--)
-          *entropy++ = *pRandomVal++;
-    }
-    while (entropyLen > 0);
+            *entropy++ = *pRandomVal++;
+    } while (entropyLen > 0);
 
     return 0;
 }
 #endif // WEAVE_CONFIG_TEST_DRBG_ENTROPY_COLLECTION
 
-static int TestEntropyFunct(uint8_t *entropy, size_t entropyLen)
+static int TestEntropyFunct(uint8_t * entropy, size_t entropyLen)
 {
     if (entropyLen > 0)
         if (!TestEntropy || !entropy || (TestEntropyLen < entropyLen))
@@ -105,10 +105,10 @@ static int TestEntropyFunct(uint8_t *entropy, size_t entropyLen)
     return 0;
 }
 
-static uint8_t *TestRandomOutput = NULL;
+static uint8_t * TestRandomOutput = NULL;
 static size_t TestRandomOutputLen = 0;
 
-static int TestRandomOutputFunction(uint8_t *randomOutput, size_t randomOutputLen)
+static int TestRandomOutputFunction(uint8_t * randomOutput, size_t randomOutputLen)
 {
     int ret;
 
@@ -126,11 +126,9 @@ static int TestRandomOutputFunction(uint8_t *randomOutput, size_t randomOutputLe
     return ret;
 }
 
-static int TestDRBG(uint8_t iterationCount, bool usePR, bool useReseed,
-                    uint8_t *entropyInput, size_t entropyInputLen,
-                    uint8_t *personalizationString, size_t personalizationStringLen,
-                    uint8_t *additionalInput, size_t additionalInputLen,
-                    uint8_t *randomOutput, size_t randomOutputLen)
+static int TestDRBG(uint8_t iterationCount, bool usePR, bool useReseed, uint8_t * entropyInput, size_t entropyInputLen,
+                    uint8_t * personalizationString, size_t personalizationStringLen, uint8_t * additionalInput,
+                    size_t additionalInputLen, uint8_t * randomOutput, size_t randomOutputLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     int ret;
@@ -147,7 +145,7 @@ static int TestDRBG(uint8_t iterationCount, bool usePR, bool useReseed,
 #endif
 
     // Initialize Entropy Parameters
-    TestEntropy = entropyInput;
+    TestEntropy    = entropyInput;
     TestEntropyLen = entropyInputLen * iterationCount;
     if (usePR)
         TestEntropyLen *= 3;
@@ -155,7 +153,7 @@ static int TestDRBG(uint8_t iterationCount, bool usePR, bool useReseed,
         TestEntropyLen *= 2;
 
     // Initilize Result Check Parameters
-    TestRandomOutput = randomOutput;
+    TestRandomOutput    = randomOutput;
     TestRandomOutputLen = randomOutputLen * iterationCount;
 
     for (uint8_t i = 0; i < iterationCount; i++)
@@ -165,8 +163,7 @@ static int TestDRBG(uint8_t iterationCount, bool usePR, bool useReseed,
 #endif
 
         // DRBG Instantiate Function
-        err = ctrDRBG.Instantiate(TestEntropyFunct, entropyInputLen,
-				  personalizationString, personalizationStringLen);
+        err = ctrDRBG.Instantiate(TestEntropyFunct, entropyInputLen, personalizationString, personalizationStringLen);
         SuccessOrExit(err);
 
         personalizationString += personalizationStringLen;
@@ -202,13 +199,13 @@ exit:
 }
 
 // Current DRBG implementation doesn't support noDF option
-#define WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION  0
+#define WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION 0
 
 // ============================================================
 // Test Body
 // ============================================================
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -221,17 +218,12 @@ int main(int argc, char *argv[])
     // [AdditionalInputLen = 0]
     // [ReturnedBitsLen = 512]
     // ============================================================
-#if WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION    // no DF
-    err = TestDRBG(NIST_CTR_DRBG_AES128_NoPR_NoDF_Count,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_PredictionResistance,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_Reseed,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_EntropyInput,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_EntropyInputLen,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_PersonalizationString,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_PersonalizationStringLen,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_AdditionalInput,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_AdditionalInputLen,
-                   NIST_CTR_DRBG_AES128_NoPR_NoDF_ReturnedBytes,
+#if WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION // no DF
+    err = TestDRBG(NIST_CTR_DRBG_AES128_NoPR_NoDF_Count, NIST_CTR_DRBG_AES128_NoPR_NoDF_PredictionResistance,
+                   NIST_CTR_DRBG_AES128_NoPR_NoDF_Reseed, NIST_CTR_DRBG_AES128_NoPR_NoDF_EntropyInput,
+                   NIST_CTR_DRBG_AES128_NoPR_NoDF_EntropyInputLen, NIST_CTR_DRBG_AES128_NoPR_NoDF_PersonalizationString,
+                   NIST_CTR_DRBG_AES128_NoPR_NoDF_PersonalizationStringLen, NIST_CTR_DRBG_AES128_NoPR_NoDF_AdditionalInput,
+                   NIST_CTR_DRBG_AES128_NoPR_NoDF_AdditionalInputLen, NIST_CTR_DRBG_AES128_NoPR_NoDF_ReturnedBytes,
                    NIST_CTR_DRBG_AES128_NoPR_NoDF_ReturnedBytesLen);
     SuccessOrFail(err, "TestDRBG failed in NoPR & NoDF case\n");
 #endif
@@ -245,17 +237,12 @@ int main(int argc, char *argv[])
     // [AdditionalInputLen = 128]
     // [ReturnedBitsLen = 512]
     // ============================================================
-#if (WEAVE_CONFIG_DRBG_RESEED_INTERVAL > 0)    // PredictionResistance = False
-    err = TestDRBG(NIST_CTR_DRBG_AES128_NoPR_UseDF_Count,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_PredictionResistance,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_Reseed,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_EntropyInput,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_EntropyInputLen,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_PersonalizationString,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_PersonalizationStringLen,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_AdditionalInput,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_AdditionalInputLen,
-                   NIST_CTR_DRBG_AES128_NoPR_UseDF_ReturnedBytes,
+#if (WEAVE_CONFIG_DRBG_RESEED_INTERVAL > 0) // PredictionResistance = False
+    err = TestDRBG(NIST_CTR_DRBG_AES128_NoPR_UseDF_Count, NIST_CTR_DRBG_AES128_NoPR_UseDF_PredictionResistance,
+                   NIST_CTR_DRBG_AES128_NoPR_UseDF_Reseed, NIST_CTR_DRBG_AES128_NoPR_UseDF_EntropyInput,
+                   NIST_CTR_DRBG_AES128_NoPR_UseDF_EntropyInputLen, NIST_CTR_DRBG_AES128_NoPR_UseDF_PersonalizationString,
+                   NIST_CTR_DRBG_AES128_NoPR_UseDF_PersonalizationStringLen, NIST_CTR_DRBG_AES128_NoPR_UseDF_AdditionalInput,
+                   NIST_CTR_DRBG_AES128_NoPR_UseDF_AdditionalInputLen, NIST_CTR_DRBG_AES128_NoPR_UseDF_ReturnedBytes,
                    NIST_CTR_DRBG_AES128_NoPR_UseDF_ReturnedBytesLen);
     SuccessOrFail(err, "TestDRBG failed in NoPR & UseDF case\n");
 #endif
@@ -269,17 +256,12 @@ int main(int argc, char *argv[])
     // [AdditionalInputLen = 256]
     // [ReturnedBitsLen = 512]
     // ============================================================
-#if WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION    // no DF
-    err = TestDRBG(NIST_CTR_DRBG_AES128_UsePR_NoDF_Count,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_PredictionResistance,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_Reseed,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_EntropyInput,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_EntropyInputLen,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_PersonalizationString,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_PersonalizationStringLen,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_AdditionalInput,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_AdditionalInputLen,
-                   NIST_CTR_DRBG_AES128_UsePR_NoDF_ReturnedBytes,
+#if WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION // no DF
+    err = TestDRBG(NIST_CTR_DRBG_AES128_UsePR_NoDF_Count, NIST_CTR_DRBG_AES128_UsePR_NoDF_PredictionResistance,
+                   NIST_CTR_DRBG_AES128_UsePR_NoDF_Reseed, NIST_CTR_DRBG_AES128_UsePR_NoDF_EntropyInput,
+                   NIST_CTR_DRBG_AES128_UsePR_NoDF_EntropyInputLen, NIST_CTR_DRBG_AES128_UsePR_NoDF_PersonalizationString,
+                   NIST_CTR_DRBG_AES128_UsePR_NoDF_PersonalizationStringLen, NIST_CTR_DRBG_AES128_UsePR_NoDF_AdditionalInput,
+                   NIST_CTR_DRBG_AES128_UsePR_NoDF_AdditionalInputLen, NIST_CTR_DRBG_AES128_UsePR_NoDF_ReturnedBytes,
                    NIST_CTR_DRBG_AES128_UsePR_NoDF_ReturnedBytesLen);
     SuccessOrFail(err, "TestDRBG failed in UsePR & NoDF case\n");
 #endif
@@ -293,17 +275,12 @@ int main(int argc, char *argv[])
     // [AdditionalInputLen = 128]
     // [ReturnedBitsLen = 512]
     // ============================================================
-#if (WEAVE_CONFIG_DRBG_RESEED_INTERVAL == 0)    // PredictionResistance = True
-    err = TestDRBG(NIST_CTR_DRBG_AES128_UsePR_UseDF_Count,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_PredictionResistance,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_Reseed,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_EntropyInput,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_EntropyInputLen,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_PersonalizationString,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_PersonalizationStringLen,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_AdditionalInput,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_AdditionalInputLen,
-                   NIST_CTR_DRBG_AES128_UsePR_UseDF_ReturnedBytes,
+#if (WEAVE_CONFIG_DRBG_RESEED_INTERVAL == 0) // PredictionResistance = True
+    err = TestDRBG(NIST_CTR_DRBG_AES128_UsePR_UseDF_Count, NIST_CTR_DRBG_AES128_UsePR_UseDF_PredictionResistance,
+                   NIST_CTR_DRBG_AES128_UsePR_UseDF_Reseed, NIST_CTR_DRBG_AES128_UsePR_UseDF_EntropyInput,
+                   NIST_CTR_DRBG_AES128_UsePR_UseDF_EntropyInputLen, NIST_CTR_DRBG_AES128_UsePR_UseDF_PersonalizationString,
+                   NIST_CTR_DRBG_AES128_UsePR_UseDF_PersonalizationStringLen, NIST_CTR_DRBG_AES128_UsePR_UseDF_AdditionalInput,
+                   NIST_CTR_DRBG_AES128_UsePR_UseDF_AdditionalInputLen, NIST_CTR_DRBG_AES128_UsePR_UseDF_ReturnedBytes,
                    NIST_CTR_DRBG_AES128_UsePR_UseDF_ReturnedBytesLen);
     SuccessOrFail(err, "TestDRBG failed in UsePR & UseDF case\n");
 #endif
@@ -317,17 +294,12 @@ int main(int argc, char *argv[])
     // [AdditionalInputLen = 256]
     // [ReturnedBitsLen = 512]
     // ============================================================
-#if WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION    // no DF
-    err = TestDRBG(NIST_CTR_DRBG_AES128_NoReseed_NoDF_Count,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_PredictionResistance,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_Reseed,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_EntropyInput,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_EntropyInputLen,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_PersonalizationString,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_PersonalizationStringLen,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_AdditionalInput,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_AdditionalInputLen,
-                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_ReturnedBytes,
+#if WEAVE_CONFIG_DRBG_WITHOUT_DERIVATION_FUNCTION // no DF
+    err = TestDRBG(NIST_CTR_DRBG_AES128_NoReseed_NoDF_Count, NIST_CTR_DRBG_AES128_NoReseed_NoDF_PredictionResistance,
+                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_Reseed, NIST_CTR_DRBG_AES128_NoReseed_NoDF_EntropyInput,
+                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_EntropyInputLen, NIST_CTR_DRBG_AES128_NoReseed_NoDF_PersonalizationString,
+                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_PersonalizationStringLen, NIST_CTR_DRBG_AES128_NoReseed_NoDF_AdditionalInput,
+                   NIST_CTR_DRBG_AES128_NoReseed_NoDF_AdditionalInputLen, NIST_CTR_DRBG_AES128_NoReseed_NoDF_ReturnedBytes,
                    NIST_CTR_DRBG_AES128_NoReseed_NoDF_ReturnedBytesLen);
     SuccessOrFail(err, "TestDRBG failed in NoReseed & NoDF case\n");
 #endif

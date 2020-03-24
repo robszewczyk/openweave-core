@@ -46,7 +46,7 @@
  *          be certified without this asserted.
  *
  */
-#define REQUIRE_AUTH_DROPCAM_LEGACY_PAIRING    1
+#define REQUIRE_AUTH_DROPCAM_LEGACY_PAIRING 1
 
 namespace nl {
 namespace Weave {
@@ -61,14 +61,13 @@ using namespace nl::Weave::TLV;
 
 // Preprocessor Macros
 
-#define kWeave_VendorNameString_Nest "Nest"
-#define kWeave_ProfileNameString_DropcamLegacyPairing \
-    kWeave_VendorNameString_Nest ":DropcamLegacyPairing"
+#define kWeave_VendorNameString_Nest                  "Nest"
+#define kWeave_ProfileNameString_DropcamLegacyPairing kWeave_VendorNameString_Nest ":DropcamLegacyPairing"
 
 // Forward Declarations
 
-static const char *GetDropcamLegacyPairingMessageName(uint32_t inProfileId, uint8_t inMsgType);
-static const char *GetDropcamLegacyPairingProfileName(uint32_t inProfileId);
+static const char * GetDropcamLegacyPairingMessageName(uint32_t inProfileId, uint8_t inMsgType);
+static const char * GetDropcamLegacyPairingProfileName(uint32_t inProfileId);
 
 static void _DropcamLegacyPairingProfileStringInit(void) __attribute__((constructor));
 static void _DropcamLegacyPairingProfileStringDestroy(void) __attribute__((destructor));
@@ -80,23 +79,19 @@ static void _DropcamLegacyPairingProfileStringDestroy(void) __attribute__((destr
  *  returning human-readable support strings associated with the
  *  profile.
  */
-static const Weave::Support::ProfileStringInfo sDropcamLegacyPairingProfileStringInfo = {
-    kWeaveProfile_DropcamLegacyPairing,
+static const Weave::Support::ProfileStringInfo sDropcamLegacyPairingProfileStringInfo = { kWeaveProfile_DropcamLegacyPairing,
 
-    GetDropcamLegacyPairingMessageName,
-    GetDropcamLegacyPairingProfileName,
-    NULL
-};
+                                                                                          GetDropcamLegacyPairingMessageName,
+                                                                                          GetDropcamLegacyPairingProfileName,
+                                                                                          NULL };
 
 /**
  *  Context for registering and deregistering callbacks associated
  *  with for returning human-readable support strings associated with
  *  the profile.
  */
-static Weave::Support::ProfileStringContext sDropcamLegacyPairingProfileStringContext = {
-    NULL,
-    sDropcamLegacyPairingProfileStringInfo
-};
+static Weave::Support::ProfileStringContext sDropcamLegacyPairingProfileStringContext = { NULL,
+                                                                                          sDropcamLegacyPairingProfileStringInfo };
 
 /**
  *  One time, yet reentrant, initializer for registering Weave Dropcam
@@ -105,7 +100,7 @@ static Weave::Support::ProfileStringContext sDropcamLegacyPairingProfileStringCo
  */
 static void _DropcamLegacyPairingProfileStringInit(void)
 {
-    (void)Weave::Support::RegisterProfileStringInfo(sDropcamLegacyPairingProfileStringContext);
+    (void) Weave::Support::RegisterProfileStringInfo(sDropcamLegacyPairingProfileStringContext);
 }
 
 /**
@@ -115,7 +110,7 @@ static void _DropcamLegacyPairingProfileStringInit(void)
  */
 static void _DropcamLegacyPairingProfileStringDestroy(void)
 {
-    (void)Weave::Support::UnregisterProfileStringInfo(sDropcamLegacyPairingProfileStringContext);
+    (void) Weave::Support::UnregisterProfileStringInfo(sDropcamLegacyPairingProfileStringContext);
 }
 
 /**
@@ -138,22 +133,20 @@ static void _DropcamLegacyPairingProfileStringDestroy(void)
  *  found; otherwise, NULL.
  *
  */
-static const char *GetDropcamLegacyPairingMessageName(uint32_t inProfileId, uint8_t inMsgType)
+static const char * GetDropcamLegacyPairingMessageName(uint32_t inProfileId, uint8_t inMsgType)
 {
-    const char *result = NULL;
+    const char * result = NULL;
 
-    switch (inProfileId) {
+    switch (inProfileId)
+    {
 
     case kWeaveProfile_DropcamLegacyPairing:
-        switch (inMsgType) {
+        switch (inMsgType)
+        {
 
-        case DropcamLegacyPairing::kMsgType_CameraAuthDataRequest:
-            result = "CameraAuthDataRequest";
-            break;
+        case DropcamLegacyPairing::kMsgType_CameraAuthDataRequest: result = "CameraAuthDataRequest"; break;
 
-        case DropcamLegacyPairing::kMsgType_CameraAuthDataResponse:
-            result = "CameraAuthDataResponse";
-            break;
+        case DropcamLegacyPairing::kMsgType_CameraAuthDataResponse: result = "CameraAuthDataResponse"; break;
         }
         break;
     }
@@ -176,15 +169,13 @@ static const char *GetDropcamLegacyPairingMessageName(uint32_t inProfileId, uint
  *  found; otherwise, NULL.
  *
  */
-static const char *GetDropcamLegacyPairingProfileName(uint32_t inProfileId)
+static const char * GetDropcamLegacyPairingProfileName(uint32_t inProfileId)
 {
-    const char *result = NULL;
+    const char * result = NULL;
 
     switch (inProfileId)
     {
-    case kWeaveProfile_DropcamLegacyPairing:
-        result = kWeave_ProfileNameString_DropcamLegacyPairing;
-        break;
+    case kWeaveProfile_DropcamLegacyPairing: result = kWeave_ProfileNameString_DropcamLegacyPairing; break;
     }
 
     return (result);
@@ -201,7 +192,7 @@ static const char *GetDropcamLegacyPairingProfileName(uint32_t inProfileId)
  * @retval other            Other Weave or platform-specific error codes indicating that an error
  *                          occurred preventing encoding of the message payload.
  */
-WEAVE_ERROR EncodeCameraAuthDataRequest(PacketBuffer *buf, const char *nonce)
+WEAVE_ERROR EncodeCameraAuthDataRequest(PacketBuffer * buf, const char * nonce)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVWriter writer;
@@ -232,7 +223,7 @@ exit:
  * @retval other            Other Weave or platform-specific error codes indicating that an error
  *                          occurred preventing decoding of the message payload.
  */
-WEAVE_ERROR DecodeCameraAuthDataResponse(PacketBuffer *buf, uint8_t (&macAddress)[EUI48_LEN], uint8_t (&hmac)[HMAC_BUF_LEN])
+WEAVE_ERROR DecodeCameraAuthDataResponse(PacketBuffer * buf, uint8_t (&macAddress)[EUI48_LEN], uint8_t (&hmac)[HMAC_BUF_LEN])
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
@@ -262,7 +253,7 @@ DropcamLegacyPairingServer::DropcamLegacyPairingServer(void)
 {
     FabricState = NULL;
     ExchangeMgr = NULL;
-    mDelegate = NULL;
+    mDelegate   = NULL;
 }
 
 /**
@@ -275,14 +266,13 @@ DropcamLegacyPairingServer::DropcamLegacyPairingServer(void)
  *                                                              handlers are registered.
  * @retval  #WEAVE_NO_ERROR                                     On success.
  */
-WEAVE_ERROR DropcamLegacyPairingServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR DropcamLegacyPairingServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     FabricState = exchangeMgr->FabricState;
     ExchangeMgr = exchangeMgr;
 
     // Register to receive unsolicited Dropcam Legacy Pairing messages from the exchange manager.
-    WEAVE_ERROR err =
-        ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_DropcamLegacyPairing, HandleClientRequest, this);
+    WEAVE_ERROR err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_DropcamLegacyPairing, HandleClientRequest, this);
 
     return err;
 }
@@ -308,16 +298,17 @@ WEAVE_ERROR DropcamLegacyPairingServer::Shutdown(void)
  *
  * @param[in]   delegate    A pointer to the Dropcam Legacy Pairing Delegate.
  */
-void DropcamLegacyPairingServer::SetDelegate(DropcamLegacyPairingDelegate *delegate)
+void DropcamLegacyPairingServer::SetDelegate(DropcamLegacyPairingDelegate * delegate)
 {
     mDelegate = delegate;
 }
 
-void DropcamLegacyPairingServer::HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-    const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf)
+void DropcamLegacyPairingServer::HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                     const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                     PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    DropcamLegacyPairingServer *server = reinterpret_cast<DropcamLegacyPairingServer *>(ec->AppState);
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    DropcamLegacyPairingServer * server = reinterpret_cast<DropcamLegacyPairingServer *>(ec->AppState);
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_DropcamLegacyPairing)
@@ -362,13 +353,13 @@ exit:
         WeaveServerBase::SendStatusReport(ec, kWeaveProfile_Common, Common::kStatus_InternalError, err);
     }
 
-	if (NULL != ec)
+    if (NULL != ec)
     {
         ec->Close();
     }
 }
 
-WEAVE_ERROR DropcamLegacyPairingServer::HandleCameraAuthDataRequest(ExchangeContext *ec, PacketBuffer *(&msgBuf))
+WEAVE_ERROR DropcamLegacyPairingServer::HandleCameraAuthDataRequest(ExchangeContext * ec, PacketBuffer *(&msgBuf))
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     HMACSHA256 hmacObj;
@@ -377,7 +368,7 @@ WEAVE_ERROR DropcamLegacyPairingServer::HandleCameraAuthDataRequest(ExchangeCont
     uint8_t hmac[HMAC_BUF_LEN];
     uint8_t macAddress[EUI48_LEN];
     uint8_t secret[CAMERA_SECRET_LEN];
-    const uint8_t *noncePtr;
+    const uint8_t * noncePtr;
     uint32_t nonceLen;
     TLVReader reader;
     TLVWriter writer;
@@ -436,7 +427,7 @@ WEAVE_ERROR DropcamLegacyPairingServer::HandleCameraAuthDataRequest(ExchangeCont
     SuccessOrExit(err);
 
     // Send MAC address and pairing data HMAC to client
-    err = ec->SendMessage(kWeaveProfile_DropcamLegacyPairing, kMsgType_CameraAuthDataResponse, msgBuf, 0);
+    err    = ec->SendMessage(kWeaveProfile_DropcamLegacyPairing, kMsgType_CameraAuthDataResponse, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -444,8 +435,8 @@ exit:
     return err;
 }
 
-void DropcamLegacyPairingDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void DropcamLegacyPairingDelegate::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                        const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     // If the result has not already been determined by a subclass...
     if (result == kAccessControlResult_NotDetermined)
@@ -458,7 +449,7 @@ void DropcamLegacyPairingDelegate::EnforceAccessControl(ExchangeContext *ec, uin
             {
                 result = kAccessControlResult_Accepted;
             }
-#else // WEAVE_CONFIG_REQUIRE_AUTH_DROPCAM_LEGACY_PAIRING
+#else  // WEAVE_CONFIG_REQUIRE_AUTH_DROPCAM_LEGACY_PAIRING
             result = kAccessControlResult_Accepted;
 #endif // WEAVE_CONFIG_REQUIRE_AUTH_DROPCAM_LEGACY_PAIRING
             break;

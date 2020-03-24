@@ -338,45 +338,32 @@ void SubscriptionEngine::UnsolicitedMessageHandler(nl::Weave::ExchangeContext * 
 
 #if WDM_ENABLE_SUBSCRIPTION_PUBLISHER
 
-    case kMsgType_SubscribeRequest:
-        func = OnSubscribeRequest;
-        break;
+    case kMsgType_SubscribeRequest: func = OnSubscribeRequest; break;
 
-    case kMsgType_SubscribeConfirmRequest:
-        func = OnSubscribeConfirmRequest;
-        break;
+    case kMsgType_SubscribeConfirmRequest: func = OnSubscribeConfirmRequest; break;
 
     case kMsgType_CustomCommandRequest:
-    case kMsgType_OneWayCommand:
-        func = OnCustomCommand;
-        break;
+    case kMsgType_OneWayCommand: func = OnCustomCommand; break;
 
 #endif // WDM_ENABLE_SUBSCRIPTION_PUBLISHER
 
 #if WDM_ENABLE_SUBSCRIPTION_CANCEL
-    case kMsgType_SubscribeCancelRequest:
-        func = OnCancelRequest;
-        break;
+    case kMsgType_SubscribeCancelRequest: func = OnCancelRequest; break;
 #endif // WDM_ENABLE_SUBSCRIPTION_CANCEL
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-    case kMsgType_SubscriptionlessNotification:
-        func = OnSubscriptionlessNotification;
-        break;
+    case kMsgType_SubscriptionlessNotification: func = OnSubscriptionlessNotification; break;
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
 
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    case kMsgType_UpdateRequest:
-        func = OnUpdateRequest;
-        break;
+    case kMsgType_UpdateRequest: func = OnUpdateRequest; break;
 
     case kMsgType_PartialUpdateRequest:
         WeaveLogDetail(DataManagement, "PartialUpdateRequest not supported yet for update server");
         break;
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
-    default:
-        break;
+    default: break;
     }
 
     func(aEC, aPktInfo, aMsgInfo, aProfileId, aMsgType, aPayload);
@@ -1042,10 +1029,8 @@ void SubscriptionEngine::DisablePublisher()
         switch (mHandlers[i].mCurrentState)
         {
         case SubscriptionHandler::kState_Free:
-        case SubscriptionHandler::kState_Terminated:
-            break;
-        default:
-            mHandlers[i].AbortSubscription();
+        case SubscriptionHandler::kState_Terminated: break;
+        default: mHandlers[i].AbortSubscription();
         }
     }
 

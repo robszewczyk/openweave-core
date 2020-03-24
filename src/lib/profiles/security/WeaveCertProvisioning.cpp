@@ -59,7 +59,8 @@ using namespace nl::Weave::Platform::Security;
  *  @param[in]  appState             A pointer to an application-defined object which will be passed back
  *                                   to the application whenever an API event occurs.
  */
-WEAVE_ERROR WeaveCertProvEngine::Init(Binding * binding, WeaveNodeOpAuthDelegate * opAuthDelegate, WeaveNodeMfrAttestDelegate * mfrAttestDelegate, EventCallback eventCallback, void * appState)
+WEAVE_ERROR WeaveCertProvEngine::Init(Binding * binding, WeaveNodeOpAuthDelegate * opAuthDelegate,
+                                      WeaveNodeMfrAttestDelegate * mfrAttestDelegate, EventCallback eventCallback, void * appState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -67,14 +68,14 @@ WEAVE_ERROR WeaveCertProvEngine::Init(Binding * binding, WeaveNodeOpAuthDelegate
 
     VerifyOrExit(eventCallback != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    AppState = appState;
-    mReqType = kReqType_NotSpecified;
-    mDoMfrAttest = false;
-    mBinding = binding;
-    mOpAuthDelegate = opAuthDelegate;
+    AppState           = appState;
+    mReqType           = kReqType_NotSpecified;
+    mDoMfrAttest       = false;
+    mBinding           = binding;
+    mOpAuthDelegate    = opAuthDelegate;
     mMfrAttestDelegate = mfrAttestDelegate;
-    mEventCallback = eventCallback;
-    mEC = NULL;
+    mEventCallback     = eventCallback;
+    mEC                = NULL;
 
     // Retain a reference to the binding object.
     if (binding != NULL)
@@ -105,10 +106,10 @@ void WeaveCertProvEngine::Shutdown(void)
         mBinding = NULL;
     }
 
-    mOpAuthDelegate = NULL;
+    mOpAuthDelegate    = NULL;
     mMfrAttestDelegate = NULL;
-    mEventCallback = NULL;
-    mState = kState_NotInitialized;
+    mEventCallback     = NULL;
+    mState             = kState_NotInitialized;
 }
 
 /**
@@ -137,7 +138,7 @@ WEAVE_ERROR WeaveCertProvEngine::StartCertificateProvisioning(uint8_t reqType, b
 
     VerifyOrExit(mBinding != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    mReqType = reqType;
+    mReqType     = reqType;
     mDoMfrAttest = doMfrAttest;
 
     err = SendGetCertificateRequest();
@@ -169,7 +170,7 @@ WEAVE_ERROR WeaveCertProvEngine::GenerateGetCertificateRequest(PacketBuffer * ms
     TLVWriter writer;
     TLVType containerType;
     SHA256 sha256;
-    uint8_t *tbsDataStart;
+    uint8_t * tbsDataStart;
     uint16_t tbsDataStartOffset;
     uint16_t tbsDataLen;
     uint8_t tbsHash[SHA256::kHashLength];
@@ -178,10 +179,10 @@ WEAVE_ERROR WeaveCertProvEngine::GenerateGetCertificateRequest(PacketBuffer * ms
 
     VerifyOrExit(mState == kState_Idle, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    VerifyOrExit(reqType == kReqType_GetInitialOpDeviceCert ||
-                 reqType == kReqType_RotateOpDeviceCert, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(reqType == kReqType_GetInitialOpDeviceCert || reqType == kReqType_RotateOpDeviceCert,
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    mReqType = reqType;
+    mReqType     = reqType;
     mDoMfrAttest = doMfrAttest;
 
     if (doMfrAttest)
@@ -196,7 +197,7 @@ WEAVE_ERROR WeaveCertProvEngine::GenerateGetCertificateRequest(PacketBuffer * ms
 
     // Record the offset and the start of the TBS (To-Be-Signed) portion of the message.
     tbsDataStartOffset = writer.GetLengthWritten();
-    tbsDataStart = msgBuf->Start() + tbsDataStartOffset;
+    tbsDataStart       = msgBuf->Start() + tbsDataStartOffset;
 
     // Request type.
     err = writer.Put(ContextTag(kTag_GetCertReqMsg_ReqType), reqType);
@@ -207,7 +208,7 @@ WEAVE_ERROR WeaveCertProvEngine::GenerateGetCertificateRequest(PacketBuffer * ms
         InEventParam inParam;
         OutEventParam outParam;
         inParam.Clear();
-        inParam.Source = this;
+        inParam.Source                      = this;
         inParam.PrepareAuthorizeInfo.Writer = &writer;
         outParam.Clear();
         mEventCallback(AppState, kEvent_PrepareAuthorizeInfo, inParam, outParam);
@@ -242,7 +243,8 @@ WEAVE_ERROR WeaveCertProvEngine::GenerateGetCertificateRequest(PacketBuffer * ms
     SuccessOrExit(err);
 
     // Generate and encode operational device signature.
-    err = mOpAuthDelegate->GenerateAndEncodeOpSig(tbsHash, SHA256::kHashLength, writer, ContextTag(kTag_GetCertReqMsg_OpDeviceSig_ECDSA));
+    err = mOpAuthDelegate->GenerateAndEncodeOpSig(tbsHash, SHA256::kHashLength, writer,
+                                                  ContextTag(kTag_GetCertReqMsg_OpDeviceSig_ECDSA));
     SuccessOrExit(err);
 
     // Generate and encode manufacturer attestation device signature.
@@ -283,13 +285,13 @@ WEAVE_ERROR WeaveCertProvEngine::ProcessGetCertificateResponse(PacketBuffer * ms
     TLVReader reader;
     TLVWriter writer;
     TLVType outerContainer;
-    uint16_t dataLen = msgBuf->DataLength();
+    uint16_t dataLen          = msgBuf->DataLength();
     uint16_t availableDataLen = msgBuf->AvailableDataLength();
-    uint8_t * dataStart = msgBuf->Start();
-    uint8_t * dataMove = dataStart + availableDataLen;
+    uint8_t * dataStart       = msgBuf->Start();
+    uint8_t * dataMove        = dataStart + availableDataLen;
     uint8_t * cert;
     uint16_t certLen;
-    uint8_t * relatedCerts = NULL;
+    uint8_t * relatedCerts   = NULL;
     uint16_t relatedCertsLen = 0;
 
     WeaveLogDetail(SecurityManager, "WeaveCertProvEngine:ProcessGetCertificateResponse");
@@ -319,7 +321,7 @@ WEAVE_ERROR WeaveCertProvEngine::ProcessGetCertificateResponse(PacketBuffer * ms
     err = writer.CopyContainer(ProfileTag(kWeaveProfile_Security, kTag_WeaveCertificate), reader);
     SuccessOrExit(err);
 
-    cert = dataStart;
+    cert    = dataStart;
     certLen = writer.GetLengthWritten();
 
     err = reader.Next(kTLVType_Array, ContextTag(kTag_GetCertRespMsg_OpRelatedCerts));
@@ -352,30 +354,30 @@ WEAVE_ERROR WeaveCertProvEngine::ProcessGetCertificateResponse(PacketBuffer * ms
     VerifyOrExit(reader.GetLengthRead() == dataLen, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
 exit:
+{
+    if (err != WEAVE_NO_ERROR)
     {
-        if (err != WEAVE_NO_ERROR)
-        {
-            // Deliver a CommunicationError API event to the application.
-            DeliverCommunicationError(err);
-        }
-        else
-        {
-            InEventParam inParam;
-            OutEventParam outParam;
-            inParam.Clear();
-            outParam.Clear();
-            inParam.Source = this;
-            inParam.ResponseReceived.ReplaceCert = true;
-            inParam.ResponseReceived.Cert = cert;
-            inParam.ResponseReceived.CertLen = certLen;
-            inParam.ResponseReceived.RelatedCerts = relatedCerts;
-            inParam.ResponseReceived.RelatedCertsLen = relatedCertsLen;
-
-            // Deliver a ResponseReceived API event to the application.
-            mEventCallback(AppState, kEvent_ResponseReceived, inParam, outParam);
-            err = outParam.ResponseReceived.Error;
-        }
+        // Deliver a CommunicationError API event to the application.
+        DeliverCommunicationError(err);
     }
+    else
+    {
+        InEventParam inParam;
+        OutEventParam outParam;
+        inParam.Clear();
+        outParam.Clear();
+        inParam.Source                           = this;
+        inParam.ResponseReceived.ReplaceCert     = true;
+        inParam.ResponseReceived.Cert            = cert;
+        inParam.ResponseReceived.CertLen         = certLen;
+        inParam.ResponseReceived.RelatedCerts    = relatedCerts;
+        inParam.ResponseReceived.RelatedCertsLen = relatedCertsLen;
+
+        // Deliver a ResponseReceived API event to the application.
+        mEventCallback(AppState, kEvent_ResponseReceived, inParam, outParam);
+        err = outParam.ResponseReceived.Error;
+    }
+}
 
     return err;
 }
@@ -387,7 +389,7 @@ exit:
  */
 WEAVE_ERROR WeaveCertProvEngine::SendGetCertificateRequest(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
     PacketBuffer * msgBuf = NULL;
 
     // Set the protocol callback on the binding object.  NOTE: This needs to happen after the
@@ -402,13 +404,13 @@ WEAVE_ERROR WeaveCertProvEngine::SendGetCertificateRequest(void)
         // Allocate and initialize a new exchange context.
         err = mBinding->NewExchangeContext(mEC);
         SuccessOrExit(err);
-        mEC->AppState = this;
-        mEC->OnMessageReceived = HandleResponse;
-        mEC->OnResponseTimeout = HandleResponseTimeout;
-        mEC->OnKeyError = HandleKeyError;
+        mEC->AppState           = this;
+        mEC->OnMessageReceived  = HandleResponse;
+        mEC->OnResponseTimeout  = HandleResponseTimeout;
+        mEC->OnKeyError         = HandleKeyError;
         mEC->OnConnectionClosed = HandleConnectionClosed;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-        mEC->OnAckRcvd = HandleAckRcvd;
+        mEC->OnAckRcvd   = HandleAckRcvd;
         mEC->OnSendError = HandleSendError;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
@@ -424,7 +426,8 @@ WEAVE_ERROR WeaveCertProvEngine::SendGetCertificateRequest(void)
         mState = kState_RequestInProgress;
 
         // Send a GetCertificateRequest message to the peer.
-        err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_GetCertificateRequest, msgBuf, ExchangeContext::kSendFlag_ExpectResponse);
+        err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_GetCertificateRequest, msgBuf,
+                               ExchangeContext::kSendFlag_ExpectResponse);
         msgBuf = NULL;
         SuccessOrExit(err);
     }
@@ -479,7 +482,7 @@ exit:
 void WeaveCertProvEngine::HandleRequestDone(void)
 {
     // Clear the request state.
-    mReqType = kReqType_NotSpecified;
+    mReqType     = kReqType_NotSpecified;
     mDoMfrAttest = false;
 
     // Abort any in-progress exchange and release the exchange context.
@@ -503,7 +506,7 @@ void WeaveCertProvEngine::DeliverCommunicationError(WEAVE_ERROR err)
 
     inParam.Clear();
     outParam.Clear();
-    inParam.Source = this;
+    inParam.Source                    = this;
     inParam.CommunicationError.Reason = err;
 
     mEventCallback(AppState, kEvent_CommunicationError, inParam, outParam);
@@ -512,10 +515,10 @@ void WeaveCertProvEngine::DeliverCommunicationError(WEAVE_ERROR err)
 /**
  * Process an event delivered from the binding associated with a WeaveCertProvEngine.
  */
-void WeaveCertProvEngine::HandleBindingEvent(void * const appState, const Binding::EventType eventType, const Binding::InEventParam & inParam,
-                                             Binding::OutEventParam & outParam)
+void WeaveCertProvEngine::HandleBindingEvent(void * const appState, const Binding::EventType eventType,
+                                             const Binding::InEventParam & inParam, Binding::OutEventParam & outParam)
 {
-    WeaveCertProvEngine * client = (WeaveCertProvEngine *)appState;
+    WeaveCertProvEngine * client = (WeaveCertProvEngine *) appState;
 
     switch (eventType)
     {
@@ -546,17 +549,17 @@ void WeaveCertProvEngine::HandleBindingEvent(void * const appState, const Bindin
 
         break;
 
-    default:
-        Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
+    default: Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
     }
 }
 
 /**
  * Called by the Weave messaging layer when a response is received on an GetCertificate exchange.
  */
-void WeaveCertProvEngine::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf)
+void WeaveCertProvEngine::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                         uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf)
 {
-    WeaveCertProvEngine * client = (WeaveCertProvEngine *)ec->AppState;
+    WeaveCertProvEngine * client = (WeaveCertProvEngine *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -590,7 +593,7 @@ void WeaveCertProvEngine::HandleResponse(ExchangeContext * ec, const IPPacketInf
         }
         else
         {
-            inParam.CommunicationError.Reason = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
+            inParam.CommunicationError.Reason           = WEAVE_ERROR_STATUS_REPORT_RECEIVED;
             inParam.CommunicationError.RcvdStatusReport = &statusReport;
 
             // Deliver a CommunicationError API event to the application.
@@ -628,7 +631,7 @@ exit:
  */
 void WeaveCertProvEngine::HandleResponseTimeout(ExchangeContext * ec)
 {
-    WeaveCertProvEngine * client = (WeaveCertProvEngine *)ec->AppState;
+    WeaveCertProvEngine * client = (WeaveCertProvEngine *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -647,7 +650,7 @@ void WeaveCertProvEngine::HandleResponseTimeout(ExchangeContext * ec)
  */
 void WeaveCertProvEngine::HandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
 {
-    WeaveCertProvEngine * client = (WeaveCertProvEngine *)ec->AppState;
+    WeaveCertProvEngine * client = (WeaveCertProvEngine *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -660,7 +663,7 @@ void WeaveCertProvEngine::HandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
  */
 void WeaveCertProvEngine::HandleSendError(ExchangeContext * ec, WEAVE_ERROR sendErr, void * msgCtxt)
 {
-    WeaveCertProvEngine * client = (WeaveCertProvEngine *)ec->AppState;
+    WeaveCertProvEngine * client = (WeaveCertProvEngine *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -684,7 +687,7 @@ void WeaveCertProvEngine::HandleKeyError(ExchangeContext * ec, WEAVE_ERROR keyEr
 /**
  * Called by the Weave messaging layer if an underlying Weave connection closes while waiting for an GetCertificateResponse message.
  */
-void WeaveCertProvEngine::HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveCertProvEngine::HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
     // If the other side simply closed the connection without responding, deliver a "closed unexpectedly"
     // error to the application.
@@ -696,7 +699,6 @@ void WeaveCertProvEngine::HandleConnectionClosed(ExchangeContext *ec, WeaveConne
     // Treat this the same as if a send error had occurred.
     HandleSendError(ec, conErr, NULL);
 }
-
 
 // ==================== Documentation for Inline Public Members ====================
 
@@ -765,7 +767,6 @@ void WeaveCertProvEngine::HandleConnectionClosed(ExchangeContext *ec, WeaveConne
  *
  * Sets the API event callback function on the WeaveCertProvEngine object.
  */
-
 
 } // namespace CertProvisioning
 } // namespace Security

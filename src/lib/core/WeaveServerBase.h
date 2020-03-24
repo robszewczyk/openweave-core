@@ -37,7 +37,6 @@ namespace Weave {
 
 class WeaveServerDelegateBase;
 
-
 /**
  *  @class WeaveServerBase
  *
@@ -52,23 +51,23 @@ class WeaveServerDelegateBase;
 class WeaveServerBase
 {
 public:
-    WeaveFabricState     *FabricState;  ///< [READ ONLY] Fabric state object
-    WeaveExchangeManager *ExchangeMgr;  ///< [READ ONLY] Exchange manager object
+    WeaveFabricState * FabricState;     ///< [READ ONLY] Fabric state object
+    WeaveExchangeManager * ExchangeMgr; ///< [READ ONLY] Exchange manager object
 
-    static WEAVE_ERROR SendStatusReport(ExchangeContext *ec, uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError);
+    static WEAVE_ERROR SendStatusReport(ExchangeContext * ec, uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError);
 
-    static WEAVE_ERROR SendStatusReport(ExchangeContext *ec, uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError, uint16_t sendFlags);
+    static WEAVE_ERROR SendStatusReport(ExchangeContext * ec, uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError,
+                                        uint16_t sendFlags);
 
 protected:
     WeaveServerBase(void) { }
 
-    bool EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const WeaveMessageInfo *msgInfo, WeaveServerDelegateBase *delegate);
+    bool EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType, const WeaveMessageInfo * msgInfo,
+                              WeaveServerDelegateBase * delegate);
 
 private:
-    WeaveServerBase(const WeaveServerBase&); // not defined
+    WeaveServerBase(const WeaveServerBase &); // not defined
 };
-
 
 /**
  * A common base class for implementing Weave server delegate objects.
@@ -84,28 +83,25 @@ protected:
 
     enum
     {
-        kAccessControlResult_NotDetermined          = 0,    ///< The message has not yet been accepted or rejected.
-        kAccessControlResult_Accepted               = 1,    ///< The message has been accepted.
-        kAccessControlResult_Rejected               = 2,    ///< The message has been rejected, and a default response should be sent.
-        kAccessControlResult_Rejected_RespSent      = 3,    ///< The message has been rejected, and a response has already been sent.
-        kAccessControlResult_Rejected_Silent        = 4,    ///< The message has been rejected, but no response should be sent.
+        kAccessControlResult_NotDetermined     = 0, ///< The message has not yet been accepted or rejected.
+        kAccessControlResult_Accepted          = 1, ///< The message has been accepted.
+        kAccessControlResult_Rejected          = 2, ///< The message has been rejected, and a default response should be sent.
+        kAccessControlResult_Rejected_RespSent = 3, ///< The message has been rejected, and a response has already been sent.
+        kAccessControlResult_Rejected_Silent   = 4, ///< The message has been rejected, but no response should be sent.
     };
 
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 
 private:
-
     enum
     {
-        kAccessControlResult_IsFinal                = 0x80, ///< A flag indicating that access control evaluation is complete and the result is final.
-        kAccessControlResult_FinalAccepted          = kAccessControlResult_Accepted | kAccessControlResult_IsFinal
-                                                            ///< Access control evaluation is complete and the message has been accepted.
+        kAccessControlResult_IsFinal =
+            0x80, ///< A flag indicating that access control evaluation is complete and the result is final.
+        kAccessControlResult_FinalAccepted = kAccessControlResult_Accepted | kAccessControlResult_IsFinal
+        ///< Access control evaluation is complete and the message has been accepted.
     };
 };
-
-
-
 
 } // namespace Weave
 } // namespace nl

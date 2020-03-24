@@ -27,28 +27,24 @@
 #ifndef _NEST_TEST_TRAIT__TEST_COMMON_VERSIONED_C_H_
 #define _NEST_TEST_TRAIT__TEST_COMMON_VERSIONED_C_H_
 
+//
+// Enums
+//
 
-    //
-    // Enums
-    //
-
-    // CommonEnumA
-    typedef enum
-    {
+// CommonEnumA
+typedef enum
+{
     COMMON_ENUM_A_VALUE_1 = 1,
     COMMON_ENUM_A_VALUE_2 = 2,
     COMMON_ENUM_A_VALUE_3 = 3,
-    } schema_nest_test_test_common_versioned_common_enum_a_t;
-    // CommonEnumE
-    typedef enum
-    {
+} schema_nest_test_test_common_versioned_common_enum_a_t;
+// CommonEnumE
+typedef enum
+{
     COMMON_ENUM_E_VALUE_1 = 1,
     COMMON_ENUM_E_VALUE_2 = 2,
     COMMON_ENUM_E_VALUE_3 = 3,
     COMMON_ENUM_E_VALUE_4 = 4,
-    } schema_nest_test_test_common_versioned_common_enum_e_t;
-
-
-
+} schema_nest_test_test_common_versioned_common_enum_e_t;
 
 #endif // _NEST_TEST_TRAIT__TEST_COMMON_VERSIONED_C_H_

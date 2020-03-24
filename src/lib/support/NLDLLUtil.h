@@ -31,19 +31,19 @@
 #define NLDLLEXPORT_H_
 
 #if defined _WIN32 || defined __CYGWIN__
-  #define NL_DLL_IMPORT __declspec(dllimport)
-  #define NL_DLL_EXPORT __declspec(dllexport)
-  #define NL_DLL_LOCAL
+#define NL_DLL_IMPORT __declspec(dllimport)
+#define NL_DLL_EXPORT __declspec(dllexport)
+#define NL_DLL_LOCAL
 #else
-  #if __GNUC__ >= 4
-    #define NL_DLL_IMPORT __attribute__ ((visibility ("default")))
-    #define NL_DLL_EXPORT __attribute__ ((visibility ("default")))
-    #define NL_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
-  #else
-    #define NL_DLL_IMPORT
-    #define NL_DLL_EXPORT
-    #define NL_DLL_LOCAL
-  #endif
+#if __GNUC__ >= 4
+#define NL_DLL_IMPORT __attribute__((visibility("default")))
+#define NL_DLL_EXPORT __attribute__((visibility("default")))
+#define NL_DLL_LOCAL  __attribute__((visibility("hidden")))
+#else
+#define NL_DLL_IMPORT
+#define NL_DLL_EXPORT
+#define NL_DLL_LOCAL
+#endif
 #endif
 
 #endif /* NLDLLEXPORT_H_ */

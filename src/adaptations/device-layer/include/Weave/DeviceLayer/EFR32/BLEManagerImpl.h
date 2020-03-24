@@ -50,46 +50,34 @@ class BLEManagerImpl final : public BLEManager,
 
     // ===== Members that implement the BLEManager internal interface.
 
-    WEAVE_ERROR          _Init(void);
-    WoBLEServiceMode     _GetWoBLEServiceMode(void);
-    WEAVE_ERROR          _SetWoBLEServiceMode(WoBLEServiceMode val);
-    bool                 _IsAdvertisingEnabled(void);
-    WEAVE_ERROR          _SetAdvertisingEnabled(bool val);
-    bool                 _IsFastAdvertisingEnabled(void);
-    WEAVE_ERROR          _SetFastAdvertisingEnabled(bool val);
-    bool                 _IsAdvertising(void);
-    WEAVE_ERROR          _GetDeviceName(char *buf, size_t bufSize);
-    WEAVE_ERROR          _SetDeviceName(const char *deviceName);
-    uint16_t             _NumConnections(void);
-    void                 _OnPlatformEvent(const WeaveDeviceEvent *event);
-    ::nl::Ble::BleLayer *_GetBleLayer(void) const;
+    WEAVE_ERROR _Init(void);
+    WoBLEServiceMode _GetWoBLEServiceMode(void);
+    WEAVE_ERROR _SetWoBLEServiceMode(WoBLEServiceMode val);
+    bool _IsAdvertisingEnabled(void);
+    WEAVE_ERROR _SetAdvertisingEnabled(bool val);
+    bool _IsFastAdvertisingEnabled(void);
+    WEAVE_ERROR _SetFastAdvertisingEnabled(bool val);
+    bool _IsAdvertising(void);
+    WEAVE_ERROR _GetDeviceName(char * buf, size_t bufSize);
+    WEAVE_ERROR _SetDeviceName(const char * deviceName);
+    uint16_t _NumConnections(void);
+    void _OnPlatformEvent(const WeaveDeviceEvent * event);
+    ::nl::Ble::BleLayer * _GetBleLayer(void) const;
 
     // ===== Members that implement virtual methods on BlePlatformDelegate.
 
-    bool     SubscribeCharacteristic(BLE_CONNECTION_OBJECT conId,
-                                     const WeaveBleUUID *  svcId,
-                                     const WeaveBleUUID *  charId) override;
-    bool     UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId,
-                                       const WeaveBleUUID *  svcId,
-                                       const WeaveBleUUID *  charId) override;
-    bool     CloseConnection(BLE_CONNECTION_OBJECT conId) override;
+    bool SubscribeCharacteristic(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId) override;
+    bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId) override;
+    bool CloseConnection(BLE_CONNECTION_OBJECT conId) override;
     uint16_t GetMTU(BLE_CONNECTION_OBJECT conId) const override;
-    bool     SendIndication(BLE_CONNECTION_OBJECT conId,
-                            const WeaveBleUUID *  svcId,
-                            const WeaveBleUUID *  charId,
-                            PacketBuffer *        pBuf) override;
-    bool     SendWriteRequest(BLE_CONNECTION_OBJECT conId,
-                              const WeaveBleUUID *  svcId,
-                              const WeaveBleUUID *  charId,
-                              PacketBuffer *        pBuf) override;
-    bool     SendReadRequest(BLE_CONNECTION_OBJECT conId,
-                             const WeaveBleUUID *  svcId,
-                             const WeaveBleUUID *  charId,
-                             PacketBuffer *        pBuf) override;
-    bool     SendReadResponse(BLE_CONNECTION_OBJECT    conId,
-                              BLE_READ_REQUEST_CONTEXT requestContext,
-                              const WeaveBleUUID *     svcId,
-                              const WeaveBleUUID *     charId) override;
+    bool SendIndication(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                        PacketBuffer * pBuf) override;
+    bool SendWriteRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                          PacketBuffer * pBuf) override;
+    bool SendReadRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                         PacketBuffer * pBuf) override;
+    bool SendReadResponse(BLE_CONNECTION_OBJECT conId, BLE_READ_REQUEST_CONTEXT requestContext, const WeaveBleUUID * svcId,
+                          const WeaveBleUUID * charId) override;
 
     // ===== Members that implement virtual methods on BleApplicationDelegate.
 
@@ -97,8 +85,8 @@ class BLEManagerImpl final : public BLEManager,
 
     // ===== Members for internal use by the following friends.
 
-    friend BLEManager &    BLEMgr(void);
-    friend BLEManagerImpl &BLEMgrImpl(void);
+    friend BLEManager & BLEMgr(void);
+    friend BLEManagerImpl & BLEMgrImpl(void);
 
     static BLEManagerImpl sInstance;
 
@@ -123,41 +111,41 @@ class BLEManagerImpl final : public BLEManager,
 
     struct WoBLEConState
     {
-        bd_addr  address;
+        bd_addr address;
         uint16_t mtu : 10;
         uint16_t allocated : 1;
         uint16_t subscribed : 1;
         uint16_t unused : 4;
-        uint8_t  connectionHandle;
-        uint8_t  bondingHandle;
+        uint8_t connectionHandle;
+        uint8_t bondingHandle;
     };
 
-    WoBLEConState    mBleConnections[kMaxConnections];
-    uint8_t          mIndConfId[kMaxConnections];
+    WoBLEConState mBleConnections[kMaxConnections];
+    uint8_t mIndConfId[kMaxConnections];
     WoBLEServiceMode mServiceMode;
-    uint16_t         mFlags;
-    char             mDeviceName[kMaxDeviceNameLength + 1];
+    uint16_t mFlags;
+    char mDeviceName[kMaxDeviceNameLength + 1];
 
-    WEAVE_ERROR    MapBLEError(int bleErr);
-    void           DriveBLEState(void);
-    WEAVE_ERROR    ConfigureAdvertisingData(void);
-    WEAVE_ERROR    StartAdvertising(void);
-    WEAVE_ERROR    StopAdvertising(void);
-    void           UpdateMtu(volatile struct gecko_cmd_packet *evt);
-    void           HandleBootEvent(void);
-    void           HandleConnectEvent(volatile struct gecko_cmd_packet *evt);
-    void           HandleConnectionCloseEvent(volatile struct gecko_cmd_packet *evt);
-    void           HandleWriteEvent(volatile struct gecko_cmd_packet *evt);
-    void           HandleTXCharCCCDWrite(volatile struct gecko_cmd_packet *evt);
-    void           HandleRXCharWrite(volatile struct gecko_cmd_packet *evt);
-    void           HandleTxConfirmationEvent(volatile struct gecko_cmd_packet *evt);
-    void           HandleSoftTimerEvent(volatile struct gecko_cmd_packet *evt);
-    bool           RemoveConnection(uint8_t connectionHandle);
-    void           AddConnection(uint8_t connectionHandle, uint8_t bondingHandle);
-    WoBLEConState *GetConnectionState(uint8_t conId, bool allocate = false);
-    uint8_t        GetTimerHandle(uint8_t connectionHandle, bool allocate = false);
-    static void    DriveBLEState(intptr_t arg);
-    static void    bluetoothStackEventHandler(void *p_arg);
+    WEAVE_ERROR MapBLEError(int bleErr);
+    void DriveBLEState(void);
+    WEAVE_ERROR ConfigureAdvertisingData(void);
+    WEAVE_ERROR StartAdvertising(void);
+    WEAVE_ERROR StopAdvertising(void);
+    void UpdateMtu(volatile struct gecko_cmd_packet * evt);
+    void HandleBootEvent(void);
+    void HandleConnectEvent(volatile struct gecko_cmd_packet * evt);
+    void HandleConnectionCloseEvent(volatile struct gecko_cmd_packet * evt);
+    void HandleWriteEvent(volatile struct gecko_cmd_packet * evt);
+    void HandleTXCharCCCDWrite(volatile struct gecko_cmd_packet * evt);
+    void HandleRXCharWrite(volatile struct gecko_cmd_packet * evt);
+    void HandleTxConfirmationEvent(volatile struct gecko_cmd_packet * evt);
+    void HandleSoftTimerEvent(volatile struct gecko_cmd_packet * evt);
+    bool RemoveConnection(uint8_t connectionHandle);
+    void AddConnection(uint8_t connectionHandle, uint8_t bondingHandle);
+    WoBLEConState * GetConnectionState(uint8_t conId, bool allocate = false);
+    uint8_t GetTimerHandle(uint8_t connectionHandle, bool allocate = false);
+    static void DriveBLEState(intptr_t arg);
+    static void bluetoothStackEventHandler(void * p_arg);
 };
 
 /**
@@ -166,7 +154,7 @@ class BLEManagerImpl final : public BLEManager,
  * Internal components should use this to access features of the BLEManager object
  * that are common to all platforms.
  */
-inline BLEManager &BLEMgr(void)
+inline BLEManager & BLEMgr(void)
 {
     return BLEManagerImpl::sInstance;
 }
@@ -177,14 +165,14 @@ inline BLEManager &BLEMgr(void)
  * Internal components can use this to gain access to features of the BLEManager
  * that are specific to the EFR32 platforms.
  */
-inline BLEManagerImpl &BLEMgrImpl(void)
+inline BLEManagerImpl & BLEMgrImpl(void)
 {
     return BLEManagerImpl::sInstance;
 }
 
-inline ::nl::Ble::BleLayer *BLEManagerImpl::_GetBleLayer() const
+inline ::nl::Ble::BleLayer * BLEManagerImpl::_GetBleLayer() const
 {
-    return (BleLayer *)(this);
+    return (BleLayer *) (this);
 }
 
 inline BLEManager::WoBLEServiceMode BLEManagerImpl::_GetWoBLEServiceMode(void)

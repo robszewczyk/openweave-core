@@ -43,18 +43,18 @@ bool IsSupportedCurve(uint32_t curveId)
 {
     return false
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP160R1
-           || curveId == kWeaveCurveId_secp160r1
+        || curveId == kWeaveCurveId_secp160r1
 #endif
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1
-           || curveId == kWeaveCurveId_prime192v1
+        || curveId == kWeaveCurveId_prime192v1
 #endif
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1
-           || curveId == kWeaveCurveId_secp224r1
+        || curveId == kWeaveCurveId_secp224r1
 #endif
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
-           || curveId == kWeaveCurveId_prime256v1
+        || curveId == kWeaveCurveId_prime256v1
 #endif
-           ;
+        ;
 }
 
 bool IsCurveInSet(uint32_t curveId, uint8_t curveSet)
@@ -64,31 +64,22 @@ bool IsCurveInSet(uint32_t curveId, uint8_t curveSet)
     switch (curveId)
     {
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP160R1
-    case kWeaveCurveId_secp160r1:
-        curveFlag = kWeaveCurveSet_secp160r1;
-        break;
+    case kWeaveCurveId_secp160r1: curveFlag = kWeaveCurveSet_secp160r1; break;
 #endif // WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP160R1
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1
-    case kWeaveCurveId_prime192v1:
-        curveFlag = kWeaveCurveSet_prime192v1;
-        break;
+    case kWeaveCurveId_prime192v1: curveFlag = kWeaveCurveSet_prime192v1; break;
 #endif // WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1
-    case kWeaveCurveId_secp224r1:
-        curveFlag = kWeaveCurveSet_secp224r1;
-        break;
+    case kWeaveCurveId_secp224r1: curveFlag = kWeaveCurveSet_secp224r1; break;
 #endif // WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
-    case kWeaveCurveId_prime256v1:
-        curveFlag = kWeaveCurveSet_prime256v1;
-        break;
+    case kWeaveCurveId_prime256v1: curveFlag = kWeaveCurveSet_prime256v1; break;
 #endif // WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
 
-    default:
-        return false;
+    default: return false;
     }
 
     return (curveSet & curveFlag) != 0;
@@ -98,7 +89,7 @@ NL_DLL_EXPORT OID WeaveCurveIdToOID(uint32_t weaveCurveId)
 {
     if ((weaveCurveId & kWeaveCurveId_VendorMask) != (kWeaveVendor_NestLabs << kWeaveCurveId_VendorShift))
         return kOID_Unknown;
-    return (OID)ASN1::kOIDCategory_EllipticCurve | (OID)(kWeaveCurveId_CurveNumMask & weaveCurveId);
+    return (OID) ASN1::kOIDCategory_EllipticCurve | (OID)(kWeaveCurveId_CurveNumMask & weaveCurveId);
 }
 
 } // namespace Security

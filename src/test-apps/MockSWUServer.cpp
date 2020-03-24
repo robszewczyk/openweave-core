@@ -39,28 +39,26 @@
 #include "MockSWUServer.h"
 #include <Weave/Profiles/common/CommonProfile.h>
 
-
 MockSoftwareUpdateServer::MockSoftwareUpdateServer()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    mCurServerOp = NULL;
-    mRefImageQuery = NULL;
+    FabricState     = NULL;
+    ExchangeMgr     = NULL;
+    mCurServerOp    = NULL;
+    mRefImageQuery  = NULL;
     mFileDesignator = NULL;
     mCurServerOpBuf = NULL;
 }
 
-WEAVE_ERROR MockSoftwareUpdateServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockSoftwareUpdateServer::Init(WeaveExchangeManager * exchangeMgr)
 {
-    FabricState = exchangeMgr->FabricState;
-    ExchangeMgr = exchangeMgr;
-    mCurServerOp = NULL;
+    FabricState     = exchangeMgr->FabricState;
+    ExchangeMgr     = exchangeMgr;
+    mCurServerOp    = NULL;
     mCurServerOpBuf = NULL;
     mFileDesignator = NULL;
 
     // Register to receive unsolicited Service Provisioning messages from the exchange manager.
-    WEAVE_ERROR err =
-        ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_SWU, HandleClientRequest, this);
+    WEAVE_ERROR err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_SWU, HandleClientRequest, this);
 
     return err;
 }
@@ -82,18 +80,19 @@ WEAVE_ERROR MockSoftwareUpdateServer::Shutdown()
         mCurServerOpBuf = NULL;
     }
 
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState  = NULL;
+    ExchangeMgr  = NULL;
     mCurServerOp = NULL;
 
     return WEAVE_NO_ERROR;
 }
 
-void MockSoftwareUpdateServer::HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                                    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void MockSoftwareUpdateServer::HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                   const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                   PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    MockSoftwareUpdateServer *server = (MockSoftwareUpdateServer *) ec->AppState;
+    WEAVE_ERROR err                   = WEAVE_NO_ERROR;
+    MockSoftwareUpdateServer * server = (MockSoftwareUpdateServer *) ec->AppState;
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_SWU)
@@ -117,14 +116,12 @@ void MockSoftwareUpdateServer::HandleClientRequest(ExchangeContext *ec, const IP
     // Decode and dispatch the message.
     switch (msgType)
     {
-        case kMsgType_ImageQuery:
-            err = HandleImageQuery(ec, pktInfo, msgInfo, profileId, msgType, payload);
-            SuccessOrExit(err);
-            break;
+    case kMsgType_ImageQuery:
+        err = HandleImageQuery(ec, pktInfo, msgInfo, profileId, msgType, payload);
+        SuccessOrExit(err);
+        break;
 
-        default:
-            server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest);
-            break;
+    default: server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest); break;
     }
 
 exit:
@@ -133,12 +130,12 @@ exit:
         PacketBuffer::Free(payload);
 }
 
-WEAVE_ERROR MockSoftwareUpdateServer::GenerateImageDigest(const char *imagePath, uint8_t integrityType, uint8_t *digest)
+WEAVE_ERROR MockSoftwareUpdateServer::GenerateImageDigest(const char * imagePath, uint8_t integrityType, uint8_t * digest)
 {
-    //Generate Image Digest
+    // Generate Image Digest
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t block[512];
-    FILE *file;
+    FILE * file;
     int bytesRead = 0;
     nl::Weave::Platform::Security::SHA1 sha1;
     nl::Weave::Platform::Security::SHA256 sha256;
@@ -152,13 +149,8 @@ WEAVE_ERROR MockSoftwareUpdateServer::GenerateImageDigest(const char *imagePath,
 
     switch (integrityType)
     {
-    case kIntegrityType_SHA160:
-
-        sha1.Begin();
-        break;
-    case kIntegrityType_SHA256:
-        sha256.Begin();
-        break;
+    case kIntegrityType_SHA160: sha1.Begin(); break;
+    case kIntegrityType_SHA256: sha256.Begin(); break;
     default:
         printf("Unsupported image integrity type: %u\n", integrityType);
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -200,7 +192,7 @@ WEAVE_ERROR MockSoftwareUpdateServer::SendImageQueryResponse()
     uint8_t imageDigest[nl::Weave::Platform::Security::SHA256::kHashLength];
     uint8_t supported_update_scheme;
     int integrityType = -1;
-    int i = 0;
+    int i             = 0;
 
     VerifyOrExit(mFileDesignator != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -216,11 +208,8 @@ WEAVE_ERROR MockSoftwareUpdateServer::SendImageQueryResponse()
             if (integrityType == -1)
                 integrityType = kIntegrityType_SHA160;
             break;
-        case kIntegrityType_SHA256:
-            integrityType = kIntegrityType_SHA256;
-            break;
-        default:
-            break;
+        case kIntegrityType_SHA256: integrityType = kIntegrityType_SHA256; break;
+        default: break;
         }
     }
     if (integrityType == -1)
@@ -229,21 +218,21 @@ WEAVE_ERROR MockSoftwareUpdateServer::SendImageQueryResponse()
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
-    err = GenerateImageDigest(mFileDesignator, (uint8_t)integrityType, imageDigest);
+    err = GenerateImageDigest(mFileDesignator, (uint8_t) integrityType, imageDigest);
     SuccessOrExit(err);
 
     err = integritySpec.init(mRefImageQuery->integrityTypes.theList[i], imageDigest);
     SuccessOrExit(err);
 
-    err = URI.init((uint16_t)(strlen(mFileDesignator) + 1), (char *)mFileDesignator);
+    err = URI.init((uint16_t)(strlen(mFileDesignator) + 1), (char *) mFileDesignator);
     SuccessOrExit(err);
 
-    err = imageQueryResponse.init(URI, mRefImageQuery->version, integritySpec,
-                                  supported_update_scheme, Normal, Unconditionally, false);
+    err = imageQueryResponse.init(URI, mRefImageQuery->version, integritySpec, supported_update_scheme, Normal, Unconditionally,
+                                  false);
     SuccessOrExit(err);
 
     mCurServerOpBuf = PacketBuffer::New();
-    err = imageQueryResponse.pack(mCurServerOpBuf);
+    err             = imageQueryResponse.pack(mCurServerOpBuf);
     SuccessOrExit(err);
 
     // If we are given a URI, then we should download the image and calculate the checksum using the correct
@@ -273,23 +262,24 @@ WEAVE_ERROR MockSoftwareUpdateServer::SendImageQueryStatus()
 
 exit:
     return err;
-
 }
 
-WEAVE_ERROR MockSoftwareUpdateServer::HandleImageQuery(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                                    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+WEAVE_ERROR MockSoftwareUpdateServer::HandleImageQuery(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                       const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                       PacketBuffer * payload)
 {
     ImageQuery ParsedImageQueryRequest;
-    bool update_available = false;
+    bool update_available              = false;
     bool common_integrity_scheme_found = false;
-    bool common_update_scheme_found = false;
-    int index = 0;
+    bool common_update_scheme_found    = false;
+    int index                          = 0;
 
-    MockSoftwareUpdateServer *server = (MockSoftwareUpdateServer *) ec->AppState;
+    MockSoftwareUpdateServer * server = (MockSoftwareUpdateServer *) ec->AppState;
 
-    //Parse image query ans print values
+    // Parse image query ans print values
     WEAVE_ERROR err = ImageQuery::parse(payload, ParsedImageQueryRequest);
-    if (WEAVE_NO_ERROR == err) {
+    if (WEAVE_NO_ERROR == err)
+    {
         printf("\nReceievd Image Query Request\n");
         printf("    Vendor Id: %d\n", ParsedImageQueryRequest.productSpec.vendorId);
         printf("    Product Id: %d\n", ParsedImageQueryRequest.productSpec.productId);
@@ -403,7 +393,7 @@ exit:
     return err;
 }
 
-void MockSoftwareUpdateServer::SetReferenceImageQuery(ImageQuery *aRefImageQuery)
+void MockSoftwareUpdateServer::SetReferenceImageQuery(ImageQuery * aRefImageQuery)
 {
     mRefImageQuery = aRefImageQuery;
 
@@ -414,20 +404,23 @@ void MockSoftwareUpdateServer::SetReferenceImageQuery(ImageQuery *aRefImageQuery
     printf("  Product Rev: %d\n", mRefImageQuery->productSpec.productRev);
     printf("  Software version: %s\n", mRefImageQuery->version.printString());
     printf("  Integrity Type[s]: ");
-    for (int i = 0 ; i < mRefImageQuery->integrityTypes.theLength; i++)
-        {   printf("%d  ", mRefImageQuery->integrityTypes.theList[i]);  }
+    for (int i = 0; i < mRefImageQuery->integrityTypes.theLength; i++)
+    {
+        printf("%d  ", mRefImageQuery->integrityTypes.theList[i]);
+    }
     printf("\n");
     printf("  Update Scheme[s]: ");
-    for (int i = 0 ; i < mRefImageQuery->updateSchemes.theLength; i++)
-        {   printf("%d  ", mRefImageQuery->updateSchemes.theList[i]);  }
+    for (int i = 0; i < mRefImageQuery->updateSchemes.theLength; i++)
+    {
+        printf("%d  ", mRefImageQuery->updateSchemes.theList[i]);
+    }
     printf("\n");
 #endif
-
 }
 
-WEAVE_ERROR MockSoftwareUpdateServer::SetFileDesignator(const char *aFileDesignator)
+WEAVE_ERROR MockSoftwareUpdateServer::SetFileDesignator(const char * aFileDesignator)
 {
-    FILE *file;
+    FILE * file;
 
     if (!aFileDesignator)
     {
@@ -437,10 +430,12 @@ WEAVE_ERROR MockSoftwareUpdateServer::SetFileDesignator(const char *aFileDesigna
 
     // Make sure we can open the image file
     file = fopen(aFileDesignator, "r");
-    if (file == NULL) {
+    if (file == NULL)
+    {
         return WEAVE_ERROR_INCORRECT_STATE;
     }
-    else {
+    else
+    {
         fclose(file);
     }
 
@@ -448,7 +443,7 @@ WEAVE_ERROR MockSoftwareUpdateServer::SetFileDesignator(const char *aFileDesigna
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR MockSoftwareUpdateServer::SendImageAnnounce(WeaveConnection *con)
+WEAVE_ERROR MockSoftwareUpdateServer::SendImageAnnounce(WeaveConnection * con)
 {
     // Discard any existing exchange context.
     // Effectively we can only have one SWU exchange with a single node at any one time.
@@ -496,11 +491,11 @@ WEAVE_ERROR MockSoftwareUpdateServer::SendImageAnnounce()
 {
     printf("0 SendImageAnnounce entering\n");
 
-    PacketBuffer* lBuffer = PacketBuffer::New();
+    PacketBuffer * lBuffer = PacketBuffer::New();
 
     // Send image announce message. Discard the exchange context if the send fails.
     WEAVE_ERROR err = mCurServerOp->SendMessage(kWeaveProfile_SWU, kMsgType_ImageAnnounce, lBuffer);
-    lBuffer = NULL;
+    lBuffer         = NULL;
 
     mCurServerOp->Close();
     mCurServerOp = NULL;

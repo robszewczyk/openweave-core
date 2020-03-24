@@ -39,27 +39,27 @@
  *  Number of nanoseconds in a microsecond
  */
 
-#define INET_NANOSECONDS_PER_MICROSECOND    nl::Weave::System::kTimerFactor_nano_per_micro
+#define INET_NANOSECONDS_PER_MICROSECOND  nl::Weave::System::kTimerFactor_nano_per_micro
 
 /**
  *  Number of nanoseconds in a millisecond
  */
-#define INET_NANOSECONDS_PER_MILLISECOND    nl::Weave::System::kTimerFactor_nano_per_milli
+#define INET_NANOSECONDS_PER_MILLISECOND  nl::Weave::System::kTimerFactor_nano_per_milli
 
 /**
  *  Number of microseconds in a millisecond
  */
-#define INET_MICROSECONDS_PER_MILLISECOND   nl::Weave::System::kTimerFactor_micro_per_milli
+#define INET_MICROSECONDS_PER_MILLISECOND nl::Weave::System::kTimerFactor_micro_per_milli
 
 /**
  *  Number of milliseconds in a second
  */
-#define INET_MILLISECONDS_PER_SECOND        nl::Weave::System::kTimerFactor_milli_per_unit
+#define INET_MILLISECONDS_PER_SECOND      nl::Weave::System::kTimerFactor_milli_per_unit
 
 /**
  *  Number of microseconds in a second
  */
-#define INET_MICROSECONDS_PER_SECOND        nl::Weave::System::kTimerFactor_micro_per_unit
+#define INET_MICROSECONDS_PER_SECOND      nl::Weave::System::kTimerFactor_micro_per_unit
 
 namespace nl {
 namespace Inet {
@@ -71,8 +71,8 @@ class InetTimer
     friend class InetLayer;
 
     InetTimer(void);
-    InetTimer(const InetTimer&);
-    InetTimer& operator =(const InetTimer&);
+    InetTimer(const InetTimer &);
+    InetTimer & operator =(const InetTimer &);
 
 public:
     typedef Weave::System::Timer::Epoch Time;

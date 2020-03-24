@@ -58,16 +58,12 @@ using namespace ::nl::Weave::Profiles::StatusReporting;
  *  notification is received.
  */
 
-static void ClientListener(ExchangeContext *ec,
-                           const IPPacketInfo *pktInfo,
-                           const WeaveMessageInfo *msgInfo,
-                           uint32_t profileId,
-                           uint8_t msgType,
-                           PacketBuffer *payload)
+static void ClientListener(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo, uint32_t profileId,
+                           uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    ClientNotifier *n = static_cast<ClientNotifier*>(ec->AppState);
+    ClientNotifier * n = static_cast<ClientNotifier *>(ec->AppState);
 
     if (msgType == kMsgType_NotifyRequest)
         err = n->DispatchNotifyIndication(ec, payload);
@@ -101,7 +97,10 @@ ClientNotifier::Subscription::Subscription(void)
  *    ClientNotifier.
  */
 
-ClientNotifier::Subscription::~Subscription(void) { Free(); }
+ClientNotifier::Subscription::~Subscription(void)
+{
+    Free();
+}
 
 /**
  *  @brief
@@ -151,21 +150,18 @@ ClientNotifier::Subscription::~Subscription(void) { Free(); }
  *  arguments has an invalid value.
  */
 
-WEAVE_ERROR ClientNotifier::Subscription::Init(const TopicIdentifier &aAssignedId,
-                                               const TopicIdentifier &aRequestedId,
-                                               const uint64_t &aPublisherId,
-                                               DMClient *aClient)
+WEAVE_ERROR ClientNotifier::Subscription::Init(const TopicIdentifier & aAssignedId, const TopicIdentifier & aRequestedId,
+                                               const uint64_t & aPublisherId, DMClient * aClient)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    if ((aAssignedId != kTopicIdNotSpecified || aRequestedId != kTopicIdNotSpecified) &&
-        aPublisherId != kNodeIdNotSpecified &&
+    if ((aAssignedId != kTopicIdNotSpecified || aRequestedId != kTopicIdNotSpecified) && aPublisherId != kNodeIdNotSpecified &&
         aClient != NULL)
     {
-        mAssignedId = aAssignedId;
+        mAssignedId  = aAssignedId;
         mRequestedId = aRequestedId;
         mPublisherId = aPublisherId;
-        mClient = aClient;
+        mClient      = aClient;
     }
 
     else
@@ -185,10 +181,10 @@ WEAVE_ERROR ClientNotifier::Subscription::Init(const TopicIdentifier &aAssignedI
 
 void ClientNotifier::Subscription::Free(void)
 {
-    mAssignedId = kTopicIdNotSpecified;
+    mAssignedId  = kTopicIdNotSpecified;
     mRequestedId = kTopicIdNotSpecified;
     mPublisherId = kNodeIdNotSpecified;
-    mClient = NULL;
+    mClient      = NULL;
 }
 
 /**
@@ -245,7 +241,7 @@ ClientNotifier::~ClientNotifier(void)
  *  message.
  */
 
-WEAVE_ERROR ClientNotifier::DispatchNotifyIndication(ExchangeContext *aResponseCtx, PacketBuffer *payload)
+WEAVE_ERROR ClientNotifier::DispatchNotifyIndication(ExchangeContext * aResponseCtx, PacketBuffer * payload)
 {
     WEAVE_ERROR err;
     MessageIterator it(payload);
@@ -270,7 +266,7 @@ WEAVE_ERROR ClientNotifier::DispatchNotifyIndication(ExchangeContext *aResponseC
 
     for (int i = 0; i < kNotifierTableSize; i++)
     {
-        Subscription &s = mNotifierTable[i];
+        Subscription & s = mNotifierTable[i];
 
         if (s.CheckSubscription(topicId, peerId))
         {
@@ -344,13 +340,13 @@ exit:
  *  @return True if a match is found. Otherwise return false.
  */
 
-bool ClientNotifier::HasSubscription(const TopicIdentifier &aTopicId, const uint64_t &aPublisherId, DMClient *aClient) const
+bool ClientNotifier::HasSubscription(const TopicIdentifier & aTopicId, const uint64_t & aPublisherId, DMClient * aClient) const
 {
     bool result = false;
 
     for (int i = 0; i < kNotifierTableSize; i++)
     {
-        const Subscription &s = mNotifierTable[i];
+        const Subscription & s = mNotifierTable[i];
 
         if (s.MatchSubscription(aTopicId, aPublisherId, aClient))
         {
@@ -400,10 +396,8 @@ bool ClientNotifier::HasSubscription(const TopicIdentifier &aTopicId, const uint
  *  subscription.
  */
 
-WEAVE_ERROR ClientNotifier::InstallSubscription(const TopicIdentifier &aTopicId,
-                                                const TopicIdentifier &aRequestedId,
-                                                const uint64_t &aPublisherId,
-                                                DMClient *aClient)
+WEAVE_ERROR ClientNotifier::InstallSubscription(const TopicIdentifier & aTopicId, const TopicIdentifier & aRequestedId,
+                                                const uint64_t & aPublisherId, DMClient * aClient)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
 
@@ -427,7 +421,7 @@ WEAVE_ERROR ClientNotifier::InstallSubscription(const TopicIdentifier &aTopicId,
     {
         for (int i = 0; i < kNotifierTableSize; i++)
         {
-            Subscription &s = mNotifierTable[i];
+            Subscription & s = mNotifierTable[i];
 
             if (s.MatchSubscription(aRequestedId, aPublisherId))
             {
@@ -446,7 +440,7 @@ WEAVE_ERROR ClientNotifier::InstallSubscription(const TopicIdentifier &aTopicId,
     {
         for (int i = 0; i < kNotifierTableSize; i++)
         {
-            Subscription &s = mNotifierTable[i];
+            Subscription & s = mNotifierTable[i];
 
             if (s.IsFree())
             {
@@ -469,7 +463,8 @@ WEAVE_ERROR ClientNotifier::InstallSubscription(const TopicIdentifier &aTopicId,
 
                     mExchangeMgr = aClient->mExchangeMgr;
 
-                    err = mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM, kMsgType_NotifyRequest, ClientListener, this);
+                    err = mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM, kMsgType_NotifyRequest, ClientListener,
+                                                                          this);
                     SuccessOrExit(err);
                 }
 
@@ -508,11 +503,11 @@ exit:
  *                                  the subscription.
  */
 
-void ClientNotifier::RemoveSubscription(const TopicIdentifier &aTopicId, const uint64_t &aPublisherId, DMClient *aClient)
+void ClientNotifier::RemoveSubscription(const TopicIdentifier & aTopicId, const uint64_t & aPublisherId, DMClient * aClient)
 {
     for (int i = 0; i < kNotifierTableSize; i++)
     {
-        Subscription &s = mNotifierTable[i];
+        Subscription & s = mNotifierTable[i];
 
         if (s.MatchSubscription(aTopicId, aPublisherId, aClient))
         {
@@ -559,11 +554,12 @@ void ClientNotifier::RemoveSubscription(const TopicIdentifier &aTopicId, const u
  *                                  describing the reason for failure.
  */
 
-void ClientNotifier::FailSubscription(const TopicIdentifier &aTopicId, const uint64_t &aPublisherId, DMClient *aClient, StatusReport &aReport)
+void ClientNotifier::FailSubscription(const TopicIdentifier & aTopicId, const uint64_t & aPublisherId, DMClient * aClient,
+                                      StatusReport & aReport)
 {
     for (int i = 0; i < kNotifierTableSize; i++)
     {
-        Subscription &s = mNotifierTable[i];
+        Subscription & s = mNotifierTable[i];
 
         if (s.MatchSubscription(aTopicId, aPublisherId, aClient))
         {
@@ -599,7 +595,7 @@ void ClientNotifier::Clear(void)
 
     for (int i = 0; i < kNotifierTableSize; i++)
     {
-        Subscription &s = mNotifierTable[i];
+        Subscription & s = mNotifierTable[i];
 
         s.Free();
     }

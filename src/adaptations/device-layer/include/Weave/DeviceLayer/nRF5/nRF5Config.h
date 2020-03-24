@@ -42,7 +42,6 @@ constexpr inline uint32_t NRF5ConfigKey(uint16_t fileId, uint16_t recordId)
     return static_cast<uint32_t>(fileId) << 16 | recordId;
 }
 
-
 /**
  * Provides functions and definitions for accessing persisted device configuration
  * on platforms based on the Nordic nRF5 SDK.
@@ -58,7 +57,6 @@ constexpr inline uint32_t NRF5ConfigKey(uint16_t fileId, uint16_t recordId)
 class NRF5Config
 {
 public:
-
     // *** CAUTION ***: Changing the FDS file or record ids of these values will *break* existing devices.
 
     // Limits/definitions imposed by the Nordic SDK
@@ -130,12 +128,11 @@ public:
     static void RunConfigUnitTest(void);
 
 protected:
-
     struct FDSAsyncOp
     {
         enum
         {
-            kAddRecord                      = 0,
+            kAddRecord = 0,
             kUpdateRecord,
             kAddOrUpdateRecord,
             kDeleteRecord,

@@ -40,8 +40,8 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // user_nfc_tokens
-    { kPropertyHandle_UserNfcTokens, 0 }, // value
+    { kPropertyHandle_Root, 1 },                // user_nfc_tokens
+    { kPropertyHandle_UserNfcTokens, 0 },       // value
     { kPropertyHandle_UserNfcTokens_Value, 1 }, // user_id
     { kPropertyHandle_UserNfcTokens_Value, 2 }, // token_device_id
     { kPropertyHandle_UserNfcTokens_Value, 3 }, // public_key
@@ -51,63 +51,50 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsDictionary Table
 //
 
-uint8_t IsDictionaryTypeHandleBitfield[] = {
-        0x1
-};
+uint8_t IsDictionaryTypeHandleBitfield[] = { 0x1 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        3,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    3,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        IsDictionaryTypeHandleBitfield,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    IsDictionaryTypeHandleBitfield,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor UserNFCTokenFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(UserNFCToken, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1
-    },
+const nl::FieldDescriptor UserNFCTokenFieldDescriptors[] = {
+    { NULL, offsetof(UserNFCToken, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1 },
 
-    {
-        NULL, offsetof(UserNFCToken, tokenDeviceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 2
-    },
+    { NULL, offsetof(UserNFCToken, tokenDeviceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 2 },
 
-    {
-        NULL, offsetof(UserNFCToken, publicKey), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 3
-    },
+    { NULL, offsetof(UserNFCToken, publicKey), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 3 },
 
 };
 
-const nl::SchemaFieldDescriptor UserNFCToken::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(UserNFCTokenFieldDescriptors)/sizeof(UserNFCTokenFieldDescriptors[0]),
-    .mFields = UserNFCTokenFieldDescriptors,
-    .mSize = sizeof(UserNFCToken)
-};
+const nl::SchemaFieldDescriptor UserNFCToken::FieldSchema = { .mNumFieldDescriptorElements = sizeof(UserNFCTokenFieldDescriptors) /
+                                                                  sizeof(UserNFCTokenFieldDescriptors[0]),
+                                                              .mFields = UserNFCTokenFieldDescriptors,
+                                                              .mSize   = sizeof(UserNFCToken) };
 
 } // namespace UserNFCTokenSettingsTrait
 } // namespace Security

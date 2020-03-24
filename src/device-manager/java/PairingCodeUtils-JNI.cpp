@@ -29,20 +29,19 @@
 #include <Weave/Support/CodeUtils.h>
 #include <Weave/Support/pairing-code/PairingCodeUtils.h>
 
-extern "C"
-{
-	NL_DLL_EXPORT jboolean Java_nl_Weave_DeviceManager_PairingCodeUtils_isValidPairingCode(JNIEnv *, jclass, jstring);
-    NL_DLL_EXPORT jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_normalizePairingCode(JNIEnv *, jclass, jstring);
-    NL_DLL_EXPORT jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisPairingCodeToDeviceId(JNIEnv *, jclass, jstring);
-    NL_DLL_EXPORT jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisDeviceIdToPairingCode(JNIEnv *, jclass, jlong);
-    NL_DLL_EXPORT jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptonitePairingCodeToDeviceId(JNIEnv *, jclass, jstring);
-    NL_DLL_EXPORT jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptoniteDeviceIdToPairingCode(JNIEnv *, jclass, jlong);
+extern "C" {
+NL_DLL_EXPORT jboolean Java_nl_Weave_DeviceManager_PairingCodeUtils_isValidPairingCode(JNIEnv *, jclass, jstring);
+NL_DLL_EXPORT jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_normalizePairingCode(JNIEnv *, jclass, jstring);
+NL_DLL_EXPORT jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisPairingCodeToDeviceId(JNIEnv *, jclass, jstring);
+NL_DLL_EXPORT jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisDeviceIdToPairingCode(JNIEnv *, jclass, jlong);
+NL_DLL_EXPORT jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptonitePairingCodeToDeviceId(JNIEnv *, jclass, jstring);
+NL_DLL_EXPORT jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptoniteDeviceIdToPairingCode(JNIEnv *, jclass, jlong);
 }
 
-jboolean Java_nl_Weave_DeviceManager_PairingCodeUtils_isValidPairingCode(JNIEnv *env, jclass cls, jstring pairingCodeObj)
+jboolean Java_nl_Weave_DeviceManager_PairingCodeUtils_isValidPairingCode(JNIEnv * env, jclass cls, jstring pairingCodeObj)
 {
     WEAVE_ERROR err;
-    const char *pairingCodeStr = NULL;
+    const char * pairingCodeStr = NULL;
 
     pairingCodeStr = env->GetStringUTFChars(pairingCodeObj, 0);
 
@@ -53,10 +52,10 @@ jboolean Java_nl_Weave_DeviceManager_PairingCodeUtils_isValidPairingCode(JNIEnv 
     return (err == WEAVE_NO_ERROR) ? JNI_TRUE : JNI_FALSE;
 }
 
-jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_normalizePairingCode(JNIEnv *env, jclass cls, jstring pairingCodeObj)
+jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_normalizePairingCode(JNIEnv * env, jclass cls, jstring pairingCodeObj)
 {
-    const char *pairingCodeStr = NULL;
-    char *normalizedPairingCodeStr = NULL;
+    const char * pairingCodeStr      = NULL;
+    char * normalizedPairingCodeStr  = NULL;
     jstring normalizedPairingCodeObj = NULL;
     size_t pairingCodeLen;
 
@@ -80,10 +79,10 @@ jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_normalizePairingCode(JNIEnv
     return normalizedPairingCodeObj;
 }
 
-jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisPairingCodeToDeviceId(JNIEnv *env, jclass cls, jstring pairingCodeObj)
+jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisPairingCodeToDeviceId(JNIEnv * env, jclass cls, jstring pairingCodeObj)
 {
     WEAVE_ERROR err;
-    const char *pairingCodeStr = NULL;
+    const char * pairingCodeStr = NULL;
     uint64_t res;
 
     pairingCodeStr = env->GetStringUTFChars(pairingCodeObj, 0);
@@ -94,10 +93,10 @@ jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisPairingCodeToDeviceId(JN
 
     env->ReleaseStringUTFChars(pairingCodeObj, pairingCodeStr);
 
-    return (jlong)res;
+    return (jlong) res;
 }
 
-jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisDeviceIdToPairingCode(JNIEnv *env, jclass cls, jlong deviceId)
+jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisDeviceIdToPairingCode(JNIEnv * env, jclass cls, jlong deviceId)
 {
     WEAVE_ERROR err;
     char pairingCodeStr[nl::PairingCode::kStandardPairingCodeLength + 1];
@@ -114,11 +113,10 @@ jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_nevisDeviceIdToPairingCode(
     return pairingCode;
 }
 
-
-jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptonitePairingCodeToDeviceId(JNIEnv *env, jclass cls, jstring pairingCodeObj)
+jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptonitePairingCodeToDeviceId(JNIEnv * env, jclass cls, jstring pairingCodeObj)
 {
     WEAVE_ERROR err;
-    const char *pairingCodeStr = NULL;
+    const char * pairingCodeStr = NULL;
     uint64_t res;
 
     pairingCodeStr = env->GetStringUTFChars(pairingCodeObj, 0);
@@ -129,10 +127,10 @@ jlong Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptonitePairingCodeToDevice
 
     env->ReleaseStringUTFChars(pairingCodeObj, pairingCodeStr);
 
-    return (jlong)res;
+    return (jlong) res;
 }
 
-jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptoniteDeviceIdToPairingCode(JNIEnv *env, jclass cls, jlong deviceId)
+jstring Java_nl_Weave_DeviceManager_PairingCodeUtils_kryptoniteDeviceIdToPairingCode(JNIEnv * env, jclass cls, jlong deviceId)
 {
     WEAVE_ERROR err;
     char pairingCodeStr[nl::PairingCode::kKryptonitePairingCodeLength + 1];

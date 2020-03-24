@@ -40,12 +40,12 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // tc_a
-    { kPropertyHandle_Root, 2 }, // tc_b
-    { kPropertyHandle_Root, 3 }, // tc_c
-    { kPropertyHandle_TcC, 1 }, // sc_a
-    { kPropertyHandle_TcC, 2 }, // sc_b
-    { kPropertyHandle_Root, 4 }, // tc_d
+    { kPropertyHandle_Root, 1 },  // tc_a
+    { kPropertyHandle_Root, 2 },  // tc_b
+    { kPropertyHandle_Root, 3 },  // tc_c
+    { kPropertyHandle_TcC, 1 },   // sc_a
+    { kPropertyHandle_TcC, 2 },   // sc_b
+    { kPropertyHandle_Root, 4 },  // tc_d
     { kPropertyHandle_Root, 32 }, // td_d
     { kPropertyHandle_Root, 33 }, // td_e
     { kPropertyHandle_Root, 34 }, // td_f
@@ -60,28 +60,26 @@ const ConstSchemaVersionRange traitVersion = { .mMinVersion = 1, .mMaxVersion = 
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        2,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    2,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        8,
+    8,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        &Nest::Test::Trait::TestCTrait::TraitSchema,
+    &Nest::Test::Trait::TestCTrait::TraitSchema,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        &traitVersion,
+    &traitVersion,
 #endif
-    }
-};
+} };
 
 } // namespace TestDTrait
 } // namespace Trait

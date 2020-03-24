@@ -45,48 +45,41 @@ using ::nl::Weave::System::PacketBuffer;
 using ::nl::Weave::System::pbuf;
 #endif
 
-
 // Test input vector format.
 
-
-struct TestContext {
-    uint16_t    init_len;
-    uint16_t    reserved_size;
-    uint8_t *   start_buffer;
-    uint8_t *   end_buffer;
-    uint8_t *   payload_ptr;
-    struct pbuf *buf;
+struct TestContext
+{
+    uint16_t init_len;
+    uint16_t reserved_size;
+    uint8_t * start_buffer;
+    uint8_t * end_buffer;
+    uint8_t * payload_ptr;
+    struct pbuf * buf;
 };
-
 
 // Test input data.
 
-
-static struct TestContext sContext[] = {
-      { 0,      0,                               NULL, NULL, NULL, NULL },
-      { 0,      10,                              NULL, NULL, NULL, NULL },
-      { 0,      128,                             NULL, NULL, NULL, NULL },
-      { 0,      1536,                            NULL, NULL, NULL, NULL },
-      { 0,      WEAVE_SYSTEM_PACKETBUFFER_SIZE,  NULL, NULL, NULL, NULL }
-};
+static struct TestContext sContext[] = { { 0, 0, NULL, NULL, NULL, NULL },
+                                         { 0, 10, NULL, NULL, NULL, NULL },
+                                         { 0, 128, NULL, NULL, NULL, NULL },
+                                         { 0, 1536, NULL, NULL, NULL, NULL },
+                                         { 0, WEAVE_SYSTEM_PACKETBUFFER_SIZE, NULL, NULL, NULL, NULL } };
 
 static const uint16_t sLengths[] = { 0, 1, 10, 128, WEAVE_SYSTEM_PACKETBUFFER_SIZE, UINT16_MAX };
 
 // Number of test context examples.
 static const size_t kTestElements = sizeof(sContext) / sizeof(struct TestContext);
-static const size_t kTestLengths = sizeof(sLengths) / sizeof(uint16_t);
-
+static const size_t kTestLengths  = sizeof(sLengths) / sizeof(uint16_t);
 
 // Utility functions.
 
-
-#define TO_LWIP_PBUF(x)                 (reinterpret_cast<struct pbuf*>(reinterpret_cast<void*>(x)))
-#define OF_LWIP_PBUF(x)                 (reinterpret_cast<PacketBuffer*>(reinterpret_cast<void*>(x)))
+#define TO_LWIP_PBUF(x) (reinterpret_cast<struct pbuf *>(reinterpret_cast<void *>(x)))
+#define OF_LWIP_PBUF(x) (reinterpret_cast<PacketBuffer *>(reinterpret_cast<void *>(x)))
 
 /**
  *  Free allocated test buffer memory.
  */
-static void BufferFree(struct TestContext* theContext)
+static void BufferFree(struct TestContext * theContext)
 {
     if (theContext->buf != NULL)
     {
@@ -98,10 +91,10 @@ static void BufferFree(struct TestContext* theContext)
 /**
  *  Allocate memory for a test buffer and configure according to test context.
  */
-static void BufferAlloc(struct TestContext* theContext)
+static void BufferAlloc(struct TestContext * theContext)
 {
     const size_t lInitialSize = WEAVE_SYSTEM_PACKETBUFFER_HEADER_SIZE + theContext->reserved_size;
-    const size_t lAllocSize = WEAVE_SYSTEM_PACKETBUFFER_SIZE;
+    const size_t lAllocSize   = WEAVE_SYSTEM_PACKETBUFFER_SIZE;
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     u8_t lType, lFlags;
@@ -122,26 +115,26 @@ static void BufferAlloc(struct TestContext* theContext)
     }
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-    lType = theContext->buf->type;
+    lType  = theContext->buf->type;
     lFlags = theContext->buf->flags;
 #if LWIP_PBUF_FROM_CUSTOM_POOLS
     lPool = theContext->buf->pool;
 #endif // LWIP_PBUF_FROM_CUSTOM_POOLS
     memset(theContext->buf, 0, lAllocSize);
-    theContext->buf->type = lType;
+    theContext->buf->type  = lType;
     theContext->buf->flags = lFlags;
 #if LWIP_PBUF_FROM_CUSTOM_POOLS
     theContext->buf->pool = lPool;
 #endif // LWIP_PBUF_FROM_CUSTOM_POOLS
-#else // !WEAVE_SYSTEM_CONFIG_USE_LWIP
+#else  // !WEAVE_SYSTEM_CONFIG_USE_LWIP
     memset(theContext->buf, 0, lAllocSize);
 #if WEAVE_SYSTEM_CONFIG_PACKETBUFFER_MAXALLOC == 0
     theContext->buf->alloc_size = lAllocSize;
 #endif // WEAVE_SYSTEM_CONFIG_PACKETBUFFER_MAXALLOC == 0
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-    theContext->start_buffer = reinterpret_cast<uint8_t*>(theContext->buf);
-    theContext->end_buffer = reinterpret_cast<uint8_t*>(theContext->buf) + lAllocSize;
+    theContext->start_buffer = reinterpret_cast<uint8_t *>(theContext->buf);
+    theContext->end_buffer   = reinterpret_cast<uint8_t *>(theContext->buf) + lAllocSize;
 
     if (lInitialSize > lAllocSize)
     {
@@ -156,31 +149,30 @@ static void BufferAlloc(struct TestContext* theContext)
 /**
  *  Setup buffer layout as it is used by PacketBuffer class.
  */
-static PacketBuffer* PrepareTestBuffer(struct TestContext* theContext)
+static PacketBuffer * PrepareTestBuffer(struct TestContext * theContext)
 {
     BufferAlloc(theContext);
 
-    theContext->buf->next = NULL;
+    theContext->buf->next    = NULL;
     theContext->buf->payload = theContext->payload_ptr;
-    theContext->buf->ref = 1;
-    theContext->buf->len = theContext->init_len;
+    theContext->buf->ref     = 1;
+    theContext->buf->len     = theContext->init_len;
     theContext->buf->tot_len = theContext->init_len;
 
-    return reinterpret_cast<PacketBuffer*>(theContext->buf);
+    return reinterpret_cast<PacketBuffer *>(theContext->buf);
 }
 // Test functions invoked from the suite.
-
 
 /**
  *  Test PacketBuffer::Start() function.
  */
-static void CheckStart(nlTestSuite *inSuite, void *inContext)
+static void CheckStart(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer *buffer = PrepareTestBuffer(theContext);
+        PacketBuffer * buffer = PrepareTestBuffer(theContext);
 
         NL_TEST_ASSERT(inSuite, buffer->Start() == theContext->payload_ptr);
 
@@ -199,29 +191,20 @@ static void CheckStart(nlTestSuite *inSuite, void *inContext)
  *               adjusted according to the offset value passed into the
  *               SetStart() method.
  */
-static void CheckSetStart(nlTestSuite *inSuite, void *inContext)
+static void CheckSetStart(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext          = (struct TestContext *) (inContext);
     static const ptrdiff_t sSizePacketBuffer = WEAVE_SYSTEM_PACKETBUFFER_SIZE;
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        static const ptrdiff_t start_offset[] =
-        {
-            -sSizePacketBuffer,
-            -128,
-            -1,
-            0,
-            1,
-            128,
-            sSizePacketBuffer
-        };
+        static const ptrdiff_t start_offset[] = { -sSizePacketBuffer, -128, -1, 0, 1, 128, sSizePacketBuffer };
 
         for (size_t s = 0; s < sizeof(start_offset) / sizeof(start_offset[0]); s++)
         {
-            PacketBuffer *buffer = PrepareTestBuffer(theContext);
-            uint8_t *test_start = theContext->payload_ptr + start_offset[s];
-            uint8_t *verify_start = test_start;
+            PacketBuffer * buffer  = PrepareTestBuffer(theContext);
+            uint8_t * test_start   = theContext->payload_ptr + start_offset[s];
+            uint8_t * verify_start = test_start;
 
             buffer->SetStart(test_start);
 
@@ -248,8 +231,7 @@ static void CheckSetStart(nlTestSuite *inSuite, void *inContext)
             {
                 // Set start to somewhere between the end of the buffer's
                 // header and the end of payload.
-                NL_TEST_ASSERT(inSuite, theContext->buf->len ==
-                    (theContext->init_len -(verify_start - theContext->payload_ptr)));
+                NL_TEST_ASSERT(inSuite, theContext->buf->len == (theContext->init_len - (verify_start - theContext->payload_ptr)));
             }
         }
         theContext++;
@@ -259,13 +241,13 @@ static void CheckSetStart(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::DataLength() function.
  */
-static void CheckDataLength(nlTestSuite *inSuite, void *inContext)
+static void CheckDataLength(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer *buffer = PrepareTestBuffer(theContext);
+        PacketBuffer * buffer = PrepareTestBuffer(theContext);
 
         NL_TEST_ASSERT(inSuite, buffer->DataLength() == theContext->buf->len);
 
@@ -286,20 +268,20 @@ static void CheckDataLength(nlTestSuite *inSuite, void *inContext)
  *               other one being passed as the head of the chain. After calling
  *               the method verify that data lenghts were correctly adjusted.
  */
-static void CheckSetDataLength(nlTestSuite *inSuite, void *inContext)
+static void CheckSetDataLength(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
             for (size_t n = 0; n < kTestLengths; n++)
             {
-                PacketBuffer *buffer_1 = PrepareTestBuffer(theFirstContext);
-                PacketBuffer *buffer_2 = PrepareTestBuffer(theSecondContext);
+                PacketBuffer * buffer_1 = PrepareTestBuffer(theFirstContext);
+                PacketBuffer * buffer_2 = PrepareTestBuffer(theSecondContext);
 
                 if (theFirstContext == theSecondContext)
                 {
@@ -308,10 +290,11 @@ static void CheckSetDataLength(nlTestSuite *inSuite, void *inContext)
 
                     if (sLengths[n] > (theSecondContext->end_buffer - theSecondContext->payload_ptr))
                     {
-                        NL_TEST_ASSERT(inSuite, theSecondContext->buf->len ==
-                            (theSecondContext->end_buffer - theSecondContext->payload_ptr));
-                        NL_TEST_ASSERT(inSuite, theSecondContext->buf->tot_len ==
-                            (theSecondContext->end_buffer - theSecondContext->payload_ptr));
+                        NL_TEST_ASSERT(
+                            inSuite, theSecondContext->buf->len == (theSecondContext->end_buffer - theSecondContext->payload_ptr));
+                        NL_TEST_ASSERT(inSuite,
+                                       theSecondContext->buf->tot_len ==
+                                           (theSecondContext->end_buffer - theSecondContext->payload_ptr));
                         NL_TEST_ASSERT(inSuite, theSecondContext->buf->next == NULL);
                     }
                     else
@@ -328,16 +311,18 @@ static void CheckSetDataLength(nlTestSuite *inSuite, void *inContext)
 
                     if (sLengths[n] > (theSecondContext->end_buffer - theSecondContext->payload_ptr))
                     {
-                        NL_TEST_ASSERT(inSuite, theSecondContext->buf->len ==
-                            (theSecondContext->end_buffer - theSecondContext->payload_ptr));
-                        NL_TEST_ASSERT(inSuite, theSecondContext->buf->tot_len ==
-                            (theSecondContext->end_buffer - theSecondContext->payload_ptr));
+                        NL_TEST_ASSERT(
+                            inSuite, theSecondContext->buf->len == (theSecondContext->end_buffer - theSecondContext->payload_ptr));
+                        NL_TEST_ASSERT(inSuite,
+                                       theSecondContext->buf->tot_len ==
+                                           (theSecondContext->end_buffer - theSecondContext->payload_ptr));
                         NL_TEST_ASSERT(inSuite, theSecondContext->buf->next == NULL);
 
-                        NL_TEST_ASSERT(inSuite, theFirstContext->buf->tot_len ==
-                            (theFirstContext->init_len +
-                            static_cast<int32_t>(theSecondContext->end_buffer - theSecondContext->payload_ptr) -
-                            static_cast<int32_t>(theSecondContext->init_len)));
+                        NL_TEST_ASSERT(inSuite,
+                                       theFirstContext->buf->tot_len ==
+                                           (theFirstContext->init_len +
+                                            static_cast<int32_t>(theSecondContext->end_buffer - theSecondContext->payload_ptr) -
+                                            static_cast<int32_t>(theSecondContext->init_len)));
                     }
                     else
                     {
@@ -345,10 +330,10 @@ static void CheckSetDataLength(nlTestSuite *inSuite, void *inContext)
                         NL_TEST_ASSERT(inSuite, theSecondContext->buf->tot_len == sLengths[n]);
                         NL_TEST_ASSERT(inSuite, theSecondContext->buf->next == NULL);
 
-                        NL_TEST_ASSERT(inSuite, theFirstContext->buf->tot_len ==
-                            (theFirstContext->init_len +
-                            static_cast<int32_t>(sLengths[n]) -
-                            static_cast<int32_t>(theSecondContext->init_len)));
+                        NL_TEST_ASSERT(inSuite,
+                                       theFirstContext->buf->tot_len ==
+                                           (theFirstContext->init_len + static_cast<int32_t>(sLengths[n]) -
+                                            static_cast<int32_t>(theSecondContext->init_len)));
                     }
                 }
             }
@@ -363,13 +348,13 @@ static void CheckSetDataLength(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::TotalLength() function.
  */
-static void CheckTotalLength(nlTestSuite *inSuite, void *inContext)
+static void CheckTotalLength(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer *buffer = PrepareTestBuffer(theContext);
+        PacketBuffer * buffer = PrepareTestBuffer(theContext);
 
         NL_TEST_ASSERT(inSuite, buffer->TotalLength() == theContext->init_len);
 
@@ -380,16 +365,15 @@ static void CheckTotalLength(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::MaxDataLength() function.
  */
-static void CheckMaxDataLength(nlTestSuite *inSuite, void *inContext)
+static void CheckMaxDataLength(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer *buffer = PrepareTestBuffer(theContext);
+        PacketBuffer * buffer = PrepareTestBuffer(theContext);
 
-        NL_TEST_ASSERT(inSuite, buffer->MaxDataLength() ==
-            (theContext->end_buffer - theContext->payload_ptr));
+        NL_TEST_ASSERT(inSuite, buffer->MaxDataLength() == (theContext->end_buffer - theContext->payload_ptr));
 
         theContext++;
     }
@@ -398,16 +382,16 @@ static void CheckMaxDataLength(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::AvailableDataLength() function.
  */
-static void CheckAvailableDataLength(nlTestSuite *inSuite, void *inContext)
+static void CheckAvailableDataLength(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer *buffer = PrepareTestBuffer(theContext);
+        PacketBuffer * buffer = PrepareTestBuffer(theContext);
 
-        NL_TEST_ASSERT(inSuite, buffer->AvailableDataLength() ==
-            ((theContext->end_buffer - theContext->payload_ptr) - theContext->init_len));
+        NL_TEST_ASSERT(
+            inSuite, buffer->AvailableDataLength() == ((theContext->end_buffer - theContext->payload_ptr) - theContext->init_len));
 
         theContext++;
     }
@@ -416,13 +400,13 @@ static void CheckAvailableDataLength(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::ReservedSize() function.
  */
-static void CheckReservedSize(nlTestSuite *inSuite, void *inContext)
+static void CheckReservedSize(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer& lBuffer = *PrepareTestBuffer(theContext);
+        PacketBuffer & lBuffer  = *PrepareTestBuffer(theContext);
         const size_t kAllocSize = lBuffer.AllocSize();
 
         if (theContext->reserved_size > kAllocSize)
@@ -449,26 +433,25 @@ static void CheckReservedSize(nlTestSuite *inSuite, void *inContext)
  *               This test function tests linking any combination of three
  *               buffer-configurations passed within inContext.
  */
-static void CheckAddToEnd(nlTestSuite *inSuite, void *inContext)
+static void CheckAddToEnd(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
-            struct TestContext *theThirdContext = static_cast<struct TestContext *>(inContext);
+            struct TestContext * theThirdContext = static_cast<struct TestContext *>(inContext);
 
             for (size_t kth = 0; kth < kTestElements; kth++)
             {
-                PacketBuffer *buffer_1 = NULL;
-                PacketBuffer *buffer_2 = NULL;
-                PacketBuffer *buffer_3 = NULL;
+                PacketBuffer * buffer_1 = NULL;
+                PacketBuffer * buffer_2 = NULL;
+                PacketBuffer * buffer_3 = NULL;
 
-                if (theFirstContext == theSecondContext ||
-                    theFirstContext == theThirdContext ||
+                if (theFirstContext == theSecondContext || theFirstContext == theThirdContext ||
                     theSecondContext == theThirdContext)
                 {
                     theThirdContext++;
@@ -481,8 +464,7 @@ static void CheckAddToEnd(nlTestSuite *inSuite, void *inContext)
 
                 buffer_1->AddToEnd(buffer_2);
 
-                NL_TEST_ASSERT(inSuite, theFirstContext->buf->tot_len ==
-                    (theFirstContext->init_len + theSecondContext->init_len));
+                NL_TEST_ASSERT(inSuite, theFirstContext->buf->tot_len == (theFirstContext->init_len + theSecondContext->init_len));
                 NL_TEST_ASSERT(inSuite, theFirstContext->buf->next == theSecondContext->buf);
                 NL_TEST_ASSERT(inSuite, theSecondContext->buf->next == NULL);
 
@@ -490,8 +472,9 @@ static void CheckAddToEnd(nlTestSuite *inSuite, void *inContext)
 
                 buffer_1->AddToEnd(buffer_3);
 
-                NL_TEST_ASSERT(inSuite, theFirstContext->buf->tot_len ==
-                    (theFirstContext->init_len + theSecondContext->init_len + theThirdContext->init_len));
+                NL_TEST_ASSERT(inSuite,
+                               theFirstContext->buf->tot_len ==
+                                   (theFirstContext->init_len + theSecondContext->init_len + theThirdContext->init_len));
                 NL_TEST_ASSERT(inSuite, theFirstContext->buf->next == theSecondContext->buf);
                 NL_TEST_ASSERT(inSuite, theSecondContext->buf->next == theThirdContext->buf);
                 NL_TEST_ASSERT(inSuite, theThirdContext->buf->next == NULL);
@@ -516,19 +499,19 @@ static void CheckAddToEnd(nlTestSuite *inSuite, void *inContext)
  *               on the first buffer to unlink the second buffer. After the call,
  *               verify correct internal state of the first buffer.
  */
-static void CheckDetachTail(nlTestSuite *inSuite, void *inContext)
+static void CheckDetachTail(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
-            PacketBuffer *buffer_1 = PrepareTestBuffer(theFirstContext);
-            PacketBuffer *buffer_2 = PrepareTestBuffer(theSecondContext);
-            PacketBuffer *returned = NULL;
+            PacketBuffer * buffer_1 = PrepareTestBuffer(theFirstContext);
+            PacketBuffer * buffer_2 = PrepareTestBuffer(theSecondContext);
+            PacketBuffer * returned = NULL;
 
             if (theFirstContext != theSecondContext)
             {
@@ -564,13 +547,13 @@ static void CheckDetachTail(nlTestSuite *inSuite, void *inContext)
  *               the chain. After calling the method, verify correctly adjusted
  *               state of the first buffer.
  */
-static void CheckCompactHead(nlTestSuite *inSuite, void *inContext)
+static void CheckCompactHead(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
@@ -580,10 +563,10 @@ static void CheckCompactHead(nlTestSuite *inSuite, void *inContext)
                 // start with various initial length for the second buffer
                 for (size_t l = 0; l < kTestLengths; l++)
                 {
-                    PacketBuffer *buffer_1 = PrepareTestBuffer(theFirstContext);
-                    PacketBuffer *buffer_2 = PrepareTestBuffer(theSecondContext);
-                    uint16_t len1 = 0;
-                    uint16_t len2 = 0;
+                    PacketBuffer * buffer_1 = PrepareTestBuffer(theFirstContext);
+                    PacketBuffer * buffer_2 = PrepareTestBuffer(theSecondContext);
+                    uint16_t len1           = 0;
+                    uint16_t len2           = 0;
 
                     buffer_1->SetDataLength(sLengths[k], buffer_1);
                     len1 = buffer_1->DataLength();
@@ -599,18 +582,20 @@ static void CheckCompactHead(nlTestSuite *inSuite, void *inContext)
 
                     buffer_1->CompactHead();
 
-                    NL_TEST_ASSERT(inSuite, theFirstContext->buf->payload ==
-                        (theFirstContext->start_buffer + WEAVE_SYSTEM_PACKETBUFFER_HEADER_SIZE));
+                    NL_TEST_ASSERT(inSuite,
+                                   theFirstContext->buf->payload ==
+                                       (theFirstContext->start_buffer + WEAVE_SYSTEM_PACKETBUFFER_HEADER_SIZE));
 
                     /* verify length of the first buffer */
-                    if (theFirstContext == theSecondContext) {
+                    if (theFirstContext == theSecondContext)
+                    {
                         NL_TEST_ASSERT(inSuite, theFirstContext->buf->tot_len == len1);
                     }
                     else if (theFirstContext->buf->tot_len > buffer_1->MaxDataLength())
                     {
                         NL_TEST_ASSERT(inSuite, theFirstContext->buf->len == buffer_1->MaxDataLength());
-                        NL_TEST_ASSERT(inSuite, theSecondContext->buf->len == theFirstContext->buf->tot_len -
-                            buffer_1->MaxDataLength());
+                        NL_TEST_ASSERT(inSuite,
+                                       theSecondContext->buf->len == theFirstContext->buf->tot_len - buffer_1->MaxDataLength());
                     }
                     else
                     {
@@ -646,15 +631,15 @@ static void CheckCompactHead(nlTestSuite *inSuite, void *inContext)
  *               the internal state of the buffer has been correctly
  *               adjusted according to the value passed into the method.
  */
-static void CheckConsumeHead(nlTestSuite *inSuite, void *inContext)
+static void CheckConsumeHead(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
         for (size_t n = 0; n < kTestLengths; n++)
         {
-            PacketBuffer *buffer = PrepareTestBuffer(theContext);
+            PacketBuffer * buffer = PrepareTestBuffer(theContext);
 
             buffer->ConsumeHead(sLengths[n]);
 
@@ -671,7 +656,8 @@ static void CheckConsumeHead(nlTestSuite *inSuite, void *inContext)
                 NL_TEST_ASSERT(inSuite, theContext->buf->tot_len == (theContext->buf->tot_len - sLengths[n]));
             }
 
-            if (theContext->buf->ref == 0) {
+            if (theContext->buf->ref == 0)
+            {
                 theContext->buf = NULL;
             }
         }
@@ -692,13 +678,13 @@ static void CheckConsumeHead(nlTestSuite *inSuite, void *inContext)
  *               method, verify correctly adjusted the state of the first
  *               buffer and appropriate return pointer from the method's call.
  */
-static void CheckConsume(nlTestSuite *inSuite, void *inContext)
+static void CheckConsume(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
@@ -711,9 +697,9 @@ static void CheckConsume(nlTestSuite *inSuite, void *inContext)
                     // start with various initial length for the second buffer
                     for (size_t l = 0; l < kTestLengths; l++)
                     {
-                        PacketBuffer *buffer_1;
-                        PacketBuffer *buffer_2;
-                        PacketBuffer *returned;
+                        PacketBuffer * buffer_1;
+                        PacketBuffer * buffer_2;
+                        PacketBuffer * returned;
                         uint16_t buf_1_len = 0;
                         uint16_t buf_2_len = 0;
 
@@ -746,8 +732,8 @@ static void CheckConsume(nlTestSuite *inSuite, void *inContext)
                         {
                             NL_TEST_ASSERT(inSuite, returned == buffer_1);
                         }
-                        else if ((sLengths[c] >= buf_1_len) && (sLengths[c] < buf_1_len + buf_2_len ||
-                              (sLengths[c] == buf_1_len + buf_2_len && buf_2_len == 0)))
+                        else if ((sLengths[c] >= buf_1_len) &&
+                                 (sLengths[c] < buf_1_len + buf_2_len || (sLengths[c] == buf_1_len + buf_2_len && buf_2_len == 0)))
                         {
                             NL_TEST_ASSERT(inSuite, returned == buffer_2);
                             theFirstContext->buf = NULL;
@@ -755,7 +741,7 @@ static void CheckConsume(nlTestSuite *inSuite, void *inContext)
                         else if (sLengths[c] >= (buf_1_len + buf_2_len))
                         {
                             NL_TEST_ASSERT(inSuite, returned == NULL);
-                            theFirstContext->buf = NULL;
+                            theFirstContext->buf  = NULL;
                             theSecondContext->buf = NULL;
                         }
                     }
@@ -778,17 +764,17 @@ static void CheckConsume(nlTestSuite *inSuite, void *inContext)
  *               Then, verify that EnsureReservedSize() method correctly
  *               retrieves the amount of the reserved space.
  */
-static void CheckEnsureReservedSize(nlTestSuite *inSuite, void *inContext)
+static void CheckEnsureReservedSize(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
         for (size_t n = 0; n < kTestLengths; n++)
         {
-            PacketBuffer& lBuffer = *PrepareTestBuffer(theContext);
+            PacketBuffer & lBuffer  = *PrepareTestBuffer(theContext);
             const size_t kAllocSize = lBuffer.AllocSize();
-            uint16_t reserved_size = theContext->reserved_size;
+            uint16_t reserved_size  = theContext->reserved_size;
 
             if (WEAVE_SYSTEM_PACKETBUFFER_HEADER_SIZE + theContext->reserved_size > kAllocSize)
             {
@@ -824,15 +810,15 @@ static void CheckEnsureReservedSize(nlTestSuite *inSuite, void *inContext)
  *               required payload shift. Then, verify that AlignPayload()
  *               method correctly aligns the payload start pointer.
  */
-static void CheckAlignPayload(nlTestSuite *inSuite, void *inContext)
+static void CheckAlignPayload(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
         for (size_t n = 0; n < kTestLengths - 1; n++)
         {
-            PacketBuffer& lBuffer = *PrepareTestBuffer(theContext);
+            PacketBuffer & lBuffer  = *PrepareTestBuffer(theContext);
             const size_t kAllocSize = lBuffer.AllocSize();
 
             if (sLengths[n] == 0)
@@ -848,7 +834,7 @@ static void CheckAlignPayload(nlTestSuite *inSuite, void *inContext)
             }
 
             uint16_t payload_offset = (unsigned long) lBuffer.Start() % sLengths[n];
-            uint16_t payload_shift = 0;
+            uint16_t payload_shift  = 0;
             if (payload_offset > 0)
                 payload_shift = sLengths[n] - payload_offset;
 
@@ -870,18 +856,18 @@ static void CheckAlignPayload(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::Next() function.
  */
-static void CheckNext(nlTestSuite *inSuite, void *inContext)
+static void CheckNext(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
-            PacketBuffer *buffer_1 = PrepareTestBuffer(theFirstContext);
-            PacketBuffer *buffer_2 = PrepareTestBuffer(theSecondContext);
+            PacketBuffer * buffer_1 = PrepareTestBuffer(theFirstContext);
+            PacketBuffer * buffer_2 = PrepareTestBuffer(theSecondContext);
 
             if (theFirstContext != theSecondContext)
             {
@@ -905,13 +891,13 @@ static void CheckNext(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::AddRef() function.
  */
-static void CheckAddRef(nlTestSuite *inSuite, void *inContext)
+static void CheckAddRef(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        PacketBuffer *buffer = PrepareTestBuffer(theContext);
+        PacketBuffer * buffer = PrepareTestBuffer(theContext);
         buffer->AddRef();
 
         NL_TEST_ASSERT(inSuite, theContext->buf->ref == 2);
@@ -930,14 +916,14 @@ static void CheckAddRef(nlTestSuite *inSuite, void *inContext)
  *               returns NULL. Otherwise, check for correctness of initializing
  *               the new buffer's internal state. Finally, free the buffer.
  */
-static void CheckNewWithAvailableSizeAndFree(nlTestSuite *inSuite, void *inContext)
+static void CheckNewWithAvailableSizeAndFree(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theContext = (struct TestContext *)(inContext);
-    PacketBuffer *buffer;
+    struct TestContext * theContext = (struct TestContext *) (inContext);
+    PacketBuffer * buffer;
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct pbuf *pb = NULL;
+        struct pbuf * pb = NULL;
 
         buffer = PacketBuffer::NewWithAvailableSize(theContext->reserved_size, 0);
 
@@ -970,8 +956,7 @@ static void CheckNewWithAvailableSizeAndFree(nlTestSuite *inSuite, void *inConte
     do
     {
         buffer = PacketBuffer::NewWithAvailableSize(0, 0);
-    }
-    while (buffer != NULL);
+    } while (buffer != NULL);
 }
 
 /**
@@ -985,23 +970,23 @@ static void CheckNewWithAvailableSizeAndFree(nlTestSuite *inSuite, void *inConte
  *               the chain and verify correctly adjusted states of the two
  *               buffers.
  */
-static void CheckFree(nlTestSuite *inSuite, void *inContext)
+static void CheckFree(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
             const uint16_t init_ref_count[] = { 1, 2, 3 };
-            const int refs = sizeof(init_ref_count) / sizeof(uint16_t);
+            const int refs                  = sizeof(init_ref_count) / sizeof(uint16_t);
 
             // start with various buffer ref counts
             for (size_t r = 0; r < refs; r++)
             {
-                PacketBuffer *buffer_1;
+                PacketBuffer * buffer_1;
 
                 if (theFirstContext == theSecondContext)
                 {
@@ -1009,12 +994,12 @@ static void CheckFree(nlTestSuite *inSuite, void *inContext)
                 }
 
                 buffer_1 = PrepareTestBuffer(theFirstContext);
-                (void)PrepareTestBuffer(theSecondContext);
+                (void) PrepareTestBuffer(theSecondContext);
 
                 theFirstContext->buf->next = theSecondContext->buf;
 
                 // Add various buffer ref counts
-                theFirstContext->buf->ref = init_ref_count[r];
+                theFirstContext->buf->ref  = init_ref_count[r];
                 theSecondContext->buf->ref = init_ref_count[(r + 1) % refs];
 
                 PacketBuffer::Free(buffer_1);
@@ -1062,19 +1047,19 @@ static void CheckFree(nlTestSuite *inSuite, void *inContext)
  *               FreeHead() on the first buffer in the chain and verify that
  *               the method returned pointer to the second buffer.
  */
-static void CheckFreeHead(nlTestSuite *inSuite, void *inContext)
+static void CheckFreeHead(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestContext *theFirstContext = static_cast<struct TestContext *>(inContext);
+    struct TestContext * theFirstContext = static_cast<struct TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
-        struct TestContext *theSecondContext = static_cast<struct TestContext *>(inContext);
+        struct TestContext * theSecondContext = static_cast<struct TestContext *>(inContext);
 
         for (size_t jth = 0; jth < kTestElements; jth++)
         {
-            PacketBuffer *buffer_1;
-            PacketBuffer *buffer_2;
-            PacketBuffer *returned = NULL;
+            PacketBuffer * buffer_1;
+            PacketBuffer * buffer_2;
+            PacketBuffer * returned = NULL;
 
             if (theFirstContext == theSecondContext)
             {
@@ -1101,41 +1086,40 @@ static void CheckFreeHead(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test PacketBuffer::BuildFreeList() function.
  */
-static void CheckBuildFreeList(nlTestSuite *inSuite, void *inContext)
+static void CheckBuildFreeList(nlTestSuite * inSuite, void * inContext)
 {
     // BuildFreeList() is a private method called automatically.
-    (void)inSuite;
-    (void)inContext;
+    (void) inSuite;
+    (void) inContext;
 }
 
 /**
  *   Test Suite. It lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("PacketBuffer::NewWithAvailableSize&PacketBuffer::Free", CheckNewWithAvailableSizeAndFree),
-    NL_TEST_DEF("PacketBuffer::Start",                          CheckStart),
-    NL_TEST_DEF("PacketBuffer::SetStart",                       CheckSetStart),
-    NL_TEST_DEF("PacketBuffer::DataLength",                     CheckDataLength),
-    NL_TEST_DEF("PacketBuffer::SetDataLength",                  CheckSetDataLength),
-    NL_TEST_DEF("PacketBuffer::TotalLength",                    CheckTotalLength),
-    NL_TEST_DEF("PacketBuffer::MaxDataLength",                  CheckMaxDataLength),
-    NL_TEST_DEF("PacketBuffer::AvailableDataLength",            CheckAvailableDataLength),
-    NL_TEST_DEF("PacketBuffer::ReservedSize",                   CheckReservedSize),
-    NL_TEST_DEF("PacketBuffer::AddToEnd",                       CheckAddToEnd),
-    NL_TEST_DEF("PacketBuffer::DetachTail",                     CheckDetachTail),
-    NL_TEST_DEF("PacketBuffer::CompactHead",                    CheckCompactHead),
-    NL_TEST_DEF("PacketBuffer::ConsumeHead",                    CheckConsumeHead),
-    NL_TEST_DEF("PacketBuffer::Consume",                        CheckConsume),
-    NL_TEST_DEF("PacketBuffer::EnsureReservedSize",             CheckEnsureReservedSize),
-    NL_TEST_DEF("PacketBuffer::AlignPayload",                   CheckAlignPayload),
-    NL_TEST_DEF("PacketBuffer::Next",                           CheckNext),
-    NL_TEST_DEF("PacketBuffer::AddRef",                         CheckAddRef),
-    NL_TEST_DEF("PacketBuffer::Free",                           CheckFree),
-    NL_TEST_DEF("PacketBuffer::FreeHead",                       CheckFreeHead),
-    NL_TEST_DEF("PacketBuffer::BuildFreeList",                  CheckBuildFreeList),
+static const nlTest sTests[] = { NL_TEST_DEF("PacketBuffer::NewWithAvailableSize&PacketBuffer::Free",
+                                             CheckNewWithAvailableSizeAndFree),
+                                 NL_TEST_DEF("PacketBuffer::Start", CheckStart),
+                                 NL_TEST_DEF("PacketBuffer::SetStart", CheckSetStart),
+                                 NL_TEST_DEF("PacketBuffer::DataLength", CheckDataLength),
+                                 NL_TEST_DEF("PacketBuffer::SetDataLength", CheckSetDataLength),
+                                 NL_TEST_DEF("PacketBuffer::TotalLength", CheckTotalLength),
+                                 NL_TEST_DEF("PacketBuffer::MaxDataLength", CheckMaxDataLength),
+                                 NL_TEST_DEF("PacketBuffer::AvailableDataLength", CheckAvailableDataLength),
+                                 NL_TEST_DEF("PacketBuffer::ReservedSize", CheckReservedSize),
+                                 NL_TEST_DEF("PacketBuffer::AddToEnd", CheckAddToEnd),
+                                 NL_TEST_DEF("PacketBuffer::DetachTail", CheckDetachTail),
+                                 NL_TEST_DEF("PacketBuffer::CompactHead", CheckCompactHead),
+                                 NL_TEST_DEF("PacketBuffer::ConsumeHead", CheckConsumeHead),
+                                 NL_TEST_DEF("PacketBuffer::Consume", CheckConsume),
+                                 NL_TEST_DEF("PacketBuffer::EnsureReservedSize", CheckEnsureReservedSize),
+                                 NL_TEST_DEF("PacketBuffer::AlignPayload", CheckAlignPayload),
+                                 NL_TEST_DEF("PacketBuffer::Next", CheckNext),
+                                 NL_TEST_DEF("PacketBuffer::AddRef", CheckAddRef),
+                                 NL_TEST_DEF("PacketBuffer::Free", CheckFree),
+                                 NL_TEST_DEF("PacketBuffer::FreeHead", CheckFreeHead),
+                                 NL_TEST_DEF("PacketBuffer::BuildFreeList", CheckBuildFreeList),
 
-    NL_TEST_SENTINEL()
-};
+                                 NL_TEST_SENTINEL() };
 
 /**
  * Set up the test suite.
@@ -1143,9 +1127,9 @@ static const nlTest sTests[] = {
  *  This is a work-around to initiate PacketBuffer protected class instance's data and set it to a known state, before an instance
  *  is created.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
-    struct TestContext* theContext = reinterpret_cast<TestContext*>(inContext);
+    struct TestContext * theContext = reinterpret_cast<TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
@@ -1161,9 +1145,9 @@ static int TestSetup(void *inContext)
  *
  *  Free memory reserved at TestSetup.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
-    struct TestContext* theContext = reinterpret_cast<TestContext*>(inContext);
+    struct TestContext * theContext = reinterpret_cast<TestContext *>(inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++)
     {
@@ -1176,12 +1160,7 @@ static int TestTeardown(void *inContext)
 
 int main(void)
 {
-    nlTestSuite theSuite = {
-        "weave-system-packetbuffer",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-system-packetbuffer", &sTests[0], TestSetup, TestTeardown };
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);

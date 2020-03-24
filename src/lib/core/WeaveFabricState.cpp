@@ -50,8 +50,14 @@
 #if HAVE_NEW
 #include <new>
 #else
-inline void * operator new     (size_t, void * p) throw() { return p; }
-inline void * operator new[]   (size_t, void * p) throw() { return p; }
+inline void * operator new(size_t, void * p) throw()
+{
+    return p;
+}
+inline void * operator new[](size_t, void * p) throw()
+{
+    return p;
+}
 #endif
 
 namespace nl {
@@ -66,7 +72,8 @@ using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::Profiles::Security::AppKeys;
 
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n \
                  !!!!    WARNING - SECURITY_TEST_MODE IS ENABLED    !!!!\n \
                  !!!! BASIC WEAVE SECURITY / ENCRYPTION IS CRIPPLED !!!!\n \
@@ -76,7 +83,8 @@ using namespace nl::Weave::Profiles::Security::AppKeys;
 #endif
 
 #if !WEAVE_CONFIG_REQUIRE_AUTH
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n \
                  !!!!  WARNING - REQUIRE_AUTH IS DISABLED   !!!!\n \
                  !!!! CLIENT AUTHENTICATION IS NOT REQUIRED !!!!\n \
@@ -86,8 +94,8 @@ using namespace nl::Weave::Profiles::Security::AppKeys;
 #endif
 
 #ifndef nlDEFINE_ALIGNED_VAR
-#define nlDEFINE_ALIGNED_VAR(varName, bytes, alignment_type) \
-  alignment_type varName[(((bytes)+(sizeof(alignment_type)-1))/sizeof(alignment_type))]
+#define nlDEFINE_ALIGNED_VAR(varName, bytes, alignment_type)                                                                       \
+    alignment_type varName[(((bytes) + (sizeof(alignment_type) - 1)) / sizeof(alignment_type))]
 #endif
 
 // Identifies the scheme used to rotate fabric secret. The use of this
@@ -99,7 +107,7 @@ typedef uint8_t FabricSecretRotationScheme;
 
 enum
 {
-    kDeprecatedRotationScheme                           = 0x00
+    kDeprecatedRotationScheme = 0x00
 };
 
 // Key diversifier used for Weave message encryption key derivation.
@@ -113,12 +121,12 @@ void WeaveSessionKey::Init(void)
     NodeId = kNodeIdNotSpecified;
     NextMsgId.Init(0);
     MaxRcvdMsgId = 0;
-    BoundCon = NULL;
-    RcvFlags = 0;
-    AuthMode = kWeaveAuthMode_NotSpecified;
+    BoundCon     = NULL;
+    RcvFlags     = 0;
+    AuthMode     = kWeaveAuthMode_NotSpecified;
     memset(&MsgEncKey, 0, sizeof(MsgEncKey));
     ReserveCount = 0;
-    Flags = 0;
+    Flags        = 0;
 }
 
 /**
@@ -127,7 +135,7 @@ void WeaveSessionKey::Init(void)
 void WeaveSessionKey::Clear(void)
 {
     Init();
-    ClearSecretData((uint8_t *)&MsgEncKey.EncKey, sizeof(MsgEncKey.EncKey));
+    ClearSecretData((uint8_t *) &MsgEncKey.EncKey, sizeof(MsgEncKey.EncKey));
 }
 
 /**
@@ -209,12 +217,12 @@ WeaveFabricState::WeaveFabricState()
 
 WEAVE_ERROR WeaveFabricState::Init()
 {
-    static nlDEFINE_ALIGNED_VAR(sDummyGroupKeyStore, sizeof(DummyGroupKeyStore), void*);
+    static nlDEFINE_ALIGNED_VAR(sDummyGroupKeyStore, sizeof(DummyGroupKeyStore), void *);
 
     return Init(new (&sDummyGroupKeyStore) DummyGroupKeyStore());
 }
 
-WEAVE_ERROR WeaveFabricState::Init(GroupKeyStoreBase *groupKeyStore)
+WEAVE_ERROR WeaveFabricState::Init(GroupKeyStoreBase * groupKeyStore)
 {
     if (State != kState_NotInitialized)
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -231,22 +239,23 @@ WEAVE_ERROR WeaveFabricState::Init(GroupKeyStoreBase *groupKeyStore)
 
     GroupKeyStore = groupKeyStore;
 
-    FabricId = kFabricIdNotSpecified;
-    LocalNodeId = 1;
-    PairingCode = NULL;
+    FabricId      = kFabricIdNotSpecified;
+    LocalNodeId   = 1;
+    PairingCode   = NULL;
     DefaultSubnet = kWeaveSubnetId_PrimaryWiFi;
-    PeerCount = 0;
+    PeerCount     = 0;
     NextUnencUDPMsgId.Init(GetRandU32());
     NextUnencTCPMsgId.Init(0);
     for (int i = 0; i < WEAVE_CONFIG_MAX_SESSION_KEYS; i++)
         SessionKeys[i].Init();
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    WEAVE_ERROR err = NextGroupKeyMsgId.Init(WEAVE_CONFIG_PERSISTED_STORAGE_ENC_MSG_CNTR_ID, WEAVE_CONFIG_PERSISTED_STORAGE_ENC_MSG_CNTR_EPOCH);
+    WEAVE_ERROR err =
+        NextGroupKeyMsgId.Init(WEAVE_CONFIG_PERSISTED_STORAGE_ENC_MSG_CNTR_ID, WEAVE_CONFIG_PERSISTED_STORAGE_ENC_MSG_CNTR_EPOCH);
     if (err != WEAVE_NO_ERROR)
         return err;
 
     GroupKeyMsgIdFreshWindowStart = 0;
-    MsgCounterSyncStatus = 0;
+    MsgCounterSyncStatus          = 0;
     AppKeyCache.Init();
 #endif
     memset(&PeerStates, 0, sizeof(PeerStates));
@@ -254,11 +263,11 @@ WEAVE_ERROR WeaveFabricState::Init(GroupKeyStoreBase *groupKeyStore)
     memset(SharedSessionsNodes, 0, sizeof(SharedSessionsNodes));
 
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-    DebugFabricId = 0;
-    LogKeys = false;
-    UseTestKey = false; // DEPRECATED -- Temporarily retained for API compatibility
+    DebugFabricId  = 0;
+    LogKeys        = false;
+    UseTestKey     = false; // DEPRECATED -- Temporarily retained for API compatibility
     AutoCreateKeys = false; // DEPRECATED -- Temporarily retained for API compatibility
-#endif // WEAVE_CONFIG_SECURITY_TEST_MODE
+#endif                      // WEAVE_CONFIG_SECURITY_TEST_MODE
 
 #if WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
 
@@ -267,7 +276,7 @@ WEAVE_ERROR WeaveFabricState::Init(GroupKeyStoreBase *groupKeyStore)
 
 #if defined(DEBUG) && !WEAVE_SYSTEM_CONFIG_USE_LWIP
     {
-        const char *envVal = getenv("WEAVE_IPV6_LISTEN_ADDR");
+        const char * envVal = getenv("WEAVE_IPV6_LISTEN_ADDR");
         if (envVal != NULL)
             IPAddress::FromString(envVal, ListenIPv6Addr);
         envVal = getenv("WEAVE_IPV4_LISTEN_ADDR");
@@ -294,7 +303,8 @@ WEAVE_ERROR WeaveFabricState::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveFabricState::AllocSessionKey(uint64_t peerNodeId, uint16_t keyId, WeaveConnection *boundCon, WeaveSessionKey *& sessionKey)
+WEAVE_ERROR WeaveFabricState::AllocSessionKey(uint64_t peerNodeId, uint16_t keyId, WeaveConnection * boundCon,
+                                              WeaveSessionKey *& sessionKey)
 {
     WEAVE_ERROR err;
     bool chooseRandomKeyId = (keyId == WeaveKeyId::kNone);
@@ -312,23 +322,24 @@ WEAVE_ERROR WeaveFabricState::AllocSessionKey(uint64_t peerNodeId, uint16_t keyI
             return WEAVE_ERROR_DUPLICATE_KEY_ID;
     }
 
-    sessionKey->MsgEncKey.KeyId = keyId;
-    sessionKey->NodeId = peerNodeId;
+    sessionKey->MsgEncKey.KeyId   = keyId;
+    sessionKey->NodeId            = peerNodeId;
     sessionKey->MsgEncKey.EncType = kWeaveEncryptionType_None;
     sessionKey->NextMsgId.Init(UINT32_MAX);
     sessionKey->MaxRcvdMsgId = UINT32_MAX;
-    sessionKey->BoundCon = boundCon;
-    sessionKey->RcvFlags = 0;
-    sessionKey->Flags = WeaveSessionKey::kFlag_RecentlyActive;
+    sessionKey->BoundCon     = boundCon;
+    sessionKey->RcvFlags     = 0;
+    sessionKey->Flags        = WeaveSessionKey::kFlag_RecentlyActive;
     sessionKey->ReserveCount = 1;
 
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveFabricState::SetSessionKey(uint16_t keyId, uint64_t peerNodeId, uint8_t encType, WeaveAuthMode authMode, const WeaveEncryptionKey *encKey)
+WEAVE_ERROR WeaveFabricState::SetSessionKey(uint16_t keyId, uint64_t peerNodeId, uint8_t encType, WeaveAuthMode authMode,
+                                            const WeaveEncryptionKey * encKey)
 {
     WEAVE_ERROR err;
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
 
     err = FindSessionKey(keyId, peerNodeId, false, sessionKey);
     SuccessOrExit(err);
@@ -340,7 +351,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveFabricState::SetSessionKey(WeaveSessionKey *sessionKey, uint8_t encType, WeaveAuthMode authMode, const WeaveEncryptionKey *encKey)
+WEAVE_ERROR WeaveFabricState::SetSessionKey(WeaveSessionKey * sessionKey, uint8_t encType, WeaveAuthMode authMode,
+                                            const WeaveEncryptionKey * encKey)
 {
     WEAVE_ERROR err;
     uint32_t msgId;
@@ -352,19 +364,20 @@ WEAVE_ERROR WeaveFabricState::SetSessionKey(WeaveSessionKey *sessionKey, uint8_t
     SuccessOrExit(err);
 
     sessionKey->MsgEncKey.EncType = encType;
-    sessionKey->MsgEncKey.EncKey = *encKey;
+    sessionKey->MsgEncKey.EncKey  = *encKey;
     sessionKey->NextMsgId.Init(msgId);
     sessionKey->MaxRcvdMsgId = 0;
-    sessionKey->RcvFlags = 0;
-    sessionKey->AuthMode = authMode;
+    sessionKey->RcvFlags     = 0;
+    sessionKey->AuthMode     = authMode;
 
 #if WEAVE_CONFIG_SECURITY_TEST_MODE && WEAVE_DETAIL_LOGGING
     if (LogKeys)
     {
         char keyString[kMaxEncKeyStringSize];
         WeaveEncryptionKeyToString(encType, *encKey, keyString, sizeof(keyString));
-        WeaveLogDetail(MessageLayer, "Message Encryption Key: Id=%04" PRIX16 " Type=SessionKey Peer=%016" PRIX64 " EncType=%02" PRIX8 " Key=%s",
-                sessionKey->MsgEncKey.KeyId, sessionKey->NodeId, encType, keyString);
+        WeaveLogDetail(MessageLayer,
+                       "Message Encryption Key: Id=%04" PRIX16 " Type=SessionKey Peer=%016" PRIX64 " EncType=%02" PRIX8 " Key=%s",
+                       sessionKey->MsgEncKey.KeyId, sessionKey->NodeId, encType, keyString);
     }
 #endif // WEAVE_CONFIG_SECURITY_TEST_MODE
 
@@ -375,7 +388,7 @@ exit:
 WEAVE_ERROR WeaveFabricState::RemoveSessionKey(uint16_t keyId, uint64_t peerNodeId)
 {
     WEAVE_ERROR err;
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
 
     err = FindSessionKey(keyId, peerNodeId, false, sessionKey);
     SuccessOrExit(err);
@@ -386,10 +399,10 @@ exit:
     return err;
 }
 
-void WeaveFabricState::RemoveSessionKey(WeaveSessionKey *sessionKey, bool wasIdle)
+void WeaveFabricState::RemoveSessionKey(WeaveSessionKey * sessionKey, bool wasIdle)
 {
-    WeaveLogDetail(MessageLayer, "Removing %ssession key: Id=%04" PRIX16 " Peer=%016" PRIX64,
-            (wasIdle) ? "idle " : "", sessionKey->MsgEncKey.KeyId, sessionKey->NodeId);
+    WeaveLogDetail(MessageLayer, "Removing %ssession key: Id=%04" PRIX16 " Peer=%016" PRIX64, (wasIdle) ? "idle " : "",
+                   sessionKey->MsgEncKey.KeyId, sessionKey->NodeId);
 
     RemoveSharedSessionEndNodes(sessionKey);
     sessionKey->Clear();
@@ -412,9 +425,9 @@ WEAVE_ERROR WeaveFabricState::GetSessionKey(uint16_t keyId, uint64_t peerNodeId,
  *                                shared session; or NULL if no matching session was found.
  *
  */
-WeaveSessionKey *WeaveFabricState::FindSharedSession(uint64_t terminatingNodeId, WeaveAuthMode authMode, uint8_t encType)
+WeaveSessionKey * WeaveFabricState::FindSharedSession(uint64_t terminatingNodeId, WeaveAuthMode authMode, uint8_t encType)
 {
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
 
     // Search the session keys table for an established shared session key that targets the specified
     // terminating node and matches the given auth mode and encryption type.
@@ -422,8 +435,7 @@ WeaveSessionKey *WeaveFabricState::FindSharedSession(uint64_t terminatingNodeId,
     for (int i = 0; i < WEAVE_CONFIG_MAX_SESSION_KEYS; i++, sessionKey++)
     {
         if (sessionKey->IsAllocated() && sessionKey->IsKeySet() && sessionKey->IsSharedSession() &&
-            sessionKey->NodeId == terminatingNodeId && sessionKey->AuthMode == authMode &&
-            sessionKey->MsgEncKey.EncType == encType)
+            sessionKey->NodeId == terminatingNodeId && sessionKey->AuthMode == authMode && sessionKey->MsgEncKey.EncType == encType)
         {
             return sessionKey;
         }
@@ -444,7 +456,7 @@ WeaveSessionKey *WeaveFabricState::FindSharedSession(uint64_t terminatingNodeId,
 bool WeaveFabricState::IsSharedSession(uint16_t keyId, uint64_t peerNodeId)
 {
     WEAVE_ERROR err;
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
     bool retVal = false;
 
     err = FindSessionKey(keyId, peerNodeId, false, sessionKey);
@@ -467,10 +479,10 @@ exit:
  *                                shared end nodes list.
  *
  */
-bool WeaveFabricState::FindSharedSessionEndNode(uint64_t endNodeId, const WeaveSessionKey *sessionKey)
+bool WeaveFabricState::FindSharedSessionEndNode(uint64_t endNodeId, const WeaveSessionKey * sessionKey)
 {
-    SharedSessionEndNode *endNode = SharedSessionsNodes;
-    bool retVal = false;
+    SharedSessionEndNode * endNode = SharedSessionsNodes;
+    bool retVal                    = false;
 
     for (int i = 0; i < WEAVE_CONFIG_MAX_SHARED_SESSIONS_END_NODES; i++, endNode++)
     {
@@ -487,7 +499,7 @@ bool WeaveFabricState::FindSharedSessionEndNode(uint64_t endNodeId, const WeaveS
 WEAVE_ERROR WeaveFabricState::AddSharedSessionEndNode(uint64_t endNodeId, uint64_t terminatingNodeId, uint16_t keyId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
 
     err = FindSessionKey(keyId, terminatingNodeId, false, sessionKey);
     SuccessOrExit(err);
@@ -511,12 +523,12 @@ exit:
  * @retval #WEAVE_NO_ERROR        On success.
  *
  */
-WEAVE_ERROR WeaveFabricState::AddSharedSessionEndNode(WeaveSessionKey *sessionKey, uint64_t endNodeId)
+WEAVE_ERROR WeaveFabricState::AddSharedSessionEndNode(WeaveSessionKey * sessionKey, uint64_t endNodeId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    SharedSessionEndNode *endNode = SharedSessionsNodes;
-    SharedSessionEndNode *freeEndNode = NULL;
-    uint8_t endNodeCount = 0;
+    WEAVE_ERROR err                    = WEAVE_NO_ERROR;
+    SharedSessionEndNode * endNode     = SharedSessionsNodes;
+    SharedSessionEndNode * freeEndNode = NULL;
+    uint8_t endNodeCount               = 0;
 
     // No need to add new shared entry record if the end node is also the terminating node.
     VerifyOrExit(endNodeId != sessionKey->NodeId, /* Exit without error. */);
@@ -547,7 +559,7 @@ WEAVE_ERROR WeaveFabricState::AddSharedSessionEndNode(WeaveSessionKey *sessionKe
                  err = WEAVE_ERROR_TOO_MANY_SHARED_SESSION_END_NODES);
 
     // Add new end node.
-    freeEndNode->EndNodeId = endNodeId;
+    freeEndNode->EndNodeId  = endNodeId;
     freeEndNode->SessionKey = sessionKey;
 
 exit:
@@ -567,11 +579,11 @@ exit:
  * @retval #WEAVE_NO_ERROR        On success.
  *
  */
-WEAVE_ERROR WeaveFabricState::GetSharedSessionEndNodeIds(const WeaveSessionKey *sessionKey, uint64_t *endNodeIds,
-                                                         uint8_t endNodeIdsMaxCount, uint8_t& endNodeIdsCount)
+WEAVE_ERROR WeaveFabricState::GetSharedSessionEndNodeIds(const WeaveSessionKey * sessionKey, uint64_t * endNodeIds,
+                                                         uint8_t endNodeIdsMaxCount, uint8_t & endNodeIdsCount)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    SharedSessionEndNode *endNode = SharedSessionsNodes;
+    WEAVE_ERROR err                = WEAVE_NO_ERROR;
+    SharedSessionEndNode * endNode = SharedSessionsNodes;
 
     endNodeIdsCount = 0;
 
@@ -590,18 +602,18 @@ exit:
     return err;
 }
 
-void WeaveFabricState::RemoveSharedSessionEndNodes(const WeaveSessionKey *sessionKey)
+void WeaveFabricState::RemoveSharedSessionEndNodes(const WeaveSessionKey * sessionKey)
 {
     if (sessionKey->IsSharedSession())
     {
-        SharedSessionEndNode *endNode = SharedSessionsNodes;
+        SharedSessionEndNode * endNode = SharedSessionsNodes;
 
         // Clear all information about shared session end nodes.
         for (int i = 0; i < WEAVE_CONFIG_MAX_SHARED_SESSIONS_END_NODES; i++, endNode++)
         {
             if (endNode->SessionKey == sessionKey)
             {
-                memset((uint8_t *)endNode, 0, sizeof(SharedSessionEndNode));
+                memset((uint8_t *) endNode, 0, sizeof(SharedSessionEndNode));
             }
         }
     }
@@ -617,7 +629,8 @@ void WeaveFabricState::RemoveSharedSessionEndNodes(const WeaveSessionKey *sessio
  * allowing them to persist the state of an active session and thereby avoid the need to
  * re-establish the session when they wake.
  */
-WEAVE_ERROR WeaveFabricState::SuspendSession(uint16_t keyId, uint64_t peerNodeId, uint8_t * buf, uint16_t bufSize, uint16_t & serializedSessionLen)
+WEAVE_ERROR WeaveFabricState::SuspendSession(uint16_t keyId, uint64_t peerNodeId, uint8_t * buf, uint16_t bufSize,
+                                             uint16_t & serializedSessionLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveSessionKey * sessionKey;
@@ -661,7 +674,7 @@ WEAVE_ERROR WeaveFabricState::SuspendSession(uint16_t keyId, uint64_t peerNodeId
         // If the session is shared...
         if (sessionKey->IsSharedSession())
         {
-            SharedSessionEndNode *endNode = SharedSessionsNodes;
+            SharedSessionEndNode * endNode = SharedSessionsNodes;
             TLVType container2;
 
             // Begin encoding an array containing the alternate node ids for the peer.
@@ -694,15 +707,16 @@ WEAVE_ERROR WeaveFabricState::SuspendSession(uint16_t keyId, uint64_t peerNodeId
         switch (sessionKey->MsgEncKey.EncType)
         {
         case kWeaveEncryptionType_AES128CTRSHA1:
-            err = writer.PutBytes(ContextTag(kTag_SerializedSession_AES128CTRSHA1_DataKey),
-                    sessionKey->MsgEncKey.EncKey.AES128CTRSHA1.DataKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
+            err =
+                writer.PutBytes(ContextTag(kTag_SerializedSession_AES128CTRSHA1_DataKey),
+                                sessionKey->MsgEncKey.EncKey.AES128CTRSHA1.DataKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
             SuccessOrExit(err);
             err = writer.PutBytes(ContextTag(kTag_SerializedSession_AES128CTRSHA1_IntegrityKey),
-                    sessionKey->MsgEncKey.EncKey.AES128CTRSHA1.IntegrityKey, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
+                                  sessionKey->MsgEncKey.EncKey.AES128CTRSHA1.IntegrityKey,
+                                  WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
             SuccessOrExit(err);
             break;
-        default:
-            ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
+        default: ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
         }
 
         // End the Security:SerializedSession TLV structure and finalize the encoding.
@@ -711,7 +725,7 @@ WEAVE_ERROR WeaveFabricState::SuspendSession(uint16_t keyId, uint64_t peerNodeId
         err = writer.Finalize();
         SuccessOrExit(err);
 
-        serializedSessionLen = (uint16_t)writer.GetLengthWritten();
+        serializedSessionLen = (uint16_t) writer.GetLengthWritten();
     }
 
     // Mark the session key as suspended.
@@ -719,7 +733,7 @@ WEAVE_ERROR WeaveFabricState::SuspendSession(uint16_t keyId, uint64_t peerNodeId
 
     // Wipe the key.
     sessionKey->MsgEncKey.EncType = kWeaveEncryptionType_None;
-    ClearSecretData((uint8_t *)&sessionKey->MsgEncKey.EncKey, sizeof(sessionKey->MsgEncKey.EncKey));
+    ClearSecretData((uint8_t *) &sessionKey->MsgEncKey.EncKey, sizeof(sessionKey->MsgEncKey.EncKey));
 
 exit:
     // If something goes wrong, make sure we don't leave any key material behind.
@@ -742,7 +756,7 @@ WEAVE_ERROR WeaveFabricState::RestoreSession(uint8_t * serializedSession, uint16
     uint16_t keyId;
     uint64_t peerNodeId;
     WeaveSessionKey * sessionKey = NULL;
-    bool removeSessionOnError = false;
+    bool removeSessionOnError    = false;
 
     reader.Init(serializedSession, serializedSessionLen);
 
@@ -768,10 +782,10 @@ WEAVE_ERROR WeaveFabricState::RestoreSession(uint8_t * serializedSession, uint16
     if (!sessionKey->IsAllocated())
     {
         sessionKey->MsgEncKey.KeyId = keyId;
-        sessionKey->NodeId = peerNodeId;
-        sessionKey->BoundCon = NULL;
-        sessionKey->ReserveCount = 0;
-        sessionKey->Flags = 0;
+        sessionKey->NodeId          = peerNodeId;
+        sessionKey->BoundCon        = NULL;
+        sessionKey->ReserveCount    = 0;
+        sessionKey->Flags           = 0;
     }
     else
     {
@@ -875,11 +889,11 @@ WEAVE_ERROR WeaveFabricState::RestoreSession(uint8_t * serializedSession, uint16
         err = reader.Next(kTLVType_ByteString, ContextTag(kTag_SerializedSession_AES128CTRSHA1_IntegrityKey));
         SuccessOrExit(err);
         VerifyOrExit(reader.GetLength() == WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize, err = WEAVE_ERROR_INVALID_ARGUMENT);
-        err = reader.GetBytes(sessionKey->MsgEncKey.EncKey.AES128CTRSHA1.IntegrityKey, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
+        err = reader.GetBytes(sessionKey->MsgEncKey.EncKey.AES128CTRSHA1.IntegrityKey,
+                              WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
         SuccessOrExit(err);
         break;
-    default:
-        ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
+    default: ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
     }
 
     // Verify no other data in the serialized session structure.
@@ -896,11 +910,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveFabricState::GetSessionState(uint64_t remoteNodeId,
-                                              uint16_t keyId,
-                                              uint8_t encType,
-                                              WeaveConnection *con,
-                                              WeaveSessionState& outSessionState)
+WEAVE_ERROR WeaveFabricState::GetSessionState(uint64_t remoteNodeId, uint16_t keyId, uint8_t encType, WeaveConnection * con,
+                                              WeaveSessionState & outSessionState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     PeerIndexType peerIndex;
@@ -925,39 +936,42 @@ WEAVE_ERROR WeaveFabricState::GetSessionState(uint64_t remoteNodeId,
         break;
 
     case WeaveKeyId::kType_Session:
-        WeaveSessionKey *sessionKey;
+        WeaveSessionKey * sessionKey;
         err = FindSessionKey(keyId, remoteNodeId, false, sessionKey);
         if (err != WEAVE_NO_ERROR)
             return err;
         if (sessionKey->IsSuspended())
             return WEAVE_ERROR_SESSION_KEY_SUSPENDED;
         if (sessionKey->MsgEncKey.EncType != encType)
-            return (sessionKey->MsgEncKey.EncType == kWeaveEncryptionType_None) ? WEAVE_ERROR_KEY_NOT_FOUND : WEAVE_ERROR_WRONG_ENCRYPTION_TYPE;
+            return (sessionKey->MsgEncKey.EncType == kWeaveEncryptionType_None) ? WEAVE_ERROR_KEY_NOT_FOUND
+                                                                                : WEAVE_ERROR_WRONG_ENCRYPTION_TYPE;
         if (sessionKey->BoundCon != NULL && sessionKey->BoundCon != con)
             return WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY;
-        outSessionState = WeaveSessionState(&sessionKey->MsgEncKey, sessionKey->AuthMode, &sessionKey->NextMsgId, &sessionKey->MaxRcvdMsgId, &sessionKey->RcvFlags);
+        outSessionState = WeaveSessionState(&sessionKey->MsgEncKey, sessionKey->AuthMode, &sessionKey->NextMsgId,
+                                            &sessionKey->MaxRcvdMsgId, &sessionKey->RcvFlags);
         break;
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
     case WeaveKeyId::kType_AppStaticKey:
     case WeaveKeyId::kType_AppRotatingKey:
     {
-        WeaveMsgEncryptionKey *applicationKey;
+        WeaveMsgEncryptionKey * applicationKey;
         err = FindMsgEncAppKey(keyId, encType, applicationKey);
         SuccessOrExit(err);
 
         WeaveAuthMode authMode = GroupKeyAuthMode(keyId);
 
         if (FindOrAllocPeerEntry(remoteNodeId, false, peerIndex))
-            outSessionState = WeaveSessionState(applicationKey, authMode, &NextGroupKeyMsgId, &PeerStates.MaxGroupKeyMsgIdRcvd[peerIndex], &PeerStates.GroupKeyRcvFlags[peerIndex]);
+            outSessionState =
+                WeaveSessionState(applicationKey, authMode, &NextGroupKeyMsgId, &PeerStates.MaxGroupKeyMsgIdRcvd[peerIndex],
+                                  &PeerStates.GroupKeyRcvFlags[peerIndex]);
         else
             outSessionState = WeaveSessionState(applicationKey, authMode, &NextGroupKeyMsgId, NULL, NULL);
         break;
     }
 #endif
 
-    default:
-        ExitNow(err = WEAVE_ERROR_UNKNOWN_KEY_TYPE);
+    default: ExitNow(err = WEAVE_ERROR_UNKNOWN_KEY_TYPE);
     }
 
 exit:
@@ -1005,20 +1019,17 @@ IPAddress WeaveFabricState::SelectNodeAddress(uint64_t nodeId) const
 /**
  * Determines if an IP address represents an address of a node within the local Weave fabric.
  */
-bool WeaveFabricState::IsFabricAddress(const IPAddress &addr) const
+bool WeaveFabricState::IsFabricAddress(const IPAddress & addr) const
 {
-    return (FabricId != kFabricIdNotSpecified &&
-            addr.IsIPv6ULA() &&
-            addr.GlobalId() == WeaveFabricIdToIPv6GlobalId(FabricId));
+    return (FabricId != kFabricIdNotSpecified && addr.IsIPv6ULA() && addr.GlobalId() == WeaveFabricIdToIPv6GlobalId(FabricId));
 }
 
 /**
  * Determines if an IP address represents a Weave fabric address for the local node.
  */
-bool WeaveFabricState::IsLocalFabricAddress(const IPAddress &addr) const
+bool WeaveFabricState::IsLocalFabricAddress(const IPAddress & addr) const
 {
-    return (IsFabricAddress(addr) &&
-            IPv6InterfaceIdToWeaveNodeId(addr.InterfaceId()) == LocalNodeId);
+    return (IsFabricAddress(addr) && IPv6InterfaceIdToWeaveNodeId(addr.InterfaceId()) == LocalNodeId);
 }
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
@@ -1038,8 +1049,7 @@ void WeaveFabricState::OnMsgCounterSyncRespRcvd(uint64_t peerNodeId, uint32_t pe
     PeerIndexType peerIndex;
 
     // If requestor message counter is fresh.
-    if (IsMsgCounterSyncReqInProgress() &&
-        (requestorMsgCounter >= GroupKeyMsgIdFreshWindowStart) &&
+    if (IsMsgCounterSyncReqInProgress() && (requestorMsgCounter >= GroupKeyMsgIdFreshWindowStart) &&
         (requestorMsgCounter < NextGroupKeyMsgId.GetValue()))
     {
         FindOrAllocPeerEntry(peerNodeId, true, peerIndex);
@@ -1048,7 +1058,7 @@ void WeaveFabricState::OnMsgCounterSyncRespRcvd(uint64_t peerNodeId, uint32_t pe
         if ((PeerStates.GroupKeyRcvFlags[peerIndex] & WeaveSessionState::kReceiveFlags_MessageIdSynchronized) == 0)
         {
             // Initialize group key entry in the peer state table.
-            PeerStates.GroupKeyRcvFlags[peerIndex] = WeaveSessionState::kReceiveFlags_MessageIdSynchronized;
+            PeerStates.GroupKeyRcvFlags[peerIndex]     = WeaveSessionState::kReceiveFlags_MessageIdSynchronized;
             PeerStates.MaxGroupKeyMsgIdRcvd[peerIndex] = peerMsgId;
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
@@ -1065,7 +1075,8 @@ void WeaveFabricState::OnMsgCounterSyncRespRcvd(uint64_t peerNodeId, uint32_t pe
 void WeaveFabricState::StartMsgCounterSyncTimer(void)
 {
     // Arm timer to call MsgCounterSyncRespTimeout after WEAVE_CONFIG_MSG_COUNTER_SYNC_RESP_TIMEOUT.
-    WEAVE_ERROR res = MessageLayer->SystemLayer->StartTimer((uint32_t)WEAVE_CONFIG_MSG_COUNTER_SYNC_RESP_TIMEOUT, OnMsgCounterSyncRespTimeout, this);
+    WEAVE_ERROR res = MessageLayer->SystemLayer->StartTimer((uint32_t) WEAVE_CONFIG_MSG_COUNTER_SYNC_RESP_TIMEOUT,
+                                                            OnMsgCounterSyncRespTimeout, this);
     VerifyOrDie(res == WEAVE_NO_ERROR);
 }
 
@@ -1101,9 +1112,9 @@ void WeaveFabricState::OnMsgCounterSyncReqSent(uint32_t messageId)
 }
 
 // Handle MsgCounterSyncRespTimeout.
-void WeaveFabricState::OnMsgCounterSyncRespTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveFabricState::OnMsgCounterSyncRespTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveFabricState* fabricState = reinterpret_cast<WeaveFabricState*>(aAppState);
+    WeaveFabricState * fabricState = reinterpret_cast<WeaveFabricState *>(aAppState);
     uint32_t freshWindoWidth;
 
     VerifyOrDie(fabricState != NULL && fabricState->MessageLayer->SystemLayer == aSystemLayer);
@@ -1111,7 +1122,8 @@ void WeaveFabricState::OnMsgCounterSyncRespTimeout(System::Layer* aSystemLayer, 
     // If message counter synchronization request was sent this period.
     if (fabricState->MsgCounterSyncStatus & fabricState->kFlag_ReqSentThisPeriod)
     {
-        fabricState->GroupKeyMsgIdFreshWindowStart += (fabricState->MsgCounterSyncStatus & fabricState->kMask_GroupKeyMsgIdFreshWindowWidth);
+        fabricState->GroupKeyMsgIdFreshWindowStart +=
+            (fabricState->MsgCounterSyncStatus & fabricState->kMask_GroupKeyMsgIdFreshWindowWidth);
 
         freshWindoWidth = fabricState->NextGroupKeyMsgId.GetValue() - fabricState->GroupKeyMsgIdFreshWindowStart;
 
@@ -1158,7 +1170,8 @@ void WeaveFabricState::OnMsgCounterSyncRespTimeout(System::Layer* aSystemLayer, 
  * @param[out]  keyId           The key ID to be used to encrypt messages for the specified
  *                              Weave Application Group.
  */
-WEAVE_ERROR WeaveFabricState::GetMsgEncKeyIdForAppGroup(uint32_t appGroupGlobalId, uint32_t rootKeyId, bool useRotatingKey, uint32_t& keyId)
+WEAVE_ERROR WeaveFabricState::GetMsgEncKeyIdForAppGroup(uint32_t appGroupGlobalId, uint32_t rootKeyId, bool useRotatingKey,
+                                                        uint32_t & keyId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t masterKeyId;
@@ -1195,7 +1208,8 @@ exit:
  * @param[in]   requireRotatingKey
  *                              True if the Weave Application Group uses rotating message keys.
  */
-WEAVE_ERROR WeaveFabricState::CheckMsgEncForAppGroup(const WeaveMessageInfo *msgInfo, uint32_t appGroupGlobalId, uint32_t rootKeyId, bool requireRotatingKey)
+WEAVE_ERROR WeaveFabricState::CheckMsgEncForAppGroup(const WeaveMessageInfo * msgInfo, uint32_t appGroupGlobalId,
+                                                     uint32_t rootKeyId, bool requireRotatingKey)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t expectedMasterKeyId;
@@ -1235,7 +1249,7 @@ exit:
  *                              was requested.
  *
  */
-bool WeaveFabricState::FindOrAllocPeerEntry(uint64_t peerNodeId, bool allocEntry, PeerIndexType& retPeerIndex)
+bool WeaveFabricState::FindOrAllocPeerEntry(uint64_t peerNodeId, bool allocEntry, PeerIndexType & retPeerIndex)
 {
     uint16_t i;
     bool retVal = false;
@@ -1290,40 +1304,37 @@ bool WeaveFabricState::FindOrAllocPeerEntry(uint64_t peerNodeId, bool allocEntry
             retPeerIndex = i;
         }
 
-        PeerStates.NodeId[retPeerIndex] = peerNodeId;
+        PeerStates.NodeId[retPeerIndex]               = peerNodeId;
         PeerStates.MaxUnencUDPMsgIdRcvd[retPeerIndex] = 0;
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
         PeerStates.MaxGroupKeyMsgIdRcvd[retPeerIndex] = 0;
-        PeerStates.GroupKeyRcvFlags[retPeerIndex] = 0;
+        PeerStates.GroupKeyRcvFlags[retPeerIndex]     = 0;
 #endif
         PeerStates.UnencRcvFlags[retPeerIndex] = 0;
-        retVal = true;
+        retVal                                 = true;
     }
 
     // Move the requested entry to the top of the most recently used indexes list.
     if (retVal)
     {
-        memmove(&PeerStates.MostRecentlyUsedIndexes[1],
-                &PeerStates.MostRecentlyUsedIndexes[0],
-                i * sizeof(PeerIndexType));
+        memmove(&PeerStates.MostRecentlyUsedIndexes[1], &PeerStates.MostRecentlyUsedIndexes[0], i * sizeof(PeerIndexType));
         PeerStates.MostRecentlyUsedIndexes[0] = retPeerIndex;
     }
 
     return retVal;
 }
 
-WEAVE_ERROR WeaveFabricState::GetPassword(uint8_t pwSrc, const char *& ps, uint16_t& pwLen)
+WEAVE_ERROR WeaveFabricState::GetPassword(uint8_t pwSrc, const char *& ps, uint16_t & pwLen)
 {
     switch (pwSrc)
     {
     case kPasswordSource_PairingCode:
         if (PairingCode == NULL)
             return WEAVE_ERROR_INVALID_ARGUMENT; // TODO: use proper error code
-        ps = PairingCode;
-        pwLen = (uint16_t)strlen(PairingCode);
+        ps    = PairingCode;
+        pwLen = (uint16_t) strlen(PairingCode);
         return WEAVE_NO_ERROR;
-    default:
-        return WEAVE_ERROR_INVALID_ARGUMENT; // TODO: use proper error code
+    default: return WEAVE_ERROR_INVALID_ARGUMENT; // TODO: use proper error code
     }
 }
 
@@ -1356,7 +1367,7 @@ WEAVE_ERROR WeaveFabricState::CreateFabric()
         // uniqueness.
         do
         {
-            err = nl::Weave::Platform::Security::GetSecureRandomData((unsigned char *)&FabricId, sizeof(FabricId));
+            err = nl::Weave::Platform::Security::GetSecureRandomData((unsigned char *) &FabricId, sizeof(FabricId));
             SuccessOrExit(err);
         } while (FabricId == kFabricIdNotSpecified || FabricId >= kReservedFabricIdStart);
     }
@@ -1369,9 +1380,9 @@ WEAVE_ERROR WeaveFabricState::CreateFabric()
 #endif
 
     // Create an initial fabric secret.
-    fabricSecret.KeyId = WeaveKeyId::kFabricSecret;
+    fabricSecret.KeyId  = WeaveKeyId::kFabricSecret;
     fabricSecret.KeyLen = kWeaveFabricSecretSize;
-    err = nl::Weave::Platform::Security::GetSecureRandomData(fabricSecret.Key, kWeaveFabricSecretSize);
+    err                 = nl::Weave::Platform::Security::GetSecureRandomData(fabricSecret.Key, kWeaveFabricSecretSize);
     SuccessOrExit(err);
 
     err = GroupKeyStore->StoreGroupKey(fabricSecret);
@@ -1384,7 +1395,7 @@ exit:
     if (err != WEAVE_NO_ERROR)
         ClearFabricState();
 
-    ClearSecretData((uint8_t *)&fabricSecret, sizeof(fabricSecret));
+    ClearSecretData((uint8_t *) &fabricSecret, sizeof(fabricSecret));
 
     return err;
 }
@@ -1394,7 +1405,7 @@ void WeaveFabricState::ClearFabricState()
     uint64_t oldFabricId;
 
     oldFabricId = FabricId;
-    FabricId = kFabricIdNotSpecified;
+    FabricId    = kFabricIdNotSpecified;
     GroupKeyStore->Clear();
 
     if (oldFabricId != kFabricIdNotSpecified)
@@ -1402,10 +1413,9 @@ void WeaveFabricState::ClearFabricState()
         if (Delegate != NULL)
             Delegate->DidLeaveFabric(this, oldFabricId);
     }
-
 }
 
-WEAVE_ERROR WeaveFabricState::GetFabricState(uint8_t *buf, uint32_t bufSize, uint32_t &fabricStateLen)
+WEAVE_ERROR WeaveFabricState::GetFabricState(uint8_t * buf, uint32_t bufSize, uint32_t & fabricStateLen)
 {
     WEAVE_ERROR err;
     TLVWriter writer;
@@ -1445,19 +1455,20 @@ WEAVE_ERROR WeaveFabricState::GetFabricState(uint8_t *buf, uint32_t bufSize, uin
             err = writer.Put(ContextTag(kTag_FabricKeyId), (uint16_t)(fabricSecret.KeyId));
             SuccessOrExit(err);
 
-            err = writer.Put(ContextTag(kTag_EncryptionType), (uint8_t)kWeaveEncryptionType_AES128CTRSHA1);
+            err = writer.Put(ContextTag(kTag_EncryptionType), (uint8_t) kWeaveEncryptionType_AES128CTRSHA1);
             SuccessOrExit(err);
 
             err = writer.PutBytes(ContextTag(kTag_DataKey), fabricSecret.Key, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
             SuccessOrExit(err);
 
-            err = writer.PutBytes(ContextTag(kTag_IntegrityKey), fabricSecret.Key + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
+            err = writer.PutBytes(ContextTag(kTag_IntegrityKey), fabricSecret.Key + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
+                                  WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
             SuccessOrExit(err);
 
-            err = writer.Put(ContextTag(kTag_KeyScope), (FabricSecretScope)kFabricSecretScope_All);
+            err = writer.Put(ContextTag(kTag_KeyScope), (FabricSecretScope) kFabricSecretScope_All);
             SuccessOrExit(err);
 
-            err = writer.Put(ContextTag(kTag_RotationScheme), (FabricSecretRotationScheme)kDeprecatedRotationScheme);
+            err = writer.Put(ContextTag(kTag_RotationScheme), (FabricSecretRotationScheme) kDeprecatedRotationScheme);
             SuccessOrExit(err);
 
             err = writer.EndContainer(containerType3);
@@ -1480,7 +1491,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveFabricState::JoinExistingFabric(const uint8_t *fabricState, uint32_t fabricStateLen)
+WEAVE_ERROR WeaveFabricState::JoinExistingFabric(const uint8_t * fabricState, uint32_t fabricStateLen)
 {
     WEAVE_ERROR err;
     TLVReader reader;
@@ -1547,14 +1558,17 @@ WEAVE_ERROR WeaveFabricState::JoinExistingFabric(const uint8_t *fabricState, uin
 
                 err = reader.Next(kTLVType_ByteString, ContextTag(kTag_DataKey));
                 SuccessOrExit(err);
-                VerifyOrExit(reader.GetLength() == WeaveEncryptionKey_AES128CTRSHA1::DataKeySize, err = WEAVE_ERROR_INVALID_ARGUMENT);
+                VerifyOrExit(reader.GetLength() == WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
+                             err = WEAVE_ERROR_INVALID_ARGUMENT);
                 err = reader.GetBytes(fabricSecret.Key, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
                 SuccessOrExit(err);
 
                 err = reader.Next(kTLVType_ByteString, ContextTag(kTag_IntegrityKey));
                 SuccessOrExit(err);
-                VerifyOrExit(reader.GetLength() == WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize, err = WEAVE_ERROR_INVALID_ARGUMENT);
-                err = reader.GetBytes(fabricSecret.Key + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
+                VerifyOrExit(reader.GetLength() == WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize,
+                             err = WEAVE_ERROR_INVALID_ARGUMENT);
+                err = reader.GetBytes(fabricSecret.Key + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
+                                      WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
                 SuccessOrExit(err);
 
                 fabricSecret.KeyLen = kWeaveFabricSecretSize;
@@ -1596,9 +1610,9 @@ exit:
     return err;
 }
 
-void WeaveFabricState::HandleConnectionClosed(WeaveConnection *con)
+void WeaveFabricState::HandleConnectionClosed(WeaveConnection * con)
 {
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
 
     // Remove any session keys that are bound to the closed connection.
     sessionKey = SessionKeys;
@@ -1615,21 +1629,22 @@ void WeaveFabricState::HandleConnectionClosed(WeaveConnection *con)
 
 WeaveSessionState::WeaveSessionState(void)
 {
-    MsgEncKey = NULL;
-    AuthMode = kWeaveAuthMode_NotSpecified;
-    NextMsgId = NULL;
+    MsgEncKey    = NULL;
+    AuthMode     = kWeaveAuthMode_NotSpecified;
+    NextMsgId    = NULL;
     MaxMsgIdRcvd = NULL;
-    RcvFlags = NULL;
+    RcvFlags     = NULL;
 }
 
-WeaveSessionState::WeaveSessionState(WeaveMsgEncryptionKey *msgEncKey, WeaveAuthMode authMode,
-                                     MonotonicallyIncreasingCounter *nextMsgId, uint32_t *maxMsgIdRcvd, ReceiveFlagsType *rcvFlags)
+WeaveSessionState::WeaveSessionState(WeaveMsgEncryptionKey * msgEncKey, WeaveAuthMode authMode,
+                                     MonotonicallyIncreasingCounter * nextMsgId, uint32_t * maxMsgIdRcvd,
+                                     ReceiveFlagsType * rcvFlags)
 {
-    MsgEncKey = msgEncKey;
-    AuthMode = authMode;
-    NextMsgId = nextMsgId;
+    MsgEncKey    = msgEncKey;
+    AuthMode     = authMode;
+    NextMsgId    = nextMsgId;
     MaxMsgIdRcvd = maxMsgIdRcvd;
-    RcvFlags = rcvFlags;
+    RcvFlags     = rcvFlags;
 }
 
 uint32_t WeaveSessionState::NewMessageId(void)
@@ -1689,7 +1704,7 @@ bool WeaveSessionState::IsDuplicateMessage(uint32_t msgId)
         // Otherwise mark message as synchronized and initialize peer's max counter.
         else
         {
-            *RcvFlags = kReceiveFlags_MessageIdSynchronized;
+            *RcvFlags     = kReceiveFlags_MessageIdSynchronized;
             *MaxMsgIdRcvd = msgId;
             ExitNow();
         }
@@ -1711,7 +1726,7 @@ bool WeaveSessionState::IsDuplicateMessage(uint32_t msgId)
     // (send-rate * 2^31) past a message's original send time, while allowing (send-rate * (2^31 - 1)) time
     // between message arrivals before a new message will be mistakenly considered a duplicate.
     //
-    delta = (int32_t) (msgId - *MaxMsgIdRcvd);
+    delta = (int32_t)(msgId - *MaxMsgIdRcvd);
 
     // If the new message was sent after the max id message...
     if (delta > 0)
@@ -1728,7 +1743,8 @@ bool WeaveSessionState::IsDuplicateMessage(uint32_t msgId)
     }
 
     // If the new id is the same as the max id message, the message is a duplicate.
-    else if (delta == 0) {
+    else if (delta == 0)
+    {
         ExitNow(isDup = true);
     }
     // Otherwise the new message was sent earlier than the max id message...
@@ -1744,7 +1760,8 @@ bool WeaveSessionState::IsDuplicateMessage(uint32_t msgId)
             ReceiveFlagsType mask = 1 << (delta - 1);
             if ((msgIdFlags & mask) == 0)
                 msgIdFlags |= mask;
-            else {
+            else
+            {
                 ExitNow(isDup = true);
             }
         }
@@ -1753,7 +1770,8 @@ bool WeaveSessionState::IsDuplicateMessage(uint32_t msgId)
         else
         {
             // If the message was encrypted then assume the message is a duplicate.
-            if (MsgEncKey != NULL) {
+            if (MsgEncKey != NULL)
+            {
                 ExitNow(isDup = true);
             }
 
@@ -1764,7 +1782,7 @@ bool WeaveSessionState::IsDuplicateMessage(uint32_t msgId)
             // in the network layer, we allow message ids for unencrypted messages from the same peer to go backwards.
             else
             {
-                msgIdFlags = 0;
+                msgIdFlags    = 0;
                 *MaxMsgIdRcvd = msgId;
             }
         }
@@ -1795,8 +1813,8 @@ exit:
  */
 WEAVE_ERROR WeaveFabricState::FindSessionKey(uint16_t keyId, uint64_t peerNodeId, bool create, WeaveSessionKey *& retRec)
 {
-    WeaveSessionKey *curRec = SessionKeys;
-    WeaveSessionKey *freeRec = NULL;
+    WeaveSessionKey * curRec  = SessionKeys;
+    WeaveSessionKey * freeRec = NULL;
 
     if (!WeaveKeyId::IsSessionKey(keyId))
         return WEAVE_ERROR_WRONG_KEY_TYPE;
@@ -1812,8 +1830,7 @@ WEAVE_ERROR WeaveFabricState::FindSessionKey(uint16_t keyId, uint64_t peerNodeId
                 freeRec = curRec;
         }
         else if (curRec->MsgEncKey.KeyId == keyId &&
-                 (curRec->NodeId == peerNodeId ||
-                  (curRec->IsSharedSession() && FindSharedSessionEndNode(peerNodeId, curRec))))
+                 (curRec->NodeId == peerNodeId || (curRec->IsSharedSession() && FindSharedSessionEndNode(peerNodeId, curRec))))
         {
             retRec = curRec;
             return WEAVE_NO_ERROR;
@@ -1852,7 +1869,9 @@ WEAVE_ERROR WeaveFabricState::FindMsgEncAppKey(uint16_t keyId, uint8_t encType, 
         {
             char keyString[kMaxEncKeyStringSize];
             WeaveEncryptionKeyToString(encType, retRec->EncKey, keyString, sizeof(keyString));
-            WeaveLogDetail(MessageLayer, "Message Encryption Key: Id=%04" PRIX16 " Type=GroupKey(%08" PRIX32 ") EncType=%02" PRIX8 " Key=%s", keyId, appGroupGlobalId, encType, keyString);
+            WeaveLogDetail(MessageLayer,
+                           "Message Encryption Key: Id=%04" PRIX16 " Type=GroupKey(%08" PRIX32 ") EncType=%02" PRIX8 " Key=%s",
+                           keyId, appGroupGlobalId, encType, keyString);
         }
 #endif
     }
@@ -1886,7 +1905,8 @@ exit:
  *                                  key store APIs.
  *
  */
-WEAVE_ERROR WeaveFabricState::DeriveMsgEncAppKey(uint32_t keyId, uint8_t encType, WeaveMsgEncryptionKey& appKey, uint32_t& appGroupGlobalId)
+WEAVE_ERROR WeaveFabricState::DeriveMsgEncAppKey(uint32_t keyId, uint8_t encType, WeaveMsgEncryptionKey & appKey,
+                                                 uint32_t & appGroupGlobalId)
 {
     WEAVE_ERROR err;
     uint8_t keyData[WeaveEncryptionKey_AES128CTRSHA1::KeySize];
@@ -1900,21 +1920,17 @@ WEAVE_ERROR WeaveFabricState::DeriveMsgEncAppKey(uint32_t keyId, uint8_t encType
     keyDiversifier[sizeof(kWeaveMsgEncAppKeyDiversifier)] = encType;
 
     // Derive application key data.
-    err = GroupKeyStore->DeriveApplicationKey(keyId, NULL, 0, keyDiversifier, kWeaveMsgEncAppKeyDiversifierSize,
-                                              keyData, sizeof(keyData), WeaveEncryptionKey_AES128CTRSHA1::KeySize,
-                                              appGroupGlobalId);
+    err = GroupKeyStore->DeriveApplicationKey(keyId, NULL, 0, keyDiversifier, kWeaveMsgEncAppKeyDiversifierSize, keyData,
+                                              sizeof(keyData), WeaveEncryptionKey_AES128CTRSHA1::KeySize, appGroupGlobalId);
     SuccessOrExit(err);
 
     // Copy the generated key data to the appropriate destinations.
-    memcpy(appKey.EncKey.AES128CTRSHA1.DataKey,
-           keyData,
-           WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
-    memcpy(appKey.EncKey.AES128CTRSHA1.IntegrityKey,
-           keyData + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
+    memcpy(appKey.EncKey.AES128CTRSHA1.DataKey, keyData, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
+    memcpy(appKey.EncKey.AES128CTRSHA1.IntegrityKey, keyData + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
            WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
 
     // Set key parameters.
-    appKey.KeyId = keyId;
+    appKey.KeyId   = keyId;
     appKey.EncType = encType;
 
 exit:
@@ -1924,14 +1940,14 @@ exit:
 }
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
 
-void WeaveFabricState::SetDelegate(FabricStateDelegate *aDelegate)
+void WeaveFabricState::SetDelegate(FabricStateDelegate * aDelegate)
 {
     Delegate = aDelegate;
 }
 
 bool WeaveFabricState::RemoveIdleSessionKeys()
 {
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
     bool potentialIdleSessionsExist = false;
 
     // For each allocated session key...
@@ -1974,8 +1990,6 @@ bool WeaveFabricState::RemoveIdleSessionKeys()
     return potentialIdleSessionsExist;
 }
 
-
-
 // ============================================================
 // Weave Message Encryption Application Key Cache.
 // ============================================================
@@ -2000,16 +2014,16 @@ void WeaveMsgEncryptionKeyCache::Reset()
 // Clear key cache entry.
 void WeaveMsgEncryptionKeyCache::Clear(uint8_t keyEntryIndex)
 {
-    ClearSecretData((uint8_t *)(&mKeyCache[keyEntryIndex]), sizeof(WeaveMsgEncryptionKey));
-    mKeyCache[keyEntryIndex].KeyId = WeaveKeyId::kNone;
+    ClearSecretData((uint8_t *) (&mKeyCache[keyEntryIndex]), sizeof(WeaveMsgEncryptionKey));
+    mKeyCache[keyEntryIndex].KeyId   = WeaveKeyId::kNone;
     mKeyCache[keyEntryIndex].EncType = kWeaveEncryptionType_None;
 }
 
 // If the key is found in the cache then function returns pointer to the key.
 // If the key is not found in the cache then function allocates and returns pointer to the empty key entry in the cache.
-WeaveMsgEncryptionKey *WeaveMsgEncryptionKeyCache::FindOrAllocateKeyEntry(uint16_t keyId, uint8_t encType)
+WeaveMsgEncryptionKey * WeaveMsgEncryptionKeyCache::FindOrAllocateKeyEntry(uint16_t keyId, uint8_t encType)
 {
-    WeaveMsgEncryptionKey *keyEntry;
+    WeaveMsgEncryptionKey * keyEntry;
     uint8_t retKeyEntryIndex = WEAVE_CONFIG_MAX_CACHED_MSG_ENC_APP_KEYS;
     uint8_t i;
 
@@ -2049,7 +2063,6 @@ WeaveMsgEncryptionKey *WeaveMsgEncryptionKeyCache::FindOrAllocateKeyEntry(uint16
     return &mKeyCache[retKeyEntryIndex];
 }
 
-
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
 
 static inline char ToHex(const uint8_t data)
@@ -2057,7 +2070,7 @@ static inline char ToHex(const uint8_t data)
     return (data < 10) ? '0' + data : 'A' + (data - 10);
 }
 
-static void ToHexString(const uint8_t *data, size_t dataLen, char *& outBuf, size_t& outBufSize)
+static void ToHexString(const uint8_t * data, size_t dataLen, char *& outBuf, size_t & outBufSize)
 {
     for (; dataLen > 0 && outBufSize >= 2; data++, dataLen--, outBuf += 2, outBufSize -= 2)
     {
@@ -2066,7 +2079,7 @@ static void ToHexString(const uint8_t *data, size_t dataLen, char *& outBuf, siz
     }
 }
 
-void WeaveEncryptionKeyToString(uint8_t encType, const WeaveEncryptionKey& key, char *buf, size_t bufSize)
+void WeaveEncryptionKeyToString(uint8_t encType, const WeaveEncryptionKey & key, char * buf, size_t bufSize)
 {
     if (encType == kWeaveEncryptionType_AES128CTRSHA1)
     {

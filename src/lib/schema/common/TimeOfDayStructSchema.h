@@ -29,8 +29,6 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Common {
@@ -42,15 +40,13 @@ struct TimeOfDay
     uint8_t second;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct TimeOfDay_array {
+struct TimeOfDay_array
+{
     uint32_t num;
-    TimeOfDay *buf;
+    TimeOfDay * buf;
 };
-
-
 
 } // namespace Common
 } // namespace Weave

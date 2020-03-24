@@ -74,7 +74,7 @@ exit:
     return err;
 }
 
-void ConnectivityManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent *event)
+void ConnectivityManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent * event)
 {
     // Forward the event to the generic base classes as needed.
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD

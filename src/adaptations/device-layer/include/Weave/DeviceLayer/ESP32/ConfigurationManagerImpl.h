@@ -39,10 +39,9 @@ class NetworkProvisioningServerImpl;
 /**
  * Concrete implementation of the ConfigurationManager singleton object for the ESP32 platform.
  */
-class ConfigurationManagerImpl final
-    : public ConfigurationManager,
-      public Internal::GenericConfigurationManagerImpl<ConfigurationManagerImpl>,
-      private Internal::ESP32Config
+class ConfigurationManagerImpl final : public ConfigurationManager,
+                                       public Internal::GenericConfigurationManagerImpl<ConfigurationManagerImpl>,
+                                       private Internal::ESP32Config
 {
     // Allow the ConfigurationManager interface class to delegate method calls to
     // the implementation methods provided by this class.
@@ -53,7 +52,6 @@ class ConfigurationManagerImpl final
     friend class Internal::GenericConfigurationManagerImpl<ConfigurationManagerImpl>;
 
 private:
-
     // ===== Members that implement the ConfigurationManager public interface.
 
     WEAVE_ERROR _Init(void);

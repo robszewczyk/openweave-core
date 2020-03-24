@@ -39,26 +39,24 @@ namespace Weave {
 namespace Platform {
 namespace Security {
 
-WEAVE_ERROR MemoryInit(void *buf, size_t bufSize)
+WEAVE_ERROR MemoryInit(void * buf, size_t bufSize)
 {
     return WEAVE_NO_ERROR;
 }
 
-void MemoryShutdown()
-{
-}
+void MemoryShutdown() { }
 
-void *MemoryAlloc(size_t size)
+void * MemoryAlloc(size_t size)
 {
     return MemoryAlloc(size, false);
 }
 
-void *MemoryAlloc(size_t size, bool isLongTermAlloc)
+void * MemoryAlloc(size_t size, bool isLongTermAlloc)
 {
     return malloc(size);
 }
 
-void MemoryFree(void *p)
+void MemoryFree(void * p)
 {
     free(p);
 }

@@ -43,7 +43,6 @@ namespace Weave {
 namespace Profiles {
 namespace Security {
 
-
 // Message Types for Weave Security Profile
 //
 // clang-format off
@@ -386,10 +385,8 @@ extern ASN1::OID WeaveCurveIdToOID(uint32_t weaveCurveId);
 
 inline uint32_t OIDToWeaveCurveId(ASN1::OID curveOID)
 {
-    return (((uint32_t)kWeaveVendor_NestLabs) << kWeaveCurveId_VendorShift) | (kWeaveCurveId_CurveNumMask & curveOID);
+    return (((uint32_t) kWeaveVendor_NestLabs) << kWeaveCurveId_VendorShift) | (kWeaveCurveId_CurveNumMask & curveOID);
 }
-
-
 
 } // namespace Security
 } // namespace Profiles

@@ -42,23 +42,26 @@
  * - PTR, a pointer into a buffer of type uint8_t
  * - VAL, a value to write
  */
-#define WRITEBYTE(PTR, VAL)        \
-    do {                           \
-        *(PTR)++ = (uint8_t)(VAL); \
+#define WRITEBYTE(PTR, VAL)                                                                                                        \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        *(PTR)++ = (uint8_t)(VAL);                                                                                                 \
     } while (0)
 
-#define WRITE16(PTR, VAL)               \
-    do {                                \
-        WRITEBYTE((PTR), ((VAL) >> 0)); \
-        WRITEBYTE((PTR), ((VAL) >> 8)); \
+#define WRITE16(PTR, VAL)                                                                                                          \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        WRITEBYTE((PTR), ((VAL) >> 0));                                                                                            \
+        WRITEBYTE((PTR), ((VAL) >> 8));                                                                                            \
     } while (0)
 
-#define WRITE32(PTR, VAL)                \
-    do {                                 \
-        WRITEBYTE((PTR), ((VAL) >>  0)); \
-        WRITEBYTE((PTR), ((VAL) >>  8)); \
-        WRITEBYTE((PTR), ((VAL) >> 16)); \
-        WRITEBYTE((PTR), ((VAL) >> 24)); \
+#define WRITE32(PTR, VAL)                                                                                                          \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        WRITEBYTE((PTR), ((VAL) >> 0));                                                                                            \
+        WRITEBYTE((PTR), ((VAL) >> 8));                                                                                            \
+        WRITEBYTE((PTR), ((VAL) >> 16));                                                                                           \
+        WRITEBYTE((PTR), ((VAL) >> 24));                                                                                           \
     } while (0)
 
 /*
@@ -66,26 +69,28 @@
  * parameter: PTR, a pointer into a buffer of type uint8_t
  * value: the value read form the buffer
  */
-#define READBYTE(PTR) (*(uint8_t *)(PTR)++)
+#define READBYTE(PTR) (*(uint8_t *) (PTR)++)
 /*
  * parameters:
  * - PTR, a pointer into a buffer of type uint8_t
  * - DEST, where to put what's read from *p
  */
-#define READ16(PTR, DEST)                           \
-    do {                                            \
-        uint16_t __byte0 = (uint16_t)READBYTE(PTR); \
-        uint16_t __byte1 = (uint16_t)READBYTE(PTR); \
-        DEST = __byte0 + (__byte1 << 8);            \
+#define READ16(PTR, DEST)                                                                                                          \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        uint16_t __byte0 = (uint16_t) READBYTE(PTR);                                                                               \
+        uint16_t __byte1 = (uint16_t) READBYTE(PTR);                                                                               \
+        DEST             = __byte0 + (__byte1 << 8);                                                                               \
     } while (0)
 
-#define READ32(PTR, DEST)                                                    \
-    do {                                                                     \
-        uint16_t __byte0 = (uint16_t)READBYTE(PTR);                          \
-        uint16_t __byte1 = (uint16_t)READBYTE(PTR);                          \
-        uint16_t __byte2 = (uint16_t)READBYTE(PTR);                          \
-        uint16_t __byte3 = (uint16_t)READBYTE(PTR);                          \
-        DEST = __byte0 + (__byte1 << 8) + (__byte2 << 16) + (__byte3 << 24); \
+#define READ32(PTR, DEST)                                                                                                          \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        uint16_t __byte0 = (uint16_t) READBYTE(PTR);                                                                               \
+        uint16_t __byte1 = (uint16_t) READBYTE(PTR);                                                                               \
+        uint16_t __byte2 = (uint16_t) READBYTE(PTR);                                                                               \
+        uint16_t __byte3 = (uint16_t) READBYTE(PTR);                                                                               \
+        DEST             = __byte0 + (__byte1 << 8) + (__byte2 << 16) + (__byte3 << 24);                                           \
     } while (0)
 
 /*
@@ -94,16 +99,20 @@
  * it's not good and so on. this results in a bunch of boilerplate
  * code, which is captured here.
  */
-#define TRY(OPERATION)                      \
-    do {                                    \
-        WEAVE_ERROR e = (OPERATION);        \
-        if ( e != WEAVE_NO_ERROR) return e; \
+#define TRY(OPERATION)                                                                                                             \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        WEAVE_ERROR e = (OPERATION);                                                                                               \
+        if (e != WEAVE_NO_ERROR)                                                                                                   \
+            return e;                                                                                                              \
     } while (0)
 
-#define RESCUE(ERR,OPERATION,OUT)            \
-    do {                                     \
-        ERR = (OPERATION);                   \
-        if (ERR != WEAVE_NO_ERROR) goto OUT; \
+#define RESCUE(ERR, OPERATION, OUT)                                                                                                \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        ERR = (OPERATION);                                                                                                         \
+        if (ERR != WEAVE_NO_ERROR)                                                                                                 \
+            goto OUT;                                                                                                              \
     } while (0)
 
 namespace nl {
@@ -112,64 +121,64 @@ namespace Weave {
 
 namespace Profiles {
 
-  /**
-   *  @class RetainedPacketBuffer
-   *
-   *  @brief
-   *    This is a base class that serves as a convenience object for
-   *    automatically reference counting a System::PacketBuffer.
-   *
-   */
-  class NL_DLL_EXPORT RetainedPacketBuffer
-  {
-  public:
-      // Con/destructors
-      RetainedPacketBuffer(void);
-      RetainedPacketBuffer(const RetainedPacketBuffer &aRetainedPacketBuffer);
-      ~RetainedPacketBuffer(void);
+/**
+ *  @class RetainedPacketBuffer
+ *
+ *  @brief
+ *    This is a base class that serves as a convenience object for
+ *    automatically reference counting a System::PacketBuffer.
+ *
+ */
+class NL_DLL_EXPORT RetainedPacketBuffer
+{
+public:
+    // Con/destructors
+    RetainedPacketBuffer(void);
+    RetainedPacketBuffer(const RetainedPacketBuffer & aRetainedPacketBuffer);
+    ~RetainedPacketBuffer(void);
 
-      RetainedPacketBuffer &operator =(const RetainedPacketBuffer &aRetainedPacketBuffer);
+    RetainedPacketBuffer & operator =(const RetainedPacketBuffer & aRetainedPacketBuffer);
 
-      virtual bool IsRetaining(void) const;
+    virtual bool IsRetaining(void) const;
 
-      void Retain(System::PacketBuffer *aBuffer);
-      virtual void Release(void);
+    void Retain(System::PacketBuffer * aBuffer);
+    virtual void Release(void);
 
-      inline System::PacketBuffer *GetBuffer(void) { return (mBuffer); }
+    inline System::PacketBuffer * GetBuffer(void) { return (mBuffer); }
 
-  protected:
-      System::PacketBuffer *mBuffer; ///< A pointer to the retained packet buffer.
-  };
+protected:
+    System::PacketBuffer * mBuffer; ///< A pointer to the retained packet buffer.
+};
 
-  /**
-   * In order to use message buffers sensibly, we define this iterator,
-   * which can be used to keep track of boundaries and so on.
-   */
-  class NL_DLL_EXPORT MessageIterator : public RetainedPacketBuffer
-  {
-  public:
+/**
+ * In order to use message buffers sensibly, we define this iterator,
+ * which can be used to keep track of boundaries and so on.
+ */
+class NL_DLL_EXPORT MessageIterator : public RetainedPacketBuffer
+{
+public:
     // constructor
-    MessageIterator(System::PacketBuffer*);
+    MessageIterator(System::PacketBuffer *);
     // reading and writing
-    WEAVE_ERROR readByte(uint8_t*);
-    WEAVE_ERROR read16(uint16_t*);
-    WEAVE_ERROR read32(uint32_t*);
-    WEAVE_ERROR read64(uint64_t*);
-    WEAVE_ERROR readString(uint16_t, char*);
-    WEAVE_ERROR readBytes(uint16_t, uint8_t*);
+    WEAVE_ERROR readByte(uint8_t *);
+    WEAVE_ERROR read16(uint16_t *);
+    WEAVE_ERROR read32(uint32_t *);
+    WEAVE_ERROR read64(uint64_t *);
+    WEAVE_ERROR readString(uint16_t, char *);
+    WEAVE_ERROR readBytes(uint16_t, uint8_t *);
     WEAVE_ERROR writeByte(uint8_t);
     WEAVE_ERROR write16(uint16_t);
     WEAVE_ERROR write32(uint32_t);
     WEAVE_ERROR write64(uint64_t);
-    WEAVE_ERROR writeString(uint16_t, char*);
-    WEAVE_ERROR writeBytes(uint16_t, uint8_t*);
+    WEAVE_ERROR writeString(uint16_t, char *);
+    WEAVE_ERROR writeBytes(uint16_t, uint8_t *);
     // standard iterator operations
-    MessageIterator& operator ++(void);
-    MessageIterator& operator +(uint16_t);
-    MessageIterator& operator -(uint16_t);
-    bool operator ==(const MessageIterator&);
-    bool operator !=(const MessageIterator&);
-    uint8_t& operator *(void);
+    MessageIterator & operator ++(void);
+    MessageIterator & operator +(uint16_t);
+    MessageIterator & operator -(uint16_t);
+    bool operator ==(const MessageIterator &);
+    bool operator !=(const MessageIterator &);
+    uint8_t & operator *(void);
     void append(void);
     // size checking
     bool hasData(uint16_t);
@@ -177,42 +186,41 @@ namespace Profiles {
     // finishing
     void finishWriting(void);
     // data members
-    uint8_t *thePoint;
-  };
-  /**
-   * Here's how to handle strings in Weave. This class has 8-bit
-   * and 16-bit variants.
-   */
-  class NL_DLL_EXPORT ReferencedString : public RetainedPacketBuffer
-  {
-  public:
+    uint8_t * thePoint;
+};
+/**
+ * Here's how to handle strings in Weave. This class has 8-bit
+ * and 16-bit variants.
+ */
+class NL_DLL_EXPORT ReferencedString : public RetainedPacketBuffer
+{
+public:
     // constructor
     ReferencedString(void);
     // initializers
-    WEAVE_ERROR init(uint16_t aLength, char* aString, System::PacketBuffer* aBuffer);
-    WEAVE_ERROR init(uint16_t aLength, char* aString);
-    WEAVE_ERROR init(uint8_t aLength, char* aString, System::PacketBuffer* aBuffer);
-    WEAVE_ERROR init(uint8_t aLength, char* aString);
+    WEAVE_ERROR init(uint16_t aLength, char * aString, System::PacketBuffer * aBuffer);
+    WEAVE_ERROR init(uint16_t aLength, char * aString);
+    WEAVE_ERROR init(uint8_t aLength, char * aString, System::PacketBuffer * aBuffer);
+    WEAVE_ERROR init(uint8_t aLength, char * aString);
     // pack and parse
-    WEAVE_ERROR pack(MessageIterator&);
-    static WEAVE_ERROR parse(MessageIterator&, ReferencedString&);
+    WEAVE_ERROR pack(MessageIterator &);
+    static WEAVE_ERROR parse(MessageIterator &, ReferencedString &);
     // comparison
-    bool operator ==(const ReferencedString&) const;
+    bool operator ==(const ReferencedString &) const;
     // print string generation (for testing)
-    char *printString(void);
-    //data members
+    char * printString(void);
+    // data members
     uint16_t theLength;
-    char *theString;
+    char * theString;
     bool isShort;
-  };
-  /**
-   * Similarly, we need to be able to represent a big old blob
-   * of TLV data.
-   */
-  class NL_DLL_EXPORT ReferencedTLVData : public RetainedPacketBuffer
-  {
-  public:
-
+};
+/**
+ * Similarly, we need to be able to represent a big old blob
+ * of TLV data.
+ */
+class NL_DLL_EXPORT ReferencedTLVData : public RetainedPacketBuffer
+{
+public:
     /*
      * under certain circumstances, e.g. when we don't want to blow out the
      * stack by writing some big thing into it in preparation for sending
@@ -230,7 +238,7 @@ namespace Profiles {
      * - void*, a state object known to the application
      */
 
-    typedef void (*TLVWriteCallback)(TLV::TLVWriter &aWriter, void *aAppState);
+    typedef void (*TLVWriteCallback)(TLV::TLVWriter & aWriter, void * aAppState);
 
     // constructor
 
@@ -238,10 +246,10 @@ namespace Profiles {
 
     // initializers
 
-    WEAVE_ERROR init(System::PacketBuffer* aBuffer);
-    WEAVE_ERROR init(MessageIterator&i);
-    WEAVE_ERROR init(uint16_t aLength, uint16_t aMaxLength, uint8_t*aByteString);
-    WEAVE_ERROR init(TLVWriteCallback aWriteCallback, void*anAppState);
+    WEAVE_ERROR init(System::PacketBuffer * aBuffer);
+    WEAVE_ERROR init(MessageIterator & i);
+    WEAVE_ERROR init(uint16_t aLength, uint16_t aMaxLength, uint8_t * aByteString);
+    WEAVE_ERROR init(TLVWriteCallback aWriteCallback, void * anAppState);
 
     /*
      * ReferencedTLVData needs to override the free() and isFree()
@@ -264,10 +272,7 @@ namespace Profiles {
      * callback in hand, false otherwise.
      */
 
-    inline bool isEmpty(void)
-    {
-        return (theLength == 0 && theWriteCallback == NULL);
-    };
+    inline bool isEmpty(void) { return (theLength == 0 && theWriteCallback == NULL); };
 
     // packing and parsing
 
@@ -282,14 +287,14 @@ namespace Profiles {
      * pack call.
      */
 
-    inline WEAVE_ERROR pack(System::PacketBuffer *buff)
+    inline WEAVE_ERROR pack(System::PacketBuffer * buff)
     {
         MessageIterator i(buff);
 
         return pack(i);
     };
 
-    WEAVE_ERROR pack(MessageIterator&i, uint32_t maxLen = 0xFFFFFFFFUL);
+    WEAVE_ERROR pack(MessageIterator & i, uint32_t maxLen = 0xFFFFFFFFUL);
 
     /**
      * Return the data length assuming that the object has been packed
@@ -298,10 +303,7 @@ namespace Profiles {
      * @return the integer length of the packed data.
      */
 
-    inline uint16_t packedLength(void)
-    {
-        return theLength;
-    };
+    inline uint16_t packedLength(void) { return theLength; };
 
     /**
      * @fn WEAVE_ERROR parse(System::PacketBuffer *buff, ReferencedTLVData &aTarget)
@@ -319,34 +321,34 @@ namespace Profiles {
      * parse call.
      */
 
-    static inline WEAVE_ERROR parse(System::PacketBuffer *buff, ReferencedTLVData &aTarget)
+    static inline WEAVE_ERROR parse(System::PacketBuffer * buff, ReferencedTLVData & aTarget)
     {
         MessageIterator i(buff);
 
         return parse(i, aTarget);
     };
 
-    static WEAVE_ERROR parse(MessageIterator&i, ReferencedTLVData&aTarget);
+    static WEAVE_ERROR parse(MessageIterator & i, ReferencedTLVData & aTarget);
 
     // comparison
 
-    bool operator ==(const ReferencedTLVData&) const;
+    bool operator ==(const ReferencedTLVData &) const;
 
     // data members
 
-    uint16_t         theLength;
-    uint16_t         theMaxLength;
-    uint8_t         *theData;
+    uint16_t theLength;
+    uint16_t theMaxLength;
+    uint8_t * theData;
 
-  private:
+private:
     TLVWriteCallback theWriteCallback;
-    void            *theAppState;
-  };
+    void * theAppState;
+};
 
-}; // Profiles
+}; // namespace Profiles
 
-}; // Weave
+}; // namespace Weave
 
-}; // nl
+}; // namespace nl
 
 #endif // _WEAVE_MESSAGE_H

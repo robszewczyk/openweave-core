@@ -34,8 +34,8 @@ namespace Resource {
 namespace Service {
 namespace DescriptionServiceResource {
 
-
-enum {
+enum
+{
     DeviceLabel = 0,
 };
 } // namespace DescriptionServiceResource

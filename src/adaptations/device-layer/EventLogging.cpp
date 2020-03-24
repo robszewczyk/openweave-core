@@ -63,36 +63,26 @@ WEAVE_ERROR InitWeaveEventLogging(void)
 #endif
 
     nl::Weave::Profiles::DataManagement::LogStorageResources logStorageResources[] = {
-        { static_cast<void *>(&gCritEventBuffer[0]), sizeof(gCritEventBuffer),
-          &critEventIdCounterStorageKey,
-          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH,
-          &sCritEventIdCounter,
+        { static_cast<void *>(&gCritEventBuffer[0]), sizeof(gCritEventBuffer), &critEventIdCounterStorageKey,
+          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH, &sCritEventIdCounter,
           nl::Weave::Profiles::DataManagement::ImportanceType::ProductionCritical },
-        { static_cast<void *>(&gProdEventBuffer[0]), sizeof(gProdEventBuffer),
-          &prodEventIdCounterStorageKey,
-          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH,
-          &sProdEventIdCounter,
+        { static_cast<void *>(&gProdEventBuffer[0]), sizeof(gProdEventBuffer), &prodEventIdCounterStorageKey,
+          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH, &sProdEventIdCounter,
           nl::Weave::Profiles::DataManagement::ImportanceType::Production },
 #if WEAVE_DEVICE_CONFIG_EVENT_LOGGING_INFO_BUFFER_SIZE
-        { static_cast<void *>(&gInfoEventBuffer[0]), sizeof(gInfoEventBuffer),
-          &infoEventIdCounterStorageKey,
-          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH,
-          &sInfoEventIdCounter,
+        { static_cast<void *>(&gInfoEventBuffer[0]), sizeof(gInfoEventBuffer), &infoEventIdCounterStorageKey,
+          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH, &sInfoEventIdCounter,
           nl::Weave::Profiles::DataManagement::ImportanceType::Info },
 #endif
 #if WEAVE_DEVICE_CONFIG_EVENT_LOGGING_DEBUG_BUFFER_SIZE
-        { static_cast<void *>(&gDebugEventBuffer[0]), sizeof(gDebugEventBuffer),
-          &debugEventIdCounterStorageKey,
-          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH,
-          &sDebugEventIdCounter,
+        { static_cast<void *>(&gDebugEventBuffer[0]), sizeof(gDebugEventBuffer), &debugEventIdCounterStorageKey,
+          WEAVE_DEVICE_CONFIG_EVENT_ID_COUNTER_EPOCH, &sDebugEventIdCounter,
           nl::Weave::Profiles::DataManagement::ImportanceType::Debug },
 #endif
     };
 
     nl::Weave::Profiles::DataManagement::LoggingManagement::CreateLoggingManagement(
-        &nl::Weave::DeviceLayer::ExchangeMgr,
-        sizeof(logStorageResources) / sizeof(logStorageResources[0]),
-        logStorageResources);
+        &nl::Weave::DeviceLayer::ExchangeMgr, sizeof(logStorageResources) / sizeof(logStorageResources[0]), logStorageResources);
 
     return WEAVE_NO_ERROR;
 }

@@ -73,15 +73,12 @@ WEAVE_ERROR ESP32Utils::StartWiFiLayer(void)
     err = esp_wifi_get_max_tx_power(&ignored);
     switch (err)
     {
-    case ESP_OK:
-        wifiStarted = true;
-        break;
+    case ESP_OK: wifiStarted = true; break;
     case ESP_ERR_WIFI_NOT_STARTED:
         wifiStarted = false;
-        err = ESP_OK;
+        err         = ESP_OK;
         break;
-    default:
-        ExitNow();
+    default: ExitNow();
     }
 
     if (!wifiStarted)
@@ -116,7 +113,8 @@ WEAVE_ERROR ESP32Utils::EnableStationMode(void)
     // the mode to WIFI_MODE_APSTA.
     if (curWiFiMode == WIFI_MODE_AP)
     {
-        WeaveLogProgress(DeviceLayer, "Changing ESP WiFi mode: %s -> %s", WiFiModeToStr(WIFI_MODE_AP), WiFiModeToStr(WIFI_MODE_APSTA));
+        WeaveLogProgress(DeviceLayer, "Changing ESP WiFi mode: %s -> %s", WiFiModeToStr(WIFI_MODE_AP),
+                         WiFiModeToStr(WIFI_MODE_APSTA));
 
         err = esp_wifi_set_mode(WIFI_MODE_APSTA);
         if (err != ESP_OK)
@@ -149,7 +147,8 @@ WEAVE_ERROR ESP32Utils::SetAPMode(bool enabled)
     // the mode to WIFI_MODE_APSTA.
     if (true /* curWiFiMode != targetWiFiMode */)
     {
-        WeaveLogProgress(DeviceLayer, "Changing ESP WiFi mode: %s -> %s", WiFiModeToStr(curWiFiMode), WiFiModeToStr(targetWiFiMode));
+        WeaveLogProgress(DeviceLayer, "Changing ESP WiFi mode: %s -> %s", WiFiModeToStr(curWiFiMode),
+                         WiFiModeToStr(targetWiFiMode));
 
         err = esp_wifi_set_mode(targetWiFiMode);
         if (err != ESP_OK)
@@ -167,20 +166,13 @@ WiFiSecurityType ESP32Utils::WiFiAuthModeToWeaveWiFiSecurityType(wifi_auth_mode_
 {
     switch (authMode)
     {
-    case WIFI_AUTH_OPEN:
-        return kWiFiSecurityType_None;
-    case WIFI_AUTH_WEP:
-        return kWiFiSecurityType_WEP;
-    case WIFI_AUTH_WPA_PSK:
-        return kWiFiSecurityType_WPAPersonal;
-    case WIFI_AUTH_WPA2_PSK:
-        return kWiFiSecurityType_WPA2Personal;
-    case WIFI_AUTH_WPA_WPA2_PSK:
-        return kWiFiSecurityType_WPA2MixedPersonal;
-    case WIFI_AUTH_WPA2_ENTERPRISE:
-        return kWiFiSecurityType_WPA2Enterprise;
-    default:
-        return kWiFiSecurityType_NotSpecified;
+    case WIFI_AUTH_OPEN: return kWiFiSecurityType_None;
+    case WIFI_AUTH_WEP: return kWiFiSecurityType_WEP;
+    case WIFI_AUTH_WPA_PSK: return kWiFiSecurityType_WPAPersonal;
+    case WIFI_AUTH_WPA2_PSK: return kWiFiSecurityType_WPA2Personal;
+    case WIFI_AUTH_WPA_WPA2_PSK: return kWiFiSecurityType_WPA2MixedPersonal;
+    case WIFI_AUTH_WPA2_ENTERPRISE: return kWiFiSecurityType_WPA2Enterprise;
+    default: return kWiFiSecurityType_NotSpecified;
     }
 }
 
@@ -204,16 +196,11 @@ const char * ESP32Utils::WiFiModeToStr(wifi_mode_t wifiMode)
 {
     switch (wifiMode)
     {
-    case WIFI_MODE_NULL:
-        return "NULL";
-    case WIFI_MODE_STA:
-        return "STA";
-    case WIFI_MODE_AP:
-        return "AP";
-    case WIFI_MODE_APSTA:
-        return "STA+AP";
-    default:
-        return "(unknown)";
+    case WIFI_MODE_NULL: return "NULL";
+    case WIFI_MODE_STA: return "STA";
+    case WIFI_MODE_AP: return "AP";
+    case WIFI_MODE_APSTA: return "STA+AP";
+    default: return "(unknown)";
     }
 }
 
@@ -225,7 +212,7 @@ struct netif * ESP32Utils::GetStationNetif(void)
 struct netif * ESP32Utils::GetNetif(tcpip_adapter_if_t intfId)
 {
     struct netif * netif;
-    return (tcpip_adapter_get_netif(intfId, (void **)&netif) == ESP_OK) ? netif : NULL;
+    return (tcpip_adapter_get_netif(intfId, (void **) &netif) == ESP_OK) ? netif : NULL;
 }
 
 bool ESP32Utils::IsInterfaceUp(tcpip_adapter_if_t intfId)
@@ -238,14 +225,10 @@ const char * ESP32Utils::InterfaceIdToName(tcpip_adapter_if_t intfId)
 {
     switch (intfId)
     {
-    case TCPIP_ADAPTER_IF_STA:
-        return "WiFi station";
-    case TCPIP_ADAPTER_IF_AP:
-        return "WiFi AP";
-    case TCPIP_ADAPTER_IF_ETH:
-        return "Ethernet";
-    default:
-        return "(unknown)";
+    case TCPIP_ADAPTER_IF_STA: return "WiFi station";
+    case TCPIP_ADAPTER_IF_AP: return "WiFi AP";
+    case TCPIP_ADAPTER_IF_ETH: return "Ethernet";
+    default: return "(unknown)";
     }
 }
 

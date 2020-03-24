@@ -55,53 +55,55 @@ using namespace nl::Weave::Profiles::Security;
 
 #define TOOL_NAME "weave-ping"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 static void DriveSending();
-static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-static void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+static void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 static void StartClientConnection();
 static void StartSecureSession();
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
-static void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                           uint64_t peerNodeId, uint8_t encType);
+static void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                     uint64_t peerNodeId, StatusReport * statusReport);
 static void ParseDestAddress();
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-static void HandleServiceMgrStatus(void *appState, WEAVE_ERROR anError, StatusReport *aReport);
+static void HandleServiceMgrStatus(void * appState, WEAVE_ERROR anError, StatusReport * aReport);
 #endif
 
-bool Listening = false;
+bool Listening       = false;
 int32_t MaxEchoCount = -1;
 int32_t EchoInterval = 1000000;
-int32_t EchoLength = -1;
-bool UseTCP = true;
-bool Debug = false;
+int32_t EchoLength   = -1;
+bool UseTCP          = true;
+bool Debug           = false;
 uint64_t DestNodeId;
-const char *DestAddr = NULL;
-IPAddress DestIPAddr; // only used for UDP
-uint16_t DestPort; // only used for UDP
-InterfaceId DestIntf = INET_NULL_INTERFACEID; // only used for UDP
-uint64_t LastEchoTime = 0;
+const char * DestAddr = NULL;
+IPAddress DestIPAddr;                            // only used for UDP
+uint16_t DestPort;                               // only used for UDP
+InterfaceId DestIntf    = INET_NULL_INTERFACEID; // only used for UDP
+uint64_t LastEchoTime   = 0;
 bool WaitingForEchoResp = false;
-int64_t EchoCount = 0;
-int64_t EchoRespCount = 0;
+int64_t EchoCount       = 0;
+int64_t EchoRespCount   = 0;
 WeaveEchoClient EchoClient;
 WeaveEchoServer EchoServer;
-WeaveConnection *Con = NULL;
-bool ClientConInProgress = false;
-bool ClientConEstablished = false;
-bool ClientSecureSessionInProgress = false;
+WeaveConnection * Con               = NULL;
+bool ClientConInProgress            = false;
+bool ClientConEstablished           = false;
+bool ClientSecureSessionInProgress  = false;
 bool ClientSecureSessionEstablished = false;
-WeaveAuthMode AuthMode = kWeaveAuthMode_Unauthenticated;
+WeaveAuthMode AuthMode              = kWeaveAuthMode_Unauthenticated;
 
 // The server should not reply a StatusReport with kStatus_Busy for more than 30 seconds.
 // See WeaveSecurityManager::StartSessionTimer()
-uint32_t SenderBusyRespCount = 0;
+uint32_t SenderBusyRespCount          = 0;
 const uint32_t MaxSenderBusyRespCount = 10;
 // In case of SenderBusy, wait 10 seconds before trying again to establish a secure session
-const uint64_t SenderBusyRespDelay = 10*nl::kMicrosecondsPerSecond;
+const uint64_t SenderBusyRespDelay = 10 * nl::kMicrosecondsPerSecond;
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
 bool UseServiceDir = false;
@@ -124,30 +126,27 @@ enum NameResolutionStateEnum
 
 enum
 {
-    kToolOpt_UseServiceDir                          = 1000,
-    kToolOpt_TestSessionSuspend                     = 1001,
+    kToolOpt_UseServiceDir      = 1000,
+    kToolOpt_TestSessionSuspend = 1001,
 };
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "listen",       kNoArgument,       'L' },
-    { "dest-addr",    kArgumentRequired, 'D' },
-    { "count",        kArgumentRequired, 'c' },
-    { "length",       kArgumentRequired, 'l' },
-    { "interval",     kArgumentRequired, 'i' },
-    { "tcp",          kNoArgument,       't' },
-    { "udp",          kNoArgument,       'u' },
+static OptionDef gToolOptionDefs[] = { { "listen", kNoArgument, 'L' },
+                                       { "dest-addr", kArgumentRequired, 'D' },
+                                       { "count", kArgumentRequired, 'c' },
+                                       { "length", kArgumentRequired, 'l' },
+                                       { "interval", kArgumentRequired, 'i' },
+                                       { "tcp", kNoArgument, 't' },
+                                       { "udp", kNoArgument, 'u' },
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    { "wrmp",         kNoArgument,       'w' },
+                                       { "wrmp", kNoArgument, 'w' },
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { "service-dir",  kNoArgument,       kToolOpt_UseServiceDir },
+                                       { "service-dir", kNoArgument, kToolOpt_UseServiceDir },
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { "test-session-suspend", kNoArgument, kToolOpt_TestSessionSuspend },
-    { }
-};
+                                       { "test-session-suspend", kNoArgument, kToolOpt_TestSessionSuspend },
+                                       { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -D, --dest-addr <host>[:<port>][%<interface>]\n"
     "       Send Echo Requests to a specific address rather than one\n"
     "       derived from the destination node id. <host> can be a hostname,\n"
@@ -189,62 +188,49 @@ static const char *const gToolOptionHelp =
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
     "  --test-session-suspend\n"
     "       Test the ability to suspend and restore a CASE session.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n"
-    "       " TOOL_NAME " [<options...>] --listen\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Send and receive Weave Echo profile messages.\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n"
+                                "       " TOOL_NAME " [<options...>] --listen\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT, "Send and receive Weave Echo profile messages.\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWRMPOptions,
-    &gWeaveSecurityMode,
-    &gCASEOptions,
-    &gTAKEOptions,
-    &gGroupKeyEncOptions,
-    &gDeviceDescOptions,
-    &gServiceDirClientOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    &gGeneralSecurityOptions,
-    NULL
-};
-
+static OptionSet * gToolOptionSets[] = { &gToolOptions,
+                                         &gNetworkOptions,
+                                         &gWeaveNodeOptions,
+                                         &gWRMPOptions,
+                                         &gWeaveSecurityMode,
+                                         &gCASEOptions,
+                                         &gTAKEOptions,
+                                         &gGroupKeyEncOptions,
+                                         &gDeviceDescOptions,
+                                         &gServiceDirClientOptions,
+                                         &gFaultInjectionOptions,
+                                         &gHelpOptions,
+                                         &gGeneralSecurityOptions,
+                                         NULL };
 
 #if WEAVE_CONFIG_TEST
 static void ResetTestContext(void)
 {
-    Done = false;
-    WaitingForEchoResp = false;
-    EchoCount = 0;
-    EchoRespCount = 0;
+    Done                = false;
+    WaitingForEchoResp  = false;
+    EchoCount           = 0;
+    EchoRespCount       = 0;
     SenderBusyRespCount = 0;
 }
 #endif // WEAVE_CONFIG_TEST
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 #if WEAVE_CONFIG_TEST
     nl::Weave::System::Stats::Snapshot before;
     nl::Weave::System::Stats::Snapshot after;
-    const bool printStats = true;
+    const bool printStats             = true;
     uint64_t lastListeningPrintTimeMs = 0;
     uint32_t iter;
 #endif
@@ -282,9 +268,8 @@ int main(int argc, char *argv[])
     InitWeaveStack(Listening || !UseTCP, true);
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache),
-                          GetRootServiceDirectoryEntry, kWeaveAuthMode_CASE_ServiceEndPoint,
-                          NULL, NULL, OverrideServiceConnectArguments);
+    err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache), GetRootServiceDirectoryEntry,
+                          kWeaveAuthMode_CASE_ServiceEndPoint, NULL, NULL, OverrideServiceConnectArguments);
     if (err != WEAVE_NO_ERROR)
     {
         printf("ServiceMgr.init() failed with error: %s\n", ErrorStr(err));
@@ -298,8 +283,8 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activities in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     if (!Listening)
     {
@@ -314,15 +299,18 @@ int main(int argc, char *argv[])
         // Arrange to get a callback whenever an Echo Response is received.
         EchoClient.OnEchoResponseReceived = HandleEchoResponseReceived;
 
-        if (!UseTCP && (WeaveSecurityMode::kPASE == gWeaveSecurityMode.SecurityMode || WeaveSecurityMode::kTAKE == gWeaveSecurityMode.SecurityMode))
+        if (!UseTCP &&
+            (WeaveSecurityMode::kPASE == gWeaveSecurityMode.SecurityMode ||
+             WeaveSecurityMode::kTAKE == gWeaveSecurityMode.SecurityMode))
         {
             printf("PASE/TAKE not supported for UDP.\n");
             exit(EXIT_FAILURE);
         }
 
 #if !WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-        if (!UseTCP && (WeaveSecurityMode::kCASE == gWeaveSecurityMode.SecurityMode ||
-                        WeaveSecurityMode::kCASEShared == gWeaveSecurityMode.SecurityMode))
+        if (!UseTCP &&
+            (WeaveSecurityMode::kCASE == gWeaveSecurityMode.SecurityMode ||
+             WeaveSecurityMode::kCASEShared == gWeaveSecurityMode.SecurityMode))
         {
             printf("CASE not supported for UDP without WRMP support.\n");
             exit(EXIT_FAILURE);
@@ -353,7 +341,7 @@ int main(int argc, char *argv[])
         EchoServer.OnEchoRequestReceived = HandleEchoRequestReceived;
 
         SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
-        SecurityMgr.OnSessionError = HandleSecureSessionError;
+        SecurityMgr.OnSessionError       = HandleSecureSessionError;
     }
 
     PrintNodeConfig();
@@ -384,7 +372,7 @@ int main(int argc, char *argv[])
         while (!Done)
         {
             struct timeval sleepTime;
-            sleepTime.tv_sec = 0;
+            sleepTime.tv_sec  = 0;
             sleepTime.tv_usec = 100000;
 
             ServiceNetwork(sleepTime);
@@ -447,30 +435,22 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 't':
-        UseTCP = true;
-        break;
-    case 'u':
-        UseTCP = false;
-        break;
+    case 't': UseTCP = true; break;
+    case 'u': UseTCP = false; break;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     case 'w':
-        UseTCP = false;
+        UseTCP  = false;
         UseWRMP = true;
         break;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    case kToolOpt_UseServiceDir:
-        UseServiceDir = true;
-        break;
+    case kToolOpt_UseServiceDir: UseServiceDir = true; break;
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    case 'L':
-        Listening = true;
-        break;
+    case 'L': Listening = true; break;
     case 'c':
         if (!ParseInt(arg, MaxEchoCount) || MaxEchoCount < 0)
         {
@@ -493,21 +473,15 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         }
         EchoInterval = EchoInterval * 1000;
         break;
-    case 'D':
-        DestAddr = arg;
-        break;
-    case kToolOpt_TestSessionSuspend:
-        TestSessionSuspend = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'D': DestAddr = arg; break;
+    case kToolOpt_TestSessionSuspend: TestSessionSuspend = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -525,12 +499,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
 
         // TODO (arg clean up): generalize parsing of destination node ids and addresses.
 
-        const char *nodeId = argv[0];
-        char *p = (char *)strchr(nodeId, '@');
+        const char * nodeId = argv[0];
+        char * p            = (char *) strchr(nodeId, '@');
         if (p != NULL)
         {
-            *p = 0;
-            DestAddr = p+1;
+            *p       = 0;
+            DestAddr = p + 1;
         }
 
         if (!ParseNodeId(nodeId, DestNodeId))
@@ -581,9 +555,9 @@ void DriveSending()
         {
             printf("Connection closed\n");
             Con->Close();
-            Con = NULL;
+            Con                  = NULL;
             ClientConEstablished = false;
-            ClientConInProgress = false;
+            ClientConInProgress  = false;
         }
 
         Done = true;
@@ -609,7 +583,7 @@ void DriveSending()
         }
     }
 
-    PacketBuffer *payloadBuf = PacketBuffer::New();
+    PacketBuffer * payloadBuf = PacketBuffer::New();
     if (payloadBuf == NULL)
     {
         printf("Unable to allocate PacketBuffer\n");
@@ -617,7 +591,7 @@ void DriveSending()
         return;
     }
 
-    char *p = (char *) payloadBuf->Start();
+    char * p    = (char *) payloadBuf->Start();
     int32_t len = sprintf(p, "Echo Message %" PRIi64 "\n", EchoCount);
 
     if (EchoLength > payloadBuf->MaxDataLength())
@@ -645,14 +619,15 @@ void DriveSending()
     {
         VerifyOrDie(Con != NULL && ClientConEstablished);
     }
-    else if (WeaveSecurityMode::kCASE == gWeaveSecurityMode.SecurityMode || WeaveSecurityMode::kPASE == gWeaveSecurityMode.SecurityMode)
+    else if (WeaveSecurityMode::kCASE == gWeaveSecurityMode.SecurityMode ||
+             WeaveSecurityMode::kPASE == gWeaveSecurityMode.SecurityMode)
     {
         VerifyOrDie(ClientSecureSessionEstablished);
     }
 
     if (Con != NULL)
     {
-        err = EchoClient.SendEchoRequest(Con, payloadBuf);
+        err        = EchoClient.SendEchoRequest(Con, payloadBuf);
         payloadBuf = NULL;
     }
     else
@@ -667,7 +642,7 @@ void DriveSending()
         if (WeaveSecurityMode::kGroupEnc == gWeaveSecurityMode.SecurityMode)
         {
             EchoClient.EncryptionType = kWeaveEncryptionType_AES128CTRSHA1;
-            EchoClient.KeyId = gGroupKeyEncOptions.GetEncKeyId();
+            EchoClient.KeyId          = gGroupKeyEncOptions.GetEncKeyId();
         }
 
         // If the --test-session-suspend option has been enabled, suspend and restore
@@ -709,7 +684,7 @@ void DriveSending()
             }
         }
 
-        err = EchoClient.SendEchoRequest(DestNodeId, DestIPAddr, DestPort, DestIntf, payloadBuf);
+        err        = EchoClient.SendEchoRequest(DestNodeId, DestIPAddr, DestPort, DestIntf, payloadBuf);
         payloadBuf = NULL;
     }
 
@@ -728,24 +703,23 @@ void DriveSending()
     }
 }
 
-void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     if (Listening)
     {
         char ipAddrStr[64];
         nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
-        printf("Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n", nodeId, ipAddrStr,
-                payload->DataLength());
+        printf("Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n", nodeId, ipAddrStr, payload->DataLength());
 
         if (Debug)
             DumpMemory(payload->Start(), payload->DataLength(), "    ", 16);
     }
 }
 
-void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
-    uint32_t respTime = Now();
+    uint32_t respTime    = Now();
     uint32_t transitTime = respTime - LastEchoTime;
 
     WaitingForEchoResp = false;
@@ -755,14 +729,14 @@ void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffe
     nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     printf("Echo Response from node %" PRIX64 " (%s): %" PRIi64 "/%" PRIi64 "(%.2f%%) len=%u time=%.3fms\n", nodeId, ipAddrStr,
-            EchoRespCount, EchoCount, ((double) EchoRespCount) * 100 / EchoCount, payload->DataLength(),
-            ((double) transitTime) / 1000);
+           EchoRespCount, EchoCount, ((double) EchoRespCount) * 100 / EchoCount, payload->DataLength(),
+           ((double) transitTime) / 1000);
 
     if (Debug)
         DumpMemory(payload->Start(), payload->DataLength(), "    ", 16);
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -792,31 +766,28 @@ void StartSecureSession()
 
     switch (gWeaveSecurityMode.SecurityMode)
     {
-        case WeaveSecurityMode::kPASE:
-            err = SecurityMgr.StartPASESession(Con, AuthMode, NULL,
-                                               HandleSecureSessionEstablished, HandleSecureSessionError);
-            break;
-        case WeaveSecurityMode::kCASE:
-            err = SecurityMgr.StartCASESession(Con, DestNodeId, DestIPAddr, WEAVE_PORT, AuthMode,
-                                               NULL, HandleSecureSessionEstablished, HandleSecureSessionError);
-            break;
-        case WeaveSecurityMode::kCASEShared:
-            coreRouterAddress = IPAddress::MakeULA(WeaveFabricIdToIPv6GlobalId(FabricState.FabricId),
-                                                   nl::Weave::kWeaveSubnetId_Service,
-                                                   nl::Weave::WeaveNodeIdToIPv6InterfaceId(kServiceEndpoint_CoreRouter));
+    case WeaveSecurityMode::kPASE:
+        err = SecurityMgr.StartPASESession(Con, AuthMode, NULL, HandleSecureSessionEstablished, HandleSecureSessionError);
+        break;
+    case WeaveSecurityMode::kCASE:
+        err = SecurityMgr.StartCASESession(Con, DestNodeId, DestIPAddr, WEAVE_PORT, AuthMode, NULL, HandleSecureSessionEstablished,
+                                           HandleSecureSessionError);
+        break;
+    case WeaveSecurityMode::kCASEShared:
+        coreRouterAddress = IPAddress::MakeULA(WeaveFabricIdToIPv6GlobalId(FabricState.FabricId), nl::Weave::kWeaveSubnetId_Service,
+                                               nl::Weave::WeaveNodeIdToIPv6InterfaceId(kServiceEndpoint_CoreRouter));
 
-            err = SecurityMgr.StartCASESession(Con, DestNodeId, coreRouterAddress, WEAVE_PORT, AuthMode,
-                                               NULL, HandleSecureSessionEstablished, HandleSecureSessionError,
-                                               NULL, kServiceEndpoint_CoreRouter);
-            break;
-        default:
-            err = WEAVE_ERROR_UNSUPPORTED_AUTH_MODE;
+        err = SecurityMgr.StartCASESession(Con, DestNodeId, coreRouterAddress, WEAVE_PORT, AuthMode, NULL,
+                                           HandleSecureSessionEstablished, HandleSecureSessionError, NULL,
+                                           kServiceEndpoint_CoreRouter);
+        break;
+    default: err = WEAVE_ERROR_UNSUPPORTED_AUTH_MODE;
     }
 
     if (err != WEAVE_NO_ERROR)
     {
         printf("SecurityMgr.StartSecureSession() failed: %s\n", ErrorStr(err));
-        LastEchoTime = Now();
+        LastEchoTime                  = Now();
         ClientSecureSessionInProgress = false;
         return;
     }
@@ -841,11 +812,7 @@ void StartClientConnection()
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
     if (UseServiceDir)
     {
-        err = ServiceMgr.connect(DestNodeId,
-                                 AuthMode,
-                                 NULL,
-                                 HandleServiceMgrStatus,
-                                 HandleConnectionComplete);
+        err = ServiceMgr.connect(DestNodeId, AuthMode, NULL, HandleServiceMgrStatus, HandleConnectionComplete);
         if (err != WEAVE_NO_ERROR)
         {
             printf("WeaveServiceManager.Connect(): failed: %s\n", ErrorStr(err));
@@ -861,20 +828,20 @@ void StartClientConnection()
         {
             printf("WeaveConnection.Connect failed: %s\n", ErrorStr(WEAVE_ERROR_NO_MEMORY));
             LastEchoTime = Now();
-            Done = true;
+            Done         = true;
             return;
         }
         Con->OnConnectionComplete = HandleConnectionComplete;
-        Con->OnConnectionClosed = HandleConnectionClosed;
+        Con->OnConnectionClosed   = HandleConnectionClosed;
 
         err = Con->Connect(DestNodeId, AuthMode, DestAddr);
         if (err != WEAVE_NO_ERROR)
         {
             printf("WeaveConnection.Connect failed: %s\n", ErrorStr(err));
             Con->Close();
-            Con = NULL;
+            Con          = NULL;
             LastEchoTime = Now();
-            Done = true;
+            Done         = true;
             return;
         }
     }
@@ -882,7 +849,7 @@ void StartClientConnection()
     ClientConInProgress = true;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -891,11 +858,11 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     {
         printf("Connection FAILED to node %" PRIX64 " (%s): %s\n", con->PeerNodeId, ipAddrStr, ErrorStr(conErr));
         con->Close();
-        Con = NULL;
-        LastEchoTime = Now();
+        Con                  = NULL;
+        LastEchoTime         = Now();
         ClientConEstablished = false;
-        ClientConInProgress = false;
-        Done = true;
+        ClientConInProgress  = false;
+        Done                 = true;
         return;
     }
 
@@ -906,13 +873,13 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     con->OnConnectionClosed = HandleConnectionClosed;
 
     EchoClient.EncryptionType = con->DefaultEncryptionType;
-    EchoClient.KeyId = con->DefaultKeyId;
+    EchoClient.KeyId          = con->DefaultKeyId;
 
     ClientConEstablished = true;
-    ClientConInProgress = false;
+    ClientConInProgress  = false;
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -930,12 +897,13 @@ void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
         Con = NULL;
     }
 
-    WaitingForEchoResp = false;
+    WaitingForEchoResp   = false;
     ClientConEstablished = false;
-    ClientConInProgress = false;
+    ClientConInProgress  = false;
 }
 
-void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
+void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                    uint64_t peerNodeId, uint8_t encType)
 {
     char ipAddrStr[64];
 
@@ -949,17 +917,18 @@ void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *c
         DestIPAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
         EchoClient.EncryptionType = encType;
-        EchoClient.KeyId = sessionKeyId;
+        EchoClient.KeyId          = sessionKeyId;
 
         ClientSecureSessionEstablished = true;
-        ClientSecureSessionInProgress = false;
+        ClientSecureSessionInProgress  = false;
     }
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
     printf("Secure session established with node %" PRIX64 " (%s)\n", peerNodeId, ipAddrStr);
 }
 
-void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport)
+void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                              uint64_t peerNodeId, StatusReport * statusReport)
 {
     char ipAddrStr[64];
     bool isSenderBusy = false;
@@ -973,18 +942,18 @@ void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, vo
     {
         DestIPAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
-        ClientSecureSessionInProgress = false;
+        ClientSecureSessionInProgress  = false;
         ClientSecureSessionEstablished = false;
     }
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
-        printf("FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr, StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        printf("FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr,
+               StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     else
         printf("FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr, ErrorStr(localErr));
 
-    isSenderBusy = (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED &&
-                    statusReport != NULL &&
+    isSenderBusy = (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL &&
                     statusReport->mProfileId == nl::Weave::Profiles::kWeaveProfile_Common &&
                     statusReport->mStatusCode == nl::Weave::Profiles::Common::kStatus_Busy);
 
@@ -1007,9 +976,9 @@ void ParseDestAddress()
     // parsing the destination node address for TCP connections.
 
     WEAVE_ERROR err;
-    const char *addr;
+    const char * addr;
     uint16_t addrLen = 0;
-    const char *intfName;
+    const char * intfName;
     uint16_t intfNameLen;
 
     err = ParseHostPortAndInterface(DestAddr, strlen(DestAddr), addr, addrLen, DestPort, intfName, intfNameLen);
@@ -1037,7 +1006,7 @@ void ParseDestAddress()
 }
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-void HandleServiceMgrStatus(void* anAppState, WEAVE_ERROR anError, StatusReport *aReport)
+void HandleServiceMgrStatus(void * anAppState, WEAVE_ERROR anError, StatusReport * aReport)
 {
     if (aReport)
         printf("service directory status report [%" PRIx32 ", %" PRIx32 "]", aReport->mProfileId, aReport->mStatusCode);
@@ -1045,8 +1014,8 @@ void HandleServiceMgrStatus(void* anAppState, WEAVE_ERROR anError, StatusReport 
     else
         printf("service directory error %" PRIx32 "", static_cast<uint32_t>(anError));
 
-    LastEchoTime = Now();
+    LastEchoTime         = Now();
     ClientConEstablished = false;
-    ClientConInProgress = false;
+    ClientConInProgress  = false;
 }
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY

@@ -27,25 +27,19 @@
 #ifndef _WEAVE_TRAIT_HEARTBEAT__LIVENESS_TRAIT_C_H_
 #define _WEAVE_TRAIT_HEARTBEAT__LIVENESS_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // LivenessDeviceStatus
-    typedef enum
-    {
-    LIVENESS_DEVICE_STATUS_ONLINE = 1,
-    LIVENESS_DEVICE_STATUS_UNREACHABLE = 2,
-    LIVENESS_DEVICE_STATUS_UNINITIALIZED = 3,
-    LIVENESS_DEVICE_STATUS_REBOOTING = 4,
-    LIVENESS_DEVICE_STATUS_UPGRADING = 5,
+// LivenessDeviceStatus
+typedef enum
+{
+    LIVENESS_DEVICE_STATUS_ONLINE         = 1,
+    LIVENESS_DEVICE_STATUS_UNREACHABLE    = 2,
+    LIVENESS_DEVICE_STATUS_UNINITIALIZED  = 3,
+    LIVENESS_DEVICE_STATUS_REBOOTING      = 4,
+    LIVENESS_DEVICE_STATUS_UPGRADING      = 5,
     LIVENESS_DEVICE_STATUS_SCHEDULED_DOWN = 6,
-    } schema_weave_heartbeat_liveness_trait_liveness_device_status_t;
-
-
-
+} schema_weave_heartbeat_liveness_trait_liveness_device_status_t;
 
 #endif // _WEAVE_TRAIT_HEARTBEAT__LIVENESS_TRAIT_C_H_

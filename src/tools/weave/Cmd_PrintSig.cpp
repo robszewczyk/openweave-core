@@ -39,32 +39,25 @@ using namespace nl::Weave::Profiles::Security;
 
 #define CMD_NAME "weave print-sig"
 
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [<options...>] <sig-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Print a Weave signature object.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <cert-file>\n"
-    "\n"
-    "       A file containing a Weave signature object. The signature must be in\n"
-    "       base-64 or raw TLV format.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [<options...>] <sig-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Print a Weave signature object.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <cert-file>\n"
+                                "\n"
+                                "       A file containing a Weave signature object. The signature must be in\n"
+                                "       base-64 or raw TLV format.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gHelpOptions, NULL };
 
-static const char *gSigFileName = NULL;
+static const char * gSigFileName = NULL;
 
-bool Cmd_PrintSig(int argc, char *argv[])
+bool Cmd_PrintSig(int argc, char * argv[])
 {
     bool res = true;
     WEAVE_ERROR err;
@@ -85,7 +78,7 @@ bool Cmd_PrintSig(int argc, char *argv[])
     if (!ReadFileIntoMem(gSigFileName, sigBuf, sigLen))
         ExitNow(res = false);
 
-    if (IsBase64String((const char *)sigBuf, sigLen))
+    if (IsBase64String((const char *) sigBuf, sigLen))
     {
         if (Base64Decode(sigBuf, sigLen, sigBuf, sigLen, sigLen) == NULL)
             ExitNow(res = false);
@@ -111,7 +104,7 @@ exit:
     return res;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {

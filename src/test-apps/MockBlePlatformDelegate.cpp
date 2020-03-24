@@ -19,13 +19,15 @@
 #include <BleLayer/BlePlatformDelegate.h>
 #include "MockBlePlatformDelegate.h"
 
-bool MockBlePlatformDelegate::SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool MockBlePlatformDelegate::SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                      const nl::Ble::WeaveBleUUID * charId)
 {
     // TODO mock implementation
     return false;
 }
 
-bool MockBlePlatformDelegate::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool MockBlePlatformDelegate::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                        const nl::Ble::WeaveBleUUID * charId)
 {
     // TODO mock implementation
     return false;
@@ -43,25 +45,29 @@ uint16_t MockBlePlatformDelegate::GetMTU(BLE_CONNECTION_OBJECT connObj) const
     return 0;
 }
 
-bool MockBlePlatformDelegate::SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf)
+bool MockBlePlatformDelegate::SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                             const nl::Ble::WeaveBleUUID * charId, nl::Weave::System::PacketBuffer * pBuf)
 {
     // TODO mock implementation
     return false;
 }
 
-bool MockBlePlatformDelegate::SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf)
+bool MockBlePlatformDelegate::SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                               const nl::Ble::WeaveBleUUID * charId, nl::Weave::System::PacketBuffer * pBuf)
 {
     // TODO mock implementation
     return false;
 }
 
-bool MockBlePlatformDelegate::SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf)
+bool MockBlePlatformDelegate::SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                              const nl::Ble::WeaveBleUUID * charId, nl::Weave::System::PacketBuffer * pBuf)
 {
     // TODO mock implementation
     return false;
 }
 
-bool MockBlePlatformDelegate::SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool MockBlePlatformDelegate::SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext,
+                                               const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId)
 {
     // TODO mock implementation
     return false;

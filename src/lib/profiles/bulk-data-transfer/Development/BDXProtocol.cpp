@@ -57,24 +57,25 @@ using namespace nl::Weave::Logging;
  * @retval      #WEAVE_ERROR_NO_MEMORY      If we could not get an PacketBuffer for sending the message
  * @retval      #WEAVE_NO_ERROR             If the message was successfully sent
  */
-WEAVE_ERROR InitBdxReceive(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                           bool aAsyncOk, ReferencedTLVData *aMetaData)
+WEAVE_ERROR InitBdxReceive(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk, ReferencedTLVData * aMetaData)
 {
-    WEAVE_ERROR     err;
-    ReceiveInit     msg;
-    PacketBuffer*   buffer = PacketBuffer::New();
-    uint16_t        flags;
+    WEAVE_ERROR err;
+    ReceiveInit msg;
+    PacketBuffer * buffer = PacketBuffer::New();
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     if (aXfer.mIsWideRange)
     {
-        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aUCanDrive, aICanDrive, aAsyncOk, aXfer.mMaxBlockSize, aXfer.mStartOffset, aXfer.mLength, aXfer.mFileDesignator, aMetaData);
+        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aUCanDrive, aICanDrive, aAsyncOk, aXfer.mMaxBlockSize, aXfer.mStartOffset,
+                       aXfer.mLength, aXfer.mFileDesignator, aMetaData);
         SuccessOrExit(err);
     }
     else
     {
-        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aUCanDrive, aICanDrive, aAsyncOk, aXfer.mMaxBlockSize, (uint32_t) aXfer.mStartOffset, (uint32_t) aXfer.mLength, aXfer.mFileDesignator, aMetaData);
+        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aUCanDrive, aICanDrive, aAsyncOk, aXfer.mMaxBlockSize,
+                       (uint32_t) aXfer.mStartOffset, (uint32_t) aXfer.mLength, aXfer.mFileDesignator, aMetaData);
         SuccessOrExit(err);
     }
 
@@ -83,7 +84,7 @@ WEAVE_ERROR InitBdxReceive(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
 
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveInit, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveInit, buffer, flags);
     buffer = NULL;
     SuccessOrExit(err);
 
@@ -113,24 +114,25 @@ exit:
  * @retval      #WEAVE_ERROR_NO_MEMORY      If we could not get an PacketBuffer for sending the message
  * @retval      #WEAVE_NO_ERROR             If the message was successfully sent
  */
-WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                        bool aAsyncOk, ReferencedTLVData *aMetaData)
+WEAVE_ERROR InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk, ReferencedTLVData * aMetaData)
 {
-    WEAVE_ERROR     err;
-    SendInit        msg;
-    PacketBuffer*   buffer = PacketBuffer::New();
-    uint16_t        flags;
+    WEAVE_ERROR err;
+    SendInit msg;
+    PacketBuffer * buffer = PacketBuffer::New();
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     if (aXfer.mIsWideRange)
     {
-        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, aXfer.mStartOffset, aXfer.mLength, aXfer.mFileDesignator, aMetaData);
+        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, aXfer.mStartOffset,
+                       aXfer.mLength, aXfer.mFileDesignator, aMetaData);
         SuccessOrExit(err);
     }
     else
     {
-        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, (uint32_t)aXfer.mStartOffset, (uint32_t) aXfer.mLength, aXfer.mFileDesignator, aMetaData);
+        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize,
+                       (uint32_t) aXfer.mStartOffset, (uint32_t) aXfer.mLength, aXfer.mFileDesignator, aMetaData);
         SuccessOrExit(err);
     }
 
@@ -139,7 +141,7 @@ WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
 
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_SendInit, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_SendInit, buffer, flags);
     buffer = NULL;
     SuccessOrExit(err);
 
@@ -168,25 +170,27 @@ exit:
  * @retval      #WEAVE_ERROR_NO_MEMORY      If we could not get an PacketBuffer for sending the message
  * @retval      #WEAVE_NO_ERROR             If the message was successfully sent
  */
-WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                        bool aAsyncOk, SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback,
-                        void *aMetaDataAppState)
+WEAVE_ERROR InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk,
+                        SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback, void * aMetaDataAppState)
 {
-    WEAVE_ERROR     err;
-    SendInit        msg;
-    PacketBuffer*   buffer = PacketBuffer::New();
-    uint16_t        flags;
+    WEAVE_ERROR err;
+    SendInit msg;
+    PacketBuffer * buffer = PacketBuffer::New();
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     if (aXfer.mIsWideRange)
     {
-        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, aXfer.mStartOffset, aXfer.mLength, aXfer.mFileDesignator, aMetaDataWriteCallback, aMetaDataAppState);
+        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, aXfer.mStartOffset,
+                       aXfer.mLength, aXfer.mFileDesignator, aMetaDataWriteCallback, aMetaDataAppState);
         SuccessOrExit(err);
     }
     else
     {
-        err = msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, (uint32_t)aXfer.mStartOffset, (uint32_t) aXfer.mLength, aXfer.mFileDesignator, aMetaDataWriteCallback, aMetaDataAppState);
+        err =
+            msg.init(WEAVE_CONFIG_BDX_VERSION, aICanDrive, aUCanDrive, aAsyncOk, aXfer.mMaxBlockSize, (uint32_t) aXfer.mStartOffset,
+                     (uint32_t) aXfer.mLength, aXfer.mFileDesignator, aMetaDataWriteCallback, aMetaDataAppState);
         SuccessOrExit(err);
     }
 
@@ -195,7 +199,7 @@ WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
 
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_SendInit, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_SendInit, buffer, flags);
     buffer = NULL;
     SuccessOrExit(err);
 
@@ -227,12 +231,12 @@ WEAVE_ERROR SendBadBlockCounterStatusReport(BDXTransfer & aXfer)
  * @retval         #WEAVE_NO_ERROR          If we successfully sent the message.
  * @retval         #WEAVE_ERROR_NO_MEMORY   If no available PacketBuffers.
  */
-WEAVE_ERROR SendBlockQuery(BDXTransfer &aXfer)
+WEAVE_ERROR SendBlockQuery(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buffer  = PacketBuffer::NewWithAvailableSize(BlockQuery::kPayloadLen);
-    BlockQuery      outMsg;
-    uint16_t        flags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buffer = PacketBuffer::NewWithAvailableSize(BlockQuery::kPayloadLen);
+    BlockQuery outMsg;
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
@@ -244,7 +248,7 @@ WEAVE_ERROR SendBlockQuery(BDXTransfer &aXfer)
 
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockQuery, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockQuery, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -267,12 +271,12 @@ exit:
  * @retval         #WEAVE_NO_ERROR          If we successfully sent the message.
  * @retval         #WEAVE_ERROR_NO_MEMORY   If no available PacketBuffers.
  */
-WEAVE_ERROR SendBlockQueryV1(BDXTransfer &aXfer)
+WEAVE_ERROR SendBlockQueryV1(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buffer  = PacketBuffer::NewWithAvailableSize(BlockQueryV1::kPayloadLen);
-    BlockQueryV1    outMsg;
-    uint16_t        flags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buffer = PacketBuffer::NewWithAvailableSize(BlockQueryV1::kPayloadLen);
+    BlockQueryV1 outMsg;
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
@@ -281,7 +285,7 @@ WEAVE_ERROR SendBlockQueryV1(BDXTransfer &aXfer)
 
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockQueryV1, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockQueryV1, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -306,12 +310,12 @@ exit:
  * @retval          #WEAVE_NO_ERROR         If we successfully sent the message.
  * @retval          #WEAVE_ERROR_NO_MEMORY  If no available PacketBuffers.
  */
-static WEAVE_ERROR SendBlockAck(BDXTransfer &aXfer)
+static WEAVE_ERROR SendBlockAck(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buffer  = PacketBuffer::NewWithAvailableSize(BlockQuery::kPayloadLen);
-    BlockAck        outMsg;
-    uint16_t        flags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buffer = PacketBuffer::NewWithAvailableSize(BlockQuery::kPayloadLen);
+    BlockAck outMsg;
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
@@ -320,7 +324,7 @@ static WEAVE_ERROR SendBlockAck(BDXTransfer &aXfer)
 
     flags = aXfer.GetDefaultFlags(false);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockAck, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockAck, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -345,12 +349,12 @@ exit:
  * @retval          #WEAVE_NO_ERROR         If we successfully sent the message.
  * @retval          #WEAVE_ERROR_NO_MEMORY  If no available PacketBuffers.
  */
-static WEAVE_ERROR SendBlockAckV1(BDXTransfer &aXfer)
+static WEAVE_ERROR SendBlockAckV1(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buffer  = PacketBuffer::NewWithAvailableSize(BlockQueryV1::kPayloadLen);
-    BlockAckV1      outMsg;
-    uint16_t        flags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buffer = PacketBuffer::NewWithAvailableSize(BlockQueryV1::kPayloadLen);
+    BlockAckV1 outMsg;
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
@@ -359,7 +363,7 @@ static WEAVE_ERROR SendBlockAckV1(BDXTransfer &aXfer)
 
     flags = aXfer.GetDefaultFlags(false);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockAckV1, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockAckV1, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -382,12 +386,12 @@ exit:
  * @retval          #WEAVE_NO_ERROR         If we successfully sent the message.
  * @retval          #WEAVE_ERROR_NO_MEMORY  If no available PacketBuffers.
  */
-static WEAVE_ERROR SendBlockEOFAck(BDXTransfer &aXfer)
+static WEAVE_ERROR SendBlockEOFAck(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buffer  = PacketBuffer::NewWithAvailableSize(BlockQuery::kPayloadLen);
-    BlockEOFAck     outMsg;
-    uint16_t        flags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buffer = PacketBuffer::NewWithAvailableSize(BlockQuery::kPayloadLen);
+    BlockEOFAck outMsg;
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
@@ -396,7 +400,7 @@ static WEAVE_ERROR SendBlockEOFAck(BDXTransfer &aXfer)
 
     flags = aXfer.GetDefaultFlags(false);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAck, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAck, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -427,12 +431,12 @@ exit:
  * @retval          #WEAVE_NO_ERROR         If we successfully sent the message.
  * @retval          #WEAVE_ERROR_NO_MEMORY  If no available PacketBuffers.
  */
-static WEAVE_ERROR SendBlockEOFAckV1(BDXTransfer &aXfer)
+static WEAVE_ERROR SendBlockEOFAckV1(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buffer  = PacketBuffer::NewWithAvailableSize(BlockQueryV1::kPayloadLen);
-    BlockEOFAckV1   outMsg;
-    uint16_t        flags;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buffer = PacketBuffer::NewWithAvailableSize(BlockQueryV1::kPayloadLen);
+    BlockEOFAckV1 outMsg;
+    uint16_t flags;
 
     VerifyOrExit(buffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
@@ -441,7 +445,7 @@ static WEAVE_ERROR SendBlockEOFAckV1(BDXTransfer &aXfer)
 
     flags = aXfer.GetDefaultFlags(false);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAckV1, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAckV1, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -475,16 +479,16 @@ exit:
  * @note
  *   This function defers to SendBlock once the next block has been grabbed
  */
-WEAVE_ERROR SendNextBlock(BDXTransfer &aXfer)
+WEAVE_ERROR SendNextBlock(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err         = WEAVE_NO_ERROR;
-    uint64_t        length;
-    uint8_t*        data;
-    bool            isLast;
-    uint8_t         msgType;
-    uint8_t         counter;
-    PacketBuffer*   buffer      = PacketBuffer::New();
-    uint16_t        flags;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    uint64_t length;
+    uint8_t * data;
+    bool isLast;
+    uint8_t msgType;
+    uint8_t counter;
+    PacketBuffer * buffer = PacketBuffer::New();
+    uint16_t flags;
 
     counter = static_cast<uint8_t>(aXfer.mBlockCounter);
     WeaveLogDetail(BDX, "Sending next block # %hd\n", counter);
@@ -539,7 +543,7 @@ WEAVE_ERROR SendNextBlock(BDXTransfer &aXfer)
     // another BlockQuery
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, msgType, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, msgType, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -562,16 +566,16 @@ exit:
  *
  * @retval          #WEAVE_ERROR_INCORRECT_STATE    If the GetBlockHandler is NULL
  */
-WEAVE_ERROR SendNextBlockV1(BDXTransfer &aXfer)
+WEAVE_ERROR SendNextBlockV1(BDXTransfer & aXfer)
 {
-    WEAVE_ERROR     err         = WEAVE_NO_ERROR;
-    uint64_t        length;
-    uint8_t*        data;
-    bool            isLast;
-    uint8_t         msgType;
-    PacketBuffer*   buffer      = PacketBuffer::New();
-    uint16_t        flags;
-    uint32_t        blockCounter;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    uint64_t length;
+    uint8_t * data;
+    bool isLast;
+    uint8_t msgType;
+    PacketBuffer * buffer = PacketBuffer::New();
+    uint16_t flags;
+    uint32_t blockCounter;
 
     WeaveLogDetail(BDX, "Sending next block # %d\n", aXfer.mBlockCounter);
 
@@ -625,7 +629,7 @@ WEAVE_ERROR SendNextBlockV1(BDXTransfer &aXfer)
     // another BlockQuery
     flags = aXfer.GetDefaultFlags(true);
 
-    err = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, msgType, buffer, flags);
+    err    = aXfer.mExchangeContext->SendMessage(kWeaveProfile_BDX, msgType, buffer, flags);
     buffer = NULL;
 
 exit:
@@ -650,14 +654,16 @@ exit:
  * @param[in]   aMessageType    The message type of that profile
  * @param[in]   aPacketBuffer    The packed message itself
  */
-void HandleResponse(ExchangeContext *anEc, const IPPacketInfo *aPktInfo, const WeaveMessageInfo *aWeaveMsgInfo,
-                    uint32_t aProfileId, uint8_t aMessageType, PacketBuffer *aPacketBuffer)
+void HandleResponse(ExchangeContext * anEc, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aWeaveMsgInfo,
+                    uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;	// we'll use this later
+    WEAVE_ERROR err = WEAVE_NO_ERROR; // we'll use this later
     // extract the BDXTransfer object from the exchange context to access state
-    BDXTransfer *xfer = static_cast<BDXTransfer *>(anEc->AppState);
+    BDXTransfer * xfer = static_cast<BDXTransfer *>(anEc->AppState);
 
-    VerifyOrExit(aProfileId == kWeaveProfile_BDX || (aProfileId == kWeaveProfile_Common && aMessageType == Common::kMsgType_StatusReport), err = WEAVE_ERROR_INVALID_PROFILE_ID);
+    VerifyOrExit(aProfileId == kWeaveProfile_BDX ||
+                     (aProfileId == kWeaveProfile_Common && aMessageType == Common::kMsgType_StatusReport),
+                 err = WEAVE_ERROR_INVALID_PROFILE_ID);
     VerifyOrExit(xfer->mIsInitiated, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // (Re-)Initialize the next action to take
@@ -688,7 +694,7 @@ void HandleResponse(ExchangeContext *anEc, const IPPacketInfo *aPktInfo, const W
 
     if (xfer->mNext)
     {
-        err = xfer->mNext(*xfer);
+        err         = xfer->mNext(*xfer);
         xfer->mNext = NULL;
     }
 
@@ -712,11 +718,12 @@ exit:
  * @param[in]   aCon        The Weave connection, unused in the actual function
  * @param[in]   aConErr     Error associated with the connection closing
  */
-void HandleConnectionClosed(ExchangeContext *anEc, WeaveConnection *aCon, WEAVE_ERROR aConErr)
+void HandleConnectionClosed(ExchangeContext * anEc, WeaveConnection * aCon, WEAVE_ERROR aConErr)
 {
-    BDXTransfer *xfer = static_cast<BDXTransfer *>(anEc->AppState);
+    BDXTransfer * xfer = static_cast<BDXTransfer *>(anEc->AppState);
 
-    // If the other end closed the connection, pass WEAVE_ERROR_CONNECTION_CLOSED_UNEXPECTEDLY to the application if it didn't already have an error attached.
+    // If the other end closed the connection, pass WEAVE_ERROR_CONNECTION_CLOSED_UNEXPECTEDLY to the application if it didn't
+    // already have an error attached.
     if (aConErr == WEAVE_NO_ERROR)
     {
         aConErr = WEAVE_ERROR_CONNECTION_CLOSED_UNEXPECTEDLY;
@@ -733,9 +740,9 @@ void HandleConnectionClosed(ExchangeContext *anEc, WeaveConnection *aCon, WEAVE_
  *
  * @param[in]   anEc    Exchange context which we can find the BDXTransfer from
  */
-void HandleResponseTimeout(ExchangeContext *anEc)
+void HandleResponseTimeout(ExchangeContext * anEc)
 {
-    BDXTransfer *xfer = static_cast<BDXTransfer *>(anEc->AppState);
+    BDXTransfer * xfer = static_cast<BDXTransfer *>(anEc->AppState);
 
     WeaveLogDetail(BDX, "Exchange timed out while waiting for reply");
     xfer->DispatchErrorHandler(WEAVE_ERROR_TIMEOUT);
@@ -749,9 +756,9 @@ void HandleResponseTimeout(ExchangeContext *anEc)
  *                          We can find the associated BDXTransfer from this
  * @param[in]   aKeyErr     Error associated with the key no longer being usable
  */
-void HandleKeyError(ExchangeContext *anEc, WEAVE_ERROR aKeyErr)
+void HandleKeyError(ExchangeContext * anEc, WEAVE_ERROR aKeyErr)
 {
-    BDXTransfer *xfer = static_cast<BDXTransfer *>(anEc->AppState);
+    BDXTransfer * xfer = static_cast<BDXTransfer *>(anEc->AppState);
 
     WeaveLogDetail(BDX, "Encryption and authentication key became unusable");
     xfer->DispatchErrorHandler(aKeyErr);
@@ -768,9 +775,9 @@ void HandleKeyError(ExchangeContext *anEc, WEAVE_ERROR aKeyErr)
  * @param[in]   aMsgCtxt    An arbitrary message context that was associated
  *                          with the unacknowledged message.
  */
-void HandleSendError(ExchangeContext *anEc, WEAVE_ERROR aSendErr, void *aMsgCtxt)
+void HandleSendError(ExchangeContext * anEc, WEAVE_ERROR aSendErr, void * aMsgCtxt)
 {
-    BDXTransfer *xfer = static_cast<BDXTransfer *>(anEc->AppState);
+    BDXTransfer * xfer = static_cast<BDXTransfer *>(anEc->AppState);
 
     WeaveLogDetail(BDX, "WMRP message was not acknowledged");
     xfer->DispatchErrorHandler(aSendErr);
@@ -786,35 +793,27 @@ void HandleSendError(ExchangeContext *anEc, WEAVE_ERROR aSendErr, void *aMsgCtxt
  * @param[in]   aProfileId      Profile ID
  * @param[in]   aStatusCode     Code associated with the transfer error
  */
-void SendTransferError(ExchangeContext *anEc, uint32_t aProfileId, uint16_t aStatusCode)
+void SendTransferError(ExchangeContext * anEc, uint32_t aProfileId, uint16_t aStatusCode)
 {
-    TransferError   transferError;
-    PacketBuffer*   payloadTransferError    = PacketBuffer::New();
-    WEAVE_ERROR     err                     = WEAVE_NO_ERROR;
+    TransferError transferError;
+    PacketBuffer * payloadTransferError = PacketBuffer::New();
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
 
-    VerifyOrExit(payloadTransferError != NULL,
-                 WeaveLogDetail(BDX,
-                               "Error (out of PacketBuffers) in SendTransferError"));
+    VerifyOrExit(payloadTransferError != NULL, WeaveLogDetail(BDX, "Error (out of PacketBuffers) in SendTransferError"));
 
     err = transferError.init(aProfileId, aStatusCode);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX,
-                               "Error initializing TransferError: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "Error initializing TransferError: %d", err));
 
     err = transferError.pack(payloadTransferError);
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX,
-                               "Error packing TransferError: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "Error packing TransferError: %d", err));
 
-    //TODO: open question: should we dispatch the callback when sending an error or only when receiving?
-    //dispatchXferErrorHandler(aProfileId, aStatusCode);
+    // TODO: open question: should we dispatch the callback when sending an error or only when receiving?
+    // dispatchXferErrorHandler(aProfileId, aStatusCode);
 
-    err = anEc->SendMessage(kWeaveProfile_BDX, kMsgType_TransferError, payloadTransferError, GetBDXAckFlag(anEc));
+    err                  = anEc->SendMessage(kWeaveProfile_BDX, kMsgType_TransferError, payloadTransferError, GetBDXAckFlag(anEc));
     payloadTransferError = NULL;
 
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(BDX,
-                               "Error sending TransferError message: %d", err));
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "Error sending TransferError message: %d", err));
 
 exit:
     if (payloadTransferError != NULL)
@@ -830,12 +829,12 @@ exit:
  * @param[in]   aProfileId      Profile ID
  * @param[in]   aStatusCode     Code associated with the transfer error
  */
-void SendStatusReport(ExchangeContext *anEc, uint32_t aProfileId, uint16_t aStatusCode)
+void SendStatusReport(ExchangeContext * anEc, uint32_t aProfileId, uint16_t aStatusCode)
 {
-    WEAVE_ERROR     err             = WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    //TODO: open question: should we dispatch the callback when sending an error or only when receiving?
-    //dispatchXferErrorHandler(aProfileId, aStatusCode);
+    // TODO: open question: should we dispatch the callback when sending an error or only when receiving?
+    // dispatchXferErrorHandler(aProfileId, aStatusCode);
 
     err = nl::Weave::WeaveServerBase::SendStatusReport(anEc, aProfileId, aStatusCode, WEAVE_NO_ERROR, GetBDXAckFlag(anEc));
     if (err != WEAVE_NO_ERROR)
@@ -852,7 +851,7 @@ void SendStatusReport(ExchangeContext *anEc, uint32_t aProfileId, uint16_t aStat
  * Otherwise, I should expect a BlockQuery and should respond
  * with the right block.
  */
-WEAVE_ERROR HandleResponseTransmit(BDXTransfer &aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer *aPacketBuffer)
+WEAVE_ERROR HandleResponseTransmit(BDXTransfer & aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t rcvdCounter;
@@ -872,212 +871,212 @@ WEAVE_ERROR HandleResponseTransmit(BDXTransfer &aXfer, uint32_t aProfileId, uint
         switch (aMessageType)
         {
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_BlockAck:
-                /*
-                 * Receiver MAY send an Ack before BlockQuery. We should
-                 * free any resources associated with that block so we
-                 * can stop resending it, but currently have no support
-                 * for such activity.
-                 * Similarly, we simply ignore Acks during async xfer.
-                 */
+        case kMsgType_BlockAck:
+            /*
+             * Receiver MAY send an Ack before BlockQuery. We should
+             * free any resources associated with that block so we
+             * can stop resending it, but currently have no support
+             * for such activity.
+             * Similarly, we simply ignore Acks during async xfer.
+             */
+            {
+                BlockAck ack;
+
+                // Don't set error here - simply ignore the message.
+                VerifyOrExit(aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_NO_ERROR);
+
+                err = BlockAck::parse(aPacketBuffer, ack);
+                VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockAck parse failed."));
+
+                rcvdCounter = ack.mBlockCounter;
+
+                if (rcvdCounter == static_cast<uint8_t>(aXfer.mBlockCounter))
                 {
-                    BlockAck ack;
-
-                    // Don't set error here - simply ignore the message.
-                    VerifyOrExit(aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_NO_ERROR);
-
-                    err = BlockAck::parse(aPacketBuffer, ack);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockAck parse failed."));
-
-                    rcvdCounter = ack.mBlockCounter;
-
-                    if (rcvdCounter == static_cast<uint8_t>(aXfer.mBlockCounter))
-                    {
-                        // Update the counter and send the next block
-                        aXfer.mBlockCounter++;
-                        aXfer.mNext = SendNextBlock;
-                    }
-                    else if (rcvdCounter < static_cast<uint8_t>(aXfer.mBlockCounter))
-                    {
-                        // just ignore the packet
-                        WeaveLogDetail(BDX, "Received BlockAck for old block: %hd\n", rcvdCounter);
-                    }
-                    else
-                    {
-                        // bad scene we've somehow fallen behind
-                        WeaveLogDetail(BDX, "Received BlockAck for future block???: %d\n", rcvdCounter);
-                    }
+                    // Update the counter and send the next block
+                    aXfer.mBlockCounter++;
+                    aXfer.mNext = SendNextBlock;
                 }
+                else if (rcvdCounter < static_cast<uint8_t>(aXfer.mBlockCounter))
+                {
+                    // just ignore the packet
+                    WeaveLogDetail(BDX, "Received BlockAck for old block: %hd\n", rcvdCounter);
+                }
+                else
+                {
+                    // bad scene we've somehow fallen behind
+                    WeaveLogDetail(BDX, "Received BlockAck for future block???: %d\n", rcvdCounter);
+                }
+            }
 
-                break;
+            break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            case kMsgType_BlockAckV1:
+        case kMsgType_BlockAckV1:
+        {
+            BlockAckV1 ackV1;
+
+            VerifyOrExit(aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_NO_ERROR);
+
+            err = BlockAckV1::parse(aPacketBuffer, ackV1);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockAckV1 parse failed."));
+
+            rcvdCounter = ackV1.mBlockCounter;
+
+            if (rcvdCounter == aXfer.mBlockCounter)
+            {
+                // Update the counter and send the next block
+                aXfer.mBlockCounter++;
+                aXfer.mNext = SendNextBlockV1;
+            }
+            else
+            {
+                WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
+
+                if (rcvdCounter > aXfer.mBlockCounter)
                 {
-                    BlockAckV1 ackV1;
-
-                    VerifyOrExit(aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_NO_ERROR);
-
-                    err = BlockAckV1::parse(aPacketBuffer, ackV1);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockAckV1 parse failed."));
-
-                    rcvdCounter = ackV1.mBlockCounter;
-
-                    if (rcvdCounter == aXfer.mBlockCounter)
-                    {
-                        // Update the counter and send the next block
-                        aXfer.mBlockCounter++;
-                        aXfer.mNext = SendNextBlockV1;
-                    }
-                    else
-                    {
-                        WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
-
-                        if (rcvdCounter > aXfer.mBlockCounter)
-                        {
-                            // Only send a status report if the block counter is later than expected, and ignore
-                            // earlier than expected due to the possibility of duplicate messages
-                            aXfer.mNext = SendBadBlockCounterStatusReport;
-                        }
-                    }
+                    // Only send a status report if the block counter is later than expected, and ignore
+                    // earlier than expected due to the possibility of duplicate messages
+                    aXfer.mNext = SendBadBlockCounterStatusReport;
                 }
+            }
+        }
 
-                break;
+        break;
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_BlockQuery:
-                {
-                    BlockQuery query;
+        case kMsgType_BlockQuery:
+        {
+            BlockQuery query;
 
-                    VerifyOrExit(!aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
+            VerifyOrExit(!aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
-                    err = BlockQuery::parse(aPacketBuffer, query);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockQuery parse failed."));
+            err = BlockQuery::parse(aPacketBuffer, query);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockQuery parse failed."));
 
-                    rcvdCounter = query.mBlockCounter;
+            rcvdCounter = query.mBlockCounter;
 
-                    // For the first query, look for counter = 0.
-                    if (aXfer.mFirstQuery && rcvdCounter == 0)
-                    {
-                        aXfer.mFirstQuery = false;
-                        aXfer.mNext = SendNextBlock;
-                    }
-                    // Afterwards, check that the received counter is the one after our block counter
-                    else if (rcvdCounter == static_cast<uint8_t>(aXfer.mBlockCounter + 1))
-                    {
-                        // Increment block counter after verifying block query message + block counter if it isn't the first query
-                        // This is because we need to stay on the same block counter if the receiver decides to send an ack
-                        // Ex. Recv BlockQuery for #2, send Block #2, get ack back for #2. Need to have block counter on
-                        // 2 to verify the ack, and only increment when we receive the next block query.
-                        aXfer.mBlockCounter++;
-                        aXfer.mNext = SendNextBlock;
-                    }
-                    else
-                    {
-                        // just ignore the packet
-                        WeaveLogDetail(BDX, "Received bad block counter: %d, expected %d\n", rcvdCounter, aXfer.mBlockCounter + 1);
-                    }
-                }
+            // For the first query, look for counter = 0.
+            if (aXfer.mFirstQuery && rcvdCounter == 0)
+            {
+                aXfer.mFirstQuery = false;
+                aXfer.mNext       = SendNextBlock;
+            }
+            // Afterwards, check that the received counter is the one after our block counter
+            else if (rcvdCounter == static_cast<uint8_t>(aXfer.mBlockCounter + 1))
+            {
+                // Increment block counter after verifying block query message + block counter if it isn't the first query
+                // This is because we need to stay on the same block counter if the receiver decides to send an ack
+                // Ex. Recv BlockQuery for #2, send Block #2, get ack back for #2. Need to have block counter on
+                // 2 to verify the ack, and only increment when we receive the next block query.
+                aXfer.mBlockCounter++;
+                aXfer.mNext = SendNextBlock;
+            }
+            else
+            {
+                // just ignore the packet
+                WeaveLogDetail(BDX, "Received bad block counter: %d, expected %d\n", rcvdCounter, aXfer.mBlockCounter + 1);
+            }
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            case kMsgType_BlockQueryV1:
+        case kMsgType_BlockQueryV1:
+        {
+            BlockQueryV1 queryV1;
+
+            VerifyOrExit(!aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
+
+            err = BlockQueryV1::parse(aPacketBuffer, queryV1);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockQueryV1 parse failed."));
+
+            rcvdCounter = queryV1.mBlockCounter;
+
+            // For the first query, look for counter = 0.
+            if (aXfer.mFirstQuery && rcvdCounter == 0)
+            {
+                aXfer.mFirstQuery = false;
+                aXfer.mNext       = SendNextBlockV1;
+            }
+            // Afterwards, check that the received counter is the one after our block counter
+            else if (rcvdCounter == aXfer.mBlockCounter + 1)
+            {
+                // Increment block counter after verifying block query message + block counter if it isn't the first query
+                // This is because we need to stay on the same block counter if the receiver decides to send an ack
+                // Ex. Recv BlockQuery for #2, send Block #2, get ack back for #2. Need to have block counter on
+                // 2 to verify the ack, and only increment when we receive the next block query.
+                aXfer.mBlockCounter++;
+                aXfer.mNext = SendNextBlockV1;
+            }
+            else
+            {
+                WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter + 1);
+
+                if (rcvdCounter > aXfer.mBlockCounter + 1)
                 {
-                    BlockQueryV1 queryV1;
-
-                    VerifyOrExit(!aXfer.IsDriver() && !aXfer.IsAsync(), err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-
-                    err = BlockQueryV1::parse(aPacketBuffer, queryV1);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockQueryV1 parse failed."));
-
-                    rcvdCounter = queryV1.mBlockCounter;
-
-                    // For the first query, look for counter = 0.
-                    if (aXfer.mFirstQuery && rcvdCounter == 0)
-                    {
-                        aXfer.mFirstQuery = false;
-                        aXfer.mNext = SendNextBlockV1;
-                    }
-                    // Afterwards, check that the received counter is the one after our block counter
-                    else if (rcvdCounter == aXfer.mBlockCounter + 1)
-                    {
-                        // Increment block counter after verifying block query message + block counter if it isn't the first query
-                        // This is because we need to stay on the same block counter if the receiver decides to send an ack
-                        // Ex. Recv BlockQuery for #2, send Block #2, get ack back for #2. Need to have block counter on
-                        // 2 to verify the ack, and only increment when we receive the next block query.
-                        aXfer.mBlockCounter++;
-                        aXfer.mNext = SendNextBlockV1;
-                    }
-                    else
-                    {
-                        WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter + 1);
-
-                        if (rcvdCounter > aXfer.mBlockCounter + 1)
-                        {
-                            // Only send a status report if the block counter is later than expected, and ignore
-                            // earlier than expected due to the possibility of duplicate messages
-                            aXfer.mNext = SendBadBlockCounterStatusReport;
-                        }
-                    }
+                    // Only send a status report if the block counter is later than expected, and ignore
+                    // earlier than expected due to the possibility of duplicate messages
+                    aXfer.mNext = SendBadBlockCounterStatusReport;
                 }
+            }
+        }
 
-                break;
+        break;
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_BlockEOFAck:
-                // TODO: should we bother parsing the message here just
-                // to verify the block counter is correct? if we do parse it,
-                // only set mIsCompletedSuccessfully to true on no error
-                {
-                    aXfer.mIsCompletedSuccessfully = true;
-                    aXfer.DispatchXferDoneHandler();
-                    aXfer.mFirstQuery = true;
-                }
+        case kMsgType_BlockEOFAck:
+            // TODO: should we bother parsing the message here just
+            // to verify the block counter is correct? if we do parse it,
+            // only set mIsCompletedSuccessfully to true on no error
+            {
+                aXfer.mIsCompletedSuccessfully = true;
+                aXfer.DispatchXferDoneHandler();
+                aXfer.mFirstQuery = true;
+            }
 
-                break;
+            break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            case kMsgType_BlockEOFAckV1:
-                {
-                    BlockEOFAckV1 EOFAckV1;
-                    err = BlockEOFAckV1::parse(aPacketBuffer, EOFAckV1);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockEOFAckV1 parse failed."));
+        case kMsgType_BlockEOFAckV1:
+        {
+            BlockEOFAckV1 EOFAckV1;
+            err = BlockEOFAckV1::parse(aPacketBuffer, EOFAckV1);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockEOFAckV1 parse failed."));
 
-                    rcvdCounter = EOFAckV1.mBlockCounter;
+            rcvdCounter = EOFAckV1.mBlockCounter;
 
-                    if (rcvdCounter == aXfer.mBlockCounter)
-                    {
-                        aXfer.mIsCompletedSuccessfully = true;
-                        aXfer.DispatchXferDoneHandler();
-                        aXfer.mFirstQuery = true;
-                    }
-                    else
-                    {
-                        WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
-                        aXfer.mNext = SendBadBlockCounterStatusReport;
-                    }
-                }
+            if (rcvdCounter == aXfer.mBlockCounter)
+            {
+                aXfer.mIsCompletedSuccessfully = true;
+                aXfer.DispatchXferDoneHandler();
+                aXfer.mFirstQuery = true;
+            }
+            else
+            {
+                WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
+                aXfer.mNext = SendBadBlockCounterStatusReport;
+            }
+        }
 
-                break;
+        break;
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_TransferError:
-                {
-                    TransferError inMsg;
-                    TransferError::parse(aPacketBuffer, inMsg);
-                    aXfer.DispatchXferErrorHandler(&inMsg);
-                }
+        case kMsgType_TransferError:
+        {
+            TransferError inMsg;
+            TransferError::parse(aPacketBuffer, inMsg);
+            aXfer.DispatchXferErrorHandler(&inMsg);
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            default:
-                {
-                    aXfer.DispatchErrorHandler(WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-                }
+        default:
+        {
+            aXfer.DispatchErrorHandler(WEAVE_ERROR_INVALID_MESSAGE_TYPE);
+        }
 
-                break;
+        break;
         }
     }
 
@@ -1097,7 +1096,7 @@ exit:
  * a block here and then, If I'm driving, send out a
  * query for the next block otherwise just send an ACK.
  */
-WEAVE_ERROR HandleResponseReceive(BDXTransfer &aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer *aPacketBuffer)
+WEAVE_ERROR HandleResponseReceive(BDXTransfer & aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t rcvdCounter;
@@ -1117,125 +1116,125 @@ WEAVE_ERROR HandleResponseReceive(BDXTransfer &aXfer, uint32_t aProfileId, uint8
         switch (aMessageType)
         {
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_BlockSend:
-                {
-                    BlockSend blockSend;
+        case kMsgType_BlockSend:
+        {
+            BlockSend blockSend;
 
-                    err = BlockSend::parse(aPacketBuffer, blockSend);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockSend parse failed."));
+            err = BlockSend::parse(aPacketBuffer, blockSend);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockSend parse failed."));
 
-                    aXfer.DispatchPutBlockHandler(blockSend.mLength, blockSend.mData, false);
+            aXfer.DispatchPutBlockHandler(blockSend.mLength, blockSend.mData, false);
 
-                    aXfer.mBlockCounter++;
-                    // SendBlockAck will by design send out the ack for mBlockCounter - 1
-                    aXfer.mNext = aXfer.IsDriver() ? SendBlockQuery : SendBlockAck;
-                }
+            aXfer.mBlockCounter++;
+            // SendBlockAck will by design send out the ack for mBlockCounter - 1
+            aXfer.mNext = aXfer.IsDriver() ? SendBlockQuery : SendBlockAck;
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            case kMsgType_BlockSendV1:
+        case kMsgType_BlockSendV1:
+        {
+            BlockSendV1 blockSendV1;
+            err = BlockSendV1::parse(aPacketBuffer, blockSendV1);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockSendV1 parse failed."));
+
+            rcvdCounter = blockSendV1.mBlockCounter;
+
+            if (rcvdCounter == aXfer.mBlockCounter)
+            {
+                aXfer.DispatchPutBlockHandler(blockSendV1.mLength, blockSendV1.mData, false);
+            }
+
+            if (rcvdCounter == aXfer.mBlockCounter)
+            {
+                aXfer.mBlockCounter++;
+                aXfer.mNext = aXfer.IsDriver() ? SendBlockQueryV1 : SendBlockAckV1;
+            }
+            else
+            {
+                WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
+
+                if (rcvdCounter > aXfer.mBlockCounter)
                 {
-                    BlockSendV1 blockSendV1;
-                    err = BlockSendV1::parse(aPacketBuffer, blockSendV1);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockSendV1 parse failed."));
-
-                    rcvdCounter = blockSendV1.mBlockCounter;
-
-                    if (rcvdCounter == aXfer.mBlockCounter)
-                    {
-                        aXfer.DispatchPutBlockHandler(blockSendV1.mLength, blockSendV1.mData, false);
-                    }
-
-                    if (rcvdCounter == aXfer.mBlockCounter)
-                    {
-                        aXfer.mBlockCounter++;
-                        aXfer.mNext = aXfer.IsDriver() ? SendBlockQueryV1 : SendBlockAckV1;
-                    }
-                    else
-                    {
-                        WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
-
-                        if (rcvdCounter > aXfer.mBlockCounter)
-                        {
-                            // Only send a status report if the block counter is later than expected, and ignore
-                            // earlier than expected due to the possibility of duplicate messages
-                            aXfer.mNext = SendBadBlockCounterStatusReport;
-                        }
-                    }
+                    // Only send a status report if the block counter is later than expected, and ignore
+                    // earlier than expected due to the possibility of duplicate messages
+                    aXfer.mNext = SendBadBlockCounterStatusReport;
                 }
+            }
+        }
 
-                break;
+        break;
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_BlockEOF:
-                // TODO: add a consistency check on the overall size of the file received
-                // i.e. the sum of all received blocks should match the expected file size
-                // this would require us to keep track of the number of bytes received
-                // as we can imagine a case where a block in the middle wasn't full
+        case kMsgType_BlockEOF:
+            // TODO: add a consistency check on the overall size of the file received
+            // i.e. the sum of all received blocks should match the expected file size
+            // this would require us to keep track of the number of bytes received
+            // as we can imagine a case where a block in the middle wasn't full
+            {
+                BlockEOF blockEOF;
+
+                // Only try to parse if we have a data length of > 0
+                if (aPacketBuffer->DataLength() != 0)
                 {
-                    BlockEOF blockEOF;
+                    err = BlockEOF::parse(aPacketBuffer, blockEOF);
+                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockEOF parse failed."));
 
-                    // Only try to parse if we have a data length of > 0
-                    if (aPacketBuffer->DataLength() != 0)
-                    {
-                        err = BlockEOF::parse(aPacketBuffer, blockEOF);
-                        VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockEOF parse failed."));
-
-                        aXfer.DispatchPutBlockHandler(blockEOF.mLength, blockEOF.mData, true);
-                    }
-
-                    // ACK the EOF and clean up transfer
-                    aXfer.mNext = SendBlockEOFAck;
+                    aXfer.DispatchPutBlockHandler(blockEOF.mLength, blockEOF.mData, true);
                 }
 
-                break;
+                // ACK the EOF and clean up transfer
+                aXfer.mNext = SendBlockEOFAck;
+            }
+
+            break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            case kMsgType_BlockEOFV1:
-                {
-                    BlockEOFV1 blockEOFV1;
-                    err = BlockEOFV1::parse(aPacketBuffer, blockEOFV1);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockEOFV1 parse failed."));
+        case kMsgType_BlockEOFV1:
+        {
+            BlockEOFV1 blockEOFV1;
+            err = BlockEOFV1::parse(aPacketBuffer, blockEOFV1);
+            VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "BlockEOFV1 parse failed."));
 
-                    rcvdCounter = blockEOFV1.mBlockCounter;
+            rcvdCounter = blockEOFV1.mBlockCounter;
 
-                    if (rcvdCounter == aXfer.mBlockCounter)
-                    {
-                        aXfer.DispatchPutBlockHandler(blockEOFV1.mLength, blockEOFV1.mData, true);
-                    }
+            if (rcvdCounter == aXfer.mBlockCounter)
+            {
+                aXfer.DispatchPutBlockHandler(blockEOFV1.mLength, blockEOFV1.mData, true);
+            }
 
-                    if (rcvdCounter == aXfer.mBlockCounter)
-                    {
-                        aXfer.mNext = SendBlockEOFAckV1;
-                    }
-                    else
-                    {
-                        WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
-                        aXfer.mNext = SendBadBlockCounterStatusReport;
-                    }
-                }
+            if (rcvdCounter == aXfer.mBlockCounter)
+            {
+                aXfer.mNext = SendBlockEOFAckV1;
+            }
+            else
+            {
+                WeaveLogDetail(BDX, "Received bad block counter: %d, expected: %d", rcvdCounter, aXfer.mBlockCounter);
+                aXfer.mNext = SendBadBlockCounterStatusReport;
+            }
+        }
 
-                break;
+        break;
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_TransferError:
-                {
-                    TransferError inMsg;
+        case kMsgType_TransferError:
+        {
+            TransferError inMsg;
 
-                    TransferError::parse(aPacketBuffer, inMsg);
-                    aXfer.DispatchXferErrorHandler(&inMsg);
-                }
+            TransferError::parse(aPacketBuffer, inMsg);
+            aXfer.DispatchXferErrorHandler(&inMsg);
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            default:
-                {
-                    aXfer.DispatchErrorHandler(WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-                }
+        default:
+        {
+            aXfer.DispatchErrorHandler(WEAVE_ERROR_INVALID_MESSAGE_TYPE);
+        }
 
-                break;
+        break;
         }
     }
 
@@ -1249,7 +1248,7 @@ exit:
 }
 #endif // WEAVE_CONFIG_BDX_CLIENT_RECEIVE_SUPPORT
 
-WEAVE_ERROR HandleResponseNotAccepted(BDXTransfer &aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer *aPacketBuffer)
+WEAVE_ERROR HandleResponseNotAccepted(BDXTransfer & aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1274,167 +1273,159 @@ WEAVE_ERROR HandleResponseNotAccepted(BDXTransfer &aXfer, uint32_t aProfileId, u
         switch (aMessageType)
         {
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_TransferError:
-                {
-                    TransferError inMsg;
+        case kMsgType_TransferError:
+        {
+            TransferError inMsg;
 
-                    TransferError::parse(aPacketBuffer, inMsg);
-                    aXfer.DispatchXferErrorHandler(&inMsg);
-                }
+            TransferError::parse(aPacketBuffer, inMsg);
+            aXfer.DispatchXferErrorHandler(&inMsg);
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
 #if WEAVE_CONFIG_BDX_CLIENT_SEND_SUPPORT
-            case kMsgType_SendAccept:
-                /*
-                 * The send is accepted. now we figure out who's driving and,
-                 * if necessary, kick it off.
-                 */
+        case kMsgType_SendAccept:
+            /*
+             * The send is accepted. now we figure out who's driving and,
+             * if necessary, kick it off.
+             */
+            {
+                uint8_t xferMode;
+                SendAccept inMsg;
+
+                err = SendAccept::parse(aPacketBuffer, inMsg);
+                VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendAccept parse failed."));
+                // This implies we're compatible with any version equal or below WEAVE_CONFIG_BDX_VERSION
+                VerifyOrExit(inMsg.mVersion <= WEAVE_CONFIG_BDX_VERSION, err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
+                             WeaveLogDetail(BDX, "SendAccept returned an incompatible version: %d.", inMsg.mVersion));
+
+                aXfer.mIsAccepted   = true;
+                aXfer.mMaxBlockSize = inMsg.mMaxBlockSize;
+                aXfer.mTransferMode = inMsg.mTransferMode;
+                aXfer.mVersion      = inMsg.mVersion;
+                err                 = aXfer.DispatchSendAccept(&inMsg);
+                VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "DispatchSendAccept failed."));
+
+                xferMode = inMsg.mTransferMode;
+
+                switch (xferMode)
                 {
-                    uint8_t xferMode;
-                    SendAccept inMsg;
-
-                    err = SendAccept::parse(aPacketBuffer, inMsg);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "SendAccept parse failed."));
-                    // This implies we're compatible with any version equal or below WEAVE_CONFIG_BDX_VERSION
-                    VerifyOrExit(inMsg.mVersion <= WEAVE_CONFIG_BDX_VERSION,
-                                 err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
-                                 WeaveLogDetail(BDX, "SendAccept returned an incompatible version: %d.", inMsg.mVersion));
-
-                    aXfer.mIsAccepted = true;
-                    aXfer.mMaxBlockSize = inMsg.mMaxBlockSize;
-                    aXfer.mTransferMode = inMsg.mTransferMode;
-                    aXfer.mVersion = inMsg.mVersion;
-                    err = aXfer.DispatchSendAccept(&inMsg);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "DispatchSendAccept failed."));
-
-                    xferMode = inMsg.mTransferMode;
-
-                    switch (xferMode)
-                    {
-                        case kMode_SenderDrive:
-                            // Try and send the first block
-                            VerifyOrExit(aXfer.mVersion < 2, err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION);
+                case kMode_SenderDrive:
+                    // Try and send the first block
+                    VerifyOrExit(aXfer.mVersion < 2, err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION);
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-                            aXfer.mNext = aXfer.mVersion == 1 ? SendNextBlockV1 : SendNextBlock;
+                    aXfer.mNext = aXfer.mVersion == 1 ? SendNextBlockV1 : SendNextBlock;
 #else
-                            aXfer.mNext = aXfer.mVersion == 1 ? SendNextBlockV1 : NULL;
+                    aXfer.mNext = aXfer.mVersion == 1 ? SendNextBlockV1 : NULL;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
-                            break;
+                    break;
 
-                        case kMode_ReceiverDrive:
-                            // Do nothing else as now we just wait for a BlockQuery
-                            break;
+                case kMode_ReceiverDrive:
+                    // Do nothing else as now we just wait for a BlockQuery
+                    break;
 
-                        case kMode_Asynchronous:
-                            WeaveLogDetail(BDX, "Received request for Async transfer mode, but it's not implemented yet!");
-                            err = WEAVE_ERROR_INVALID_TRANSFER_MODE;
-                            break;
+                case kMode_Asynchronous:
+                    WeaveLogDetail(BDX, "Received request for Async transfer mode, but it's not implemented yet!");
+                    err = WEAVE_ERROR_INVALID_TRANSFER_MODE;
+                    break;
 
-                        default:
-                            err = WEAVE_ERROR_INVALID_TRANSFER_MODE;
-                            break;
-                    }
+                default: err = WEAVE_ERROR_INVALID_TRANSFER_MODE; break;
                 }
+            }
 
-                break;
+            break;
 #endif // WEAVE_CONFIG_BDX_CLIENT_SEND_SUPPORT
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_SendReject:
-                {
-                    SendReject sendReject;
+        case kMsgType_SendReject:
+        {
+            SendReject sendReject;
 
-                    err = SendReject::parse(aPacketBuffer, sendReject);
-                    if (err == WEAVE_NO_ERROR)
-                    {
-                        aXfer.DispatchRejectHandler(&sendReject);
-                    }
-                }
+            err = SendReject::parse(aPacketBuffer, sendReject);
+            if (err == WEAVE_NO_ERROR)
+            {
+                aXfer.DispatchRejectHandler(&sendReject);
+            }
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
 #if WEAVE_CONFIG_BDX_CLIENT_RECEIVE_SUPPORT
-            case kMsgType_ReceiveAccept:
-                /*
-                 * The receive is accepted. now we figure out who's driving and,
-                 * if necessary, kick it off.
-                 */
+        case kMsgType_ReceiveAccept:
+            /*
+             * The receive is accepted. now we figure out who's driving and,
+             * if necessary, kick it off.
+             */
+            {
+                uint8_t xferMode;
+                ReceiveAccept inMsg;
+
+                err = ReceiveAccept::parse(aPacketBuffer, inMsg);
+
+                VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "ReceiveAccept parse failed."));
+                // This implies we're compatible with any version equal or below WEAVE_CONFIG_BDX_VERSION
+                VerifyOrExit(inMsg.mVersion <= WEAVE_CONFIG_BDX_VERSION, err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
+                             WeaveLogDetail(BDX, "ReceiveAccept returned an incompatible version: %d.", inMsg.mVersion));
+
+                // Set up the aXfer object and call callback
+                aXfer.mIsAccepted   = true;
+                aXfer.mMaxBlockSize = inMsg.mMaxBlockSize;
+                aXfer.mTransferMode = inMsg.mTransferMode;
+                aXfer.mVersion      = inMsg.mVersion;
+                aXfer.mLength       = inMsg.mLength;
+                err                 = aXfer.DispatchReceiveAccept(&inMsg);
+                VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "DispatchReceiveAccept failed."));
+                xferMode = inMsg.mTransferMode;
+
+                switch (xferMode)
                 {
-                    uint8_t xferMode;
-                    ReceiveAccept inMsg;
+                case kMode_SenderDrive:
+                    WeaveLogDetail(BDX, "Receive accepted: am not driving, so waiting for first BlockSend");
+                    // Do nothing else as now we just expect the first BlockSend
+                    break;
 
-                    err = ReceiveAccept::parse(aPacketBuffer, inMsg);
-
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "ReceiveAccept parse failed."));
-                    // This implies we're compatible with any version equal or below WEAVE_CONFIG_BDX_VERSION
-                    VerifyOrExit(inMsg.mVersion <= WEAVE_CONFIG_BDX_VERSION,
-                                 err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
-                                 WeaveLogDetail(BDX, "ReceiveAccept returned an incompatible version: %d.", inMsg.mVersion));
-
-                    // Set up the aXfer object and call callback
-                    aXfer.mIsAccepted = true;
-                    aXfer.mMaxBlockSize = inMsg.mMaxBlockSize;
-                    aXfer.mTransferMode = inMsg.mTransferMode;
-                    aXfer.mVersion = inMsg.mVersion;
-                    aXfer.mLength = inMsg.mLength;
-                    err = aXfer.DispatchReceiveAccept(&inMsg);
-                    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(BDX, "DispatchReceiveAccept failed."));
-                    xferMode = inMsg.mTransferMode;
-
-                    switch (xferMode)
-                    {
-                        case kMode_SenderDrive:
-                            WeaveLogDetail(BDX, "Receive accepted: am not driving, so waiting for first BlockSend");
-                            // Do nothing else as now we just expect the first BlockSend
-                            break;
-
-                        case kMode_ReceiverDrive:
-                            WeaveLogDetail(BDX, "Receive accepted: am driving, so sending first query");
-                            VerifyOrExit(aXfer.mVersion < 2, err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION);
+                case kMode_ReceiverDrive:
+                    WeaveLogDetail(BDX, "Receive accepted: am driving, so sending first query");
+                    VerifyOrExit(aXfer.mVersion < 2, err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION);
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-                            aXfer.mNext = aXfer.mVersion == 1 ? SendBlockQueryV1 : SendBlockQuery;
+                    aXfer.mNext = aXfer.mVersion == 1 ? SendBlockQueryV1 : SendBlockQuery;
 #else
-                            aXfer.mNext = aXfer.mVersion == 1 ? SendBlockQueryV1 : NULL;
+                    aXfer.mNext = aXfer.mVersion == 1 ? SendBlockQueryV1 : NULL;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-                            break;
+                    break;
 
-                        case kMode_Asynchronous:
-                            WeaveLogDetail(BDX, "Received request for Async transfer mode, but it's not implemented yet!");
-                            err = WEAVE_ERROR_INVALID_TRANSFER_MODE;
-                            break;
+                case kMode_Asynchronous:
+                    WeaveLogDetail(BDX, "Received request for Async transfer mode, but it's not implemented yet!");
+                    err = WEAVE_ERROR_INVALID_TRANSFER_MODE;
+                    break;
 
-                        default:
-                            err = WEAVE_ERROR_INVALID_TRANSFER_MODE;
-                            break;
-                    }
+                default: err = WEAVE_ERROR_INVALID_TRANSFER_MODE; break;
                 }
+            }
 
-                break;
+            break;
 #endif // WEAVE_CONFIG_BDX_CLIENT_RECEIVE_SUPPORT
 
 #if WEAVE_CONFIG_BDX_V0_SUPPORT
-            case kMsgType_ReceiveReject:
-                {
-                    ReceiveReject receiveReject;
-                    err = ReceiveReject::parse(aPacketBuffer, receiveReject);
-                    if (err == WEAVE_NO_ERROR)
-                    {
-                        aXfer.DispatchRejectHandler(&receiveReject);
-                    }
-                }
+        case kMsgType_ReceiveReject:
+        {
+            ReceiveReject receiveReject;
+            err = ReceiveReject::parse(aPacketBuffer, receiveReject);
+            if (err == WEAVE_NO_ERROR)
+            {
+                aXfer.DispatchRejectHandler(&receiveReject);
+            }
+        }
 
-                break;
+        break;
 #endif // WEAVE_CONFIG_BDX_V0_SUPPORT
 
-            default:
-                aXfer.DispatchErrorHandler(WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-                break;
+        default: aXfer.DispatchErrorHandler(WEAVE_ERROR_INVALID_MESSAGE_TYPE); break;
         }
     }
 
@@ -1447,8 +1438,8 @@ exit:
     return err;
 }
 
-} // BdxProtocol
-} // BulkDataTransfer
-} // Profiles
-} // Weave
-} // nl
+} // namespace BdxProtocol
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl

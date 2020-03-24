@@ -228,9 +228,7 @@ BLE_ERROR BleTransportCommandMessage::Encode(PacketBuffer * msgBuf, BleTransport
         nl::Weave::Encoding::Write8(p, cmd.Payload.MsgTxTiming.Enable);
         msgBuf->SetDataLength(COMMAND_HEADER_LEN + COMMAND_TXTIMING_HDR_LEN);
         break;
-    default:
-        WeaveLogError(Ble, "%s: Not yet support", __FUNCTION__);
-        break;
+    default: WeaveLogError(Ble, "%s: Not yet support", __FUNCTION__); break;
     }
 
 exit:
@@ -302,12 +300,8 @@ BLE_ERROR BleTransportCommandMessage::Decode(const PacketBuffer & msgBuf, BleTra
         cmd.Payload.MsgWobleWindowSize.TxWindowSize = nl::Weave::Encoding::Read8(p);
         cmd.Payload.MsgWobleWindowSize.RxWindowSize = nl::Weave::Encoding::Read8(p);
         break;
-    case kBleCommandType_TxTiming:
-        cmd.Payload.MsgTxTiming.Enable = nl::Weave::Encoding::Read8(p);
-        break;
-    default:
-        WeaveLogError(Ble, "%s: Not yet support", __FUNCTION__);
-        break;
+    case kBleCommandType_TxTiming: cmd.Payload.MsgTxTiming.Enable = nl::Weave::Encoding::Read8(p); break;
+    default: WeaveLogError(Ble, "%s: Not yet support", __FUNCTION__); break;
     }
 
 exit:
@@ -344,9 +338,7 @@ void WoBleTest::Decode(uint8_t * src, uint8_t * dst, size_t size)
 {
     switch (size)
     {
-    case sizeof(int8_t):
-        *dst = *src;
-        break;
+    case sizeof(int8_t): *dst = *src; break;
     case sizeof(int16_t):
     {
         int16_t i = nl::Weave::Encoding::LittleEndian::Read16(src);
@@ -365,9 +357,7 @@ void WoBleTest::Decode(uint8_t * src, uint8_t * dst, size_t size)
         memcpy(dst, &i, size);
     }
     break;
-    default:
-        WeaveLogError(Ble, "%s: unsupported size %u\n", __FUNCTION__, size);
-        break;
+    default: WeaveLogError(Ble, "%s: unsupported size %u\n", __FUNCTION__, size); break;
     }
 }
 
@@ -498,8 +488,7 @@ void WoBleTest::DoTxTiming(PacketBuffer * data, int stage)
         }
         break;
 
-    default:
-        break;
+    default: break;
     }
 }
 
@@ -1077,9 +1066,7 @@ void WoBleTest::HandleCommandPacket(Weave::System::Layer * systemLayer, void * a
         SuccessOrExit(err);
         break;
 
-    default:
-        WeaveLogError(Ble, "%s: Control type %d is not yet supported", __FUNCTION__, cmd.CmdHdr.PacketType);
-        break;
+    default: WeaveLogError(Ble, "%s: Control type %d is not yet supported", __FUNCTION__, cmd.CmdHdr.PacketType); break;
     }
 
     if (needAck)

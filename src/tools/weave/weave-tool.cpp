@@ -32,44 +32,43 @@
 
 #include "weave-tool.h"
 
-static const char *const sHelp =
-        "Usage: weave <command> [ <args...> ]\n"
-        "\n"
-        "Commands:\n"
-        "\n"
-        "    gen-ca-cert -- Generate a Weave CA certificate.\n"
-        "\n"
-        "    gen-device-cert -- Generate a Weave device certificate.\n"
-        "\n"
-        "    gen-code-signing-cert -- Generate a Weave code signing certificate.\n"
-        "\n"
-        "    gen-service-endpoint-cert -- Generate a Weave service endpoint certificate.\n"
-        "\n"
-        "    gen-general-cert -- Generate a general Weave certificate with a string subject.\n"
-        "\n"
-        "    gen-provisioning-data -- Generate manufacturing provisioning data for one or more devices.\n"
-        "\n"
-        "    convert-cert -- Convert a certificate between Weave and X509 form.\n"
-        "\n"
-        "    convert-key -- Convert a private key between Weave and PEM/DER form.\n"
-        "\n"
-        "    convert-provisioning-data -- Perform various conversions on a device provisioning data file.\n"
-        "\n"
-        "    resign-cert -- Resign a weave certificate using a new CA key.\n"
-        "\n"
-        "    make-service-config -- Make a service config object.\n"
-        "\n"
-        "    validate-cert -- Validate a Weave certificate chain.\n"
-        "\n"
-        "    print-cert -- Print a Weave certificate.\n"
-        "\n"
-        "    print-sig -- Print a Weave signature.\n"
-        "\n"
-        "    print-tlv -- Print a Weave TLV object.\n"
-        "\n"
-        "    version -- Print the program version and exit.\n"
-        "\n"
-        ;
+static const char * const sHelp =
+    "Usage: weave <command> [ <args...> ]\n"
+    "\n"
+    "Commands:\n"
+    "\n"
+    "    gen-ca-cert -- Generate a Weave CA certificate.\n"
+    "\n"
+    "    gen-device-cert -- Generate a Weave device certificate.\n"
+    "\n"
+    "    gen-code-signing-cert -- Generate a Weave code signing certificate.\n"
+    "\n"
+    "    gen-service-endpoint-cert -- Generate a Weave service endpoint certificate.\n"
+    "\n"
+    "    gen-general-cert -- Generate a general Weave certificate with a string subject.\n"
+    "\n"
+    "    gen-provisioning-data -- Generate manufacturing provisioning data for one or more devices.\n"
+    "\n"
+    "    convert-cert -- Convert a certificate between Weave and X509 form.\n"
+    "\n"
+    "    convert-key -- Convert a private key between Weave and PEM/DER form.\n"
+    "\n"
+    "    convert-provisioning-data -- Perform various conversions on a device provisioning data file.\n"
+    "\n"
+    "    resign-cert -- Resign a weave certificate using a new CA key.\n"
+    "\n"
+    "    make-service-config -- Make a service config object.\n"
+    "\n"
+    "    validate-cert -- Validate a Weave certificate chain.\n"
+    "\n"
+    "    print-cert -- Print a Weave certificate.\n"
+    "\n"
+    "    print-sig -- Print a Weave signature.\n"
+    "\n"
+    "    print-tlv -- Print a Weave TLV object.\n"
+    "\n"
+    "    version -- Print the program version and exit.\n"
+    "\n";
 
 /**
  * Print to standard output the program version information.
@@ -84,8 +83,7 @@ static bool PrintVersion(void)
     return true;
 }
 
-extern "C"
-int main(int argc, char *argv[])
+extern "C" int main(int argc, char * argv[])
 {
     bool res = false;
 

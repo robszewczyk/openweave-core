@@ -39,72 +39,61 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 // Property Table
 //
 
-const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-};
+const TraitSchemaEngine::PropertyInfo PropertyMap[] = { };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor UserNFCTokenManagementEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(UserNFCTokenManagementEvent, nfcTokenManagementEvent), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1
-    },
+const nl::FieldDescriptor UserNFCTokenManagementEventFieldDescriptors[] = {
+    { NULL, offsetof(UserNFCTokenManagementEvent, nfcTokenManagementEvent), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0),
+      1 },
 
-    {
-        &Schema::Weave::Trait::Security::UserNFCTokensTrait::UserNFCTokenData::FieldSchema, offsetof(UserNFCTokenManagementEvent, userNfcToken), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2
-    },
+    { &Schema::Weave::Trait::Security::UserNFCTokensTrait::UserNFCTokenData::FieldSchema,
+      offsetof(UserNFCTokenManagementEvent, userNfcToken), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2 },
 
-    {
-        NULL, offsetof(UserNFCTokenManagementEvent, initiatingUserId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 3
-    },
+    { NULL, offsetof(UserNFCTokenManagementEvent, initiatingUserId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 3 },
 
-    {
-        NULL, offsetof(UserNFCTokenManagementEvent, previousUserId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 4
-    },
+    { NULL, offsetof(UserNFCTokenManagementEvent, previousUserId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 4 },
 
 };
 
-const nl::SchemaFieldDescriptor UserNFCTokenManagementEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(UserNFCTokenManagementEventFieldDescriptors)/sizeof(UserNFCTokenManagementEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor UserNFCTokenManagementEvent::FieldSchema = {
+    .mNumFieldDescriptorElements =
+        sizeof(UserNFCTokenManagementEventFieldDescriptors) / sizeof(UserNFCTokenManagementEventFieldDescriptors[0]),
     .mFields = UserNFCTokenManagementEventFieldDescriptors,
-    .mSize = sizeof(UserNFCTokenManagementEvent)
+    .mSize   = sizeof(UserNFCTokenManagementEvent)
 };
-const nl::Weave::Profiles::DataManagement::EventSchema UserNFCTokenManagementEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
-    .mDataSchemaVersion = 1,
+const nl::Weave::Profiles::DataManagement::EventSchema UserNFCTokenManagementEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::Production,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

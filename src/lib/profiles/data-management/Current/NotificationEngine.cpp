@@ -246,7 +246,7 @@ WEAVE_ERROR NotificationEngine::IntermediateGraphSolver::DeleteKey(TraitDataHand
             if (mDirtyStore.mValidFlags[i] && (mDirtyStore.mStore[i].mTraitDataHandle == aDataHandle))
             {
                 if (mDirtyStore.mStore[i].mPropertyPathHandle == aPropertyHandle ||
-                        dataSource->GetSchemaEngine()->IsParent(mDirtyStore.mStore[i].mPropertyPathHandle, aPropertyHandle))
+                    dataSource->GetSchemaEngine()->IsParent(mDirtyStore.mStore[i].mPropertyPathHandle, aPropertyHandle))
                 {
                     WeaveLogDetail(DataManagement, "<ISolver:DeleteKey> Removing previously added dirty handle (%u:%u)",
                                    GetPropertyDictionaryKey(mDirtyStore.mStore[i].mPropertyPathHandle),
@@ -313,7 +313,7 @@ WEAVE_ERROR NotificationEngine::IntermediateGraphSolver::SetDirty(TraitDataHandl
             if (mDeleteStore.mValidFlags[i] && (mDeleteStore.mStore[i].mTraitDataHandle == aDataHandle))
             {
                 if (aPropertyHandle == mDeleteStore.mStore[i].mPropertyPathHandle ||
-                        dataSource->GetSchemaEngine()->IsParent(aPropertyHandle, mDeleteStore.mStore[i].mPropertyPathHandle))
+                    dataSource->GetSchemaEngine()->IsParent(aPropertyHandle, mDeleteStore.mStore[i].mPropertyPathHandle))
                 {
                     WeaveLogDetail(DataManagement, "<ISolver:DeleteKey> Removing previously deleted element (%u:%u)",
                                    GetPropertyDictionaryKey(mDeleteStore.mStore[i].mPropertyPathHandle),
@@ -732,8 +732,7 @@ void NotificationEngine::IntermediateGraphSolver::Store::Clear()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 WEAVE_ERROR NotificationEngine::NotifyRequestBuilder::Init(PacketBuffer * aBuf, TLV::TLVWriter * aWriter,
-                                                           SubscriptionHandler * aSubHandler,
-                                                           uint32_t aMaxPayloadSize)
+                                                           SubscriptionHandler * aSubHandler, uint32_t aMaxPayloadSize)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -969,17 +968,10 @@ WEAVE_ERROR NotificationEngine::NotifyRequestBuilder::MoveToState(NotifyRequestB
     // Get to the toplevel of the request
     switch (mState)
     {
-    case kNotifyRequestBuilder_Idle:
-        err = StartNotifyRequest();
-        break;
-    case kNotifyRequestBuilder_Ready:
-        break;
-    case kNotifyRequestBuilder_BuildDataList:
-        err = EndDataList();
-        break;
-    case kNotifyRequestBuilder_BuildEventList:
-        err = EndEventList();
-        break;
+    case kNotifyRequestBuilder_Idle: err = StartNotifyRequest(); break;
+    case kNotifyRequestBuilder_Ready: break;
+    case kNotifyRequestBuilder_BuildDataList: err = EndDataList(); break;
+    case kNotifyRequestBuilder_BuildEventList: err = EndEventList(); break;
     }
 
     // verify that we're at the toplevel
@@ -991,17 +983,10 @@ WEAVE_ERROR NotificationEngine::NotifyRequestBuilder::MoveToState(NotifyRequestB
 
     switch (aDesiredState)
     {
-    case kNotifyRequestBuilder_Idle:
-        err = EndNotifyRequest();
-        break;
-    case kNotifyRequestBuilder_Ready:
-        break;
-    case kNotifyRequestBuilder_BuildDataList:
-        err = StartDataList();
-        break;
-    case kNotifyRequestBuilder_BuildEventList:
-        err = StartEventList();
-        break;
+    case kNotifyRequestBuilder_Idle: err = EndNotifyRequest(); break;
+    case kNotifyRequestBuilder_Ready: break;
+    case kNotifyRequestBuilder_BuildDataList: err = StartDataList(); break;
+    case kNotifyRequestBuilder_BuildEventList: err = StartEventList(); break;
     }
     VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(DataManagement, "<NE:Builder> Failed to reach desired state: %d", err));
     // Extra paranoia: verify that we're in desired state
@@ -1520,9 +1505,9 @@ WEAVE_ERROR NotificationEngine::BuildSingleNotifyRequest(SubscriptionHandler * a
     TLVWriter writer;
     NotifyRequestBuilder notifyRequest;
     bool subClean;
-    bool neWriteInProgress = false;
+    bool neWriteInProgress       = false;
     uint32_t maxNotificationSize = 0;
-    uint32_t maxPayloadSize = 0;
+    uint32_t maxPayloadSize      = 0;
 
     aIsSubscriptionClean = true; // assume no work it to be done
 
@@ -1603,17 +1588,15 @@ exit:
 }
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-WEAVE_ERROR NotificationEngine::SendSubscriptionlessNotification(Binding * const apBinding,
-                                                                 TraitPath *aPathList,
+WEAVE_ERROR NotificationEngine::SendSubscriptionlessNotification(Binding * const apBinding, TraitPath * aPathList,
                                                                  uint16_t aPathListSize)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer * msgBuf = NULL;
-    ExchangeContext *ec = NULL;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf   = NULL;
+    ExchangeContext * ec    = NULL;
     uint32_t maxPayloadSize = 0;
 
-    VerifyOrExit(apBinding != NULL && aPathList != NULL,
-                 err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(apBinding != NULL && aPathList != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     err = apBinding->AllocateRightSizedBuffer(msgBuf, WDM_MAX_NOTIFICATION_SIZE, WDM_MIN_NOTIFICATION_SIZE, maxPayloadSize);
     SuccessOrExit(err);
@@ -1626,9 +1609,9 @@ WEAVE_ERROR NotificationEngine::SendSubscriptionlessNotification(Binding * const
     err = apBinding->NewExchangeContext(ec);
     SuccessOrExit(err);
 
-    ec->AppState          = this;
+    ec->AppState = this;
 
-    err = ec->SendMessage(nl::Weave::Profiles::kWeaveProfile_WDM, kMsgType_SubscriptionlessNotification, msgBuf);
+    err    = ec->SendMessage(nl::Weave::Profiles::kWeaveProfile_WDM, kMsgType_SubscriptionlessNotification, msgBuf);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1651,15 +1634,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR NotificationEngine::BuildSubscriptionlessNotification(PacketBuffer *aMsgBuf, uint32_t maxPayloadSize,
-                                                                  TraitPath *aPathList,
-                                                                  uint16_t aPathListSize)
+WEAVE_ERROR NotificationEngine::BuildSubscriptionlessNotification(PacketBuffer * aMsgBuf, uint32_t maxPayloadSize,
+                                                                  TraitPath * aPathList, uint16_t aPathListSize)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVWriter writer;
     NotifyRequestBuilder notifyRequest;
-    TraitDataSource *dataSource;
-    TraitPath *currPath;
+    TraitDataSource * dataSource;
+    TraitPath * currPath;
     TraitCatalogBase<TraitDataSource> * pubCatalog;
     SchemaVersion schemaVersion;
 

@@ -78,56 +78,56 @@ extern uint32_t sNIST_P256_ECPointRjsm[2][8];
 
 #if WEAVE_CONFIG_USE_OPENSSL_ECC
 
-extern BIGNUM *NIST_P192_ECPointS_X();
-extern BIGNUM *NIST_P192_ECPointS_Y();
-extern BIGNUM *NIST_P192_ECPointT_X();
-extern BIGNUM *NIST_P192_ECPointT_Y();
-extern BIGNUM *NIST_P192_D();
-extern BIGNUM *NIST_P192_E();
-extern BIGNUM *NIST_P192_ECPointRadd_X();
-extern BIGNUM *NIST_P192_ECPointRadd_Y();
-extern BIGNUM *NIST_P192_ECPointRsub_X();
-extern BIGNUM *NIST_P192_ECPointRsub_Y();
-extern BIGNUM *NIST_P192_ECPointRdbl_X();
-extern BIGNUM *NIST_P192_ECPointRdbl_Y();
-extern BIGNUM *NIST_P192_ECPointRmul_X();
-extern BIGNUM *NIST_P192_ECPointRmul_Y();
-extern BIGNUM *NIST_P192_ECPointRjsm_X();
-extern BIGNUM *NIST_P192_ECPointRjsm_Y();
+extern BIGNUM * NIST_P192_ECPointS_X();
+extern BIGNUM * NIST_P192_ECPointS_Y();
+extern BIGNUM * NIST_P192_ECPointT_X();
+extern BIGNUM * NIST_P192_ECPointT_Y();
+extern BIGNUM * NIST_P192_D();
+extern BIGNUM * NIST_P192_E();
+extern BIGNUM * NIST_P192_ECPointRadd_X();
+extern BIGNUM * NIST_P192_ECPointRadd_Y();
+extern BIGNUM * NIST_P192_ECPointRsub_X();
+extern BIGNUM * NIST_P192_ECPointRsub_Y();
+extern BIGNUM * NIST_P192_ECPointRdbl_X();
+extern BIGNUM * NIST_P192_ECPointRdbl_Y();
+extern BIGNUM * NIST_P192_ECPointRmul_X();
+extern BIGNUM * NIST_P192_ECPointRmul_Y();
+extern BIGNUM * NIST_P192_ECPointRjsm_X();
+extern BIGNUM * NIST_P192_ECPointRjsm_Y();
 
-extern BIGNUM *NIST_P224_ECPointS_X();
-extern BIGNUM *NIST_P224_ECPointS_Y();
-extern BIGNUM *NIST_P224_ECPointT_X();
-extern BIGNUM *NIST_P224_ECPointT_Y();
-extern BIGNUM *NIST_P224_D();
-extern BIGNUM *NIST_P224_E();
-extern BIGNUM *NIST_P224_ECPointRadd_X();
-extern BIGNUM *NIST_P224_ECPointRadd_Y();
-extern BIGNUM *NIST_P224_ECPointRsub_X();
-extern BIGNUM *NIST_P224_ECPointRsub_Y();
-extern BIGNUM *NIST_P224_ECPointRdbl_X();
-extern BIGNUM *NIST_P224_ECPointRdbl_Y();
-extern BIGNUM *NIST_P224_ECPointRmul_X();
-extern BIGNUM *NIST_P224_ECPointRmul_Y();
-extern BIGNUM *NIST_P224_ECPointRjsm_X();
-extern BIGNUM *NIST_P224_ECPointRjsm_Y();
+extern BIGNUM * NIST_P224_ECPointS_X();
+extern BIGNUM * NIST_P224_ECPointS_Y();
+extern BIGNUM * NIST_P224_ECPointT_X();
+extern BIGNUM * NIST_P224_ECPointT_Y();
+extern BIGNUM * NIST_P224_D();
+extern BIGNUM * NIST_P224_E();
+extern BIGNUM * NIST_P224_ECPointRadd_X();
+extern BIGNUM * NIST_P224_ECPointRadd_Y();
+extern BIGNUM * NIST_P224_ECPointRsub_X();
+extern BIGNUM * NIST_P224_ECPointRsub_Y();
+extern BIGNUM * NIST_P224_ECPointRdbl_X();
+extern BIGNUM * NIST_P224_ECPointRdbl_Y();
+extern BIGNUM * NIST_P224_ECPointRmul_X();
+extern BIGNUM * NIST_P224_ECPointRmul_Y();
+extern BIGNUM * NIST_P224_ECPointRjsm_X();
+extern BIGNUM * NIST_P224_ECPointRjsm_Y();
 
-extern BIGNUM *NIST_P256_ECPointS_X();
-extern BIGNUM *NIST_P256_ECPointS_Y();
-extern BIGNUM *NIST_P256_ECPointT_X();
-extern BIGNUM *NIST_P256_ECPointT_Y();
-extern BIGNUM *NIST_P256_D();
-extern BIGNUM *NIST_P256_E();
-extern BIGNUM *NIST_P256_ECPointRadd_X();
-extern BIGNUM *NIST_P256_ECPointRadd_Y();
-extern BIGNUM *NIST_P256_ECPointRsub_X();
-extern BIGNUM *NIST_P256_ECPointRsub_Y();
-extern BIGNUM *NIST_P256_ECPointRdbl_X();
-extern BIGNUM *NIST_P256_ECPointRdbl_Y();
-extern BIGNUM *NIST_P256_ECPointRmul_X();
-extern BIGNUM *NIST_P256_ECPointRmul_Y();
-extern BIGNUM *NIST_P256_ECPointRjsm_X();
-extern BIGNUM *NIST_P256_ECPointRjsm_Y();
+extern BIGNUM * NIST_P256_ECPointS_X();
+extern BIGNUM * NIST_P256_ECPointS_Y();
+extern BIGNUM * NIST_P256_ECPointT_X();
+extern BIGNUM * NIST_P256_ECPointT_Y();
+extern BIGNUM * NIST_P256_D();
+extern BIGNUM * NIST_P256_E();
+extern BIGNUM * NIST_P256_ECPointRadd_X();
+extern BIGNUM * NIST_P256_ECPointRadd_Y();
+extern BIGNUM * NIST_P256_ECPointRsub_X();
+extern BIGNUM * NIST_P256_ECPointRsub_Y();
+extern BIGNUM * NIST_P256_ECPointRdbl_X();
+extern BIGNUM * NIST_P256_ECPointRdbl_Y();
+extern BIGNUM * NIST_P256_ECPointRmul_X();
+extern BIGNUM * NIST_P256_ECPointRmul_Y();
+extern BIGNUM * NIST_P256_ECPointRjsm_X();
+extern BIGNUM * NIST_P256_ECPointRjsm_Y();
 
 #endif // WEAVE_CONFIG_USE_OPENSSL_ECC
 
@@ -146,14 +146,10 @@ using namespace nl::Weave::Encoding;
 #if WEAVE_CONFIG_USE_MICRO_ECC
 
 /* Compares points: returns 1 if left == right */
-#define uECC_point_equal(left, right, num_words) \
-        uECC_vli_equal((left), (right), 2 * (num_words))
+#define uECC_point_equal(left, right, num_words) uECC_vli_equal((left), (right), 2 * (num_words))
 
 /* Points subtraction: result = left - right */
-static void uECC_point_sub(uECC_word_t *result,
-                           const uECC_word_t *left,
-                           const uECC_word_t *right,
-                           uECC_Curve curve)
+static void uECC_point_sub(uECC_word_t * result, const uECC_word_t * left, const uECC_word_t * right, uECC_Curve curve)
 {
     const wordcount_t num_words = uECC_curve_num_words(curve);
 
@@ -169,9 +165,7 @@ static void uECC_point_sub(uECC_word_t *result,
 }
 
 /* Point double: result = 2 * point */
-static void uECC_point_dbl(uECC_word_t *result,
-                           const uECC_word_t *point,
-                           uECC_Curve curve)
+static void uECC_point_dbl(uECC_word_t * result, const uECC_word_t * point, uECC_Curve curve)
 {
     uECC_word_t scalar[kuECC_MaxWordCount] = { 0x02 };
 
@@ -184,32 +178,27 @@ static uECC_Curve CurveOID2uECC_Curve(OID curveOID)
     switch (curveOID)
     {
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP160R1
-    case kOID_EllipticCurve_secp160r1:
-        return uECC_secp160r1();
+    case kOID_EllipticCurve_secp160r1: return uECC_secp160r1();
 #endif
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1
-    case kOID_EllipticCurve_prime192v1:
-        return uECC_secp192r1();
+    case kOID_EllipticCurve_prime192v1: return uECC_secp192r1();
 #endif
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1
-    case kOID_EllipticCurve_secp224r1:
-        return uECC_secp224r1();
+    case kOID_EllipticCurve_secp224r1: return uECC_secp224r1();
 #endif
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
-    case kOID_EllipticCurve_prime256v1:
-        return uECC_secp256r1();
+    case kOID_EllipticCurve_prime256v1: return uECC_secp256r1();
 #endif
-    default:
-        return NULL;
+    default: return NULL;
     }
 }
 
 static bool TestECMath_PointAddition(OID curveOID, uint32_t iterationCounter)
 {
     uECC_Curve curve;
-    uECC_word_t *ecPointS;
-    uECC_word_t *ecPointT;
-    uECC_word_t *ecPointR_Expected;
+    uECC_word_t * ecPointS;
+    uECC_word_t * ecPointT;
+    uECC_word_t * ecPointR_Expected;
     EccPoint ecPointR;
 
     curve = CurveOID2uECC_Curve(curveOID);
@@ -219,28 +208,27 @@ static bool TestECMath_PointAddition(OID curveOID, uint32_t iterationCounter)
         return false;
     }
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointS = (uECC_word_t*)sNIST_P192_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P192_ECPointT;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P192_ECPointRadd;
+        ecPointS          = (uECC_word_t *) sNIST_P192_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P192_ECPointT;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P192_ECPointRadd;
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointS = (uECC_word_t*)sNIST_P224_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P224_ECPointT;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P224_ECPointRadd;
+        ecPointS          = (uECC_word_t *) sNIST_P224_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P224_ECPointT;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P224_ECPointRadd;
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointS = (uECC_word_t*)sNIST_P256_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P256_ECPointT;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P256_ECPointRadd;
+        ecPointS          = (uECC_word_t *) sNIST_P256_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P256_ECPointT;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P256_ECPointRadd;
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        return false;
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); return false;
     }
 
     // Main Loop: ecPointR = ecPointS + ecPointT
@@ -260,9 +248,9 @@ static bool TestECMath_PointAddition(OID curveOID, uint32_t iterationCounter)
 static bool TestECMath_PointSubtraction(OID curveOID, uint32_t iterationCounter)
 {
     uECC_Curve curve;
-    uECC_word_t *ecPointS;
-    uECC_word_t *ecPointT;
-    uECC_word_t *ecPointR_Expected;
+    uECC_word_t * ecPointS;
+    uECC_word_t * ecPointT;
+    uECC_word_t * ecPointR_Expected;
     EccPoint ecPointR;
 
     curve = CurveOID2uECC_Curve(curveOID);
@@ -272,28 +260,27 @@ static bool TestECMath_PointSubtraction(OID curveOID, uint32_t iterationCounter)
         return false;
     }
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointS = (uECC_word_t*)sNIST_P192_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P192_ECPointT;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P192_ECPointRsub;
+        ecPointS          = (uECC_word_t *) sNIST_P192_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P192_ECPointT;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P192_ECPointRsub;
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointS = (uECC_word_t*)sNIST_P224_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P224_ECPointT;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P224_ECPointRsub;
+        ecPointS          = (uECC_word_t *) sNIST_P224_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P224_ECPointT;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P224_ECPointRsub;
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointS = (uECC_word_t*)sNIST_P256_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P256_ECPointT;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P256_ECPointRsub;
+        ecPointS          = (uECC_word_t *) sNIST_P256_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P256_ECPointT;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P256_ECPointRsub;
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        return false;
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); return false;
     }
 
     // Main Loop: ecPointR = ecPointS - ecPointT
@@ -316,8 +303,8 @@ static bool TestECMath_PointSubtraction(OID curveOID, uint32_t iterationCounter)
 static bool TestECMath_PointDouble(OID curveOID, uint32_t iterationCounter)
 {
     uECC_Curve curve;
-    uECC_word_t *ecPointS;
-    uECC_word_t *ecPointR_Expected;
+    uECC_word_t * ecPointS;
+    uECC_word_t * ecPointR_Expected;
     EccPoint ecPointR;
 
     curve = CurveOID2uECC_Curve(curveOID);
@@ -327,25 +314,24 @@ static bool TestECMath_PointDouble(OID curveOID, uint32_t iterationCounter)
         return false;
     }
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointS = (uECC_word_t*)sNIST_P192_ECPointS;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P192_ECPointRdbl;
+        ecPointS          = (uECC_word_t *) sNIST_P192_ECPointS;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P192_ECPointRdbl;
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointS = (uECC_word_t*)sNIST_P224_ECPointS;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P224_ECPointRdbl;
+        ecPointS          = (uECC_word_t *) sNIST_P224_ECPointS;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P224_ECPointRdbl;
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointS = (uECC_word_t*)sNIST_P256_ECPointS;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P256_ECPointRdbl;
+        ecPointS          = (uECC_word_t *) sNIST_P256_ECPointS;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P256_ECPointRdbl;
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        return false;
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); return false;
     }
 
     // Main Loop: ecPointR = 2 * ecPointS
@@ -365,9 +351,9 @@ static bool TestECMath_PointDouble(OID curveOID, uint32_t iterationCounter)
 static bool TestECMath_PointMultiply(OID curveOID, uint32_t iterationCounter)
 {
     uECC_Curve curve;
-    uECC_word_t *ecPointS;
-    uECC_word_t *scalarD;
-    uECC_word_t *ecPointR_Expected;
+    uECC_word_t * ecPointS;
+    uECC_word_t * scalarD;
+    uECC_word_t * ecPointR_Expected;
     EccPoint ecPointR;
 
     curve = CurveOID2uECC_Curve(curveOID);
@@ -377,28 +363,27 @@ static bool TestECMath_PointMultiply(OID curveOID, uint32_t iterationCounter)
         return false;
     }
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointS = (uECC_word_t*)sNIST_P192_ECPointS;
-        scalarD = (uECC_word_t*)sNIST_P192_ScalarD;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P192_ECPointRmul;
+        ecPointS          = (uECC_word_t *) sNIST_P192_ECPointS;
+        scalarD           = (uECC_word_t *) sNIST_P192_ScalarD;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P192_ECPointRmul;
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointS = (uECC_word_t*)sNIST_P224_ECPointS;
-        scalarD = (uECC_word_t*)sNIST_P224_ScalarD;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P224_ECPointRmul;
+        ecPointS          = (uECC_word_t *) sNIST_P224_ECPointS;
+        scalarD           = (uECC_word_t *) sNIST_P224_ScalarD;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P224_ECPointRmul;
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointS = (uECC_word_t*)sNIST_P256_ECPointS;
-        scalarD = (uECC_word_t*)sNIST_P256_ScalarD;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P256_ECPointRmul;
+        ecPointS          = (uECC_word_t *) sNIST_P256_ECPointS;
+        scalarD           = (uECC_word_t *) sNIST_P256_ScalarD;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P256_ECPointRmul;
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        return false;
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); return false;
     }
 
     // Main Loop: ecPointR = ScalarD * ecPointS
@@ -418,11 +403,11 @@ static bool TestECMath_PointMultiply(OID curveOID, uint32_t iterationCounter)
 static bool TestECMath_JointScalarMultiply(OID curveOID, uint32_t iterationCounter)
 {
     uECC_Curve curve;
-    uECC_word_t *ecPointS;
-    uECC_word_t *ecPointT;
-    uECC_word_t *scalarD;
-    uECC_word_t *scalarE;
-    uECC_word_t *ecPointR_Expected;
+    uECC_word_t * ecPointS;
+    uECC_word_t * ecPointT;
+    uECC_word_t * scalarD;
+    uECC_word_t * scalarE;
+    uECC_word_t * ecPointR_Expected;
     EccPoint ecPointR;
     EccPoint ecPointTmp1;
     EccPoint ecPointTmp2;
@@ -434,35 +419,34 @@ static bool TestECMath_JointScalarMultiply(OID curveOID, uint32_t iterationCount
         return false;
     }
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
 
     case kOID_EllipticCurve_prime192v1:
-        ecPointS = (uECC_word_t*)sNIST_P192_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P192_ECPointT;
-        scalarD = (uECC_word_t*)sNIST_P192_ScalarD;
-        scalarE = (uECC_word_t*)sNIST_P192_ScalarE;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P192_ECPointRjsm;
+        ecPointS          = (uECC_word_t *) sNIST_P192_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P192_ECPointT;
+        scalarD           = (uECC_word_t *) sNIST_P192_ScalarD;
+        scalarE           = (uECC_word_t *) sNIST_P192_ScalarE;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P192_ECPointRjsm;
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointS = (uECC_word_t*)sNIST_P224_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P224_ECPointT;
-        scalarD = (uECC_word_t*)sNIST_P224_ScalarD;
-        scalarE = (uECC_word_t*)sNIST_P224_ScalarE;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P224_ECPointRjsm;
+        ecPointS          = (uECC_word_t *) sNIST_P224_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P224_ECPointT;
+        scalarD           = (uECC_word_t *) sNIST_P224_ScalarD;
+        scalarE           = (uECC_word_t *) sNIST_P224_ScalarE;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P224_ECPointRjsm;
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointS = (uECC_word_t*)sNIST_P256_ECPointS;
-        ecPointT = (uECC_word_t*)sNIST_P256_ECPointT;
-        scalarD = (uECC_word_t*)sNIST_P256_ScalarD;
-        scalarE = (uECC_word_t*)sNIST_P256_ScalarE;
-        ecPointR_Expected = (uECC_word_t*)sNIST_P256_ECPointRjsm;
+        ecPointS          = (uECC_word_t *) sNIST_P256_ECPointS;
+        ecPointT          = (uECC_word_t *) sNIST_P256_ECPointT;
+        scalarD           = (uECC_word_t *) sNIST_P256_ScalarD;
+        scalarE           = (uECC_word_t *) sNIST_P256_ScalarE;
+        ecPointR_Expected = (uECC_word_t *) sNIST_P256_ECPointRjsm;
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        return false;
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); return false;
     }
 
     // Main Loop: ecPointR = ScalarD * ecPointS + ScalarE * ecPointT
@@ -498,49 +482,48 @@ static bool TestECMath_JointScalarMultiply(OID curveOID, uint32_t iterationCount
 static bool TestECMath_PointAddition(OID curveOID, uint32_t iterationCounter)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *ecPointS = NULL;
-    BIGNUM *ecPointSx = NULL;
-    BIGNUM *ecPointSy = NULL;
-    EC_POINT *ecPointT = NULL;
-    BIGNUM *ecPointTx = NULL;
-    BIGNUM *ecPointTy = NULL;
-    EC_POINT *ecPointR = NULL;
-    EC_POINT *ecPointR_Expected = NULL;
-    BIGNUM *ecPointRx_Expected = NULL;
-    BIGNUM *ecPointRy_Expected = NULL;
+    EC_GROUP * ecGroup           = NULL;
+    EC_POINT * ecPointS          = NULL;
+    BIGNUM * ecPointSx           = NULL;
+    BIGNUM * ecPointSy           = NULL;
+    EC_POINT * ecPointT          = NULL;
+    BIGNUM * ecPointTx           = NULL;
+    BIGNUM * ecPointTy           = NULL;
+    EC_POINT * ecPointR          = NULL;
+    EC_POINT * ecPointR_Expected = NULL;
+    BIGNUM * ecPointRx_Expected  = NULL;
+    BIGNUM * ecPointRy_Expected  = NULL;
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointSx = NIST_P192_ECPointS_X();
-        ecPointSy = NIST_P192_ECPointS_Y();
-        ecPointTx = NIST_P192_ECPointT_X();
-        ecPointTy = NIST_P192_ECPointT_Y();
+        ecPointSx          = NIST_P192_ECPointS_X();
+        ecPointSy          = NIST_P192_ECPointS_Y();
+        ecPointTx          = NIST_P192_ECPointT_X();
+        ecPointTy          = NIST_P192_ECPointT_Y();
         ecPointRx_Expected = NIST_P192_ECPointRadd_X();
         ecPointRy_Expected = NIST_P192_ECPointRadd_Y();
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointSx = NIST_P224_ECPointS_X();
-        ecPointSy = NIST_P224_ECPointS_Y();
-        ecPointTx = NIST_P224_ECPointT_X();
-        ecPointTy = NIST_P224_ECPointT_Y();
+        ecPointSx          = NIST_P224_ECPointS_X();
+        ecPointSy          = NIST_P224_ECPointS_Y();
+        ecPointTx          = NIST_P224_ECPointT_X();
+        ecPointTy          = NIST_P224_ECPointT_Y();
         ecPointRx_Expected = NIST_P224_ECPointRadd_X();
         ecPointRy_Expected = NIST_P224_ECPointRadd_Y();
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointSx = NIST_P256_ECPointS_X();
-        ecPointSy = NIST_P256_ECPointS_Y();
-        ecPointTx = NIST_P256_ECPointT_X();
-        ecPointTy = NIST_P256_ECPointT_Y();
+        ecPointSx          = NIST_P256_ECPointS_X();
+        ecPointSy          = NIST_P256_ECPointS_Y();
+        ecPointTx          = NIST_P256_ECPointT_X();
+        ecPointTy          = NIST_P256_ECPointT_Y();
         ecPointRx_Expected = NIST_P256_ECPointRadd_X();
         ecPointRy_Expected = NIST_P256_ECPointRadd_Y();
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     // Get EC Group for Curve OID
@@ -578,7 +561,7 @@ static bool TestECMath_PointAddition(OID curveOID, uint32_t iterationCounter)
             ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Compare Result ecPointR == ecPointR_Expected
-    if ( EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL)  != 0 )
+    if (EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL) != 0)
     {
         printf("\tERROR: OpenSSL point addition test failed !!! \n");
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -608,50 +591,49 @@ exit:
 static bool TestECMath_PointSubtraction(OID curveOID, uint32_t iterationCounter)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *ecPointS = NULL;
-    BIGNUM *ecPointSx = NULL;
-    BIGNUM *ecPointSy = NULL;
-    EC_POINT *ecPointT = NULL;
-    BIGNUM *ecPointTx = NULL;
-    BIGNUM *ecPointTy = NULL;
-    EC_POINT *ecPointR = NULL;
-    EC_POINT *ecPointR_Expected = NULL;
-    BIGNUM *ecPointRx_Expected = NULL;
-    BIGNUM *ecPointRy_Expected = NULL;
-    EC_POINT *ecPointTmp = NULL;
+    EC_GROUP * ecGroup           = NULL;
+    EC_POINT * ecPointS          = NULL;
+    BIGNUM * ecPointSx           = NULL;
+    BIGNUM * ecPointSy           = NULL;
+    EC_POINT * ecPointT          = NULL;
+    BIGNUM * ecPointTx           = NULL;
+    BIGNUM * ecPointTy           = NULL;
+    EC_POINT * ecPointR          = NULL;
+    EC_POINT * ecPointR_Expected = NULL;
+    BIGNUM * ecPointRx_Expected  = NULL;
+    BIGNUM * ecPointRy_Expected  = NULL;
+    EC_POINT * ecPointTmp        = NULL;
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointSx = NIST_P192_ECPointS_X();
-        ecPointSy = NIST_P192_ECPointS_Y();
-        ecPointTx = NIST_P192_ECPointT_X();
-        ecPointTy = NIST_P192_ECPointT_Y();
+        ecPointSx          = NIST_P192_ECPointS_X();
+        ecPointSy          = NIST_P192_ECPointS_Y();
+        ecPointTx          = NIST_P192_ECPointT_X();
+        ecPointTy          = NIST_P192_ECPointT_Y();
         ecPointRx_Expected = NIST_P192_ECPointRsub_X();
         ecPointRy_Expected = NIST_P192_ECPointRsub_Y();
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointSx = NIST_P224_ECPointS_X();
-        ecPointSy = NIST_P224_ECPointS_Y();
-        ecPointTx = NIST_P224_ECPointT_X();
-        ecPointTy = NIST_P224_ECPointT_Y();
+        ecPointSx          = NIST_P224_ECPointS_X();
+        ecPointSy          = NIST_P224_ECPointS_Y();
+        ecPointTx          = NIST_P224_ECPointT_X();
+        ecPointTy          = NIST_P224_ECPointT_Y();
         ecPointRx_Expected = NIST_P224_ECPointRsub_X();
         ecPointRy_Expected = NIST_P224_ECPointRsub_Y();
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointSx = NIST_P256_ECPointS_X();
-        ecPointSy = NIST_P256_ECPointS_Y();
-        ecPointTx = NIST_P256_ECPointT_X();
-        ecPointTy = NIST_P256_ECPointT_Y();
+        ecPointSx          = NIST_P256_ECPointS_X();
+        ecPointSy          = NIST_P256_ECPointS_Y();
+        ecPointTx          = NIST_P256_ECPointT_X();
+        ecPointTy          = NIST_P256_ECPointT_Y();
         ecPointRx_Expected = NIST_P256_ECPointRsub_X();
         ecPointRy_Expected = NIST_P256_ECPointRsub_Y();
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     // Get EC Group for Curve OID
@@ -701,7 +683,7 @@ static bool TestECMath_PointSubtraction(OID curveOID, uint32_t iterationCounter)
     }
 
     // Compare Result ecPointR == ecPointR_Expected
-    if ( EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL)  != 0 )
+    if (EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL) != 0)
     {
         printf("\tERROR: OpenSSL point subtraction test failed !!! \n");
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -732,40 +714,39 @@ exit:
 static bool TestECMath_PointDouble(OID curveOID, uint32_t iterationCounter)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *ecPointS = NULL;
-    BIGNUM *ecPointSx = NULL;
-    BIGNUM *ecPointSy = NULL;
-    EC_POINT *ecPointR = NULL;
-    EC_POINT *ecPointR_Expected = NULL;
-    BIGNUM *ecPointRx_Expected = NULL;
-    BIGNUM *ecPointRy_Expected = NULL;
+    EC_GROUP * ecGroup           = NULL;
+    EC_POINT * ecPointS          = NULL;
+    BIGNUM * ecPointSx           = NULL;
+    BIGNUM * ecPointSy           = NULL;
+    EC_POINT * ecPointR          = NULL;
+    EC_POINT * ecPointR_Expected = NULL;
+    BIGNUM * ecPointRx_Expected  = NULL;
+    BIGNUM * ecPointRy_Expected  = NULL;
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointSx = NIST_P192_ECPointS_X();
-        ecPointSy = NIST_P192_ECPointS_Y();
+        ecPointSx          = NIST_P192_ECPointS_X();
+        ecPointSy          = NIST_P192_ECPointS_Y();
         ecPointRx_Expected = NIST_P192_ECPointRdbl_X();
         ecPointRy_Expected = NIST_P192_ECPointRdbl_Y();
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointSx = NIST_P224_ECPointS_X();
-        ecPointSy = NIST_P224_ECPointS_Y();
+        ecPointSx          = NIST_P224_ECPointS_X();
+        ecPointSy          = NIST_P224_ECPointS_Y();
         ecPointRx_Expected = NIST_P224_ECPointRdbl_X();
         ecPointRy_Expected = NIST_P224_ECPointRdbl_Y();
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointSx = NIST_P256_ECPointS_X();
-        ecPointSy = NIST_P256_ECPointS_Y();
+        ecPointSx          = NIST_P256_ECPointS_X();
+        ecPointSy          = NIST_P256_ECPointS_Y();
         ecPointRx_Expected = NIST_P256_ECPointRdbl_X();
         ecPointRy_Expected = NIST_P256_ECPointRdbl_Y();
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     // Get EC Group for Curve OID
@@ -796,7 +777,7 @@ static bool TestECMath_PointDouble(OID curveOID, uint32_t iterationCounter)
             ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Compare Result ecPointR == ecPointR_Expected
-    if ( EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL)  != 0 )
+    if (EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL) != 0)
     {
         printf("\tERROR: OpenSSL point double test failed !!! \n");
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -823,44 +804,43 @@ exit:
 static bool TestECMath_PointMultiply(OID curveOID, uint32_t iterationCounter)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *ecPointS = NULL;
-    BIGNUM *ecPointSx = NULL;
-    BIGNUM *ecPointSy = NULL;
-    BIGNUM *scalarD = NULL;
-    EC_POINT *ecPointR = NULL;
-    EC_POINT *ecPointR_Expected = NULL;
-    BIGNUM *ecPointRx_Expected = NULL;
-    BIGNUM *ecPointRy_Expected = NULL;
+    EC_GROUP * ecGroup           = NULL;
+    EC_POINT * ecPointS          = NULL;
+    BIGNUM * ecPointSx           = NULL;
+    BIGNUM * ecPointSy           = NULL;
+    BIGNUM * scalarD             = NULL;
+    EC_POINT * ecPointR          = NULL;
+    EC_POINT * ecPointR_Expected = NULL;
+    BIGNUM * ecPointRx_Expected  = NULL;
+    BIGNUM * ecPointRy_Expected  = NULL;
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointSx = NIST_P192_ECPointS_X();
-        ecPointSy = NIST_P192_ECPointS_Y();
-        scalarD  = NIST_P192_D();
+        ecPointSx          = NIST_P192_ECPointS_X();
+        ecPointSy          = NIST_P192_ECPointS_Y();
+        scalarD            = NIST_P192_D();
         ecPointRx_Expected = NIST_P192_ECPointRmul_X();
         ecPointRy_Expected = NIST_P192_ECPointRmul_Y();
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointSx = NIST_P224_ECPointS_X();
-        ecPointSy = NIST_P224_ECPointS_Y();
-        scalarD  = NIST_P224_D();
+        ecPointSx          = NIST_P224_ECPointS_X();
+        ecPointSy          = NIST_P224_ECPointS_Y();
+        scalarD            = NIST_P224_D();
         ecPointRx_Expected = NIST_P224_ECPointRmul_X();
         ecPointRy_Expected = NIST_P224_ECPointRmul_Y();
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointSx = NIST_P256_ECPointS_X();
-        ecPointSy = NIST_P256_ECPointS_Y();
-        scalarD  = NIST_P256_D();
+        ecPointSx          = NIST_P256_ECPointS_X();
+        ecPointSy          = NIST_P256_ECPointS_Y();
+        scalarD            = NIST_P256_D();
         ecPointRx_Expected = NIST_P256_ECPointRmul_X();
         ecPointRy_Expected = NIST_P256_ECPointRmul_Y();
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     // Get EC Group for Curve OID
@@ -891,7 +871,7 @@ static bool TestECMath_PointMultiply(OID curveOID, uint32_t iterationCounter)
             ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Compare Result ecPointR == ecPointR_Expected
-    if ( EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL)  != 0 )
+    if (EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL) != 0)
     {
         printf("\tERROR: OpenSSL point multiply test failed !!! \n");
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -921,59 +901,58 @@ exit:
 static bool TestECMath_JointScalarMultiply(OID curveOID, uint32_t iterationCounter)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *ecPointS = NULL;
-    BIGNUM *ecPointSx = NULL;
-    BIGNUM *ecPointSy = NULL;
-    EC_POINT *ecPointT = NULL;
-    BIGNUM *ecPointTx = NULL;
-    BIGNUM *ecPointTy = NULL;
-    BIGNUM *scalarD = NULL;
-    BIGNUM *scalarE = NULL;
-    EC_POINT *ecPointR = NULL;
-    EC_POINT *ecPointR_Expected = NULL;
-    BIGNUM *ecPointRx_Expected = NULL;
-    BIGNUM *ecPointRy_Expected = NULL;
-    const EC_POINT *ecPoints[2];
-    const BIGNUM *scalars[2];
+    EC_GROUP * ecGroup           = NULL;
+    EC_POINT * ecPointS          = NULL;
+    BIGNUM * ecPointSx           = NULL;
+    BIGNUM * ecPointSy           = NULL;
+    EC_POINT * ecPointT          = NULL;
+    BIGNUM * ecPointTx           = NULL;
+    BIGNUM * ecPointTy           = NULL;
+    BIGNUM * scalarD             = NULL;
+    BIGNUM * scalarE             = NULL;
+    EC_POINT * ecPointR          = NULL;
+    EC_POINT * ecPointR_Expected = NULL;
+    BIGNUM * ecPointRx_Expected  = NULL;
+    BIGNUM * ecPointRy_Expected  = NULL;
+    const EC_POINT * ecPoints[2];
+    const BIGNUM * scalars[2];
 
-    switch (curveOID) {
+    switch (curveOID)
+    {
     case kOID_EllipticCurve_prime192v1:
-        ecPointSx = NIST_P192_ECPointS_X();
-        ecPointSy = NIST_P192_ECPointS_Y();
-        ecPointTx = NIST_P192_ECPointT_X();
-        ecPointTy = NIST_P192_ECPointT_Y();
-        scalarD   = NIST_P192_D();
-        scalarE   = NIST_P192_E();
+        ecPointSx          = NIST_P192_ECPointS_X();
+        ecPointSy          = NIST_P192_ECPointS_Y();
+        ecPointTx          = NIST_P192_ECPointT_X();
+        ecPointTy          = NIST_P192_ECPointT_Y();
+        scalarD            = NIST_P192_D();
+        scalarE            = NIST_P192_E();
         ecPointRx_Expected = NIST_P192_ECPointRjsm_X();
         ecPointRy_Expected = NIST_P192_ECPointRjsm_Y();
         break;
 
     case kOID_EllipticCurve_secp224r1:
-        ecPointSx = NIST_P224_ECPointS_X();
-        ecPointSy = NIST_P224_ECPointS_Y();
-        ecPointTx = NIST_P224_ECPointT_X();
-        ecPointTy = NIST_P224_ECPointT_Y();
-        scalarD   = NIST_P224_D();
-        scalarE   = NIST_P224_E();
+        ecPointSx          = NIST_P224_ECPointS_X();
+        ecPointSy          = NIST_P224_ECPointS_Y();
+        ecPointTx          = NIST_P224_ECPointT_X();
+        ecPointTy          = NIST_P224_ECPointT_Y();
+        scalarD            = NIST_P224_D();
+        scalarE            = NIST_P224_E();
         ecPointRx_Expected = NIST_P224_ECPointRjsm_X();
         ecPointRy_Expected = NIST_P224_ECPointRjsm_Y();
         break;
 
     case kOID_EllipticCurve_prime256v1:
-        ecPointSx = NIST_P256_ECPointS_X();
-        ecPointSy = NIST_P256_ECPointS_Y();
-        ecPointTx = NIST_P256_ECPointT_X();
-        ecPointTy = NIST_P256_ECPointT_Y();
-        scalarD   = NIST_P256_D();
-        scalarE   = NIST_P256_E();
+        ecPointSx          = NIST_P256_ECPointS_X();
+        ecPointSy          = NIST_P256_ECPointS_Y();
+        ecPointTx          = NIST_P256_ECPointT_X();
+        ecPointTy          = NIST_P256_ECPointT_Y();
+        scalarD            = NIST_P256_D();
+        scalarE            = NIST_P256_E();
         ecPointRx_Expected = NIST_P256_ECPointRjsm_X();
         ecPointRy_Expected = NIST_P256_ECPointRjsm_Y();
         break;
 
-    default:
-        printf("\tERROR: Unsupported Elliptic Curve !!! \n");
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: printf("\tERROR: Unsupported Elliptic Curve !!! \n"); ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     // Get EC Group for Curve OID
@@ -1016,7 +995,7 @@ static bool TestECMath_JointScalarMultiply(OID curveOID, uint32_t iterationCount
             ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Compare Result ecPointR == ecPointR_Expected
-    if ( EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL)  != 0 )
+    if (EC_POINT_cmp(ecGroup, ecPointR, ecPointR_Expected, NULL) != 0)
     {
         printf("\tERROR: OpenSSL joint scalar multiply test failed !!! \n");
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -1054,20 +1033,21 @@ exit:
 // ============================================================
 
 #ifndef TEST_ECMATH_DEBUG_PRINT_ENABLE
-#define TEST_ECMATH_DEBUG_PRINT_ENABLE          0
+#define TEST_ECMATH_DEBUG_PRINT_ENABLE 0
 #endif
 
 #ifndef TEST_ECMATH_NUMBER_OF_ITERATIONS
-#define TEST_ECMATH_NUMBER_OF_ITERATIONS        1
+#define TEST_ECMATH_NUMBER_OF_ITERATIONS 1
 #endif
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     bool status = true;
 
-    struct TestCurve {
+    struct TestCurve
+    {
         OID oid;
-        char const *name;
+        char const * name;
     };
 
     TestCurve TestECMath_Curves[] = {
@@ -1084,9 +1064,10 @@ int main(int argc, char *argv[])
 
     typedef bool (*TestECMath_Function)(OID curveOID, uint32_t iterationCounter);
 
-    struct TestFunction {
+    struct TestFunction
+    {
         TestECMath_Function function;
-        char const *name;
+        char const * name;
     };
 
     TestFunction TestECMath_Functions[] = {
@@ -1099,12 +1080,12 @@ int main(int argc, char *argv[])
 #endif
     };
 
-
-    for (uint j = 0; j < sizeof(TestECMath_Curves)/sizeof(TestCurve); j++)
+    for (uint j = 0; j < sizeof(TestECMath_Curves) / sizeof(TestCurve); j++)
     {
-        printf("Starting Elliptic Curve tests for %s curve (%d iterations)\n", TestECMath_Curves[j].name, TEST_ECMATH_NUMBER_OF_ITERATIONS);
+        printf("Starting Elliptic Curve tests for %s curve (%d iterations)\n", TestECMath_Curves[j].name,
+               TEST_ECMATH_NUMBER_OF_ITERATIONS);
 
-        for (uint i = 0; i < sizeof(TestECMath_Functions)/sizeof(TestFunction); i++)
+        for (uint i = 0; i < sizeof(TestECMath_Functions) / sizeof(TestFunction); i++)
         {
 #if TEST_ECMATH_DEBUG_PRINT_ENABLE
             printf("\tRunning %s test\n", TestECMath_Functions[i].name);

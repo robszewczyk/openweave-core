@@ -50,36 +50,32 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0x1
-};
+uint8_t IsNullableHandleBitfield[] = { 0x1 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 } // namespace LowPowerHeartbeatSettingsTrait
 } // namespace Heartbeat

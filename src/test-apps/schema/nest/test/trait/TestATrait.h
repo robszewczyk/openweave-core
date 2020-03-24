@@ -32,7 +32,6 @@
 
 #include <nest/test/trait/TestCommon.h>
 
-
 namespace Schema {
 namespace Nest {
 namespace Test {
@@ -41,15 +40,17 @@ namespace TestATrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0xfe00U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0xfe00U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -220,15 +221,15 @@ struct StructA
     bool IsSaAPresent(void);
 #endif
     bool saB;
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct StructA_array {
+struct StructA_array
+{
     uint32_t num;
-    StructA *buf;
+    StructA * buf;
 };
 
 inline void StructA::SetSaANull(void)
@@ -251,22 +252,26 @@ inline bool StructA::IsSaAPresent(void)
 // Commands
 //
 
-enum {
+enum
+{
     kCommandARequestId = 0x1,
     kCommandBRequestId = 0x2,
 };
 
-enum CommandARequestParameters {
+enum CommandARequestParameters
+{
     kCommandARequestParameter_A = 1,
     kCommandARequestParameter_B = 2,
 };
 
-enum CommandBRequestParameters {
+enum CommandBRequestParameters
+{
     kCommandBRequestParameter_A = 1,
     kCommandBRequestParameter_B = 2,
 };
 
-enum CommandBResponseParameters {
+enum CommandBResponseParameters
+{
     kCommandBResponseParameter_A = 1,
     kCommandBResponseParameter_B = 2,
 };
@@ -275,13 +280,15 @@ enum CommandBResponseParameters {
 // Enums
 //
 
-enum EnumA {
+enum EnumA
+{
     ENUM_A_VALUE_1 = 1,
     ENUM_A_VALUE_2 = 2,
     ENUM_A_VALUE_3 = 3,
 };
 
-enum EnumAA {
+enum EnumAA
+{
     ENUM_AA_VALUE_1 = 1,
     ENUM_AA_VALUE_2 = 2,
     ENUM_AA_VALUE_3 = 3,
@@ -290,24 +297,49 @@ enum EnumAA {
 //
 // Constants
 //
-#define CONSTANT_A_VALUE_1 {0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-#define CONSTANT_A_VALUE_2 {0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}
-#define CONSTANT_A_VALUE_3 {0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02}
-#define CONSTANT_A_VALUE_4 {0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03}
-#define CONSTANT_A_VALUE_5 {0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04}
-#define CONSTANT_A_VALUE_6 {0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05}
-#define CONSTANT_A_VALUE_7 {0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06}
-#define CONSTANT_A_VALUE_8 {0x00, 0x08, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88}
+#define CONSTANT_A_VALUE_1                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00                                                                 \
+    }
+#define CONSTANT_A_VALUE_2                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01                                                                 \
+    }
+#define CONSTANT_A_VALUE_3                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02                                                                 \
+    }
+#define CONSTANT_A_VALUE_4                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03                                                                 \
+    }
+#define CONSTANT_A_VALUE_5                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04                                                                 \
+    }
+#define CONSTANT_A_VALUE_6                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05                                                                 \
+    }
+#define CONSTANT_A_VALUE_7                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06                                                                 \
+    }
+#define CONSTANT_A_VALUE_8                                                                                                         \
+    {                                                                                                                              \
+        0x00, 0x08, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88                                                                 \
+    }
 
-enum ConstantA {
-        CONSTANT_A_VALUE_1_IMP = 0x0000000000000000ULL, // DEVICE_00000000
-        CONSTANT_A_VALUE_2_IMP = 0x0000000000000001ULL, // USER_00000001
-        CONSTANT_A_VALUE_3_IMP = 0x0000000000000002ULL, // ACCOUNT_00000002
-        CONSTANT_A_VALUE_4_IMP = 0x0000000000000003ULL, // AREA_00000003
-        CONSTANT_A_VALUE_5_IMP = 0x0000000000000004ULL, // FIXTURE_00000004
-        CONSTANT_A_VALUE_6_IMP = 0x0000000000000005ULL, // GROUP_00000005
-        CONSTANT_A_VALUE_7_IMP = 0x0000000000000006ULL, // ANNOTATION_00000006
-        CONSTANT_A_VALUE_8_IMP = 0x1122334455667788ULL, // STRUCTURE_1122334455667788
+enum ConstantA
+{
+    CONSTANT_A_VALUE_1_IMP = 0x0000000000000000ULL, // DEVICE_00000000
+    CONSTANT_A_VALUE_2_IMP = 0x0000000000000001ULL, // USER_00000001
+    CONSTANT_A_VALUE_3_IMP = 0x0000000000000002ULL, // ACCOUNT_00000002
+    CONSTANT_A_VALUE_4_IMP = 0x0000000000000003ULL, // AREA_00000003
+    CONSTANT_A_VALUE_5_IMP = 0x0000000000000004ULL, // FIXTURE_00000004
+    CONSTANT_A_VALUE_6_IMP = 0x0000000000000005ULL, // GROUP_00000005
+    CONSTANT_A_VALUE_7_IMP = 0x0000000000000006ULL, // ANNOTATION_00000006
+    CONSTANT_A_VALUE_8_IMP = 0x1122334455667788ULL, // STRUCTURE_1122334455667788
 };
 
 } // namespace TestATrait

@@ -64,41 +64,28 @@ TimeSyncNode::TimeSyncNode() :
 
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
     // Client data section
-    OnTimeChangeNotificationReceived(NULL),
-    FilterTimeCorrectionContributor(NULL),
-    OnSyncSucceeded(NULL),
-    OnSyncFailed(NULL),
-    mEncryptionType(kWeaveEncryptionType_None),
-    mKeyId(WeaveKeyId::kNone),
+    OnTimeChangeNotificationReceived(NULL), FilterTimeCorrectionContributor(NULL), OnSyncSucceeded(NULL), OnSyncFailed(NULL),
+    mEncryptionType(kWeaveEncryptionType_None), mKeyId(WeaveKeyId::kNone),
 #endif // WEAVE_CONFIG_TIME_ENABLE_CLIENT
 
     // General data section
-    mApp(NULL),
-    mRole(kTimeSyncRole_Unknown),
-    mIsInCallback(false)
+    mApp(NULL), mRole(kTimeSyncRole_Unknown), mIsInCallback(false)
 
 #if WEAVE_CONFIG_TIME_ENABLE_SERVER
     // Server data section
     ,
-    mServerState(kServerState_Uninitialized),
-    mIsAlwaysFresh(false),
-    mNumContributorInLastLocalSync(0),
-    mTimestampLastCorrectionFromServerOrNtp_usec(TIMESYNC_INVALID),
-    mTimestampLastLocalSync_usec(TIMESYNC_INVALID)
+    mServerState(kServerState_Uninitialized), mIsAlwaysFresh(false), mNumContributorInLastLocalSync(0),
+    mTimestampLastCorrectionFromServerOrNtp_usec(TIMESYNC_INVALID), mTimestampLastLocalSync_usec(TIMESYNC_INVALID)
 #endif // WEAVE_CONFIG_TIME_ENABLE_SERVER
 
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
     // Client data section
     ,
-    mClientState(kClientState_Uninitialized),
-    mIsAutoSyncEnabled(false),
-    mSyncPeriod_msec(0)
+    mClientState(kClientState_Uninitialized), mIsAutoSyncEnabled(false), mSyncPeriod_msec(0)
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
     ,
-    mIsUrgentDiscoveryPending(false),
-    mNominalDiscoveryPeriod_msec(0),
-    mShortestDiscoveryPeriod_msec(0),
+    mIsUrgentDiscoveryPending(false), mNominalDiscoveryPeriod_msec(0), mShortestDiscoveryPeriod_msec(0),
     mBootTimeForNextAutoDiscovery_usec(TIMESYNC_INVALID)
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
@@ -107,9 +94,7 @@ TimeSyncNode::TimeSyncNode() :
     mConnectionToService(NULL)
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
     ,
-    mActiveContact(NULL),
-    mExchangeContext(NULL),
-    mUnadjTimestampLastSent_usec(TIMESYNC_INVALID)
+    mActiveContact(NULL), mExchangeContext(NULL), mUnadjTimestampLastSent_usec(TIMESYNC_INVALID)
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
     ,
@@ -125,8 +110,7 @@ TimeSyncNode::TimeSyncNode() :
     // has similar results as InitState
 }
 
-WEAVE_ERROR TimeSyncNode::InitState(const TimeSyncRole aRole,
-    void * const aApp, WeaveExchangeManager * const aExchangeMgr)
+WEAVE_ERROR TimeSyncNode::InitState(const TimeSyncRole aRole, void * const aApp, WeaveExchangeManager * const aExchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -161,8 +145,8 @@ WEAVE_ERROR TimeSyncNode::InitState(const TimeSyncRole aRole,
     _TimeSyncNodeBase::Init(aExchangeMgr->FabricState, aExchangeMgr);
 
     // General data section
-    mApp = aApp;
-    mRole = aRole;
+    mApp          = aApp;
+    mRole         = aRole;
     mIsInCallback = false;
 
 exit:
@@ -196,42 +180,42 @@ void TimeSyncNode::ClearState(void)
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
     // Client data section
     OnTimeChangeNotificationReceived = NULL;
-    FilterTimeCorrectionContributor = NULL;
-    OnSyncSucceeded = NULL;
-    OnSyncFailed = NULL;
-    mEncryptionType = kWeaveEncryptionType_None;
-    mKeyId = WeaveKeyId::kNone;
+    FilterTimeCorrectionContributor  = NULL;
+    OnSyncSucceeded                  = NULL;
+    OnSyncFailed                     = NULL;
+    mEncryptionType                  = kWeaveEncryptionType_None;
+    mKeyId                           = WeaveKeyId::kNone;
 #endif // WEAVE_CONFIG_TIME_ENABLE_CLIENT
 
     // General data section
-    mApp = NULL;
-    mRole = kTimeSyncRole_Unknown;
+    mApp          = NULL;
+    mRole         = kTimeSyncRole_Unknown;
     mIsInCallback = false;
 
 #if WEAVE_CONFIG_TIME_ENABLE_SERVER
     // Server data section
-    mServerState = kServerState_Uninitialized;
-    mIsAlwaysFresh = false;
-    mNumContributorInLastLocalSync = 0;
+    mServerState                                 = kServerState_Uninitialized;
+    mIsAlwaysFresh                               = false;
+    mNumContributorInLastLocalSync               = 0;
     mTimestampLastCorrectionFromServerOrNtp_usec = TIMESYNC_INVALID;
-    mTimestampLastLocalSync_usec = TIMESYNC_INVALID;
+    mTimestampLastLocalSync_usec                 = TIMESYNC_INVALID;
 #endif // WEAVE_CONFIG_TIME_ENABLE_SERVER
 
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
     // Client data section
-    mClientState = kClientState_Uninitialized;
-    mIsAutoSyncEnabled = false;
-    mSyncPeriod_msec = 0;
-    mActiveContact = NULL;
-    mExchangeContext = NULL;
+    mClientState                 = kClientState_Uninitialized;
+    mIsAutoSyncEnabled           = false;
+    mSyncPeriod_msec             = 0;
+    mActiveContact               = NULL;
+    mExchangeContext             = NULL;
     mUnadjTimestampLastSent_usec = TIMESYNC_INVALID;
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    mIsUrgentDiscoveryPending = false;
-    mNominalDiscoveryPeriod_msec = 0;
-    mShortestDiscoveryPeriod_msec = 0;
+    mIsUrgentDiscoveryPending          = false;
+    mNominalDiscoveryPeriod_msec       = 0;
+    mShortestDiscoveryPeriod_msec      = 0;
     mBootTimeForNextAutoDiscovery_usec = TIMESYNC_INVALID;
-    mLastLikelihoodSent = TimeSyncRequest::kLikelihoodForResponse_Min;
+    mLastLikelihoodSent                = TimeSyncRequest::kLikelihoodForResponse_Min;
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
@@ -252,26 +236,18 @@ WEAVE_ERROR TimeSyncNode::Shutdown(void)
     switch (mRole)
     {
 #if WEAVE_CONFIG_TIME_ENABLE_SERVER
-    case kTimeSyncRole_Server:
-        err = _ShutdownServer();
-        break;
+    case kTimeSyncRole_Server: err = _ShutdownServer(); break;
 #endif // WEAVE_CONFIG_TIME_ENABLE_SERVER
 
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
-    case kTimeSyncRole_Client:
-        err = _ShutdownClient();
-        break;
+    case kTimeSyncRole_Client: err = _ShutdownClient(); break;
 #endif // WEAVE_CONFIG_TIME_ENABLE_CLIENT
 
 #if WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
-    case kTimeSyncRole_Coordinator:
-        err = _ShutdownCoordinator();
-        break;
+    case kTimeSyncRole_Coordinator: err = _ShutdownCoordinator(); break;
 #endif // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
 
-    default:
-        err = WEAVE_ERROR_INCORRECT_STATE;
-        break;
+    default: err = WEAVE_ERROR_INCORRECT_STATE; break;
     }
 
     ClearState();
@@ -283,8 +259,7 @@ exit:
 }
 
 #if WEAVE_CONFIG_TIME_ENABLE_SERVER
-WEAVE_ERROR TimeSyncNode::InitServer(void * const aApp, WeaveExchangeManager * const aExchangeMgr,
-    const bool aIsAlwaysFresh)
+WEAVE_ERROR TimeSyncNode::InitServer(void * const aApp, WeaveExchangeManager * const aExchangeMgr, const bool aIsAlwaysFresh)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -306,18 +281,18 @@ WEAVE_ERROR TimeSyncNode::_InitServer(const bool aIsAlwaysFresh)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    mIsAlwaysFresh = aIsAlwaysFresh;
-    mNumContributorInLastLocalSync = 0;
+    mIsAlwaysFresh                               = aIsAlwaysFresh;
+    mNumContributorInLastLocalSync               = 0;
     mTimestampLastCorrectionFromServerOrNtp_usec = TIMESYNC_INVALID;
-    mTimestampLastLocalSync_usec = TIMESYNC_INVALID;
+    mTimestampLastLocalSync_usec                 = TIMESYNC_INVALID;
 
     // Register to receive unsolicited time sync request messages from the exchange manager.
     err = GetExchangeMgr()->RegisterUnsolicitedMessageHandler(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest,
-        HandleSyncRequest, this);
+                                                              HandleSyncRequest, this);
     SuccessOrExit(err);
 
     err = GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(WEAVE_CONFIG_TIME_SERVER_TIMER_UNRELIABLE_AFTER_BOOT_MSEC,
-        HandleUnreliableAfterBootTimer, this);
+                                                                  HandleUnreliableAfterBootTimer, this);
     SuccessOrExit(err);
 
     if (aIsAlwaysFresh)
@@ -327,7 +302,7 @@ WEAVE_ERROR TimeSyncNode::_InitServer(const bool aIsAlwaysFresh)
         mServerState = kServerState_UnreliableAfterBoot;
 
         WEAVE_TIME_PROGRESS_LOG(TimeService, "Unreliable-After-Boot timer armed for %u msec",
-            WEAVE_CONFIG_TIME_SERVER_TIMER_UNRELIABLE_AFTER_BOOT_MSEC);
+                                WEAVE_CONFIG_TIME_SERVER_TIMER_UNRELIABLE_AFTER_BOOT_MSEC);
     }
     else
     {
@@ -371,7 +346,7 @@ exit:
     return err;
 }
 
-void TimeSyncNode::HandleUnreliableAfterBootTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void TimeSyncNode::HandleUnreliableAfterBootTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -392,19 +367,19 @@ exit:
     return;
 }
 
-void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-    const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void TimeSyncNode::HandleSyncRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                     uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR             err         = WEAVE_NO_ERROR;
-    PacketBuffer*           msgBuf      = NULL;
-    bool                    shouldReply = false;
-    TimeSyncNode* const     server      = reinterpret_cast<TimeSyncNode*>(ec->AppState);
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf       = NULL;
+    bool shouldReply            = false;
+    TimeSyncNode * const server = reinterpret_cast<TimeSyncNode *>(ec->AppState);
 
     // note that a Server doesn't check the encryption/auth type of the request,
     // but just sends back the response using the same context
 
     WeaveLogDetail(TimeService, "Time Sync Request: local node ID: %" PRIX64 ", peer node ID: %" PRIX64,
-        server->GetFabricState()->LocalNodeId, ec->PeerNodeId);
+                   server->GetFabricState()->LocalNodeId, ec->PeerNodeId);
 
     // ignore requests coming from our own node ID
     // this is because some network stacks would be looped back multicasts
@@ -419,8 +394,7 @@ void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pk
 
         // check internal state
         // only try to decode and then respond if we're in any of these two states
-        if ((kServerState_UnreliableAfterBoot != server->mServerState)
-            && (kServerState_Idle != server->mServerState))
+        if ((kServerState_UnreliableAfterBoot != server->mServerState) && (kServerState_Idle != server->mServerState))
         {
             ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
         }
@@ -430,8 +404,8 @@ void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pk
 
         if (NULL != server->OnSyncRequestReceived)
         {
-            shouldReply = server->OnSyncRequestReceived(server->mApp, msgInfo,
-                request.mLikelihoodForResponse, request.mIsTimeCoordinator);
+            shouldReply =
+                server->OnSyncRequestReceived(server->mApp, msgInfo, request.mLikelihoodForResponse, request.mIsTimeCoordinator);
         }
         else if (request.mLikelihoodForResponse == TimeSyncRequest::kLikelihoodForResponse_Max)
         {
@@ -458,8 +432,7 @@ void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pk
         timesync_t unadjTimestamp_usec = GetClock_Monotonic();
 
         timeSinceLastLocaSync_usec = unadjTimestamp_usec - server->mTimestampLastLocalSync_usec;
-        if ((TIMESYNC_INVALID == server->mTimestampLastLocalSync_usec) ||
-            (timeSinceLastLocaSync_usec >= (3600 * 1000000LL)))
+        if ((TIMESYNC_INVALID == server->mTimestampLastLocalSync_usec) || (timeSinceLastLocaSync_usec >= (3600 * 1000000LL)))
         {
             server->mNumContributorInLastLocalSync = 0;
         }
@@ -481,8 +454,8 @@ void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pk
         {
             if (TIMESYNC_INVALID != server->mTimestampLastCorrectionFromServerOrNtp_usec)
             {
-                const timesync_t age_min = Platform::Divide(
-                    (unadjTimestamp_usec - server->mTimestampLastCorrectionFromServerOrNtp_usec), (60 * 1000000));
+                const timesync_t age_min =
+                    Platform::Divide((unadjTimestamp_usec - server->mTimestampLastCorrectionFromServerOrNtp_usec), (60 * 1000000));
 
                 if (age_min < TimeSyncResponse::kTimeSinceLastSyncWithServer_Max)
                 {
@@ -509,8 +482,8 @@ void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pk
         SuccessOrExit(err);
 
         // create sync response based on system time
-        response.Init(server->mRole, systemTimestamp_usec, systemTimestamp_usec,
-            server->mNumContributorInLastLocalSync, timeSinceLastSyncWithServer_min);
+        response.Init(server->mRole, systemTimestamp_usec, systemTimestamp_usec, server->mNumContributorInLastLocalSync,
+                      timeSinceLastSyncWithServer_min);
 
         // allocate buffer and then encode the response into it
         msgBuf = PacketBuffer::New();
@@ -520,7 +493,7 @@ void TimeSyncNode::HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pk
         SuccessOrExit(err);
 
         // send out the response
-        err = ec->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncResponse, msgBuf);
+        err    = ec->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncResponse, msgBuf);
         msgBuf = NULL;
         SuccessOrExit(err);
     }
@@ -549,7 +522,7 @@ exit:
 }
 
 TimeSyncNode::ServerState TimeSyncNode::GetServerState(void) const
-    {
+{
     return mServerState;
 }
 
@@ -560,16 +533,16 @@ void TimeSyncNode::RegisterCorrectionFromServerOrNtp(void)
 
 void TimeSyncNode::RegisterLocalSyncOperation(const uint8_t aNumContributor)
 {
-    mTimestampLastLocalSync_usec = GetClock_Monotonic();
+    mTimestampLastLocalSync_usec   = GetClock_Monotonic();
     mNumContributorInLastLocalSync = aNumContributor;
 }
 
 void TimeSyncNode::MulticastTimeChangeNotification(const uint8_t aEncryptionType, const uint16_t aKeyId) const
-    {
-    WEAVE_ERROR             err             = WEAVE_NO_ERROR;
-    PacketBuffer*           msgBuf          = NULL;
-    ExchangeContext*        ec              = NULL;
-    TimeChangeNotification  notification;
+{
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    ExchangeContext * ec  = NULL;
+    TimeChangeNotification notification;
 
     if (mIsInCallback)
     {
@@ -582,7 +555,7 @@ void TimeSyncNode::MulticastTimeChangeNotification(const uint8_t aEncryptionType
 
     // Configure the encryption and key used to send the request
     ec->EncryptionType = aEncryptionType;
-    ec->KeyId = aKeyId;
+    ec->KeyId          = aKeyId;
 
     // allocate buffer and then encode the response into it
     msgBuf = PacketBuffer::New();
@@ -592,7 +565,7 @@ void TimeSyncNode::MulticastTimeChangeNotification(const uint8_t aEncryptionType
     SuccessOrExit(err);
 
     // send out the request
-    err = ec->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncTimeChangeNotification, msgBuf);
+    err    = ec->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncTimeChangeNotification, msgBuf);
     msgBuf = NULL;
     SuccessOrExit(err);
 

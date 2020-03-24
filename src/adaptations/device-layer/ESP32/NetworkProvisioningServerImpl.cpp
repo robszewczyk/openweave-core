@@ -56,13 +56,13 @@ void NetworkProvisioningServerImpl::_OnPlatformEvent(const WeaveDeviceEvent * ev
     // Handle ESP system events...
     if (event->Type == DeviceEventType::kESPSystemEvent)
     {
-        switch(event->Platform.ESPSystemEvent.event_id) {
+        switch (event->Platform.ESPSystemEvent.event_id)
+        {
         case SYSTEM_EVENT_SCAN_DONE:
             WeaveLogProgress(DeviceLayer, "SYSTEM_EVENT_SCAN_DONE");
             HandleScanDone();
             break;
-        default:
-            break;
+        default: break;
         }
     }
 
@@ -105,10 +105,10 @@ WEAVE_ERROR NetworkProvisioningServerImpl::GetWiFiStationProvision(NetworkInfo &
 
     VerifyOrExit(stationConfig.sta.ssid[0] != 0, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    netInfo.NetworkId = kWiFiStationNetworkId;
+    netInfo.NetworkId              = kWiFiStationNetworkId;
     netInfo.FieldPresent.NetworkId = true;
-    netInfo.NetworkType = kNetworkType_WiFi;
-    memcpy(netInfo.WiFiSSID, stationConfig.sta.ssid, min(strlen((char *)stationConfig.sta.ssid) + 1, sizeof(netInfo.WiFiSSID)));
+    netInfo.NetworkType            = kNetworkType_WiFi;
+    memcpy(netInfo.WiFiSSID, stationConfig.sta.ssid, min(strlen((char *) stationConfig.sta.ssid) + 1, sizeof(netInfo.WiFiSSID)));
     netInfo.WiFiMode = kWiFiMode_Managed;
     netInfo.WiFiRole = kWiFiRole_Station;
 
@@ -121,7 +121,7 @@ WEAVE_ERROR NetworkProvisioningServerImpl::GetWiFiStationProvision(NetworkInfo &
 
     if (includeCredentials)
     {
-        netInfo.WiFiKeyLen = min(strlen((char *)stationConfig.sta.password), sizeof(netInfo.WiFiKey));
+        netInfo.WiFiKeyLen = min(strlen((char *) stationConfig.sta.password), sizeof(netInfo.WiFiKey));
         memcpy(netInfo.WiFiKey, stationConfig.sta.password, netInfo.WiFiKeyLen);
     }
 
@@ -129,7 +129,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR NetworkProvisioningServerImpl::SetWiFiStationProvision(const NetworkInfo  & netInfo)
+WEAVE_ERROR NetworkProvisioningServerImpl::SetWiFiStationProvision(const NetworkInfo & netInfo)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     wifi_config_t wifiConfig;
@@ -142,34 +142,23 @@ WEAVE_ERROR NetworkProvisioningServerImpl::SetWiFiStationProvision(const Network
     // Initialize an ESP wifi_config_t structure based on the new provision information.
     memset(&wifiConfig, 0, sizeof(wifiConfig));
     memcpy(wifiConfig.sta.ssid, netInfo.WiFiSSID, min(strlen(netInfo.WiFiSSID) + 1, sizeof(wifiConfig.sta.ssid)));
-    memcpy(wifiConfig.sta.password, netInfo.WiFiKey, min((size_t)netInfo.WiFiKeyLen, sizeof(wifiConfig.sta.password)));
+    memcpy(wifiConfig.sta.password, netInfo.WiFiKey, min((size_t) netInfo.WiFiKeyLen, sizeof(wifiConfig.sta.password)));
     if (netInfo.WiFiSecurityType == kWiFiSecurityType_NotSpecified)
     {
         wifiConfig.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
     }
     else
     {
-        wifiConfig.sta.scan_method = WIFI_FAST_SCAN;
+        wifiConfig.sta.scan_method    = WIFI_FAST_SCAN;
         wifiConfig.sta.threshold.rssi = 0;
         switch (netInfo.WiFiSecurityType)
         {
-        case kWiFiSecurityType_None:
-            wifiConfig.sta.threshold.authmode = WIFI_AUTH_OPEN;
-            break;
-        case kWiFiSecurityType_WEP:
-            wifiConfig.sta.threshold.authmode = WIFI_AUTH_WEP;
-            break;
-        case kWiFiSecurityType_WPAPersonal:
-            wifiConfig.sta.threshold.authmode = WIFI_AUTH_WPA_PSK;
-            break;
-        case kWiFiSecurityType_WPA2Personal:
-            wifiConfig.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
-            break;
-        case kWiFiSecurityType_WPA2Enterprise:
-            wifiConfig.sta.threshold.authmode = WIFI_AUTH_WPA2_ENTERPRISE;
-            break;
-        default:
-            ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+        case kWiFiSecurityType_None: wifiConfig.sta.threshold.authmode = WIFI_AUTH_OPEN; break;
+        case kWiFiSecurityType_WEP: wifiConfig.sta.threshold.authmode = WIFI_AUTH_WEP; break;
+        case kWiFiSecurityType_WPAPersonal: wifiConfig.sta.threshold.authmode = WIFI_AUTH_WPA_PSK; break;
+        case kWiFiSecurityType_WPA2Personal: wifiConfig.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK; break;
+        case kWiFiSecurityType_WPA2Enterprise: wifiConfig.sta.threshold.authmode = WIFI_AUTH_WPA2_ENTERPRISE; break;
+        default: ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
         }
     }
     wifiConfig.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
@@ -216,8 +205,8 @@ WEAVE_ERROR NetworkProvisioningServerImpl::InitiateWiFiScan(void)
     // Initiate an active scan using the default dwell times.  Configure the scan to return hidden networks.
     memset(&scanConfig, 0, sizeof(scanConfig));
     scanConfig.show_hidden = 1;
-    scanConfig.scan_type = WIFI_SCAN_TYPE_ACTIVE;
-    err = esp_wifi_scan_start(&scanConfig, false);
+    scanConfig.scan_type   = WIFI_SCAN_TYPE_ACTIVE;
+    err                    = esp_wifi_scan_start(&scanConfig, false);
     SuccessOrExit(err);
 
 #if WEAVE_DEVICE_CONFIG_WIFI_SCAN_COMPLETION_TIMEOUT
@@ -252,10 +241,10 @@ void NetworkProvisioningServerImpl::HandleScanDone()
     SuccessOrExit(err);
 
     // Only return up to WEAVE_DEVICE_CONFIG_MAX_SCAN_NETWORKS_RESULTS.
-    scanResultCount = min(scanResultCount, (uint16_t)WEAVE_DEVICE_CONFIG_MAX_SCAN_NETWORKS_RESULTS);
+    scanResultCount = min(scanResultCount, (uint16_t) WEAVE_DEVICE_CONFIG_MAX_SCAN_NETWORKS_RESULTS);
 
     // Allocate a buffer to hold the scan results array.
-    scanResults = (wifi_ap_record_t *)malloc(scanResultCount * sizeof(wifi_ap_record_t));
+    scanResults = (wifi_ap_record_t *) malloc(scanResultCount * sizeof(wifi_ap_record_t));
     VerifyOrExit(scanResults != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Collect the scan results from the ESP WiFi driver.  Note that this also *frees*
@@ -288,16 +277,17 @@ void NetworkProvisioningServerImpl::HandleScanDone()
 
             netInfo.Reset();
             netInfo.NetworkType = kNetworkType_WiFi;
-            memcpy(netInfo.WiFiSSID, scanResult.ssid, min(strlen((char *)scanResult.ssid) + 1, (size_t)NetworkInfo::kMaxWiFiSSIDLength));
+            memcpy(netInfo.WiFiSSID, scanResult.ssid,
+                   min(strlen((char *) scanResult.ssid) + 1, (size_t) NetworkInfo::kMaxWiFiSSIDLength));
             netInfo.WiFiSSID[NetworkInfo::kMaxWiFiSSIDLength] = 0;
-            netInfo.WiFiMode = kWiFiMode_Managed;
-            netInfo.WiFiRole = kWiFiRole_Station;
-            netInfo.WiFiSecurityType = ESP32Utils::WiFiAuthModeToWeaveWiFiSecurityType(scanResult.authmode);
+            netInfo.WiFiMode                                  = kWiFiMode_Managed;
+            netInfo.WiFiRole                                  = kWiFiRole_Station;
+            netInfo.WiFiSecurityType       = ESP32Utils::WiFiAuthModeToWeaveWiFiSecurityType(scanResult.authmode);
             netInfo.WirelessSignalStrength = scanResult.rssi;
 
             {
                 nl::Weave::TLV::TLVWriter savePoint = writer;
-                err = netInfo.Encode(writer);
+                err                                 = netInfo.Encode(writer);
                 if (err == WEAVE_ERROR_BUFFER_TOO_SMALL)
                 {
                     writer = savePoint;
@@ -313,7 +303,7 @@ void NetworkProvisioningServerImpl::HandleScanDone()
 
         // Send the scan results to the requestor.  Note that this method takes ownership of the
         // buffer, success or fail.
-        err = SendNetworkScanComplete(encodedResultCount, respBuf);
+        err     = SendNetworkScanComplete(encodedResultCount, respBuf);
         respBuf = NULL;
         SuccessOrExit(err);
     }
@@ -335,7 +325,8 @@ exit:
 
 #if WEAVE_DEVICE_CONFIG_WIFI_SCAN_COMPLETION_TIMEOUT
 
-void NetworkProvisioningServerImpl::HandleScanTimeOut(::nl::Weave::System::Layer * aLayer, void * aAppState, ::nl::Weave::System::Error aError)
+void NetworkProvisioningServerImpl::HandleScanTimeOut(::nl::Weave::System::Layer * aLayer, void * aAppState,
+                                                      ::nl::Weave::System::Error aError)
 {
     WeaveLogError(DeviceLayer, "WiFi scan timed out");
 
@@ -357,13 +348,10 @@ void NetworkProvisioningServerImpl::HandleScanTimeOut(::nl::Weave::System::Layer
 
 bool NetworkProvisioningServerImpl::IsSupportedWiFiSecurityType(WiFiSecurityType_t wifiSecType)
 {
-    return (wifiSecType == kWiFiSecurityType_None ||
-            wifiSecType == kWiFiSecurityType_WEP ||
-            wifiSecType == kWiFiSecurityType_WPAPersonal ||
-            wifiSecType == kWiFiSecurityType_WPA2Personal ||
+    return (wifiSecType == kWiFiSecurityType_None || wifiSecType == kWiFiSecurityType_WEP ||
+            wifiSecType == kWiFiSecurityType_WPAPersonal || wifiSecType == kWiFiSecurityType_WPA2Personal ||
             wifiSecType == kWiFiSecurityType_WPA2Enterprise);
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

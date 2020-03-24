@@ -26,11 +26,9 @@
 
 using namespace nl::Weave::Profiles::Time;
 
-MockTimeSyncServer::MockTimeSyncServer()
-{
-}
+MockTimeSyncServer::MockTimeSyncServer() { }
 
-WEAVE_ERROR MockTimeSyncServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockTimeSyncServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 

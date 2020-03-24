@@ -40,16 +40,16 @@ namespace Weave {
 namespace Profiles {
 namespace ServiceDirectory {
 struct ServiceConnectBeginArgs;
-}; // ServiceDirectory
-}; // Profiles
-}; // Weave
-}; // nl
+}; // namespace ServiceDirectory
+}; // namespace Profiles
+}; // namespace Weave
+}; // namespace nl
 
 #define TOOL_OPTIONS_ENV_VAR_NAME "WEAVE_TEST_OPTIONS"
 
 enum
 {
-    kToolCommonOpt_NodeAddr                     = 1000,
+    kToolCommonOpt_NodeAddr = 1000,
     kToolCommonOpt_NodeCert,
     kToolCommonOpt_NodeKey,
     kToolCommonOpt_CACert,
@@ -102,7 +102,6 @@ enum
     kToolCommonOpt_GeneralSecuritySessionEstablishmentTimeout,
 };
 
-
 /**
  * Handler for options that control local network/network interface configuration.
  */
@@ -116,7 +115,7 @@ public:
     std::vector<nl::Inet::IPAddress> IPv4GatewayAddr;
     std::vector<nl::Inet::IPAddress> IPv6GatewayAddr;
     nl::Inet::IPAddress DNSServerAddr;
-    std::vector<const char *>TapDeviceName;
+    std::vector<const char *> TapDeviceName;
     uint8_t LwIPDebugFlags;
     uint32_t EventDelay;
     bool TapUseSystemConfig;
@@ -124,11 +123,10 @@ public:
 
     NetworkOptions();
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern NetworkOptions gNetworkOptions;
-
 
 /**
  * Handler for options that control Weave node configuration.
@@ -142,7 +140,7 @@ public:
     bool FabricIdSet;
     bool LocalNodeIdSet;
     bool SubnetIdSet;
-    const char *PairingCode;
+    const char * PairingCode;
     bool UseEphemeralUDPPort;
 
     // TODO (arg clean up): add common function to infer ids from local address and remove duplicate code from tool main functions.
@@ -150,11 +148,10 @@ public:
     WeaveNodeOptions();
     ~WeaveNodeOptions();
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern WeaveNodeOptions gWeaveNodeOptions;
-
 
 /**
  * Handler for options that control Weave Reliable Messaging protocol configuration.
@@ -170,11 +167,10 @@ public:
 
     nl::Weave::WRMPConfig GetWRMPConfig(void) const;
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern WRMPOptions gWRMPOptions;
-
 
 /**
  * Handler for options that control Weave Security protocol configuration.
@@ -182,7 +178,6 @@ extern WRMPOptions gWRMPOptions;
 class WeaveSecurityMode : public OptionSetBase
 {
 public:
-
     enum
     {
         kNone,
@@ -197,11 +192,10 @@ public:
 
     WeaveSecurityMode();
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern WeaveSecurityMode gWeaveSecurityMode;
-
 
 /**
  * Handler for options that control the configuration of Weave message encryption using group keys.
@@ -213,7 +207,7 @@ public:
 
     uint32_t GetEncKeyId() const;
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
 private:
     uint32_t EncKeyId;
@@ -236,7 +230,7 @@ public:
     uint32_t GetIdleSessionTimeout() const;
     uint32_t GetSessionEstablishmentTimeout() const;
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
 private:
     uint32_t IdleSessionTimeout;
@@ -244,7 +238,6 @@ private:
 };
 
 extern GeneralSecurityOptions gGeneralSecurityOptions;
-
 
 /**
  * Handler for options that control Weave service directory client configuration.
@@ -254,7 +247,7 @@ class ServiceDirClientOptions : public OptionSetBase
     using ServiceConnectBeginArgs = ::nl::Weave::Profiles::ServiceDirectory::ServiceConnectBeginArgs;
 
 public:
-    const char *ServerHost;
+    const char * ServerHost;
     uint16_t ServerPort;
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
     uint8_t DNSOptions_ServiceDirEndpoint;
@@ -263,16 +256,15 @@ public:
 
     ServiceDirClientOptions();
 
-    WEAVE_ERROR GetRootDirectoryEntry(uint8_t *buf, uint16_t bufSize);
+    WEAVE_ERROR GetRootDirectoryEntry(uint8_t * buf, uint16_t bufSize);
     void OverrideConnectArguments(ServiceConnectBeginArgs & args);
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern ServiceDirClientOptions gServiceDirClientOptions;
-extern WEAVE_ERROR GetRootServiceDirectoryEntry(uint8_t *buf, uint16_t bufSize);
+extern WEAVE_ERROR GetRootServiceDirectoryEntry(uint8_t * buf, uint16_t bufSize);
 extern void OverrideServiceConnectArguments(::nl::Weave::Profiles::ServiceDirectory::ServiceConnectBeginArgs & args);
-
 
 /**
  * Handler for options that control fault injection testing behavior.
@@ -287,15 +279,13 @@ public:
 
     FaultInjectionOptions();
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern FaultInjectionOptions gFaultInjectionOptions;
 
-extern bool ParseDNSOptions(const char * progName, const char *argName, const char * arg, uint8_t & dnsOptions);
+extern bool ParseDNSOptions(const char * progName, const char * argName, const char * arg, uint8_t & dnsOptions);
 
-extern bool ResolveWeaveNetworkOptions(const char * progName, WeaveNodeOptions &weaveOptions, NetworkOptions &networkOptions);
-
-
+extern bool ResolveWeaveNetworkOptions(const char * progName, WeaveNodeOptions & weaveOptions, NetworkOptions & networkOptions);
 
 #endif // TOOLCOMMONOPTIONS_H_

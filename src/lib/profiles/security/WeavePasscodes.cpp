@@ -58,7 +58,7 @@ const uint8_t kPasscodeFingerprintKeyDiversifier[] = { 0xD1, 0xA1, 0xD9, 0x6C };
 
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG1_TEST_ONLY
 
-static void GeneratePasscodeFingerprint_Config1(EncryptedPasscodeStruct& encPasscodeStruct)
+static void GeneratePasscodeFingerprint_Config1(EncryptedPasscodeStruct & encPasscodeStruct)
 {
     SHA1 hash;
     uint8_t digest[hash.kHashLength];
@@ -72,7 +72,7 @@ static void GeneratePasscodeFingerprint_Config1(EncryptedPasscodeStruct& encPass
     memcpy(encPasscodeStruct.fingerprint, digest, sizeof(encPasscodeStruct.fingerprint));
 }
 
-static void EncryptPasscode_Config1(EncryptedPasscodeStruct& encPasscodeStruct)
+static void EncryptPasscode_Config1(EncryptedPasscodeStruct & encPasscodeStruct)
 {
     SHA1 hash;
     uint8_t digest[hash.kHashLength];
@@ -87,7 +87,7 @@ static void EncryptPasscode_Config1(EncryptedPasscodeStruct& encPasscodeStruct)
     memcpy(encPasscodeStruct.authenticator, digest, sizeof(encPasscodeStruct.authenticator));
 }
 
-static WEAVE_ERROR VerifyPasscodeFingerprint_Config1(const EncryptedPasscodeStruct& encPasscodeStruct)
+static WEAVE_ERROR VerifyPasscodeFingerprint_Config1(const EncryptedPasscodeStruct & encPasscodeStruct)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     SHA1 hash;
@@ -107,7 +107,7 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecryptPasscode_Config1(const EncryptedPasscodeStruct& encPasscodeStruct,
+static WEAVE_ERROR DecryptPasscode_Config1(const EncryptedPasscodeStruct & encPasscodeStruct,
                                            uint8_t decryptedPasscode[kPasscodePaddedLen])
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -136,7 +136,7 @@ exit:
 
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG2
 
-static void GeneratePasscodeFingerprint_Config2(const uint8_t *fingerprintKey, EncryptedPasscodeStruct& encPasscodeStruct)
+static void GeneratePasscodeFingerprint_Config2(const uint8_t * fingerprintKey, EncryptedPasscodeStruct & encPasscodeStruct)
 {
     HMACSHA1 hmac;
     uint8_t digest[hmac.kDigestLength];
@@ -154,7 +154,7 @@ static void GeneratePasscodeFingerprint_Config2(const uint8_t *fingerprintKey, E
     memcpy(encPasscodeStruct.fingerprint, digest, sizeof(encPasscodeStruct.fingerprint));
 }
 
-static void EncryptPasscode_Config2(const uint8_t *encKey, const uint8_t *authKey, EncryptedPasscodeStruct& encPasscodeStruct)
+static void EncryptPasscode_Config2(const uint8_t * encKey, const uint8_t * authKey, EncryptedPasscodeStruct & encPasscodeStruct)
 {
     AES128BlockCipherEnc aes128Enc;
     HMACSHA1 hmac;
@@ -174,7 +174,8 @@ static void EncryptPasscode_Config2(const uint8_t *encKey, const uint8_t *authKe
     memcpy(encPasscodeStruct.authenticator, digest, sizeof(encPasscodeStruct.authenticator));
 }
 
-static WEAVE_ERROR VerifyPasscodeFingerprint_Config2(const uint8_t *fingerprintKey, uint8_t passcode[kPasscodePaddedLen], const EncryptedPasscodeStruct& encPasscodeStruct)
+static WEAVE_ERROR VerifyPasscodeFingerprint_Config2(const uint8_t * fingerprintKey, uint8_t passcode[kPasscodePaddedLen],
+                                                     const EncryptedPasscodeStruct & encPasscodeStruct)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     HMACSHA1 hmac;
@@ -194,8 +195,8 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecryptPasscode_Config2(const uint8_t *encKey, const uint8_t *authKey,
-                                           const EncryptedPasscodeStruct& encPasscodeStruct,
+static WEAVE_ERROR DecryptPasscode_Config2(const uint8_t * encKey, const uint8_t * authKey,
+                                           const EncryptedPasscodeStruct & encPasscodeStruct,
                                            uint8_t decryptedPasscode[kPasscodePaddedLen])
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -233,15 +234,12 @@ bool IsSupportedPasscodeEncryptionConfig(uint8_t config)
     switch (config)
     {
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG1_TEST_ONLY
-    case kPasscode_Config1_TEST_ONLY:
-        return true;
+    case kPasscode_Config1_TEST_ONLY: return true;
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG2
-    case kPasscode_Config2:
-        return true;
+    case kPasscode_Config2: return true;
 #endif
-    default:
-        return false;
+    default: return false;
     }
 }
 
@@ -252,10 +250,10 @@ bool IsSupportedPasscodeEncryptionConfig(uint8_t config)
  * @param[in]   encPasscodeLen      Length of the encrypted passcode.
  * @param[out]  config              The Weave passcode encryption configuration used by the encrypted passcode.
  */
-WEAVE_ERROR GetEncryptedPasscodeConfig(const uint8_t *encPasscode, size_t encPasscodeLen, uint8_t& config)
+WEAVE_ERROR GetEncryptedPasscodeConfig(const uint8_t * encPasscode, size_t encPasscodeLen, uint8_t & config)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const EncryptedPasscodeStruct &encPasscodeStruct = *(const EncryptedPasscodeStruct *)encPasscode;
+    WEAVE_ERROR err                                   = WEAVE_NO_ERROR;
+    const EncryptedPasscodeStruct & encPasscodeStruct = *(const EncryptedPasscodeStruct *) encPasscode;
 
     // Verify the encrypted passcode is the correct length.
     VerifyOrExit(encPasscodeLen == sizeof(EncryptedPasscodeStruct), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -273,10 +271,10 @@ exit:
  * @param[in]   encPasscodeLen      Length of the encrypted passcode.
  * @param[out]  keyId               The id of the key used to encrypt the encrypted passcode.
  */
-WEAVE_ERROR GetEncryptedPasscodeKeyId(const uint8_t *encPasscode, size_t encPasscodeLen, uint32_t& keyId)
+WEAVE_ERROR GetEncryptedPasscodeKeyId(const uint8_t * encPasscode, size_t encPasscodeLen, uint32_t & keyId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const EncryptedPasscodeStruct &encPasscodeStruct = *(const EncryptedPasscodeStruct *)encPasscode;
+    WEAVE_ERROR err                                   = WEAVE_NO_ERROR;
+    const EncryptedPasscodeStruct & encPasscodeStruct = *(const EncryptedPasscodeStruct *) encPasscode;
 
     // Verify the encrypted passcode is the correct length.
     VerifyOrExit(encPasscodeLen == sizeof(EncryptedPasscodeStruct), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -298,10 +296,10 @@ exit:
  * @param[in]   encPasscodeLen      Length of the encrypted passcode.
  * @param[out]  nonce               The nonce value associated with an encrypted passcode.
  */
-WEAVE_ERROR GetEncryptedPasscodeNonce(const uint8_t *encPasscode, size_t encPasscodeLen, uint32_t& nonce)
+WEAVE_ERROR GetEncryptedPasscodeNonce(const uint8_t * encPasscode, size_t encPasscodeLen, uint32_t & nonce)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const EncryptedPasscodeStruct &encPasscodeStruct = *(const EncryptedPasscodeStruct *)encPasscode;
+    WEAVE_ERROR err                                   = WEAVE_NO_ERROR;
+    const EncryptedPasscodeStruct & encPasscodeStruct = *(const EncryptedPasscodeStruct *) encPasscode;
 
     // Verify the encrypted passcode is the correct length.
     VerifyOrExit(encPasscodeLen == sizeof(EncryptedPasscodeStruct), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -325,11 +323,11 @@ exit:
  * @param[in]   fingerprintBufSize  The size of the buffer pointed at by fingerprintBuf.
  * @param[out]  fingerprintLen      The length of the returned fingerprint value.
  */
-WEAVE_ERROR GetEncryptedPasscodeFingerprint(const uint8_t *encPasscode, size_t encPasscodeLen,
-                                            uint8_t *fingerprintBuf, size_t fingerprintBufSize, size_t& fingerprintLen)
+WEAVE_ERROR GetEncryptedPasscodeFingerprint(const uint8_t * encPasscode, size_t encPasscodeLen, uint8_t * fingerprintBuf,
+                                            size_t fingerprintBufSize, size_t & fingerprintLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const EncryptedPasscodeStruct &encPasscodeStruct = *(const EncryptedPasscodeStruct *)encPasscode;
+    WEAVE_ERROR err                                   = WEAVE_NO_ERROR;
+    const EncryptedPasscodeStruct & encPasscodeStruct = *(const EncryptedPasscodeStruct *) encPasscode;
 
     // Verify the encrypted passcode is the correct length.
     VerifyOrExit(encPasscodeLen == sizeof(EncryptedPasscodeStruct), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -376,15 +374,15 @@ exit:
  *                               key store APIs.
  *
  */
-WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t *passcode, size_t passcodeLen,
-                            uint8_t *encPasscode, size_t encPasscodeBufSize, size_t& encPasscodeLen,
-                            GroupKeyStoreBase *groupKeyStore)
+WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t * passcode, size_t passcodeLen,
+                            uint8_t * encPasscode, size_t encPasscodeBufSize, size_t & encPasscodeLen,
+                            GroupKeyStoreBase * groupKeyStore)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG2
     uint8_t appKey[kPasscodeTotalDerivedKeyLen];
 #endif
-    EncryptedPasscodeStruct &encPasscodeStruct = *(EncryptedPasscodeStruct *)encPasscode;
+    EncryptedPasscodeStruct & encPasscodeStruct = *(EncryptedPasscodeStruct *) encPasscode;
 
     // Verify supported encryption config.
     VerifyOrExit(IsSupportedPasscodeEncryptionConfig(config), err = WEAVE_ERROR_UNSUPPORTED_PASSCODE_CONFIG);
@@ -432,9 +430,9 @@ WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, cons
         fingerprintKeyId = WeaveKeyId::ConvertToStaticAppKeyId(keyId);
 
         // Derive passcode fingerprint key.
-        err = groupKeyStore->DeriveApplicationKey(fingerprintKeyId, NULL, 0,
-                                                  kPasscodeFingerprintKeyDiversifier, kPasscodeFingerprintKeyDiversifierSize,
-                                                  appKey, sizeof(appKey), kPasscodeFingerprintKeyLen, appGroupGlobalId);
+        err = groupKeyStore->DeriveApplicationKey(fingerprintKeyId, NULL, 0, kPasscodeFingerprintKeyDiversifier,
+                                                  kPasscodeFingerprintKeyDiversifierSize, appKey, sizeof(appKey),
+                                                  kPasscodeFingerprintKeyLen, appGroupGlobalId);
         SuccessOrExit(err);
 
         // Generate passcode fingerprint.
@@ -445,9 +443,9 @@ WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, cons
         keyDiversifier[sizeof(kPasscodeEncKeyDiversifier)] = config;
 
         // Derive passcode encryption application key data.
-        err = groupKeyStore->DeriveApplicationKey(keyId, encPasscodeStruct.nonce, sizeof(encPasscodeStruct.nonce),
-                                                  keyDiversifier, kPasscodeEncKeyDiversifierSize,
-                                                  appKey, sizeof(appKey), kPasscodeTotalDerivedKeyLen, appGroupGlobalId);
+        err = groupKeyStore->DeriveApplicationKey(keyId, encPasscodeStruct.nonce, sizeof(encPasscodeStruct.nonce), keyDiversifier,
+                                                  kPasscodeEncKeyDiversifierSize, appKey, sizeof(appKey),
+                                                  kPasscodeTotalDerivedKeyLen, appGroupGlobalId);
         SuccessOrExit(err);
 
         // Encrypt padded passcode and generate the passcode authenticator.
@@ -508,12 +506,12 @@ exit:
  *                               If the supplied passcode is too short or too long.
  *
  */
-WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t *passcode, size_t passcodeLen,
-                            const uint8_t *encKey, const uint8_t *authKey, const uint8_t *fingerprintKey,
-                            uint8_t *encPasscode, size_t encPasscodeBufSize, size_t& encPasscodeLen)
+WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t * passcode, size_t passcodeLen,
+                            const uint8_t * encKey, const uint8_t * authKey, const uint8_t * fingerprintKey, uint8_t * encPasscode,
+                            size_t encPasscodeBufSize, size_t & encPasscodeLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EncryptedPasscodeStruct &encPasscodeStruct = *(EncryptedPasscodeStruct *)encPasscode;
+    WEAVE_ERROR err                             = WEAVE_NO_ERROR;
+    EncryptedPasscodeStruct & encPasscodeStruct = *(EncryptedPasscodeStruct *) encPasscode;
 
     // Verify supported passcode config.
     VerifyOrExit(IsSupportedPasscodeEncryptionConfig(config), err = WEAVE_ERROR_UNSUPPORTED_PASSCODE_CONFIG);
@@ -598,18 +596,17 @@ exit:
  *                               key store APIs.
  *
  */
-WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
-                            uint8_t *passcodeBuf, size_t passcodeBufSize, size_t& passcodeLen,
-                            GroupKeyStoreBase *groupKeyStore)
+WEAVE_ERROR DecryptPasscode(const uint8_t * encPasscode, size_t encPasscodeLen, uint8_t * passcodeBuf, size_t passcodeBufSize,
+                            size_t & passcodeLen, GroupKeyStoreBase * groupKeyStore)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t keyId;
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG2
     uint8_t appKey[kPasscodeTotalDerivedKeyLen];
 #endif
-    const EncryptedPasscodeStruct &encPasscodeStruct = *(const EncryptedPasscodeStruct *)encPasscode;
+    const EncryptedPasscodeStruct & encPasscodeStruct = *(const EncryptedPasscodeStruct *) encPasscode;
     uint8_t decryptedPasscode[kPasscodePaddedLen];
-    uint8_t *passcodeEnd;
+    uint8_t * passcodeEnd;
 
     // Verify the encrypted passcode is the correct length.
     VerifyOrExit(encPasscodeLen == sizeof(EncryptedPasscodeStruct), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -649,9 +646,9 @@ WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
         keyDiversifier[sizeof(kPasscodeEncKeyDiversifier)] = encPasscodeStruct.config;
 
         // Derive passcode encryption application key data.
-        err = groupKeyStore->DeriveApplicationKey(keyId, encPasscodeStruct.nonce, sizeof(encPasscodeStruct.nonce),
-                                                  keyDiversifier, kPasscodeEncKeyDiversifierSize,
-                                                  appKey, sizeof(appKey), kPasscodeTotalDerivedKeyLen, appGroupGlobalId);
+        err = groupKeyStore->DeriveApplicationKey(keyId, encPasscodeStruct.nonce, sizeof(encPasscodeStruct.nonce), keyDiversifier,
+                                                  kPasscodeEncKeyDiversifierSize, appKey, sizeof(appKey),
+                                                  kPasscodeTotalDerivedKeyLen, appGroupGlobalId);
         SuccessOrExit(err);
 
         // Decrypt and verify the passcode.
@@ -662,9 +659,9 @@ WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
         keyId = WeaveKeyId::ConvertToStaticAppKeyId(keyId);
 
         // Derive passcode fingerprint key.
-        err = groupKeyStore->DeriveApplicationKey(keyId, NULL, 0,
-                                                  kPasscodeFingerprintKeyDiversifier, kPasscodeFingerprintKeyDiversifierSize,
-                                                  appKey, sizeof(appKey), kPasscodeFingerprintKeyLen, appGroupGlobalId);
+        err = groupKeyStore->DeriveApplicationKey(keyId, NULL, 0, kPasscodeFingerprintKeyDiversifier,
+                                                  kPasscodeFingerprintKeyDiversifierSize, appKey, sizeof(appKey),
+                                                  kPasscodeFingerprintKeyLen, appGroupGlobalId);
         SuccessOrExit(err);
 
         // Verify the passcode fingerprint.
@@ -675,7 +672,7 @@ WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
     }
 
     // Determine the length of the passcode.
-    passcodeEnd = (uint8_t *)memchr(decryptedPasscode, 0, sizeof(decryptedPasscode));
+    passcodeEnd = (uint8_t *) memchr(decryptedPasscode, 0, sizeof(decryptedPasscode));
     passcodeLen = (passcodeEnd != NULL) ? passcodeEnd - decryptedPasscode : sizeof(decryptedPasscode);
 
     // Verify the output buffer is large enough to hold the decrypted passcode.
@@ -724,14 +721,13 @@ exit:
  *                               If the encrytped passcode is too short or too long.
  *
  */
-WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
-                            const uint8_t *encKey, const uint8_t *authKey, const uint8_t *fingerprintKey,
-                            uint8_t *passcodeBuf, size_t passcodeBufSize, size_t& passcodeLen)
+WEAVE_ERROR DecryptPasscode(const uint8_t * encPasscode, size_t encPasscodeLen, const uint8_t * encKey, const uint8_t * authKey,
+                            const uint8_t * fingerprintKey, uint8_t * passcodeBuf, size_t passcodeBufSize, size_t & passcodeLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const EncryptedPasscodeStruct &encPasscodeStruct = *(const EncryptedPasscodeStruct *)encPasscode;
+    WEAVE_ERROR err                                   = WEAVE_NO_ERROR;
+    const EncryptedPasscodeStruct & encPasscodeStruct = *(const EncryptedPasscodeStruct *) encPasscode;
     uint8_t decryptedPasscode[kPasscodePaddedLen];
-    uint8_t *passcodeEnd;
+    uint8_t * passcodeEnd;
 
     // Verify the encrypted passcode is the correct length.
     VerifyOrExit(encPasscodeLen == sizeof(EncryptedPasscodeStruct), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -771,7 +767,7 @@ WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
     }
 
     // Determine the length of the passcode.
-    passcodeEnd = (uint8_t *)memchr(decryptedPasscode, 0, sizeof(decryptedPasscode));
+    passcodeEnd = (uint8_t *) memchr(decryptedPasscode, 0, sizeof(decryptedPasscode));
     passcodeLen = (passcodeEnd != NULL) ? passcodeEnd - decryptedPasscode : sizeof(decryptedPasscode);
 
     // Verify the output buffer is large enough to hold the decrypted passcode.
@@ -784,7 +780,6 @@ exit:
     ClearSecretData(decryptedPasscode, sizeof(decryptedPasscode));
     return err;
 }
-
 
 } // namespace Passcodes
 } // namespace Security

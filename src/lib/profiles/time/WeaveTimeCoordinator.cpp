@@ -35,14 +35,13 @@
 using namespace nl::Weave::Profiles::Time;
 using namespace nl::Inet;
 
-WEAVE_ERROR TimeSyncNode::InitCoordinator(nl::Weave::WeaveExchangeManager *aExchangeMgr, const uint8_t aEncryptionType,
-    const uint16_t aKeyId, const int32_t aSyncPeriod_msec
+WEAVE_ERROR TimeSyncNode::InitCoordinator(nl::Weave::WeaveExchangeManager * aExchangeMgr, const uint8_t aEncryptionType,
+                                          const uint16_t aKeyId, const int32_t aSyncPeriod_msec
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    ,
-    const int32_t aNominalDiscoveryPeriod_msec,
-    const int32_t aShortestDiscoveryPeriod_msec
+                                          ,
+                                          const int32_t aNominalDiscoveryPeriod_msec, const int32_t aShortestDiscoveryPeriod_msec
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    )
+)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -59,17 +58,19 @@ WEAVE_ERROR TimeSyncNode::InitCoordinator(nl::Weave::WeaveExchangeManager *aExch
     // initialize Client-specific data
     err = _InitClient(aEncryptionType, aKeyId
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        , TimeSyncRequest::kLikelihoodForResponse_Min
+                      ,
+                      TimeSyncRequest::kLikelihoodForResponse_Min
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
     SuccessOrExit(err);
     OnSyncSucceeded = TimeSyncNode::_OnSyncSucceeded;
 
     err = EnableAutoSync(aSyncPeriod_msec
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        , aNominalDiscoveryPeriod_msec, aShortestDiscoveryPeriod_msec
+                         ,
+                         aNominalDiscoveryPeriod_msec, aShortestDiscoveryPeriod_msec
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
     SuccessOrExit(err);
 
 exit:
@@ -80,16 +81,16 @@ exit:
 
 WEAVE_ERROR TimeSyncNode::_ShutdownCoordinator(void)
 {
-    (void)_ShutdownServer();
-    (void)_ShutdownClient();
+    (void) _ShutdownServer();
+    (void) _ShutdownClient();
 
     return WEAVE_NO_ERROR;
 }
 
-bool TimeSyncNode::_OnSyncSucceeded(void * const aApp, const timesync_t aOffsetUsec, const bool aIsReliable,
-    const bool aIsServer, const uint8_t aNumContributor)
+bool TimeSyncNode::_OnSyncSucceeded(void * const aApp, const timesync_t aOffsetUsec, const bool aIsReliable, const bool aIsServer,
+                                    const uint8_t aNumContributor)
 {
-    bool shouldUpdate = true;
+    bool shouldUpdate                = true;
     TimeSyncNode * const coordinator = reinterpret_cast<TimeSyncNode *>(aApp);
 
     coordinator->RegisterLocalSyncOperation(aNumContributor);
@@ -99,8 +100,8 @@ bool TimeSyncNode::_OnSyncSucceeded(void * const aApp, const timesync_t aOffsetU
     {
         coordinator->RegisterCorrectionFromServerOrNtp();
 
-        if ((WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC > aOffsetUsec)
-            && (-WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC < aOffsetUsec))
+        if ((WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC > aOffsetUsec) &&
+            (-WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC < aOffsetUsec))
         {
             // the change is pretty small
             // ignore small changes from server
@@ -111,11 +112,10 @@ bool TimeSyncNode::_OnSyncSucceeded(void * const aApp, const timesync_t aOffsetU
     if (shouldUpdate)
     {
         // declare that we're about to significantly change our clock
-        if ((aOffsetUsec > WEAVE_CONFIG_TIME_COORDINATOR_THRESHOLD_TO_SEND_NOTIFICATION_USEC)
-            || (aOffsetUsec < -WEAVE_CONFIG_TIME_COORDINATOR_THRESHOLD_TO_SEND_NOTIFICATION_USEC))
+        if ((aOffsetUsec > WEAVE_CONFIG_TIME_COORDINATOR_THRESHOLD_TO_SEND_NOTIFICATION_USEC) ||
+            (aOffsetUsec < -WEAVE_CONFIG_TIME_COORDINATOR_THRESHOLD_TO_SEND_NOTIFICATION_USEC))
         {
-            coordinator->MulticastTimeChangeNotification(coordinator->mEncryptionType,
-                coordinator->mKeyId);
+            coordinator->MulticastTimeChangeNotification(coordinator->mEncryptionType, coordinator->mKeyId);
         }
     }
 

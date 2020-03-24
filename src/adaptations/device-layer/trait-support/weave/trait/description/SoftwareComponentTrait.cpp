@@ -47,50 +47,43 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor SoftwareComponentTypeStructFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(SoftwareComponentTypeStruct, componentName), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1
-    },
+const nl::FieldDescriptor SoftwareComponentTypeStructFieldDescriptors[] = {
+    { NULL, offsetof(SoftwareComponentTypeStruct, componentName), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1 },
 
-    {
-        NULL, offsetof(SoftwareComponentTypeStruct, componentVersion), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 2
-    },
+    { NULL, offsetof(SoftwareComponentTypeStruct, componentVersion), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor SoftwareComponentTypeStruct::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(SoftwareComponentTypeStructFieldDescriptors)/sizeof(SoftwareComponentTypeStructFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor SoftwareComponentTypeStruct::FieldSchema = {
+    .mNumFieldDescriptorElements =
+        sizeof(SoftwareComponentTypeStructFieldDescriptors) / sizeof(SoftwareComponentTypeStructFieldDescriptors[0]),
     .mFields = SoftwareComponentTypeStructFieldDescriptors,
-    .mSize = sizeof(SoftwareComponentTypeStruct)
+    .mSize   = sizeof(SoftwareComponentTypeStruct)
 };
 
 } // namespace SoftwareComponentTrait

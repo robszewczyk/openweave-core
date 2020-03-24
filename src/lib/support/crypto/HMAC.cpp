@@ -41,20 +41,17 @@ namespace Crypto {
 
 using namespace nl::Weave::TLV;
 
-template <class H>
-HMAC<H>::HMAC()
+template <class H> HMAC<H>::HMAC()
 {
     Reset();
 }
 
-template <class H>
-HMAC<H>::~HMAC()
+template <class H> HMAC<H>::~HMAC()
 {
     Reset();
 }
 
-template <class H>
-void HMAC<H>::Begin(const uint8_t *key, uint16_t keyLen)
+template <class H> void HMAC<H>::Begin(const uint8_t * key, uint16_t keyLen)
 {
     uint8_t pad[kBlockLength];
 
@@ -88,24 +85,21 @@ void HMAC<H>::Begin(const uint8_t *key, uint16_t keyLen)
     ClearSecretData(pad, sizeof(kBlockLength));
 }
 
-template <class H>
-void HMAC<H>::AddData(const uint8_t *msgData, uint16_t dataLen)
+template <class H> void HMAC<H>::AddData(const uint8_t * msgData, uint16_t dataLen)
 {
     // Add a chunk of data to the inner hash.
     mHash.AddData(msgData, dataLen);
 }
 
 #if WEAVE_WITH_OPENSSL
-template <class H>
-void HMAC<H>::AddData(const BIGNUM& num)
+template <class H> void HMAC<H>::AddData(const BIGNUM & num)
 {
     // Add a chunk of data to the inner hash.
     mHash.AddData(num);
 }
 #endif
 
-template <class H>
-void HMAC<H>::Finish(uint8_t *hashBuf)
+template <class H> void HMAC<H>::Finish(uint8_t * hashBuf)
 {
     uint8_t pad[kBlockLength];
     uint8_t innerHash[kDigestLength];
@@ -132,8 +126,7 @@ void HMAC<H>::Finish(uint8_t *hashBuf)
     ClearSecretData(innerHash, sizeof(kDigestLength));
 }
 
-template <class H>
-void HMAC<H>::Reset()
+template <class H> void HMAC<H>::Reset()
 {
     mHash.Reset();
     ClearSecretData(mKey, sizeof(mKey));
@@ -143,7 +136,6 @@ void HMAC<H>::Reset()
 template class HMAC<Platform::Security::SHA1>;
 template class HMAC<Platform::Security::SHA256>;
 
-
 /**
  * Compares with another HMAC signature.
  *
@@ -152,12 +144,9 @@ template class HMAC<Platform::Security::SHA256>;
  * @retval true                 The signatures are equal.
  * @retval false                The signatures are not equal.
  */
-bool EncodedHMACSignature::IsEqual(const EncodedHMACSignature& other) const
+bool EncodedHMACSignature::IsEqual(const EncodedHMACSignature & other) const
 {
-    return (Sig != NULL &&
-            other.Sig != NULL &&
-            Len == other.Len &&
-            memcmp(Sig, other.Sig, Len) == 0);
+    return (Sig != NULL && other.Sig != NULL && Len == other.Len && memcmp(Sig, other.Sig, Len) == 0);
 }
 
 /**
@@ -169,7 +158,7 @@ bool EncodedHMACSignature::IsEqual(const EncodedHMACSignature& other) const
  * @retval #WEAVE_NO_ERROR      If the operation succeeded.
  * @retval other                Other Weave error codes related to signature reading.
  */
-WEAVE_ERROR EncodedHMACSignature::ReadSignature(TLVReader& reader)
+WEAVE_ERROR EncodedHMACSignature::ReadSignature(TLVReader & reader)
 {
     WEAVE_ERROR err;
 
@@ -203,10 +192,8 @@ exit:
  * @retval #WEAVE_NO_ERROR      If the operation succeeded.
  * @retval other                Other Weave error codes related to the signature encoding.
  */
-WEAVE_ERROR GenerateAndEncodeWeaveHMACSignature(OID sigAlgoOID,
-                                                TLVWriter& writer, uint64_t tag,
-                                                const uint8_t * data, uint16_t dataLen,
-                                                const uint8_t * key, uint16_t keyLen)
+WEAVE_ERROR GenerateAndEncodeWeaveHMACSignature(OID sigAlgoOID, TLVWriter & writer, uint64_t tag, const uint8_t * data,
+                                                uint16_t dataLen, const uint8_t * key, uint16_t keyLen)
 {
     WEAVE_ERROR err;
     HMACSHA256 hmac;
@@ -249,9 +236,7 @@ exit:
  * @retval #WEAVE_ERROR_INVALID_SIGNATURE
  *                              If HMAC signature verification failed.
  */
-WEAVE_ERROR VerifyHMACSignature(OID sigAlgoOID,
-                                const uint8_t * data, uint16_t dataLen,
-                                const EncodedHMACSignature& sig,
+WEAVE_ERROR VerifyHMACSignature(OID sigAlgoOID, const uint8_t * data, uint16_t dataLen, const EncodedHMACSignature & sig,
                                 const uint8_t * key, uint16_t keyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;

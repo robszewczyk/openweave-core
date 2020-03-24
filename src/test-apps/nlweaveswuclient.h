@@ -49,29 +49,30 @@ using namespace ::nl::Weave;
 class SoftwareUpdateClient
 {
 public:
-	SoftwareUpdateClient();
-	~SoftwareUpdateClient();
+    SoftwareUpdateClient();
+    ~SoftwareUpdateClient();
 
-	WeaveExchangeManager *ExchangeMgr;		// [READ ONLY] Exchange manager object
-	const WeaveFabricState *FabricState;	// [READ ONLY] Fabric state object
-	uint8_t EncryptionType;                         // Encryption type to use during SWU
-	uint16_t KeyId;                                 // Encryption key to use during SWU
+    WeaveExchangeManager * ExchangeMgr;   // [READ ONLY] Exchange manager object
+    const WeaveFabricState * FabricState; // [READ ONLY] Fabric state object
+    uint8_t EncryptionType;               // Encryption type to use during SWU
+    uint16_t KeyId;                       // Encryption key to use during SWU
 
-	WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
-	WEAVE_ERROR Shutdown();
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
+    WEAVE_ERROR Shutdown();
 
-    WEAVE_ERROR SendImageQueryRequest(WeaveConnection *con);
+    WEAVE_ERROR SendImageQueryRequest(WeaveConnection * con);
     WEAVE_ERROR SendImageQueryRequest(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendImageQueryRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
     WEAVE_ERROR SendImageQueryRequest();
 
-    void SetExchangeCtx(ExchangeContext *ec);			// Set the exchange context for the most recently started SWU exchange.
+    void SetExchangeCtx(ExchangeContext * ec); // Set the exchange context for the most recently started SWU exchange.
 private:
-	ExchangeContext *ExchangeCtx;			// The exchange context for the most recently started SWU exchange.
+    ExchangeContext * ExchangeCtx; // The exchange context for the most recently started SWU exchange.
 
-	static void HandleImageQueryResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleImageQueryResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                         uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-	SoftwareUpdateClient(const SoftwareUpdateClient&);   // not defined
+    SoftwareUpdateClient(const SoftwareUpdateClient &); // not defined
 };
 
 } // namespace Profiles

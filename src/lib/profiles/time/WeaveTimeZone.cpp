@@ -64,7 +64,7 @@ WEAVE_ERROR TimeZoneUtcOffset::GetCurrentLocalTime(timesync_t * const aLocalTime
     if (1 == mSize)
     {
         // ignore the begin time check, as it shall be zero through decoding, anyway
-        found = true;
+        found       = true;
         *aLocalTime = aUtcTime + timesync_t(mUtcOffsetRecord[0].mUtcOffset_sec) * 1000000;
     }
     else if (mSize >= 2)
@@ -74,7 +74,7 @@ WEAVE_ERROR TimeZoneUtcOffset::GetCurrentLocalTime(timesync_t * const aLocalTime
             if ((aUtcTime >= mUtcOffsetRecord[i].mBeginAt_usec) && (aUtcTime < mUtcOffsetRecord[i + 1].mBeginAt_usec))
             {
                 // we found it!
-                found = true;
+                found       = true;
                 *aLocalTime = aUtcTime + timesync_t(mUtcOffsetRecord[i].mUtcOffset_sec) * 1000000;
                 break;
             }
@@ -87,7 +87,7 @@ WEAVE_ERROR TimeZoneUtcOffset::GetCurrentLocalTime(timesync_t * const aLocalTime
 
     if (!found)
     {
-        ExitNow(err= WEAVE_ERROR_KEY_NOT_FOUND);
+        ExitNow(err = WEAVE_ERROR_KEY_NOT_FOUND);
     }
 
 exit:
@@ -103,7 +103,7 @@ WEAVE_ERROR TimeZoneUtcOffset::Decode(const uint8_t * const aInputBuf, const uin
     int8_t numOfRecord;
     bool IsSubsequentOffsetAll32Bit;
     size_t minDataSizeNeeded;
-    const uint8_t * cursor = aInputBuf;
+    const uint8_t * cursor            = aInputBuf;
     const uint8_t * const end_of_data = aInputBuf + aDataSize;
 
     mSize = 0;
@@ -117,7 +117,7 @@ WEAVE_ERROR TimeZoneUtcOffset::Decode(const uint8_t * const aInputBuf, const uin
     memcpy(&status, cursor, 2);
     cursor += 2;
 
-    numOfRecord = int8_t(status & 0xF);
+    numOfRecord                = int8_t(status & 0xF);
     IsSubsequentOffsetAll32Bit = (status & 0x10) ? true : false;
     if (0 != (status >> 5))
     {
@@ -126,8 +126,7 @@ WEAVE_ERROR TimeZoneUtcOffset::Decode(const uint8_t * const aInputBuf, const uin
 
     if (numOfRecord > WEAVE_CONFIG_TIME_NUM_UTC_OFFSET_RECORD)
     {
-        WeaveLogDetail(TimeService, "TimeZoneUtcOffset::Decode received more offset records than we can store: %d",
-            numOfRecord);
+        WeaveLogDetail(TimeService, "TimeZoneUtcOffset::Decode received more offset records than we can store: %d", numOfRecord);
         numOfRecord = WEAVE_CONFIG_TIME_NUM_UTC_OFFSET_RECORD;
     }
 
@@ -216,9 +215,9 @@ WEAVE_ERROR TimeZoneUtcOffset::Encode(uint8_t * const aOutputBuf, uint32_t * con
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    uint16_t status = 0;
+    uint16_t status                 = 0;
     bool IsSubsequentOffsetAll32Bit = false;
-    uint8_t * cursor = aOutputBuf;
+    uint8_t * cursor                = aOutputBuf;
 
     {
         const size_t buffer_size_needed = 2 + 8 + 4 + (mSize - 1) * 8;

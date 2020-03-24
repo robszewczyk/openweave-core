@@ -30,18 +30,16 @@
 class MockWdmSubscriptionResponder
 {
 public:
-    static MockWdmSubscriptionResponder * GetInstance ();
+    static MockWdmSubscriptionResponder * GetInstance();
 
-    virtual WEAVE_ERROR Init (nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                              const MockWdmNodeOptions &aConfig) = 0;
+    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, const MockWdmNodeOptions & aConfig) = 0;
 
-    typedef void(*HandleCompleteTestFunct)();
+    typedef void (*HandleCompleteTestFunct)();
     HandleCompleteTestFunct onCompleteTest;
     HandleCompleteTestFunct onError;
 
-    virtual void PrintVersionsLog() = 0;
+    virtual void PrintVersionsLog()       = 0;
     virtual void ClearDataSinkState(void) = 0;
 };
-
 
 #endif /* MOCKWDMSUBSCRIPTIONRESPONDER_H_ */

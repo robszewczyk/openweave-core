@@ -37,7 +37,8 @@
 #elif WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE == kWeaveManagedNamespace_Current
 #include <Weave/Profiles/data-management/Current/DataManagement.h>
 #else
-#error "WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Legacy, nor kWeaveManagedNamespace_Current"
+#error                                                                                                                             \
+    "WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Legacy, nor kWeaveManagedNamespace_Current"
 #endif // WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE == kWeaveManagedNamespace_Legacy
 
 #endif // _WEAVE_DATA_MANAGEMENT_H

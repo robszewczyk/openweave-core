@@ -49,8 +49,8 @@
 
 #if WEAVE_CONFIG_ENABLE_TUNNELING
 
-#define SERVICE_ROUTE_TABLE_SIZE  (64)
-#define CONNECTION_TABLE_SIZE  (16)
+#define SERVICE_ROUTE_TABLE_SIZE (64)
+#define CONNECTION_TABLE_SIZE    (16)
 
 using namespace ::nl::Inet;
 using namespace ::nl::Weave;
@@ -65,85 +65,83 @@ class ConnectionTable
 {
 
 public:
-
     ConnectionTable(void);
 
-    WEAVE_ERROR AddConnection(WeaveConnection *aCon);
-    void RemoveConnection(WeaveConnection *aCon);
+    WEAVE_ERROR AddConnection(WeaveConnection * aCon);
+    void RemoveConnection(WeaveConnection * aCon);
 
     class ConnectionEntry
     {
-        public:
-            WeaveConnection *mConnection;
+    public:
+        WeaveConnection * mConnection;
     };
-    ConnectionEntry  mTable[CONNECTION_TABLE_SIZE];
+    ConnectionEntry mTable[CONNECTION_TABLE_SIZE];
 };
 
-//Virtual Route Table used by the Service to route IPv6 packets between various
-//border gateways and mobile devices.
+// Virtual Route Table used by the Service to route IPv6 packets between various
+// border gateways and mobile devices.
 class VirtualRouteTable
 {
     friend class WeaveTunnelServer;
 
 public:
-    //State of route entry in the virtual route table
+    // State of route entry in the virtual route table
     enum RouteEntryState
     {
-        kRouteEntryState_Invalid  = 0,
-        kRouteEntryState_Valid    = 1,
+        kRouteEntryState_Invalid = 0,
+        kRouteEntryState_Valid   = 1,
     };
 
     VirtualRouteTable(void);
 
-/**
- * Lookup an IP prefix in the route table to locate route table entry.
- *
- * @param[in] ip6Prefix       IPPrefix to lookup in the route table.
- *
- * @return index              Index of entry if found, else -1;
- */
-    int FindRouteEntry(IPPrefix &ip6Prefix);
+    /**
+     * Lookup an IP prefix in the route table to locate route table entry.
+     *
+     * @param[in] ip6Prefix       IPPrefix to lookup in the route table.
+     *
+     * @return index              Index of entry if found, else -1;
+     */
+    int FindRouteEntry(IPPrefix & ip6Prefix);
 
-/**
- * Remove all route table entries for the connection.
- *
- * @param[in] con             Pointer to a WeaveConnection object
- *
- * @return void
- */
-    void RemoveRouteEntryByConnection(WeaveConnection *con);
+    /**
+     * Remove all route table entries for the connection.
+     *
+     * @param[in] con             Pointer to a WeaveConnection object
+     *
+     * @return void
+     */
+    void RemoveRouteEntryByConnection(WeaveConnection * con);
 
-/**
- * Create a new route entry in the route table.
- *
- * @return index              Index of entry if successful, else -1;
- */
+    /**
+     * Create a new route entry in the route table.
+     *
+     * @return index              Index of entry if successful, else -1;
+     */
     int NewRouteEntry(void);
 
-/**
- * Free route entry at the given index.
- *
- * @param[in] index           Index of route entry to free in route table.
- * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
- */
+    /**
+     * Free route entry at the given index.
+     *
+     * @param[in] index           Index of route entry to free in route table.
+     * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
+     */
     WEAVE_ERROR FreeRouteEntry(int index);
 
-    //Route Entry in the Route table
+    // Route Entry in the Route table
     class RouteEntry
     {
-      public:
-       IPPrefix             prefix;
-       uint8_t              priority[2]; // 2 priority entries with 3 possible levels of priority : high(1), medium(2), and low(3)
-       uint64_t             fabricId;
-       uint64_t             BorderGwList[MAX_BORDER_GW];
-       WeaveConnection      *outgoingCon[2]; // 2 connections corresponding to each priority entry
-       int16_t              routeLifetime;
-       uint16_t             keyId;
-       uint8_t              encryptionType;
-       RouteEntryState      routeState;
+    public:
+        IPPrefix prefix;
+        uint8_t priority[2]; // 2 priority entries with 3 possible levels of priority : high(1), medium(2), and low(3)
+        uint64_t fabricId;
+        uint64_t BorderGwList[MAX_BORDER_GW];
+        WeaveConnection * outgoingCon[2]; // 2 connections corresponding to each priority entry
+        int16_t routeLifetime;
+        uint16_t keyId;
+        uint8_t encryptionType;
+        RouteEntryState routeState;
     };
     RouteEntry RouteTable[SERVICE_ROUTE_TABLE_SIZE];
-
 };
 
 class NL_DLL_EXPORT WeaveTunnelServer : public WeaveServerBase
@@ -151,78 +149,72 @@ class NL_DLL_EXPORT WeaveTunnelServer : public WeaveServerBase
 public:
     WeaveTunnelServer();
 
-/**
- * Initialize the Weave Tunnel Server. Set handlers for Message Layer and
- * Exchange Manager.
- *
- * @param[in] exchangeMgr     Pointer to exchangeManager object.
- *
- * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
- */
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    /**
+     * Initialize the Weave Tunnel Server. Set handlers for Message Layer and
+     * Exchange Manager.
+     *
+     * @param[in] exchangeMgr     Pointer to exchangeManager object.
+     *
+     * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
+     */
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
 
-/**
- * Close all connections in route table.
- *
- * @return void;
- */
+    /**
+     * Close all connections in route table.
+     *
+     * @return void;
+     */
     WEAVE_ERROR Shutdown();
 
 private:
-    WeaveTunnelServer(const WeaveTunnelServer&);   // not defined
+    WeaveTunnelServer(const WeaveTunnelServer &); // not defined
 
-    WEAVE_ERROR ProcessIPv6Message(WeaveConnection *con, const WeaveMessageInfo *recvMsgInfo, PacketBuffer *msg);
+    WEAVE_ERROR ProcessIPv6Message(WeaveConnection * con, const WeaveMessageInfo * recvMsgInfo, PacketBuffer * msg);
 
-    //TunEndPoint management functions
+    // TunEndPoint management functions
     WEAVE_ERROR CreateServiceTunEndPoint();
     WEAVE_ERROR SetupServiceTunEndPoint(void);
     WEAVE_ERROR TeardownServiceTunEndPoint(void);
 
-/**
- * Handler for a tunneled IPv6 data message.
- */
-    static void HandleTunnelDataMessage(WeaveConnection *con, const WeaveMessageInfo *msgInfo,
-                                        PacketBuffer *msg);
-/**
- * Handler for a Weave Tunnel control message.
- */
-    static void HandleTunnelControlMsg(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                       const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                       uint8_t msgType, PacketBuffer *payload);
+    /**
+     * Handler for a tunneled IPv6 data message.
+     */
+    static void HandleTunnelDataMessage(WeaveConnection * con, const WeaveMessageInfo * msgInfo, PacketBuffer * msg);
+    /**
+     * Handler for a Weave Tunnel control message.
+     */
+    static void HandleTunnelControlMsg(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                       uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-    static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+    static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
+    static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 
-    static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+    static void RecvdFromServiceTunEndPoint(TunEndPoint * tunEP, PacketBuffer * message);
+    static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
 
-    static void RecvdFromServiceTunEndPoint(TunEndPoint *tunEP, PacketBuffer *message);
-    static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
+    static void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState,
+                                               uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
+    static void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                         uint64_t peerNodeId, StatusReport * statusReport);
 
-    static void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con,
-                                               void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId,
-                                               uint8_t encType);
-    static void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState,
-                                         WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport);
+    static void HandleReconnectResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-    static void HandleReconnectResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                    const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                    uint8_t msgType, PacketBuffer *payload);
-
-    void StoreGatewayInfoForPriority(WeaveConnection *conn, uint8_t rtIndex, uint8_t priorityIndex,
-                                     uint8_t priorityVal, const IPPacketInfo *pktInfo,
-                                     const WeaveMessageInfo *msgInfo);
+    void StoreGatewayInfoForPriority(WeaveConnection * conn, uint8_t rtIndex, uint8_t priorityIndex, uint8_t priorityVal,
+                                     const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo);
 
     WeaveConnection * GetOutgoingConn(uint8_t index);
 
     void CloseConnections(void);
 
-    WEAVE_ERROR SendStatusReport(ExchangeContext *ec, uint32_t profileId, uint32_t tunStatusCode);
+    WEAVE_ERROR SendStatusReport(ExchangeContext * ec, uint32_t profileId, uint32_t tunStatusCode);
 
     WEAVE_ERROR CreateTunnelTLVDataForRestrictedRouting(ReferencedTLVData & tunTLVData);
 
-    TunEndPoint *mTunEP;
+    TunEndPoint * mTunEP;
 
-    InetLayer *mInet;                       // [READ ONLY] Associated InetLayer object
+    InetLayer * mInet; // [READ ONLY] Associated InetLayer object
 
     VirtualRouteTable vRouteDB;
 

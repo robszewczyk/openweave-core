@@ -40,82 +40,82 @@ using namespace ::nl::Weave;
 
 enum
 {
-	kEchoMessageType_EchoRequest			= 1,
-	kEchoMessageType_EchoResponse			= 2
+    kEchoMessageType_EchoRequest  = 1,
+    kEchoMessageType_EchoResponse = 2
 };
 
 class NL_DLL_EXPORT WeaveEchoClient
 {
 public:
-	WeaveEchoClient(void);
+    WeaveEchoClient(void);
 
-	const WeaveFabricState *FabricState;	// [READ ONLY] Fabric state object
-	WeaveExchangeManager *ExchangeMgr;		// [READ ONLY] Exchange manager object
-	uint8_t EncryptionType;                         // Encryption type to use when sending an Echo Request
-	uint16_t KeyId;                                 // Encryption key to use when sending an Echo Request
+    const WeaveFabricState * FabricState; // [READ ONLY] Fabric state object
+    WeaveExchangeManager * ExchangeMgr;   // [READ ONLY] Exchange manager object
+    uint8_t EncryptionType;               // Encryption type to use when sending an Echo Request
+    uint16_t KeyId;                       // Encryption key to use when sending an Echo Request
 
-	WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
-	WEAVE_ERROR Shutdown(void);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
+    WEAVE_ERROR Shutdown(void);
 
-	WEAVE_ERROR SendEchoRequest(WeaveConnection *con, PacketBuffer *payload);
-    WEAVE_ERROR SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-	WEAVE_ERROR SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port, InterfaceId sendIntfId, PacketBuffer *payload);
+    WEAVE_ERROR SendEchoRequest(WeaveConnection * con, PacketBuffer * payload);
+    WEAVE_ERROR SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+    WEAVE_ERROR SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port, InterfaceId sendIntfId, PacketBuffer * payload);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-	void SetRequestAck(bool requestAck);
-	void SetWRMPACKDelay(uint16_t aWRMPACKDelay);
-	void SetWRMPRetransInterval(uint32_t aRetransInterval);
-	void SetWRMPRetransCount(uint8_t aRetransCount);
-	typedef void (*EchoAckFunct)(void *msgCtxt);
-	EchoAckFunct OnAckRcvdReceived;
+    void SetRequestAck(bool requestAck);
+    void SetWRMPACKDelay(uint16_t aWRMPACKDelay);
+    void SetWRMPRetransInterval(uint32_t aRetransInterval);
+    void SetWRMPRetransCount(uint8_t aRetransCount);
+    typedef void (*EchoAckFunct)(void * msgCtxt);
+    EchoAckFunct OnAckRcvdReceived;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-	typedef void (*EchoFunct)(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-	EchoFunct OnEchoResponseReceived;
+    typedef void (*EchoFunct)(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+    EchoFunct OnEchoResponseReceived;
 
 private:
-	ExchangeContext *ExchangeCtx;			// The exchange context for the most recently started Echo exchange.
+    ExchangeContext * ExchangeCtx; // The exchange context for the most recently started Echo exchange.
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-	bool RequestAck;
-        bool AckReceived;
-        bool ResponseReceived;
-	uint16_t WRMPACKDelay;
-	uint32_t WRMPRetransInterval;
-	uint8_t WRMPRetransCount;
-	uint32_t appContext;
-	static void HandleAckRcvd(ExchangeContext *ec, void *msgCtxt);
+    bool RequestAck;
+    bool AckReceived;
+    bool ResponseReceived;
+    uint16_t WRMPACKDelay;
+    uint32_t WRMPRetransInterval;
+    uint8_t WRMPRetransCount;
+    uint32_t appContext;
+    static void HandleAckRcvd(ExchangeContext * ec, void * msgCtxt);
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-	static void HandleError(ExchangeContext *ec, WEAVE_ERROR err);
-	static void HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
-	static void HandleSendError(ExchangeContext *ec, WEAVE_ERROR sendErr, void *msgCtxt);
-	static void HandleKeyError(ExchangeContext *ec, WEAVE_ERROR keyErr);
+    static void HandleError(ExchangeContext * ec, WEAVE_ERROR err);
+    static void HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
+    static void HandleSendError(ExchangeContext * ec, WEAVE_ERROR sendErr, void * msgCtxt);
+    static void HandleKeyError(ExchangeContext * ec, WEAVE_ERROR keyErr);
 
-	WEAVE_ERROR SendEchoRequest(PacketBuffer *payload);
-	static void HandleResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-	WeaveEchoClient(const WeaveEchoClient&);   // not defined
+    WEAVE_ERROR SendEchoRequest(PacketBuffer * payload);
+    static void HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    WeaveEchoClient(const WeaveEchoClient &); // not defined
 };
-
 
 class NL_DLL_EXPORT WeaveEchoServer : public WeaveServerBase
 {
 public:
-	WeaveEchoServer(void);
+    WeaveEchoServer(void);
 
-	WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
-	WEAVE_ERROR Shutdown(void);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
+    WEAVE_ERROR Shutdown(void);
 
-	typedef void (*EchoFunct)(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-	EchoFunct OnEchoRequestReceived;
+    typedef void (*EchoFunct)(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+    EchoFunct OnEchoRequestReceived;
 
 private:
-	static void HandleEchoRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                  uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-	WeaveEchoServer(const WeaveEchoServer&);   // not defined
+    WeaveEchoServer(const WeaveEchoServer &); // not defined
 };
 
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_ECHO_CURRENT_H_

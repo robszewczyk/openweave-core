@@ -43,64 +43,65 @@ using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::Profiles::Security::PASE;
 using System::PacketBuffer;
 
-#define SuccessOrQuit(ERR, MSG) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        fputs(ErrorStr(ERR), stderr); \
-        fputs("\n", stderr); \
-        exit(-1); \
-    } \
-} while (0)
+#define SuccessOrQuit(ERR, MSG)                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            fputs(ErrorStr(ERR), stderr);                                                                                          \
+            fputs("\n", stderr);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrFinish(ERR) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        goto cleanUp; \
-    } \
-} while (0)
+#define SuccessOrFinish(ERR)                                                                                                       \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            goto cleanUp;                                                                                                          \
+        }                                                                                                                          \
+    } while (0)
 
 #ifdef WEAVE_FUZZING_ENABLED
-extern "C"
+extern "C" {
+int RAND_bytes(unsigned char * buf, int num)
 {
-    int RAND_bytes(unsigned char *buf, int num)
-    {
-        memset(buf, 'A', num);
-        return 1;
-    }
+    memset(buf, 'A', num);
+    return 1;
+}
 }
 #endif // WEAVE_FUZZING_ENABLED
 
-static const char testName[] = "Message Substitution Fuzzing";
+static const char testName[]     = "Message Substitution Fuzzing";
 static const char testPassword[] = "TestPassword";
 
-//Assume the user compiled with clang > 6.0
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+// Assume the user compiled with clang > 6.0
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t * data, size_t size)
 {
-    if (size > 0) {
-        MessageExternalFuzzer fuzzer = MessageExternalFuzzer(INITIATOR_STEP_1)
-            .FuzzInput(data, size);
+    if (size > 0)
+    {
+        MessageExternalFuzzer fuzzer = MessageExternalFuzzer(INITIATOR_STEP_1).FuzzInput(data, size);
 
         PASEEngineTest(testName)
-                .Mutator(&fuzzer)
-                .InitiatorPassword(testPassword)
-                .ResponderPassword(testPassword)
-                .ProposedConfig(kPASEConfig_Config1)
-                .ResponderAllowedConfigs(kPASEConfig_Config1)
-                .ConfirmKey(true)
-                .LogMessageData(false)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_MESSAGE_INCOMPLETE)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_INVALID_PASE_PARAMETER)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_INVALID_MESSAGE_LENGTH)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_INVALID_ARGUMENT)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_NO_COMMON_PASE_CONFIGURATIONS)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_PASE_RECONFIGURE_REQUIRED)
-                .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_NO_MEMORY)
-                .Run();
+            .Mutator(&fuzzer)
+            .InitiatorPassword(testPassword)
+            .ResponderPassword(testPassword)
+            .ProposedConfig(kPASEConfig_Config1)
+            .ResponderAllowedConfigs(kPASEConfig_Config1)
+            .ConfirmKey(true)
+            .LogMessageData(false)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_MESSAGE_INCOMPLETE)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_INVALID_PASE_PARAMETER)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_INVALID_MESSAGE_LENGTH)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_INVALID_ARGUMENT)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_NO_COMMON_PASE_CONFIGURATIONS)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_PASE_RECONFIGURE_REQUIRED)
+            .ExpectError(INITIATOR_STEP_1, WEAVE_ERROR_NO_MEMORY)
+            .Run();
     }
     return 0;
 }
@@ -109,7 +110,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 // the linker.  Even though the resultant application does nothing, being able to link
 // it confirms that the fuzzing tests can be built successfully.
 #ifndef WEAVE_FUZZING_ENABLED
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     return 0;
 }

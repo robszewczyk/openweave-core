@@ -35,13 +35,13 @@ class ConfigurationManagerImpl;
 namespace Internal {
 class DeviceNetworkInfo;
 class DeviceControlServer;
-template<class> class GenericPlatformManagerImpl;
-template<class> class GenericPlatformManagerImpl_FreeRTOS;
-template<class> class GenericConnectivityManagerImpl_Thread;
-template<class> class GenericThreadStackManagerImpl_OpenThread;
-template<class> class GenericThreadStackManagerImpl_OpenThread_LwIP;
-template<class> class GenericThreadStackManagerImpl_FreeRTOS;
-template<class> class GenericNetworkProvisioningServerImpl;
+template <class> class GenericPlatformManagerImpl;
+template <class> class GenericPlatformManagerImpl_FreeRTOS;
+template <class> class GenericConnectivityManagerImpl_Thread;
+template <class> class GenericThreadStackManagerImpl_OpenThread;
+template <class> class GenericThreadStackManagerImpl_OpenThread_LwIP;
+template <class> class GenericThreadStackManagerImpl_FreeRTOS;
+template <class> class GenericNetworkProvisioningServerImpl;
 } // namespace Internal
 
 /**
@@ -53,7 +53,6 @@ class ThreadStackManager
     using ImplClass = ThreadStackManagerImpl;
 
 public:
-
     // ===== Members that define the public interface of the ThreadStackManager
 
     WEAVE_ERROR InitThreadStack(void);
@@ -66,24 +65,23 @@ public:
     WEAVE_ERROR GetAndLogThreadStatsCounters(void);
     WEAVE_ERROR GetAndLogThreadTopologyMinimal(void);
     WEAVE_ERROR GetAndLogThreadTopologyFull(void);
-    WEAVE_ERROR GetPrimary802154MACAddress(uint8_t *buf);
+    WEAVE_ERROR GetPrimary802154MACAddress(uint8_t * buf);
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend class PlatformManagerImpl;
     friend class ConfigurationManagerImpl;
     friend class Internal::BLEManagerImpl;
     friend class Internal::DeviceControlServer;
-    template<class> friend class Internal::GenericPlatformManagerImpl;
-    template<class> friend class Internal::GenericConfigurationManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
-    template<class> friend class Internal::GenericConnectivityManagerImpl_Thread;
-    template<class> friend class Internal::GenericThreadStackManagerImpl_OpenThread;
-    template<class> friend class Internal::GenericThreadStackManagerImpl_OpenThread_LwIP;
-    template<class> friend class Internal::GenericThreadStackManagerImpl_FreeRTOS;
-    template<class> friend class Internal::GenericNetworkProvisioningServerImpl;
+    template <class> friend class Internal::GenericPlatformManagerImpl;
+    template <class> friend class Internal::GenericConfigurationManagerImpl;
+    template <class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
+    template <class> friend class Internal::GenericConnectivityManagerImpl_Thread;
+    template <class> friend class Internal::GenericThreadStackManagerImpl_OpenThread;
+    template <class> friend class Internal::GenericThreadStackManagerImpl_OpenThread_LwIP;
+    template <class> friend class Internal::GenericThreadStackManagerImpl_FreeRTOS;
+    template <class> friend class Internal::GenericNetworkProvisioningServerImpl;
 
     void OnPlatformEvent(const WeaveDeviceEvent * event);
     bool IsThreadEnabled(void);
@@ -103,15 +101,14 @@ private:
     void OnWoBLEAdvertisingStop(void);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    ThreadStackManager() = default;
+    ThreadStackManager()  = default;
     ~ThreadStackManager() = default;
 
     // No copy, move or assignment.
-    ThreadStackManager(const ThreadStackManager &) = delete;
+    ThreadStackManager(const ThreadStackManager &)  = delete;
     ThreadStackManager(const ThreadStackManager &&) = delete;
-    ThreadStackManager & operator=(const ThreadStackManager &) = delete;
+    ThreadStackManager & operator =(const ThreadStackManager &) = delete;
 };
 
 /**
@@ -150,32 +147,32 @@ namespace DeviceLayer {
 
 inline WEAVE_ERROR ThreadStackManager::InitThreadStack()
 {
-    return static_cast<ImplClass*>(this)->_InitThreadStack();
+    return static_cast<ImplClass *>(this)->_InitThreadStack();
 }
 
 inline void ThreadStackManager::ProcessThreadActivity()
 {
-    static_cast<ImplClass*>(this)->_ProcessThreadActivity();
+    static_cast<ImplClass *>(this)->_ProcessThreadActivity();
 }
 
 inline WEAVE_ERROR ThreadStackManager::StartThreadTask()
 {
-    return static_cast<ImplClass*>(this)->_StartThreadTask();
+    return static_cast<ImplClass *>(this)->_StartThreadTask();
 }
 
 inline void ThreadStackManager::LockThreadStack()
 {
-    static_cast<ImplClass*>(this)->_LockThreadStack();
+    static_cast<ImplClass *>(this)->_LockThreadStack();
 }
 
 inline bool ThreadStackManager::TryLockThreadStack()
 {
-    return static_cast<ImplClass*>(this)->_TryLockThreadStack();
+    return static_cast<ImplClass *>(this)->_TryLockThreadStack();
 }
 
 inline void ThreadStackManager::UnlockThreadStack()
 {
-    static_cast<ImplClass*>(this)->_UnlockThreadStack();
+    static_cast<ImplClass *>(this)->_UnlockThreadStack();
 }
 
 /**
@@ -183,107 +180,107 @@ inline void ThreadStackManager::UnlockThreadStack()
  */
 inline bool ThreadStackManager::HaveRouteToAddress(const IPAddress & destAddr)
 {
-    return static_cast<ImplClass*>(this)->_HaveRouteToAddress(destAddr);
+    return static_cast<ImplClass *>(this)->_HaveRouteToAddress(destAddr);
 }
 
 inline void ThreadStackManager::OnPlatformEvent(const WeaveDeviceEvent * event)
 {
-    static_cast<ImplClass*>(this)->_OnPlatformEvent(event);
+    static_cast<ImplClass *>(this)->_OnPlatformEvent(event);
 }
 
 inline bool ThreadStackManager::IsThreadEnabled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadEnabled();
+    return static_cast<ImplClass *>(this)->_IsThreadEnabled();
 }
 
 inline WEAVE_ERROR ThreadStackManager::SetThreadEnabled(bool val)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadEnabled(val);
+    return static_cast<ImplClass *>(this)->_SetThreadEnabled(val);
 }
 
 inline bool ThreadStackManager::IsThreadProvisioned(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadProvisioned();
+    return static_cast<ImplClass *>(this)->_IsThreadProvisioned();
 }
 
 inline bool ThreadStackManager::IsThreadAttached(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadAttached();
+    return static_cast<ImplClass *>(this)->_IsThreadAttached();
 }
 
 inline WEAVE_ERROR ThreadStackManager::GetThreadProvision(Internal::DeviceNetworkInfo & netInfo, bool includeCredentials)
 {
-    return static_cast<ImplClass*>(this)->_GetThreadProvision(netInfo, includeCredentials);
+    return static_cast<ImplClass *>(this)->_GetThreadProvision(netInfo, includeCredentials);
 }
 
 inline WEAVE_ERROR ThreadStackManager::SetThreadProvision(const Internal::DeviceNetworkInfo & netInfo)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadProvision(netInfo);
+    return static_cast<ImplClass *>(this)->_SetThreadProvision(netInfo);
 }
 
 inline void ThreadStackManager::ClearThreadProvision(void)
 {
-    static_cast<ImplClass*>(this)->_ClearThreadProvision();
+    static_cast<ImplClass *>(this)->_ClearThreadProvision();
 }
 
 inline ConnectivityManager::ThreadDeviceType ThreadStackManager::GetThreadDeviceType(void)
 {
-    return static_cast<ImplClass*>(this)->_GetThreadDeviceType();
+    return static_cast<ImplClass *>(this)->_GetThreadDeviceType();
 }
 
 inline WEAVE_ERROR ThreadStackManager::SetThreadDeviceType(ConnectivityManager::ThreadDeviceType deviceType)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadDeviceType(deviceType);
+    return static_cast<ImplClass *>(this)->_SetThreadDeviceType(deviceType);
 }
 
 inline void ThreadStackManager::GetThreadPollingConfig(ConnectivityManager::ThreadPollingConfig & pollingConfig)
 {
-    static_cast<ImplClass*>(this)->_GetThreadPollingConfig(pollingConfig);
+    static_cast<ImplClass *>(this)->_GetThreadPollingConfig(pollingConfig);
 }
 
 inline WEAVE_ERROR ThreadStackManager::SetThreadPollingConfig(const ConnectivityManager::ThreadPollingConfig & pollingConfig)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadPollingConfig(pollingConfig);
+    return static_cast<ImplClass *>(this)->_SetThreadPollingConfig(pollingConfig);
 }
 
 inline bool ThreadStackManager::HaveMeshConnectivity(void)
 {
-    return static_cast<ImplClass*>(this)->_HaveMeshConnectivity();
+    return static_cast<ImplClass *>(this)->_HaveMeshConnectivity();
 }
 
 inline void ThreadStackManager::OnMessageLayerActivityChanged(bool messageLayerIsActive)
 {
-    return static_cast<ImplClass*>(this)->_OnMessageLayerActivityChanged(messageLayerIsActive);
+    return static_cast<ImplClass *>(this)->_OnMessageLayerActivityChanged(messageLayerIsActive);
 }
 
 inline void ThreadStackManager::OnWoBLEAdvertisingStart(void)
 {
-    static_cast<ImplClass*>(this)->_OnWoBLEAdvertisingStart();
+    static_cast<ImplClass *>(this)->_OnWoBLEAdvertisingStart();
 }
 
 inline void ThreadStackManager::OnWoBLEAdvertisingStop(void)
 {
-    static_cast<ImplClass*>(this)->_OnWoBLEAdvertisingStop();
+    static_cast<ImplClass *>(this)->_OnWoBLEAdvertisingStop();
 }
 
 inline WEAVE_ERROR ThreadStackManager::GetAndLogThreadStatsCounters(void)
 {
-    return static_cast<ImplClass*>(this)->_GetAndLogThreadStatsCounters();
+    return static_cast<ImplClass *>(this)->_GetAndLogThreadStatsCounters();
 }
 
 inline WEAVE_ERROR ThreadStackManager::GetAndLogThreadTopologyMinimal(void)
 {
-    return static_cast<ImplClass*>(this)->_GetAndLogThreadTopologyMinimal();
+    return static_cast<ImplClass *>(this)->_GetAndLogThreadTopologyMinimal();
 }
 
 inline WEAVE_ERROR ThreadStackManager::GetAndLogThreadTopologyFull(void)
 {
-    return static_cast<ImplClass*>(this)->_GetAndLogThreadTopologyFull();
+    return static_cast<ImplClass *>(this)->_GetAndLogThreadTopologyFull();
 }
 
 inline WEAVE_ERROR ThreadStackManager::GetPrimary802154MACAddress(uint8_t * buf)
 {
-    return static_cast<ImplClass*>(this)->_GetPrimary802154MACAddress(buf);
+    return static_cast<ImplClass *>(this)->_GetPrimary802154MACAddress(buf);
 }
 
 } // namespace DeviceLayer

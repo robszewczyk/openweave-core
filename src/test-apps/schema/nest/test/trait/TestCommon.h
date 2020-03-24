@@ -30,20 +30,17 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Nest {
 namespace Test {
 namespace Trait {
 namespace TestCommon {
 
-  extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
+extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-  //
-  // Event Structs
-  //
-
+//
+// Event Structs
+//
 
 struct CommonStructE
 {
@@ -51,32 +48,30 @@ struct CommonStructE
     bool seB;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct CommonStructE_array {
+struct CommonStructE_array
+{
     uint32_t num;
-    CommonStructE *buf;
+    CommonStructE * buf;
 };
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-      enum CommonEnumA {
+enum CommonEnumA
+{
     COMMON_ENUM_A_VALUE_1 = 1,
     COMMON_ENUM_A_VALUE_2 = 2,
     COMMON_ENUM_A_VALUE_3 = 3,
 };
-      enum CommonEnumE {
+enum CommonEnumE
+{
     COMMON_ENUM_E_VALUE_1 = 1,
     COMMON_ENUM_E_VALUE_2 = 2,
     COMMON_ENUM_E_VALUE_3 = 3,
 };
-
 
 } // namespace TestCommon
 

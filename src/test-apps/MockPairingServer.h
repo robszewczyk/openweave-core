@@ -38,17 +38,17 @@ class MockPairingServer
 public:
     MockPairingServer();
 
-    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
 private:
-    nl::Weave::WeaveExchangeManager *mExchangeMgr;
+    nl::Weave::WeaveExchangeManager * mExchangeMgr;
 
     WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
-    static void HandleClientRequest(nl::Weave::ExchangeContext *ec, const nl::Inet::IPPacketInfo *addrInfo,
-                                    const nl::Weave::WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                    uint8_t msgType, PacketBuffer *payload);
+    static void HandleClientRequest(nl::Weave::ExchangeContext * ec, const nl::Inet::IPPacketInfo * addrInfo,
+                                    const nl::Weave::WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                    PacketBuffer * payload);
 };
 
 #endif /* MOCKPAIRINGENDPOINT_H_ */

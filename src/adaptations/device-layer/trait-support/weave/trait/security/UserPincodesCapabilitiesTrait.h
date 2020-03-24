@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace UserPincodesCapabilitiesTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe0dU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe0dU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//

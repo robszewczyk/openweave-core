@@ -43,21 +43,21 @@
 
 std::map<std::string, std::string> sPersistentStore;
 
-FILE *sPersistentStoreFile = NULL;
+FILE * sPersistentStoreFile = NULL;
 
 namespace nl {
 namespace Weave {
 namespace Platform {
 namespace PersistedStorage {
 
-static void RemoveEndOfLineSymbol(char *str)
+static void RemoveEndOfLineSymbol(char * str)
 {
     size_t len = strlen(str) - 1;
     if (str[len] == '\n')
         str[len] = '\0';
 }
 
-static WEAVE_ERROR GetCounterValueFromFile(const char *aKey, uint32_t &aValue)
+static WEAVE_ERROR GetCounterValueFromFile(const char * aKey, uint32_t & aValue)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     char key[WEAVE_CONFIG_PERSISTED_STORAGE_MAX_KEY_LENGTH];
@@ -93,7 +93,7 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR SaveCounterValueToFile(const char *aKey, uint32_t aValue)
+static WEAVE_ERROR SaveCounterValueToFile(const char * aKey, uint32_t aValue)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     int res;
@@ -135,14 +135,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR Read(const char *aKey, uint32_t &aValue)
+WEAVE_ERROR Read(const char * aKey, uint32_t & aValue)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     std::map<std::string, std::string>::iterator it;
 
     VerifyOrExit(aKey != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(strlen(aKey) <= WEAVE_CONFIG_PERSISTED_STORAGE_MAX_KEY_LENGTH,
-                 err = WEAVE_ERROR_INVALID_STRING_LENGTH);
+    VerifyOrExit(strlen(aKey) <= WEAVE_CONFIG_PERSISTED_STORAGE_MAX_KEY_LENGTH, err = WEAVE_ERROR_INVALID_STRING_LENGTH);
 
     if (sPersistentStoreFile)
     {
@@ -153,7 +152,7 @@ WEAVE_ERROR Read(const char *aKey, uint32_t &aValue)
         it = sPersistentStore.find(aKey);
         VerifyOrExit(it != sPersistentStore.end(), err = WEAVE_ERROR_PERSISTED_STORAGE_VALUE_NOT_FOUND);
 
-        size_t aValueLength = Base64Decode(it->second.c_str(), strlen(it->second.c_str()), (uint8_t *)&aValue);
+        size_t aValueLength = Base64Decode(it->second.c_str(), strlen(it->second.c_str()), (uint8_t *) &aValue);
         VerifyOrExit(aValueLength == sizeof(uint32_t), err = WEAVE_ERROR_PERSISTED_STORAGE_FAIL);
     }
 
@@ -161,13 +160,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR Write(const char *aKey, uint32_t aValue)
+WEAVE_ERROR Write(const char * aKey, uint32_t aValue)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit(aKey != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(strlen(aKey) <= WEAVE_CONFIG_PERSISTED_STORAGE_MAX_KEY_LENGTH,
-                 err = WEAVE_ERROR_INVALID_STRING_LENGTH);
+    VerifyOrExit(strlen(aKey) <= WEAVE_CONFIG_PERSISTED_STORAGE_MAX_KEY_LENGTH, err = WEAVE_ERROR_INVALID_STRING_LENGTH);
 
     if (sPersistentStoreFile)
     {
@@ -178,7 +176,7 @@ WEAVE_ERROR Write(const char *aKey, uint32_t aValue)
         char encodedValue[BASE64_ENCODED_LEN(sizeof(uint32_t)) + 1];
 
         memset(encodedValue, 0, sizeof(encodedValue));
-        Base64Encode((uint8_t *)&aValue, sizeof(aValue), encodedValue);
+        Base64Encode((uint8_t *) &aValue, sizeof(aValue), encodedValue);
 
         sPersistentStore[aKey] = encodedValue;
     }
@@ -187,7 +185,7 @@ exit:
     return err;
 }
 
-} // PersistentStorage
-} // Platform
-} // Weave
-} // nl
+} // namespace PersistedStorage
+} // namespace Platform
+} // namespace Weave
+} // namespace nl

@@ -34,7 +34,6 @@
 #include <weave/trait/power/PowerSourceCapabilitiesTrait.h>
 #include <weave/trait/power/PowerSourceTrait.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -43,15 +42,17 @@ namespace BatteryPowerSourceTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1cU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1cU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -59,7 +60,7 @@ enum {
     //---------------------------------------------------------------------------------------------------------------------------//
 
     //
-    //  type                                weave.trait.power.PowerSourceCapabilitiesTrait.PowerSourceType int               NO              NO
+    //  type                                weave.trait.power.PowerSourceCapabilitiesTrait.PowerSourceType int               NO NO
     //
     kPropertyHandle_Type = 2,
 
@@ -79,12 +80,12 @@ enum {
     kPropertyHandle_AssessedFrequency = 5,
 
     //
-    //  condition                           weave.trait.power.PowerSourceTrait.PowerSourceCondition int               NO              NO
+    //  condition                           weave.trait.power.PowerSourceTrait.PowerSourceCondition int               NO NO
     //
     kPropertyHandle_Condition = 6,
 
     //
-    //  status                              weave.trait.power.PowerSourceTrait.PowerSourceStatus int               NO              NO
+    //  status                              weave.trait.power.PowerSourceTrait.PowerSourceStatus int               NO NO
     //
     kPropertyHandle_Status = 7,
 
@@ -147,15 +148,15 @@ struct BatteryRemaining
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsRemainingTimePresent(void);
 #endif
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct BatteryRemaining_array {
+struct BatteryRemaining_array
+{
     uint32_t num;
-    BatteryRemaining *buf;
+    BatteryRemaining * buf;
 };
 
 inline void BatteryRemaining::SetRemainingPercentNull(void)
@@ -203,27 +204,29 @@ struct BatteryChangedEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x1cU,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x1cU,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct BatteryChangedEvent_array {
+struct BatteryChangedEvent_array
+{
     uint32_t num;
-    BatteryChangedEvent *buf;
+    BatteryChangedEvent * buf;
 };
-
 
 //
 // Enums
 //
 
-enum BatteryReplacementIndicator {
-    BATTERY_REPLACEMENT_INDICATOR_NOT_AT_ALL = 1,
-    BATTERY_REPLACEMENT_INDICATOR_SOON = 2,
+enum BatteryReplacementIndicator
+{
+    BATTERY_REPLACEMENT_INDICATOR_NOT_AT_ALL  = 1,
+    BATTERY_REPLACEMENT_INDICATOR_SOON        = 2,
     BATTERY_REPLACEMENT_INDICATOR_IMMEDIATELY = 3,
 };
 

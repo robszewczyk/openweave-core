@@ -32,44 +32,40 @@
 
 #define TOOL_NAME "TestWeaveMessageLayer"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 static void DriveSending();
-static PacketBuffer *MakeWeaveMessage(WeaveMessageInfo *msgInfo);
-static void HandleMessageReceived(WeaveMessageLayer *msgLayer, WeaveMessageInfo *msgInfo, PacketBuffer *payload);
-static void HandleMessageReceived(WeaveConnection *con, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-static void HandleReceiveError(WeaveMessageLayer *msgLayer, WEAVE_ERROR err, const IPPacketInfo *pktInfo);
-static void HandleReceiveError(WeaveConnection *con, WEAVE_ERROR err);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleOutboundConnectionClosed(WeaveConnection *con, WEAVE_ERROR err);
-static void HandleInboundConnectionClosed(WeaveConnection *con, WEAVE_ERROR err);
-
+static PacketBuffer * MakeWeaveMessage(WeaveMessageInfo * msgInfo);
+static void HandleMessageReceived(WeaveMessageLayer * msgLayer, WeaveMessageInfo * msgInfo, PacketBuffer * payload);
+static void HandleMessageReceived(WeaveConnection * con, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf);
+static void HandleReceiveError(WeaveMessageLayer * msgLayer, WEAVE_ERROR err, const IPPacketInfo * pktInfo);
+static void HandleReceiveError(WeaveConnection * con, WEAVE_ERROR err);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleOutboundConnectionClosed(WeaveConnection * con, WEAVE_ERROR err);
+static void HandleInboundConnectionClosed(WeaveConnection * con, WEAVE_ERROR err);
 
 bool SendMsgs = false;
 uint64_t DestNodeId;
-IPAddress DestAddr = IPAddress::Any;
+IPAddress DestAddr    = IPAddress::Any;
 uint64_t LastSendTime = 0;
-int32_t MaxSendCount = -1;
-int32_t SendInterval = 1000000;
-int32_t SendLength = -1;
-bool UseTCP = false;
-bool UseSessionKey = false;
+int32_t MaxSendCount  = -1;
+int32_t SendInterval  = 1000000;
+int32_t SendLength    = -1;
+bool UseTCP           = false;
+bool UseSessionKey    = false;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "dest-addr",          kArgumentRequired,  'D' },
-    { "count",              kArgumentRequired,  'c' },
-    { "length",             kArgumentRequired,  'l' },
-    { "interval",           kArgumentRequired,  'i' },
-    { "tcp",                kNoArgument,        't' },
+static OptionDef gToolOptionDefs[] = { { "dest-addr", kArgumentRequired, 'D' },
+                                       { "count", kArgumentRequired, 'c' },
+                                       { "length", kArgumentRequired, 'l' },
+                                       { "interval", kArgumentRequired, 'i' },
+                                       { "tcp", kNoArgument, 't' },
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-    { "use-session-key",    kNoArgument,        'S' },
+                                       { "use-session-key", kNoArgument, 'S' },
 #endif
-    { }
-};
+                                       { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -D, --dest-addr <dest-node-ip-addr>\n"
     "       Send weave messages to a specific IPv4/IPv6 address rather than one\n"
     "       derived the destination node id.\n"
@@ -93,31 +89,15 @@ static const char *gToolOptionHelp =
 #endif
     "";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options>] <dest-node-id>\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options>] <dest-node-id>\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     SetSIGUSR1Handler();
 
@@ -137,8 +117,8 @@ int main(int argc, char *argv[])
     if (DestAddr == IPAddress::Any)
         DestAddr = FabricState.SelectNodeAddress(DestNodeId);
 
-    MessageLayer.OnMessageReceived = HandleMessageReceived;
-    MessageLayer.OnReceiveError = HandleReceiveError;
+    MessageLayer.OnMessageReceived    = HandleMessageReceived;
+    MessageLayer.OnReceiveError       = HandleReceiveError;
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
 
     PrintNodeConfig();
@@ -149,7 +129,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -165,18 +145,14 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-    case 'S':
-        UseSessionKey = true;
-        break;
+    case 'S': UseSessionKey = true; break;
 #endif
-    case 't':
-        UseTCP = true;
-        break;
+    case 't': UseTCP = true; break;
     case 'c':
         if (!ParseInt(arg, MaxSendCount) || MaxSendCount < 0)
         {
@@ -206,15 +182,13 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -238,13 +212,13 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
 
 void DriveSending()
 {
-    static WeaveConnection* con         = NULL;
-    static int              sendCount   = 0;
+    static WeaveConnection * con = NULL;
+    static int sendCount         = 0;
 
-    WEAVE_ERROR             res;
-    PacketBuffer*           msgBuf;
-    WeaveMessageInfo        msgInfo;
-    bool                    isTimeToSend;
+    WEAVE_ERROR res;
+    PacketBuffer * msgBuf;
+    WeaveMessageInfo msgInfo;
+    bool isTimeToSend;
 
     isTimeToSend = (Now() >= LastSendTime + SendInterval);
     if (!isTimeToSend)
@@ -277,11 +251,11 @@ void DriveSending()
 
         if (con == NULL)
         {
-            con = MessageLayer.NewConnection();
+            con                       = MessageLayer.NewConnection();
             con->OnConnectionComplete = HandleConnectionComplete;
-            con->OnConnectionClosed = HandleOutboundConnectionClosed;
-            con->OnMessageReceived = HandleMessageReceived;
-            con->OnReceiveError = HandleReceiveError;
+            con->OnConnectionClosed   = HandleOutboundConnectionClosed;
+            con->OnMessageReceived    = HandleMessageReceived;
+            con->OnReceiveError       = HandleReceiveError;
 
             res = con->Connect(DestNodeId, DestAddr);
             if (res != WEAVE_NO_ERROR)
@@ -300,7 +274,7 @@ void DriveSending()
         if (UseSessionKey)
         {
             msgInfo.EncryptionType = kWeaveEncryptionType_AES128CTRSHA1;
-            msgInfo.KeyId = sTestDefaultTCPSessionKeyId;
+            msgInfo.KeyId          = sTestDefaultTCPSessionKeyId;
         }
 
         sendCount++;
@@ -321,7 +295,7 @@ void DriveSending()
         if (UseSessionKey)
         {
             msgInfo.EncryptionType = kWeaveEncryptionType_AES128CTRSHA1;
-            msgInfo.KeyId = sTestDefaultUDPSessionKeyId;
+            msgInfo.KeyId          = sTestDefaultUDPSessionKeyId;
         }
 
         sendCount++;
@@ -344,9 +318,9 @@ void DriveSending()
     }
 }
 
-PacketBuffer *MakeWeaveMessage(WeaveMessageInfo *msgInfo)
+PacketBuffer * MakeWeaveMessage(WeaveMessageInfo * msgInfo)
 {
-    PacketBuffer *msgBuf;
+    PacketBuffer * msgBuf;
 
     static uint16_t lastMsgNum = 0;
 
@@ -354,7 +328,7 @@ PacketBuffer *MakeWeaveMessage(WeaveMessageInfo *msgInfo)
     if (msgBuf == NULL)
         return NULL;
 
-    char *p = (char *) msgBuf->Start();
+    char * p     = (char *) msgBuf->Start();
     uint16_t len = (uint16_t) sprintf(p, "This is weave message %ld\n", (long) ++lastMsgNum);
 
     if (SendLength > msgBuf->MaxDataLength())
@@ -379,29 +353,23 @@ PacketBuffer *MakeWeaveMessage(WeaveMessageInfo *msgInfo)
 
     msgInfo->Clear();
     msgInfo->MessageVersion = kWeaveMessageVersion_V1;
-    msgInfo->Flags = 0;
-    msgInfo->SourceNodeId = FabricState.LocalNodeId;
-    msgInfo->DestNodeId = DestNodeId;
+    msgInfo->Flags          = 0;
+    msgInfo->SourceNodeId   = FabricState.LocalNodeId;
+    msgInfo->DestNodeId     = DestNodeId;
     msgInfo->EncryptionType = kWeaveEncryptionType_None;
-    msgInfo->KeyId = WeaveKeyId::kNone;
+    msgInfo->KeyId          = WeaveKeyId::kNone;
 
     return msgBuf;
 }
 
-void HandleMessageReceived(WeaveMessageLayer *msgLayer, WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+void HandleMessageReceived(WeaveMessageLayer * msgLayer, WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
-    const char *encType;
+    const char * encType;
     switch (msgInfo->EncryptionType)
     {
-    case kWeaveEncryptionType_None:
-        encType = "none";
-        break;
-    case kWeaveEncryptionType_AES128CTRSHA1:
-        encType = "AES-128-CTR-SHA1";
-        break;
-    default:
-        encType = "unknown";
-        break;
+    case kWeaveEncryptionType_None: encType = "none"; break;
+    case kWeaveEncryptionType_AES128CTRSHA1: encType = "AES-128-CTR-SHA1"; break;
+    default: encType = "unknown"; break;
     }
 
     char nodeAddrStr[64];
@@ -416,31 +384,31 @@ void HandleMessageReceived(WeaveMessageLayer *msgLayer, WeaveMessageInfo *msgInf
         intfStr[1] = 0;
     }
 
-    printf("Weave message received from node %" PRIX64 " ([%s]:%u, %s)\n  Message Id: %u\n  Encryption Type: %s\n  Key id: %04X\n  Payload Length: %u\n  Payload: %.*s\n",
-            msgInfo->SourceNodeId, nodeAddrStr, (unsigned)msgInfo->InPacketInfo->SrcPort, intfStr,
-            msgInfo->MessageId, encType, msgInfo->KeyId,
-            payload->DataLength(), payload->DataLength(), payload->Start());
+    printf("Weave message received from node %" PRIX64
+           " ([%s]:%u, %s)\n  Message Id: %u\n  Encryption Type: %s\n  Key id: %04X\n  Payload Length: %u\n  Payload: %.*s\n",
+           msgInfo->SourceNodeId, nodeAddrStr, (unsigned) msgInfo->InPacketInfo->SrcPort, intfStr, msgInfo->MessageId, encType,
+           msgInfo->KeyId, payload->DataLength(), payload->DataLength(), payload->Start());
 
     // Release the message buffer.
     PacketBuffer::Free(payload);
 }
 
-void HandleMessageReceived(WeaveConnection *con, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf)
+void HandleMessageReceived(WeaveConnection * con, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     HandleMessageReceived(&MessageLayer, msgInfo, msgBuf);
 }
 
-void HandleReceiveError(WeaveMessageLayer *msgLayer, WEAVE_ERROR err, const IPPacketInfo *pktInfo)
+void HandleReceiveError(WeaveMessageLayer * msgLayer, WEAVE_ERROR err, const IPPacketInfo * pktInfo)
 {
     printf("WEAVE MESSAGE RECEIVE ERROR: %s\n", ErrorStr(err));
 }
 
-void HandleReceiveError(WeaveConnection *con, WEAVE_ERROR err)
+void HandleReceiveError(WeaveConnection * con, WEAVE_ERROR err)
 {
     HandleReceiveError(&MessageLayer, err, NULL);
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char nodeAddrStr[64];
     con->PeerAddr.ToString(nodeAddrStr, sizeof(nodeAddrStr));
@@ -448,11 +416,11 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     printf("Connection received from node %" PRIX64 " (%s)\n", con->PeerNodeId, nodeAddrStr);
 
     con->OnConnectionClosed = HandleInboundConnectionClosed;
-    con->OnMessageReceived = HandleMessageReceived;
-    con->OnReceiveError = HandleReceiveError;
+    con->OnMessageReceived  = HandleMessageReceived;
+    con->OnReceiveError     = HandleReceiveError;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char nodeAddrStr[64];
     con->PeerAddr.ToString(nodeAddrStr, sizeof(nodeAddrStr));
@@ -466,7 +434,7 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     }
 }
 
-void HandleOutboundConnectionClosed(WeaveConnection *con, WEAVE_ERROR err)
+void HandleOutboundConnectionClosed(WeaveConnection * con, WEAVE_ERROR err)
 {
     char nodeAddrStr[64];
     con->PeerAddr.ToString(nodeAddrStr, sizeof(nodeAddrStr));
@@ -477,7 +445,7 @@ void HandleOutboundConnectionClosed(WeaveConnection *con, WEAVE_ERROR err)
         printf("Connection to node %" PRIX64 " (%s) ABORTED: %s\n", con->PeerNodeId, nodeAddrStr, ErrorStr(err));
 }
 
-void HandleInboundConnectionClosed(WeaveConnection *con, WEAVE_ERROR err)
+void HandleInboundConnectionClosed(WeaveConnection * con, WEAVE_ERROR err)
 {
     HandleOutboundConnectionClosed(con, err);
     con->Close();

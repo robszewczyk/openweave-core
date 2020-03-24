@@ -212,9 +212,9 @@ public:
     static WEAVE_ERROR parse(MessageIterator &, IntegrityTypeList &);
     // comparison
     bool operator ==(const IntegrityTypeList &) const;
-    uint8_t theLength;  /**< Length of the supported element list.  Length of 0 indicates an empty list */
-    uint8_t theList[kIntegrityType_Last]; /**< Container holding supported integrity types.  It is sized equal to the number of elements in @ref
-                           IntegrityTypes */
+    uint8_t theLength;                    /**< Length of the supported element list.  Length of 0 indicates an empty list */
+    uint8_t theList[kIntegrityType_Last]; /**< Container holding supported integrity types.  It is sized equal to the number of
+                           elements in @ref IntegrityTypes */
 };
 
 /**
@@ -237,9 +237,9 @@ public:
     static WEAVE_ERROR parse(MessageIterator &, UpdateSchemeList &);
     // comparison
     bool operator ==(const UpdateSchemeList &) const;
-    uint8_t theLength;  /**< Length of the supported element list.  Length of 0 indicates an empty list */
-    uint8_t theList[kUpdateScheme_Last]; /**< Container holding supported update schemes.  It is sized equal to the number of elements in @ref
-                           UpdateSchemes */
+    uint8_t theLength;                   /**< Length of the supported element list.  Length of 0 indicates an empty list */
+    uint8_t theList[kUpdateScheme_Last]; /**< Container holding supported update schemes.  It is sized equal to the number of
+                           elements in @ref UpdateSchemes */
 };
 
 /**

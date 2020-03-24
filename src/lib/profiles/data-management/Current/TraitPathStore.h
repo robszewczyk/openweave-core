@@ -38,76 +38,81 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
 
 struct TraitPathStore
 {
-    public:
-        enum {
-            kFlag_None       = 0x0,
-            kFlag_InUse      = 0x1,
-            kFlag_Failed     = 0x2, /**< The item is in use, but is not valid anymore.
-                                      */
+public:
+    enum
+    {
+        kFlag_None   = 0x0,
+        kFlag_InUse  = 0x1,
+        kFlag_Failed = 0x2, /**< The item is in use, but is not valid anymore.
+                             */
 
-            kFlag_ReservedFlags = kFlag_InUse | kFlag_Failed,
-        };
-        typedef uint8_t Flags;
+        kFlag_ReservedFlags = kFlag_InUse | kFlag_Failed,
+    };
+    typedef uint8_t Flags;
 
-        struct Record {
-            Flags mFlags;
-            TraitPath mTraitPath;
-        };
+    struct Record
+    {
+        Flags mFlags;
+        TraitPath mTraitPath;
+    };
 
-        TraitPathStore();
+    TraitPathStore();
 
-        void Init(Record *aRecordArray, size_t aNumItems);
+    void Init(Record * aRecordArray, size_t aNumItems);
 
-        bool IsEmpty() { return mNumItems == 0; }
-        bool IsFull() { return mNumItems >= mStoreSize; }
-        size_t GetNumItems() { return mNumItems; }
-        size_t GetPathStoreSize() { return mStoreSize; }
+    bool IsEmpty() { return mNumItems == 0; }
+    bool IsFull() { return mNumItems >= mStoreSize; }
+    size_t GetNumItems() { return mNumItems; }
+    size_t GetPathStoreSize() { return mStoreSize; }
 
-        WEAVE_ERROR AddItem(const TraitPath &aItem);
-        WEAVE_ERROR AddItem(const TraitPath &aItem, Flags aFlags);
-        WEAVE_ERROR AddItemDedup(const TraitPath &aItem, const TraitSchemaEngine * const aSchemaEngine);
-        WEAVE_ERROR InsertItemAt(size_t aIndex, const TraitPath &aItem, Flags aFlags);
-        WEAVE_ERROR InsertItemAfter(size_t aIndex, const TraitPath &aItem, Flags aFlags) { return InsertItemAt(aIndex+1, aItem, aFlags); }
+    WEAVE_ERROR AddItem(const TraitPath & aItem);
+    WEAVE_ERROR AddItem(const TraitPath & aItem, Flags aFlags);
+    WEAVE_ERROR AddItemDedup(const TraitPath & aItem, const TraitSchemaEngine * const aSchemaEngine);
+    WEAVE_ERROR InsertItemAt(size_t aIndex, const TraitPath & aItem, Flags aFlags);
+    WEAVE_ERROR InsertItemAfter(size_t aIndex, const TraitPath & aItem, Flags aFlags)
+    {
+        return InsertItemAt(aIndex + 1, aItem, aFlags);
+    }
 
-        void SetFailed(size_t aIndex) { SetFlags(aIndex, kFlag_Failed, true); }
-        void SetFailed();
-        void SetFailedTrait(TraitDataHandle aDataHandle);
+    void SetFailed(size_t aIndex) { SetFlags(aIndex, kFlag_Failed, true); }
+    void SetFailed();
+    void SetFailedTrait(TraitDataHandle aDataHandle);
 
-        void GetItemAt(size_t aIndex, TraitPath &aTraitPath) { aTraitPath = mStore[aIndex].mTraitPath; }
+    void GetItemAt(size_t aIndex, TraitPath & aTraitPath) { aTraitPath = mStore[aIndex].mTraitPath; }
 
-        size_t GetFirstValidItem() const;
-        size_t GetNextValidItem(size_t i) const;
-        size_t GetFirstValidItem(TraitDataHandle aTraitDataHandle) const;
-        size_t GetNextValidItem(size_t i, TraitDataHandle aTraitDataHandle) const;
+    size_t GetFirstValidItem() const;
+    size_t GetNextValidItem(size_t i) const;
+    size_t GetFirstValidItem(TraitDataHandle aTraitDataHandle) const;
+    size_t GetNextValidItem(size_t i, TraitDataHandle aTraitDataHandle) const;
 
-        void RemoveTrait(TraitDataHandle aDataHandle);
-        void RemoveItemAt(size_t aIndex);
+    void RemoveTrait(TraitDataHandle aDataHandle);
+    void RemoveItemAt(size_t aIndex);
 
-        void Compact();
+    void Compact();
 
-        void Clear();
+    void Clear();
 
-        bool IsPresent(const TraitPath &aItem) const;
-        bool Includes(const TraitPath &aItem, const TraitSchemaEngine * const aSchemaEngine) const;
-        bool Intersects(const TraitPath &aItem, const TraitSchemaEngine * const aSchemaEngine) const;
-        bool IsTraitPresent(TraitDataHandle aDataHandle) const;
-        bool IsItemInUse(size_t aIndex) const { return AreFlagsSet_private(aIndex, kFlag_InUse); }
-        bool IsItemValid(size_t aIndex) const { return (IsItemInUse(aIndex) && (!IsItemFailed(aIndex))); }
-        bool IsItemFailed(size_t aIndex) const { return AreFlagsSet_private(aIndex, kFlag_Failed); }
+    bool IsPresent(const TraitPath & aItem) const;
+    bool Includes(const TraitPath & aItem, const TraitSchemaEngine * const aSchemaEngine) const;
+    bool Intersects(const TraitPath & aItem, const TraitSchemaEngine * const aSchemaEngine) const;
+    bool IsTraitPresent(TraitDataHandle aDataHandle) const;
+    bool IsItemInUse(size_t aIndex) const { return AreFlagsSet_private(aIndex, kFlag_InUse); }
+    bool IsItemValid(size_t aIndex) const { return (IsItemInUse(aIndex) && (!IsItemFailed(aIndex))); }
+    bool IsItemFailed(size_t aIndex) const { return AreFlagsSet_private(aIndex, kFlag_Failed); }
 
-        bool AreFlagsSet(size_t aIndex, Flags aFlags) const;
+    bool AreFlagsSet(size_t aIndex, Flags aFlags) const;
 
-        Record *mStore;
+    Record * mStore;
 
-   private:
-        size_t FindFirstAvailableItem() const;
-        void SetItem(size_t aIndex, const TraitPath &aItem, Flags aFlags);
-        void ClearItem(size_t aIndex);
-        void SetFlags(size_t aIndex, Flags aFlags, bool aValue);
-        bool AreFlagsSet_private(size_t aIndex, Flags aFlags) const { return ((mStore[aIndex].mFlags & aFlags) == aFlags); }
+private:
+    size_t FindFirstAvailableItem() const;
+    void SetItem(size_t aIndex, const TraitPath & aItem, Flags aFlags);
+    void ClearItem(size_t aIndex);
+    void SetFlags(size_t aIndex, Flags aFlags, bool aValue);
+    bool AreFlagsSet_private(size_t aIndex, Flags aFlags) const { return ((mStore[aIndex].mFlags & aFlags) == aFlags); }
 
-        size_t mStoreSize;
-        size_t mNumItems;
+    size_t mStoreSize;
+    size_t mNumItems;
 };
 
 }; // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)

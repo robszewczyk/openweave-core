@@ -40,10 +40,10 @@ using namespace ::nl::Weave::Profiles::Common;
 using namespace ::nl::Weave::Profiles::DataManagement;
 using namespace ::nl::Weave::Profiles::StatusReporting;
 
-WEAVE_ERROR MockDMPublisher::ViewIndication(ExchangeContext *aResponseCtx, ReferencedTLVData &aPathList)
+WEAVE_ERROR MockDMPublisher::ViewIndication(ExchangeContext * aResponseCtx, ReferencedTLVData & aPathList)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buf     = PacketBuffer::New();
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    PacketBuffer * buf = PacketBuffer::New();
 
     StatusReport report;
     ReferencedTLVData dataList;
@@ -93,23 +93,15 @@ WEAVE_ERROR MockDMPublisher::ViewIndication(ExchangeContext *aResponseCtx, Refer
 
             switch (mode)
             {
-                case kFailureMode_CloseConnection:
+            case kFailureMode_CloseConnection:
 
-                    printf("<view indication> failure requested: closing connection\n");
+                printf("<view indication> failure requested: closing connection\n");
 
-                    aResponseCtx->Con->Close();
+                aResponseCtx->Con->Close();
 
-                    break;
-                case kFailureMode_NoResponse:
-
-                    printf("<view indication> failure requested: no response\n");
-
-                    break;
-                default:
-
-                    printf("<view indication> failure requested: invalid request\n");
-
-                    break;
+                break;
+            case kFailureMode_NoResponse: printf("<view indication> failure requested: no response\n"); break;
+            default: printf("<view indication> failure requested: invalid request\n"); break;
             }
 
             err = WEAVE_NO_ERROR;
@@ -142,7 +134,7 @@ WEAVE_ERROR MockDMPublisher::ViewIndication(ExchangeContext *aResponseCtx, Refer
     return err;
 }
 
-WEAVE_ERROR MockDMPublisher::UpdateIndication(ExchangeContext *aResponseCtx, ReferencedTLVData &aDataList)
+WEAVE_ERROR MockDMPublisher::UpdateIndication(ExchangeContext * aResponseCtx, ReferencedTLVData & aDataList)
 {
 
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -195,20 +187,20 @@ exit:
     return err;
 }
 
-void MockDMPublisher::IncompleteIndication(const uint64_t &aPeerNodeId, StatusReport &aReport)
+void MockDMPublisher::IncompleteIndication(const uint64_t & aPeerNodeId, StatusReport & aReport)
 {
     printf("processing: <incomplete indication>\n");
 }
 
 #if WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
 
-WEAVE_ERROR MockDMPublisher::SubscribeIndication(ExchangeContext *aResponseCtx, const TopicIdentifier &aTopicId)
+WEAVE_ERROR MockDMPublisher::SubscribeIndication(ExchangeContext * aResponseCtx, const TopicIdentifier & aTopicId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     uint8_t dataBuf[kTestBufferSize];
     ReferencedTLVData dataList;
-    ReferencedTLVData *pDataList = NULL;
+    ReferencedTLVData * pDataList = NULL;
 
     TLVWriter writer;
 
@@ -292,7 +284,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MockDMPublisher::SubscribeIndication(ExchangeContext *aResponseCtx, ReferencedTLVData &aPathList)
+WEAVE_ERROR MockDMPublisher::SubscribeIndication(ExchangeContext * aResponseCtx, ReferencedTLVData & aPathList)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -326,15 +318,15 @@ WEAVE_ERROR MockDMPublisher::SubscribeIndication(ExchangeContext *aResponseCtx, 
     return err;
 }
 
-WEAVE_ERROR MockDMPublisher::UnsubscribeIndication(const uint64_t &aClientId, const TopicIdentifier &aTopicId, StatusReport &aReport)
+WEAVE_ERROR MockDMPublisher::UnsubscribeIndication(const uint64_t & aClientId, const TopicIdentifier & aTopicId,
+                                                   StatusReport & aReport)
 {
     printf("processing: <unsubscribe indication 0x%" PRIx64 ", 0x%" PRIx64 ">\n", aClientId, aTopicId);
 
     return WEAVE_NO_ERROR;
 }
 
-
-WEAVE_ERROR MockDMPublisher::CancelSubscriptionIndication(ExchangeContext *aResponseCtx, const TopicIdentifier &aTopicId)
+WEAVE_ERROR MockDMPublisher::CancelSubscriptionIndication(ExchangeContext * aResponseCtx, const TopicIdentifier & aTopicId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -348,7 +340,8 @@ WEAVE_ERROR MockDMPublisher::CancelSubscriptionIndication(ExchangeContext *aResp
     return err;
 }
 
-WEAVE_ERROR MockDMPublisher::NotifyConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, StatusReport &aStatus, uint16_t aTxnId)
+WEAVE_ERROR MockDMPublisher::NotifyConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, StatusReport & aStatus,
+                                           uint16_t aTxnId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 

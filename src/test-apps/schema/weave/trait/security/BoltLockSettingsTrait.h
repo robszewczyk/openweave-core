@@ -24,7 +24,6 @@
  *
  */
 
-
 #ifndef _BOLT_LOCK_SETTING_TRAIT_H
 #define _BOLT_LOCK_SETTING_TRAIT_H
 
@@ -35,33 +34,35 @@ namespace Weave {
 namespace Trait {
 namespace Security {
 namespace BoltLockSettingTrait {
-    extern nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
+extern nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-    enum {
-        kWeaveProfileId = 0x00000E08
-    };
+enum
+{
+    kWeaveProfileId = 0x00000E08
+};
 
-    enum {
-        /*
-         * Root =
-         * {
-         *       auto_relock_on = 1 (bool),
-         */
-                 kPropertyHandle_auto_relock_on = 2,
+enum
+{
+    /*
+     * Root =
+     * {
+     *       auto_relock_on = 1 (bool),
+     */
+    kPropertyHandle_auto_relock_on = 2,
 
-        /*
-         *       auto_relock_duration = 2 (uint32)
-         */
-                 kPropertyHandle_auto_relock_duration = 3,
+    /*
+     *       auto_relock_duration = 2 (uint32)
+     */
+    kPropertyHandle_auto_relock_duration = 3,
 
-        /*
-         * }
-         *
-         */
-    };
-}; // BoltLockSettingTrait
-} // Security
-} // Trait
-} // Weave
+    /*
+     * }
+     *
+     */
+};
+}; // namespace BoltLockSettingTrait
+} // namespace Security
+} // namespace Trait
+} // namespace Weave
 
 #endif // _MOCK_TRAIT_SCHEMAS_H

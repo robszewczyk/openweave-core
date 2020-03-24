@@ -23,10 +23,7 @@
 
 #include <stddef.h>
 
-AndroidBleApplicationDelegate::AndroidBleApplicationDelegate():
-  NotifyWeaveConnectionClosedCb(NULL)
-{
-}
+AndroidBleApplicationDelegate::AndroidBleApplicationDelegate() : NotifyWeaveConnectionClosedCb(NULL) { }
 
 void AndroidBleApplicationDelegate::NotifyWeaveConnectionClosed(BLE_CONNECTION_OBJECT connObj)
 {

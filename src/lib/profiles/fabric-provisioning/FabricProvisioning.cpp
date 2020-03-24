@@ -49,9 +49,9 @@ using namespace nl::Weave::TLV;
 
 FabricProvisioningServer::FabricProvisioningServer()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    mDelegate = NULL;
+    FabricState  = NULL;
+    ExchangeMgr  = NULL;
+    mDelegate    = NULL;
     mCurClientOp = NULL;
 }
 
@@ -65,16 +65,15 @@ FabricProvisioningServer::FabricProvisioningServer()
  *                                                              already been registered.
  * @retval #WEAVE_NO_ERROR                                      On success.
  */
-WEAVE_ERROR FabricProvisioningServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR FabricProvisioningServer::Init(WeaveExchangeManager * exchangeMgr)
 {
-    FabricState = exchangeMgr->FabricState;
-    ExchangeMgr = exchangeMgr;
-    mDelegate = NULL;
+    FabricState  = exchangeMgr->FabricState;
+    ExchangeMgr  = exchangeMgr;
+    mDelegate    = NULL;
     mCurClientOp = NULL;
 
     // Register to receive unsolicited Service Provisioning messages from the exchange manager.
-    WEAVE_ERROR err =
-        ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_FabricProvisioning, HandleClientRequest, this);
+    WEAVE_ERROR err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_FabricProvisioning, HandleClientRequest, this);
 
     return err;
 }
@@ -90,9 +89,9 @@ WEAVE_ERROR FabricProvisioningServer::Shutdown()
     if (ExchangeMgr != NULL)
         ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_FabricProvisioning);
 
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    mDelegate = NULL;
+    FabricState  = NULL;
+    ExchangeMgr  = NULL;
+    mDelegate    = NULL;
     mCurClientOp = NULL;
 
     return WEAVE_NO_ERROR;
@@ -103,7 +102,7 @@ WEAVE_ERROR FabricProvisioningServer::Shutdown()
  *
  * @param[in]   delegate    A pointer to the Fabric Provisioning Delegate.
  */
-void FabricProvisioningServer::SetDelegate(FabricProvisioningDelegate *delegate)
+void FabricProvisioningServer::SetDelegate(FabricProvisioningDelegate * delegate)
 {
     mDelegate = delegate;
 }
@@ -152,12 +151,13 @@ exit:
     return err;
 }
 
-void FabricProvisioningServer::HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                                   uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf)
+void FabricProvisioningServer::HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                   const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                   PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    FabricProvisioningServer *server = (FabricProvisioningServer *) ec->AppState;
-    FabricProvisioningDelegate *delegate = server->mDelegate;
+    WEAVE_ERROR err                       = WEAVE_NO_ERROR;
+    FabricProvisioningServer * server     = (FabricProvisioningServer *) ec->AppState;
+    FabricProvisioningDelegate * delegate = server->mDelegate;
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_FabricProvisioning)
@@ -249,7 +249,7 @@ void FabricProvisioningServer::HandleClientRequest(ExchangeContext *ec, const IP
         msgBuf->SetDataLength(fabricStateLen);
 
         // Send the get fabric config response.
-        err = server->mCurClientOp->SendMessage(kWeaveProfile_FabricProvisioning, kMsgType_GetFabricConfigComplete, msgBuf, 0);
+        err    = server->mCurClientOp->SendMessage(kWeaveProfile_FabricProvisioning, kMsgType_GetFabricConfigComplete, msgBuf, 0);
         msgBuf = NULL;
         SuccessOrExit(err);
 
@@ -288,9 +288,7 @@ void FabricProvisioningServer::HandleClientRequest(ExchangeContext *ec, const IP
 
         break;
 
-    default:
-        server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest);
-        break;
+    default: server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest); break;
     }
 
 exit:
@@ -300,15 +298,14 @@ exit:
 
     if (err != WEAVE_NO_ERROR && server->mCurClientOp != NULL && ec == server->mCurClientOp)
     {
-        uint16_t statusCode = (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH)
-                ? Common::kStatus_BadRequest
-                : Common::kStatus_InternalError;
+        uint16_t statusCode =
+            (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH) ? Common::kStatus_BadRequest : Common::kStatus_InternalError;
         server->SendStatusReport(kWeaveProfile_Common, statusCode, err);
     }
 }
 
-void FabricProvisioningDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void FabricProvisioningDelegate::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     // If the result has not already been determined by a subclass...
     if (result == kAccessControlResult_NotDetermined)
@@ -339,9 +336,7 @@ void FabricProvisioningDelegate::EnforceAccessControl(ExchangeContext *ec, uint3
         case kMsgType_CreateFabric:
         case kMsgType_JoinExistingFabric:
         case kMsgType_LeaveFabric:
-        case kMsgType_GetFabricConfig:
-            result = kAccessControlResult_Accepted;
-            break;
+        case kMsgType_GetFabricConfig: result = kAccessControlResult_Accepted; break;
 
 #endif // WEAVE_CONFIG_REQUIRE_AUTH_FABRIC_PROV
 
@@ -361,9 +356,6 @@ bool FabricProvisioningDelegate::IsPairedToAccount() const
 {
     return false;
 }
-
-
-
 
 } /* namespace FabricProvisioning */
 } /* namespace Profiles */

@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace ApplicationKeysTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1dU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1dU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -82,12 +82,12 @@ struct EpochKey
     nl::SerializedByteString key;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct EpochKey_array {
+struct EpochKey_array
+{
     uint32_t num;
-    EpochKey *buf;
+    EpochKey * buf;
 };
 
 struct ApplicationMasterKey
@@ -97,12 +97,12 @@ struct ApplicationMasterKey
     nl::SerializedByteString key;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct ApplicationMasterKey_array {
+struct ApplicationMasterKey_array
+{
     uint32_t num;
-    ApplicationMasterKey *buf;
+    ApplicationMasterKey * buf;
 };
 
 } // namespace ApplicationKeysTrait

@@ -63,7 +63,6 @@
 namespace nl {
 namespace Inet {
 
-
 /**
  * @brief   Get the name of a network interface
  *
@@ -80,7 +79,7 @@ namespace Inet {
  *     at \c nameBuf. The name of the unspecified network interface is the empty
  *     string.
  */
-NL_DLL_EXPORT INET_ERROR GetInterfaceName(InterfaceId intfId, char *nameBuf, size_t nameBufSize)
+NL_DLL_EXPORT INET_ERROR GetInterfaceName(InterfaceId intfId, char * nameBuf, size_t nameBufSize)
 {
     if (intfId != INET_NULL_INTERFACEID)
     {
@@ -127,12 +126,12 @@ NL_DLL_EXPORT INET_ERROR GetInterfaceName(InterfaceId intfId, char *nameBuf, siz
  *     \c INET_NO_ERROR. It should be initialized with \c INET_NULL_INTERFACEID
  *     before calling this function.
  */
-NL_DLL_EXPORT INET_ERROR InterfaceNameToId(const char *intfName, InterfaceId& intfId)
+NL_DLL_EXPORT INET_ERROR InterfaceNameToId(const char * intfName, InterfaceId & intfId)
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     if (strlen(intfName) < 3)
         return INET_ERROR_UNKNOWN_INTERFACE;
-    char *parseEnd;
+    char * parseEnd;
     unsigned long intfNum = strtoul(intfName + 2, &parseEnd, 10);
     if (*parseEnd != 0 || intfNum > UINT8_MAX)
         return INET_ERROR_UNKNOWN_INTERFACE;
@@ -143,7 +142,7 @@ NL_DLL_EXPORT INET_ERROR InterfaceNameToId(const char *intfName, InterfaceId& in
     for (intf = netif_list; intf != NULL; intf = intf->next)
 #endif
     {
-        if (intf->name[0] == intfName[0] && intf->name[1] == intfName[1] && intf->num == (uint8_t)intfNum)
+        if (intf->name[0] == intfName[0] && intf->name[1] == intfName[1] && intf->num == (uint8_t) intfNum)
         {
             intfId = intf;
             return INET_NO_ERROR;
@@ -161,7 +160,6 @@ NL_DLL_EXPORT INET_ERROR InterfaceNameToId(const char *intfName, InterfaceId& in
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 }
 
-
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 
 static int sIOCTLSocket = -1;
@@ -175,14 +173,14 @@ int GetIOCTLSocket(void)
 {
     if (sIOCTLSocket == -1)
     {
-    	int s;
+        int s;
 #ifdef SOCK_CLOEXEC
         s = socket(AF_INET, SOCK_STREAM, SOCK_CLOEXEC);
         if (s < 0)
 #endif
         {
-        	s = socket(AF_INET, SOCK_STREAM, 0);
-        	fcntl(s, O_CLOEXEC);
+            s = socket(AF_INET, SOCK_STREAM, 0);
+            fcntl(s, O_CLOEXEC);
         }
 
         if (!__sync_bool_compare_and_swap(&sIOCTLSocket, -1, s))
@@ -212,7 +210,6 @@ void CloseIOCTLSocket(void)
 }
 
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-
 
 /**
  * @fn      InterfaceIterator::InterfaceIterator(void)
@@ -355,9 +352,9 @@ exit:
 
 InterfaceIterator::InterfaceIterator(void)
 {
-    mIntfArray = NULL;
-    mCurIntf = 0;
-    mIntfFlags = 0;
+    mIntfArray       = NULL;
+    mCurIntf         = 0;
+    mIntfFlags       = 0;
     mIntfFlagsCached = 0;
 }
 
@@ -402,9 +399,7 @@ InterfaceIterator::~InterfaceIterator(void)
 
 bool InterfaceIterator::HasCurrent(void)
 {
-    return (mIntfArray != NULL)
-        ? mIntfArray[mCurIntf].if_index != 0
-        : Next();
+    return (mIntfArray != NULL) ? mIntfArray[mCurIntf].if_index != 0 : Next();
 }
 
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
@@ -444,7 +439,7 @@ bool InterfaceIterator::Next(void)
     else if (mIntfArray[mCurIntf].if_index != 0)
     {
         mCurIntf++;
-        mIntfFlags = 0;
+        mIntfFlags       = 0;
         mIntfFlagsCached = false;
     }
     return (mIntfArray != NULL && mIntfArray[mCurIntf].if_index != 0);
@@ -493,13 +488,10 @@ bool InterfaceIterator::Next(void)
 
 InterfaceId InterfaceIterator::GetInterfaceId(void)
 {
-    return (HasCurrent())
-        ? mIntfArray[mCurIntf].if_index
-        : INET_NULL_INTERFACEID;
+    return (HasCurrent()) ? mIntfArray[mCurIntf].if_index : INET_NULL_INTERFACEID;
 }
 
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-
 
 /**
  * @brief   Get the name of the current network interface
@@ -608,13 +600,13 @@ short InterfaceIterator::GetFlags(void)
 
     if (!mIntfFlagsCached && HasCurrent())
     {
-    	strncpy(intfData.ifr_name, mIntfArray[mCurIntf].if_name, IFNAMSIZ);
-    	intfData.ifr_name[IFNAMSIZ-1] = '\0';
+        strncpy(intfData.ifr_name, mIntfArray[mCurIntf].if_name, IFNAMSIZ);
+        intfData.ifr_name[IFNAMSIZ - 1] = '\0';
 
         int res = ioctl(GetIOCTLSocket(), SIOCGIFFLAGS, &intfData);
         if (res == 0)
         {
-            mIntfFlags = intfData.ifr_flags;
+            mIntfFlags       = intfData.ifr_flags;
             mIntfFlagsCached = true;
         }
     }
@@ -639,11 +631,10 @@ short InterfaceIterator::GetFlags(void)
 InterfaceAddressIterator::InterfaceAddressIterator(void)
 {
     mAddrsList = NULL;
-    mCurAddr = NULL;
+    mCurAddr   = NULL;
 }
 
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-
 
 /**
  * @fn      InterfaceAddressIterator::~InterfaceAddressIterator(void)
@@ -837,16 +828,16 @@ uint8_t InterfaceAddressIterator::GetPrefixLength(void)
     if (HasCurrent())
     {
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-    	if (mCurAddr->ifa_addr->sa_family == AF_INET6)
-    	{
-    		struct sockaddr_in6& netmask = *(struct sockaddr_in6 *)(mCurAddr->ifa_netmask);
-    		return NetmaskToPrefixLength(netmask.sin6_addr.s6_addr, 16);
-    	}
-    	if (mCurAddr->ifa_addr->sa_family == AF_INET)
-    	{
-    		struct sockaddr_in& netmask = *(struct sockaddr_in *)(mCurAddr->ifa_netmask);
-    		return NetmaskToPrefixLength((const uint8_t *)&netmask.sin_addr.s_addr, 4);
-    	}
+        if (mCurAddr->ifa_addr->sa_family == AF_INET6)
+        {
+            struct sockaddr_in6 & netmask = *(struct sockaddr_in6 *) (mCurAddr->ifa_netmask);
+            return NetmaskToPrefixLength(netmask.sin6_addr.s6_addr, 16);
+        }
+        if (mCurAddr->ifa_addr->sa_family == AF_INET)
+        {
+            struct sockaddr_in & netmask = *(struct sockaddr_in *) (mCurAddr->ifa_netmask);
+            return NetmaskToPrefixLength((const uint8_t *) &netmask.sin_addr.s_addr, 4);
+        }
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
@@ -858,7 +849,7 @@ uint8_t InterfaceAddressIterator::GetPrefixLength(void)
         else
         {
             struct netif * curIntf = mIntfIter.GetInterfaceId();
-            return NetmaskToPrefixLength((const uint8_t *)netif_ip4_netmask(curIntf), 4);
+            return NetmaskToPrefixLength((const uint8_t *) netif_ip4_netmask(curIntf), 4);
         }
 #endif // INET_CONFIG_ENABLE_IPV4 && LWIP_IPV4
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
@@ -992,11 +983,11 @@ bool InterfaceAddressIterator::HasBroadcastAddress(void)
     if (HasCurrent())
     {
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-    	return (mCurAddr->ifa_flags & IFF_BROADCAST) != 0;
+        return (mCurAddr->ifa_flags & IFF_BROADCAST) != 0;
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-    	return mIntfIter.HasBroadcastAddress();
+        return mIntfIter.HasBroadcastAddress();
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
     }
     return false;
@@ -1010,15 +1001,15 @@ bool InterfaceAddressIterator::HasBroadcastAddress(void)
  */
 void InterfaceAddressIterator::GetAddressWithPrefix(IPPrefix & addrWithPrefix)
 {
-	if (HasCurrent())
-	{
-		addrWithPrefix.IPAddr = GetAddress();
-		addrWithPrefix.Length = GetPrefixLength();
-	}
-	else
-	{
-		addrWithPrefix = IPPrefix::Zero;
-	}
+    if (HasCurrent())
+    {
+        addrWithPrefix.IPAddr = GetAddress();
+        addrWithPrefix.Length = GetPrefixLength();
+    }
+    else
+    {
+        addrWithPrefix = IPPrefix::Zero;
+    }
 }
 
 /**
@@ -1028,9 +1019,9 @@ void InterfaceAddressIterator::GetAddressWithPrefix(IPPrefix & addrWithPrefix)
  */
 uint8_t NetmaskToPrefixLength(const uint8_t * netmask, uint16_t netmaskLen)
 {
-	uint8_t prefixLen = 0;
+    uint8_t prefixLen = 0;
 
-	for (uint8_t i = 0; i < netmaskLen; i++, prefixLen += 8)
+    for (uint8_t i = 0; i < netmaskLen; i++, prefixLen += 8)
     {
         uint8_t b = netmask[i];
         if (b != 0xFF)
@@ -1052,7 +1043,7 @@ uint8_t NetmaskToPrefixLength(const uint8_t * netmask, uint16_t netmaskLen)
         }
     }
 
-	return prefixLen;
+    return prefixLen;
 }
 
 } // namespace Inet

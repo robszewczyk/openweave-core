@@ -33,42 +33,41 @@ using namespace nl::Weave::Profiles::Security;
 
 enum
 {
-    kTestCert_Mask                                  = 0x000FF000,
-    kTestCertLoadFlag_Mask                          = 0x0FF00000,
-    kDecodeFlag_Mask                          		= 0x0000000F, // values defined in WeaveCert.h
+    kTestCert_Mask         = 0x000FF000,
+    kTestCertLoadFlag_Mask = 0x0FF00000,
+    kDecodeFlag_Mask       = 0x0000000F, // values defined in WeaveCert.h
 
-
-	// Available test cert types.
-    kTestCert_None                                  = 0x00000000,
-    kTestCert_Root                                  = 0x00001000,
-    kTestCert_RootKey                               = 0x00002000,
-    kTestCert_Root_SHA256                           = 0x00003000,
-    kTestCert_CA                                    = 0x00004000,
-    kTestCert_CA_SHA256                             = 0x00005000,
-    kTestCert_Dev                                   = 0x00006000,
-    kTestCert_Dev_SHA256                            = 0x00007000,
-    kTestCert_SelfSigned                            = 0x00008000,
-    kTestCert_SelfSigned_SHA256                     = 0x00009000,
-    kTestCert_ServiceEndpoint                       = 0x0000A000,
-    kTestCert_ServiceEndpoint_SHA256                = 0x0000B000,
-    kTestCert_FirmwareSigning                       = 0x0000C000,
-    kTestCert_FirmwareSigning_SHA256                = 0x0000D000,
+    // Available test cert types.
+    kTestCert_None                   = 0x00000000,
+    kTestCert_Root                   = 0x00001000,
+    kTestCert_RootKey                = 0x00002000,
+    kTestCert_Root_SHA256            = 0x00003000,
+    kTestCert_CA                     = 0x00004000,
+    kTestCert_CA_SHA256              = 0x00005000,
+    kTestCert_Dev                    = 0x00006000,
+    kTestCert_Dev_SHA256             = 0x00007000,
+    kTestCert_SelfSigned             = 0x00008000,
+    kTestCert_SelfSigned_SHA256      = 0x00009000,
+    kTestCert_ServiceEndpoint        = 0x0000A000,
+    kTestCert_ServiceEndpoint_SHA256 = 0x0000B000,
+    kTestCert_FirmwareSigning        = 0x0000C000,
+    kTestCert_FirmwareSigning_SHA256 = 0x0000D000,
 
     // Special flags to alter how certificates are fetched/loaded.
-    kTestCertLoadFlag_DERForm	                    = 0x00100000,
-    kTestCertLoadFlag_SuppressIsCA                  = 0x00200000,
-    kTestCertLoadFlag_SuppressKeyUsage              = 0x00400000,
-    kTestCertLoadFlag_SuppressKeyCertSign           = 0x00800000,
-    kTestCertLoadFlag_SetPathLenConstZero           = 0x01000000,
-    kTestCertLoadFlag_SetAppDefinedCertType         = 0x02000000,
+    kTestCertLoadFlag_DERForm               = 0x00100000,
+    kTestCertLoadFlag_SuppressIsCA          = 0x00200000,
+    kTestCertLoadFlag_SuppressKeyUsage      = 0x00400000,
+    kTestCertLoadFlag_SuppressKeyCertSign   = 0x00800000,
+    kTestCertLoadFlag_SetPathLenConstZero   = 0x01000000,
+    kTestCertLoadFlag_SetAppDefinedCertType = 0x02000000,
 
-    kTestCertBufSize                                = 1024,      // Size of buffer needed to hold any of the test certificates
-                                                                 // (in either Weave or DER form), or to decode the certificates.
+    kTestCertBufSize = 1024, // Size of buffer needed to hold any of the test certificates
+                             // (in either Weave or DER form), or to decode the certificates.
 };
 
-extern void GetTestCert(int selector, const uint8_t *& certData, size_t& certDataLen);
-extern const char *GetTestCertName(int selector);
-extern void LoadTestCert(WeaveCertificateSet& certSet, int selector);
+extern void GetTestCert(int selector, const uint8_t *& certData, size_t & certDataLen);
+extern const char * GetTestCertName(int selector);
+extern void LoadTestCert(WeaveCertificateSet & certSet, int selector);
 
 extern const int gTestCerts[];
 extern const size_t gNumTestCerts;
@@ -151,9 +150,7 @@ extern const size_t sTestCertLength_FirmwareSigning_SHA256_Weave;
 extern const uint8_t sTestCert_FirmwareSigning_SHA256_DER[];
 extern const size_t sTestCertLength_FirmwareSigning_SHA256_DER;
 
-
 } // namespace TestCerts
 } // namespace nl
-
 
 #endif /* TESTWEAVECERTDATA_H_ */

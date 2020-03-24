@@ -43,22 +43,19 @@ class GroupKeyStoreImpl final : public ::nl::Weave::Profiles::Security::AppKeys:
 public:
     WEAVE_ERROR Init();
 
-    WEAVE_ERROR RetrieveGroupKey(uint32_t keyId, WeaveGroupKey &key) override;
-    WEAVE_ERROR StoreGroupKey(const WeaveGroupKey &key) override;
+    WEAVE_ERROR RetrieveGroupKey(uint32_t keyId, WeaveGroupKey & key) override;
+    WEAVE_ERROR StoreGroupKey(const WeaveGroupKey & key) override;
     WEAVE_ERROR DeleteGroupKey(uint32_t keyId) override;
     WEAVE_ERROR DeleteGroupKeysOfAType(uint32_t keyType) override;
-    WEAVE_ERROR EnumerateGroupKeys(uint32_t  keyType,
-                                   uint32_t *keyIds,
-                                   uint8_t   keyIdsArraySize,
-                                   uint8_t & keyCount) override;
+    WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t * keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount) override;
     WEAVE_ERROR Clear(void) override;
     WEAVE_ERROR RetrieveLastUsedEpochKeyId(void) override;
     WEAVE_ERROR StoreLastUsedEpochKeyId(void) override;
 
 private:
     static constexpr size_t kFixedEncodedKeySize = 4U + // key id
-                                                   4U + // start time / global id
-                                                   1U;  // key data length
+        4U +                                            // start time / global id
+        1U;                                             // key data length
 
     static constexpr size_t kMaxEncodedKeySize = kFixedEncodedKeySize + WeaveGroupKey::MaxKeySize;
 
@@ -67,9 +64,9 @@ private:
     static constexpr uint16_t kGroupKeyRecordKey =  GetRecordKey(kConfigKey_GroupKey);
     */
 
-    static WEAVE_ERROR EncodeGroupKey(const WeaveGroupKey &key, uint8_t *buf, size_t bufSize, size_t &encodedKeyLen);
-    static WEAVE_ERROR DecodeGroupKey(const uint8_t *encodedKey, size_t encodedKeyLen, WeaveGroupKey &key);
-    static WEAVE_ERROR DecodeGroupKeyId(const uint8_t *encodedKey, size_t encodedKeyLen, uint32_t &keyId);
+    static WEAVE_ERROR EncodeGroupKey(const WeaveGroupKey & key, uint8_t * buf, size_t bufSize, size_t & encodedKeyLen);
+    static WEAVE_ERROR DecodeGroupKey(const uint8_t * encodedKey, size_t encodedKeyLen, WeaveGroupKey & key);
+    static WEAVE_ERROR DecodeGroupKeyId(const uint8_t * encodedKey, size_t encodedKeyLen, uint32_t & keyId);
 };
 
 } // namespace Internal

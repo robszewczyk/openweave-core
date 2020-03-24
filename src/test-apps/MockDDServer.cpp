@@ -43,11 +43,9 @@ using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::DeviceDescription;
 
-MockDeviceDescriptionServer::MockDeviceDescriptionServer()
-{
-}
+MockDeviceDescriptionServer::MockDeviceDescriptionServer() { }
 
-WEAVE_ERROR MockDeviceDescriptionServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockDeviceDescriptionServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -55,13 +53,12 @@ WEAVE_ERROR MockDeviceDescriptionServer::Init(WeaveExchangeManager *exchangeMgr)
     err = this->DeviceDescriptionServer::Init(exchangeMgr);
     SuccessOrExit(err);
 
-    AppState = this;
+    AppState                  = this;
     OnIdentifyRequestReceived = HandleIdentifyRequest;
 
 exit:
     return err;
 }
-
 
 WEAVE_ERROR MockDeviceDescriptionServer::Shutdown()
 {
@@ -71,18 +68,20 @@ WEAVE_ERROR MockDeviceDescriptionServer::Shutdown()
     return err;
 }
 
-void MockDeviceDescriptionServer::HandleIdentifyRequest(void *appState, uint64_t nodeId, const IPAddress& nodeAddr, const IdentifyRequestMessage& reqMsg, bool& sendResp, IdentifyResponseMessage& respMsg)
+void MockDeviceDescriptionServer::HandleIdentifyRequest(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                                        const IdentifyRequestMessage & reqMsg, bool & sendResp,
+                                                        IdentifyResponseMessage & respMsg)
 {
-    MockDeviceDescriptionServer *server = (MockDeviceDescriptionServer *)appState;
+    MockDeviceDescriptionServer * server = (MockDeviceDescriptionServer *) appState;
     WeaveDeviceDescriptor deviceDesc;
     char ipAddrStr[64];
     nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     printf("IdentifyRequest received from node %" PRIX64 " (%s)\n", nodeId, ipAddrStr);
     printf("  Target Fabric Id: %016" PRIX64 "\n", reqMsg.TargetFabricId);
-    printf("  Target Modes: %08lX\n", (unsigned long)reqMsg.TargetModes);
-    printf("  Target Vendor Id: %04X\n", (unsigned)reqMsg.TargetVendorId);
-    printf("  Target Product Id: %04X\n", (unsigned)reqMsg.TargetProductId);
+    printf("  Target Modes: %08lX\n", (unsigned long) reqMsg.TargetModes);
+    printf("  Target Vendor Id: %04X\n", (unsigned) reqMsg.TargetVendorId);
+    printf("  Target Product Id: %04X\n", (unsigned) reqMsg.TargetProductId);
 
     sendResp = true;
 

@@ -82,7 +82,7 @@ namespace Security {
  *                                         initialization function.
  *
  */
-extern WEAVE_ERROR MemoryInit(void *buf = NULL, size_t bufSize = 0);
+extern WEAVE_ERROR MemoryInit(void * buf = NULL, size_t bufSize = 0);
 
 /**
  * This function is called by the Weave layer to releases all resources that were allocated
@@ -116,7 +116,7 @@ extern void MemoryShutdown(void);
  * @retval  NULL-pointer if memory allocation fails.
  *
  */
-extern void *MemoryAlloc(size_t size, bool isLongTermAlloc);
+extern void * MemoryAlloc(size_t size, bool isLongTermAlloc);
 
 /**
  * This function is called by the Weave layer to allocate a block of memory of "size" bytes.
@@ -128,7 +128,7 @@ extern void *MemoryAlloc(size_t size, bool isLongTermAlloc);
  * @retval  NULL-pointer if memory allocation fails.
  *
  */
-extern void *MemoryAlloc(size_t size);
+extern void * MemoryAlloc(size_t size);
 
 /**
  * This function is called by the Weave layer to release a memory block allocated by
@@ -137,7 +137,7 @@ extern void *MemoryAlloc(size_t size);
  * @param[in]  p                Pointer to a memory block that should be released.
  *
  */
-extern void MemoryFree(void *p);
+extern void MemoryFree(void * p);
 
 #if WEAVE_CONFIG_SECURITY_MGR_TIME_ALERTS_PLATFORM
 
@@ -165,19 +165,18 @@ extern void OnTimeConsumingCryptoDone(void);
 
 #endif // WEAVE_CONFIG_SECURITY_MGR_TIME_ALERTS_PLATFORM
 
-} // namespace Platform
 } // namespace Security
+} // namespace Platform
 
-
-using nl::Weave::Profiles::StatusReporting::StatusReport;
-using nl::Weave::Profiles::Security::PASE::WeavePASEEngine;
-using nl::Weave::Profiles::Security::CASE::WeaveCASEEngine;
 using nl::Weave::Profiles::Security::CASE::WeaveCASEAuthDelegate;
-using nl::Weave::Profiles::Security::TAKE::WeaveTAKEEngine;
-using nl::Weave::Profiles::Security::TAKE::WeaveTAKEChallengerAuthDelegate;
-using nl::Weave::Profiles::Security::TAKE::WeaveTAKETokenAuthDelegate;
+using nl::Weave::Profiles::Security::CASE::WeaveCASEEngine;
 using nl::Weave::Profiles::Security::KeyExport::WeaveKeyExport;
 using nl::Weave::Profiles::Security::KeyExport::WeaveKeyExportDelegate;
+using nl::Weave::Profiles::Security::PASE::WeavePASEEngine;
+using nl::Weave::Profiles::Security::TAKE::WeaveTAKEChallengerAuthDelegate;
+using nl::Weave::Profiles::Security::TAKE::WeaveTAKEEngine;
+using nl::Weave::Profiles::Security::TAKE::WeaveTAKETokenAuthDelegate;
+using nl::Weave::Profiles::StatusReporting::StatusReport;
 
 class NL_DLL_EXPORT WeaveSecurityManager
 {
@@ -223,15 +222,17 @@ public:
 
     WeaveSecurityManager(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager& aExchangeMgr, System::Layer& aSystemLayer);
+    WEAVE_ERROR Init(WeaveExchangeManager & aExchangeMgr, System::Layer & aSystemLayer);
     WEAVE_ERROR Shutdown(void);
 
 #if WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-    WEAVE_ERROR Init(WeaveExchangeManager* aExchangeMgr, InetLayer* aInetLayer);
+    WEAVE_ERROR Init(WeaveExchangeManager * aExchangeMgr, InetLayer * aInetLayer);
 #endif // WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
 
-    typedef void (*SessionEstablishedFunct)(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
-    typedef void (*SessionErrorFunct)(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport);
+    typedef void (*SessionEstablishedFunct)(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState,
+                                            uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
+    typedef void (*SessionErrorFunct)(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                      uint64_t peerNodeId, StatusReport * statusReport);
 
     /**
      * Type of key error message handling function.
@@ -243,7 +244,8 @@ public:
      * @param[in] keyErr        The error code received from the peer.
      *
      */
-    typedef void (*KeyErrorMsgRcvdFunct)(uint16_t keyId, uint8_t encType, uint32_t messageId, uint64_t peerNodeId, WEAVE_ERROR keyErr);
+    typedef void (*KeyErrorMsgRcvdFunct)(uint16_t keyId, uint8_t encType, uint32_t messageId, uint64_t peerNodeId,
+                                         WEAVE_ERROR keyErr);
 
     /**
      * Type of key export protocol complete handling function.
@@ -256,7 +258,8 @@ public:
      * @param[in] exportedKeyLen A reference to the exported secret key length.
      *
      */
-    typedef void (*KeyExportCompleteFunct)(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint32_t exportedKeyId, const uint8_t *exportedKey, uint16_t exportedKeyLen);
+    typedef void (*KeyExportCompleteFunct)(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState,
+                                           uint32_t exportedKeyId, const uint8_t * exportedKey, uint16_t exportedKeyLen);
 
     /**
      * Type of key export protocol error handling function.
@@ -268,34 +271,33 @@ public:
      * @param[in] statusReport   A pointer to StatusReport object if error status received from peer.
      *
      */
-    typedef void (*KeyExportErrorFunct)(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, StatusReport *statusReport);
+    typedef void (*KeyExportErrorFunct)(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                        StatusReport * statusReport);
 
     // Initiate a secure PASE session, optionally providing a password.
     // Session establishment is done over connection that was specified.
-    WEAVE_ERROR StartPASESession(WeaveConnection *con, WeaveAuthMode requestedAuthMode, void *reqState,
-                                 SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                 const uint8_t *pw = NULL, uint16_t pwLen = 0);
+    WEAVE_ERROR StartPASESession(WeaveConnection * con, WeaveAuthMode requestedAuthMode, void * reqState,
+                                 SessionEstablishedFunct onComplete, SessionErrorFunct onError, const uint8_t * pw = NULL,
+                                 uint16_t pwLen = 0);
 
     // Initiate a secure CASE session, optionally providing a CASE auth delegate.
     // Session establishment is done over specified connection or over UDP using WRM Protocol.
-    WEAVE_ERROR StartCASESession(WeaveConnection *con, uint64_t peerNodeId, const IPAddress &peerAddr,
-                                 uint16_t peerPort, WeaveAuthMode requestedAuthMode, void *reqState,
-                                 SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                 WeaveCASEAuthDelegate *authDelegate = NULL, uint64_t terminatingNodeId = kNodeIdNotSpecified);
+    WEAVE_ERROR StartCASESession(WeaveConnection * con, uint64_t peerNodeId, const IPAddress & peerAddr, uint16_t peerPort,
+                                 WeaveAuthMode requestedAuthMode, void * reqState, SessionEstablishedFunct onComplete,
+                                 SessionErrorFunct onError, WeaveCASEAuthDelegate * authDelegate = NULL,
+                                 uint64_t terminatingNodeId = kNodeIdNotSpecified);
 
     // Initiate a secure TAKE session, optionally providing a TAKE auth delegate.
     // Session establishment is done over connection that was specified.
-    WEAVE_ERROR StartTAKESession(WeaveConnection *con, WeaveAuthMode requestedAuthMode, void *reqState,
-                                 SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                 bool encryptAuthPhase, bool encryptCommPhase,
-                                 bool timeLimitedIK, bool sendChallengerId,
-                                 WeaveTAKEChallengerAuthDelegate *authDelegate = NULL);
+    WEAVE_ERROR StartTAKESession(WeaveConnection * con, WeaveAuthMode requestedAuthMode, void * reqState,
+                                 SessionEstablishedFunct onComplete, SessionErrorFunct onError, bool encryptAuthPhase,
+                                 bool encryptCommPhase, bool timeLimitedIK, bool sendChallengerId,
+                                 WeaveTAKEChallengerAuthDelegate * authDelegate = NULL);
 
     // Initiate key export protocol.
-    WEAVE_ERROR StartKeyExport(WeaveConnection *con, uint64_t peerNodeId, const IPAddress &peerAddr,
-                               uint16_t peerPort, uint32_t keyId, bool signMessage, void *reqState,
-                               KeyExportCompleteFunct onComplete, KeyExportErrorFunct onError,
-                               WeaveKeyExportDelegate *keyExportDelegate = NULL);
+    WEAVE_ERROR StartKeyExport(WeaveConnection * con, uint64_t peerNodeId, const IPAddress & peerAddr, uint16_t peerPort,
+                               uint32_t keyId, bool signMessage, void * reqState, KeyExportCompleteFunct onComplete,
+                               KeyExportErrorFunct onError, WeaveKeyExportDelegate * keyExportDelegate = NULL);
 
     // General callback functions. These will be called when a secure session is established or fails.
     SessionEstablishedFunct OnSessionEstablished;
@@ -307,28 +309,28 @@ public:
      */
     KeyErrorMsgRcvdFunct OnKeyErrorMsgRcvd;
 
-    void SetCASEAuthDelegate(WeaveCASEAuthDelegate *delegate)
+    void SetCASEAuthDelegate(WeaveCASEAuthDelegate * delegate)
     {
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
         mDefaultAuthDelegate = delegate;
 #endif
     }
 
-    void SetTAKEAuthDelegate(WeaveTAKEChallengerAuthDelegate *delegate)
+    void SetTAKEAuthDelegate(WeaveTAKEChallengerAuthDelegate * delegate)
     {
 #if WEAVE_CONFIG_ENABLE_TAKE_INITIATOR
         mDefaultTAKEChallengerAuthDelegate = delegate;
 #endif
     }
 
-    void SetTAKETokenAuthDelegate(WeaveTAKETokenAuthDelegate *delegate)
+    void SetTAKETokenAuthDelegate(WeaveTAKETokenAuthDelegate * delegate)
     {
 #if WEAVE_CONFIG_ENABLE_TAKE_RESPONDER
         mDefaultTAKETokenAuthDelegate = delegate;
 #endif
     }
 
-    void SetKeyExportDelegate(WeaveKeyExportDelegate *delegate)
+    void SetKeyExportDelegate(WeaveKeyExportDelegate * delegate)
     {
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR || WEAVE_CONFIG_ENABLE_KEY_EXPORT_RESPONDER
         mDefaultKeyExportDelegate = delegate;
@@ -339,22 +341,23 @@ public:
     bool IsKeyError(WEAVE_ERROR err);
 
     // Send key error message when correct key has not been found and the message cannot be decrypted.
-    WEAVE_ERROR SendKeyErrorMsg(WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo, WeaveConnection *con, WEAVE_ERROR keyErr);
+    WEAVE_ERROR SendKeyErrorMsg(WeaveMessageInfo * rcvdMsgInfo, const IPPacketInfo * rcvdMsgPacketInfo, WeaveConnection * con,
+                                WEAVE_ERROR keyErr);
 
     void OnEncryptedMsgRcvd(uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
     // Send message counter synchronization message.
-    WEAVE_ERROR SendMsgCounterSyncResp(const WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo);
+    WEAVE_ERROR SendMsgCounterSyncResp(const WeaveMessageInfo * rcvdMsgInfo, const IPPacketInfo * rcvdMsgPacketInfo);
 
     // Send peer message counter synchronization request.
-    WEAVE_ERROR SendSolitaryMsgCounterSyncReq(const WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo);
+    WEAVE_ERROR SendSolitaryMsgCounterSyncReq(const WeaveMessageInfo * rcvdMsgInfo, const IPPacketInfo * rcvdMsgPacketInfo);
 
     // Handle message counter synchronization response message.
-    void HandleMsgCounterSyncRespMsg(WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
+    void HandleMsgCounterSyncRespMsg(WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf);
 #endif
 
-    WEAVE_ERROR CancelSessionEstablishment(void *reqState);
+    WEAVE_ERROR CancelSessionEstablishment(void * reqState);
 
     void ReserveKey(uint64_t peerNodeId, uint16_t keyId);
     void ReleaseKey(uint64_t peerNodeId, uint16_t keyId);
@@ -362,24 +365,24 @@ public:
 private:
     enum Flags
     {
-        kFlag_IdleSessionTimerRunning   = 0x01
+        kFlag_IdleSessionTimerRunning = 0x01
     };
 
-    ExchangeContext *mEC;
-    WeaveConnection *mCon;
+    ExchangeContext * mEC;
+    WeaveConnection * mCon;
     union
     {
 #if WEAVE_CONFIG_ENABLE_PASE_INITIATOR || WEAVE_CONFIG_ENABLE_PASE_RESPONDER
-        WeavePASEEngine *mPASEEngine;
+        WeavePASEEngine * mPASEEngine;
 #endif
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-        WeaveCASEEngine *mCASEEngine;
+        WeaveCASEEngine * mCASEEngine;
 #endif
 #if WEAVE_CONFIG_ENABLE_TAKE_INITIATOR || WEAVE_CONFIG_ENABLE_TAKE_RESPONDER
-        WeaveTAKEEngine *mTAKEEngine;
+        WeaveTAKEEngine * mTAKEEngine;
 #endif
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR
-        WeaveKeyExport *mKeyExport;
+        WeaveKeyExport * mKeyExport;
 #endif
     };
     union
@@ -404,8 +407,8 @@ private:
     };
     union
     {
-        void *mStartSecureSession_ReqState;
-        void *mStartKeyExport_ReqState;
+        void * mStartSecureSession_ReqState;
+        void * mStartKeyExport_ReqState;
     };
 #if WEAVE_CONFIG_ENABLE_PASE_RESPONDER
     uint32_t mPASERateLimiterTimeout;
@@ -413,114 +416,121 @@ private:
     void UpdatePASERateLimiter(WEAVE_ERROR err);
 #endif
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-    WeaveCASEAuthDelegate *mDefaultAuthDelegate;
+    WeaveCASEAuthDelegate * mDefaultAuthDelegate;
 #endif
 #if WEAVE_CONFIG_ENABLE_TAKE_INITIATOR
-    WeaveTAKEChallengerAuthDelegate *mDefaultTAKEChallengerAuthDelegate;
+    WeaveTAKEChallengerAuthDelegate * mDefaultTAKEChallengerAuthDelegate;
 #endif
 #if WEAVE_CONFIG_ENABLE_TAKE_RESPONDER
-    WeaveTAKETokenAuthDelegate *mDefaultTAKETokenAuthDelegate;
+    WeaveTAKETokenAuthDelegate * mDefaultTAKETokenAuthDelegate;
 #endif
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR || WEAVE_CONFIG_ENABLE_KEY_EXPORT_RESPONDER
-    WeaveKeyExportDelegate *mDefaultKeyExportDelegate;
+    WeaveKeyExportDelegate * mDefaultKeyExportDelegate;
 #endif
 
-    uint16_t        mSessionKeyId;
-    WeaveAuthMode   mRequestedAuthMode;
-    uint8_t         mEncType;
-    System::Layer*  mSystemLayer;
-    uint8_t         mFlags;
+    uint16_t mSessionKeyId;
+    WeaveAuthMode mRequestedAuthMode;
+    uint8_t mEncType;
+    System::Layer * mSystemLayer;
+    uint8_t mFlags;
 
     void StartSessionTimer(void);
     void CancelSessionTimer(void);
-    static void HandleSessionTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void HandleSessionTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 
     void StartIdleSessionTimer(void);
     void StopIdleSessionTimer(void);
-    static void HandleIdleSessionTimeout(System::Layer* aLayer, void* aAppState, System::Error aError);
+    static void HandleIdleSessionTimeout(System::Layer * aLayer, void * aAppState, System::Error aError);
 
-    static void HandleUnsolicitedMessage(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
+    static void HandleUnsolicitedMessage(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                         uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
 
     void StartPASESession(void);
-    void HandlePASESessionStart(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-    WEAVE_ERROR ProcessPASEInitiatorStep1(ExchangeContext *ec, PacketBuffer *msgBuf);
+    void HandlePASESessionStart(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                PacketBuffer * msgBuf);
+    WEAVE_ERROR ProcessPASEInitiatorStep1(ExchangeContext * ec, PacketBuffer * msgBuf);
     WEAVE_ERROR SendPASEResponderReconfigure(void);
     WEAVE_ERROR SendPASEResponderStep1(void);
     WEAVE_ERROR SendPASEResponderStep2(void);
     WEAVE_ERROR SendPASEInitiatorStep1(uint32_t paseConfig);
-    WEAVE_ERROR ProcessPASEResponderReconfigure(PacketBuffer *msgBuf, uint32_t &newConfig);
-    WEAVE_ERROR ProcessPASEResponderStep1(PacketBuffer *msgBuf);
-    WEAVE_ERROR ProcessPASEResponderStep2(PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessPASEResponderReconfigure(PacketBuffer * msgBuf, uint32_t & newConfig);
+    WEAVE_ERROR ProcessPASEResponderStep1(PacketBuffer * msgBuf);
+    WEAVE_ERROR ProcessPASEResponderStep2(PacketBuffer * msgBuf);
     WEAVE_ERROR SendPASEInitiatorStep2(void);
-    WEAVE_ERROR ProcessPASEInitiatorStep2(PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessPASEInitiatorStep2(PacketBuffer * msgBuf);
     WEAVE_ERROR SendPASEResponderKeyConfirm(void);
-    WEAVE_ERROR ProcessPASEResponderKeyConfirm(PacketBuffer *msgBuf);
-    static void HandlePASEMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
-    static void HandlePASEMessageResponder(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessPASEResponderKeyConfirm(PacketBuffer * msgBuf);
+    static void HandlePASEMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
+    static void HandlePASEMessageResponder(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
 
     void StartCASESession(uint32_t config, uint32_t curveId);
-    void HandleCASESessionStart(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-    static void HandleCASEMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
-    static void HandleCASEMessageResponder(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
+    void HandleCASESessionStart(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                PacketBuffer * msgBuf);
+    static void HandleCASEMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
+    static void HandleCASEMessageResponder(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
 
     void StartTAKESession(bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK, bool sendChallengerId);
-    void HandleTAKESessionStart(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-    WEAVE_ERROR SendTAKEIdentifyToken(uint8_t takeConfig, bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK, bool sendChallengerId);
-    static void HandleTAKEMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
-    static void HandleTAKEMessageResponder(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-            uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
-    WEAVE_ERROR ProcessTAKEIdentifyTokenResponse(const PacketBuffer *msgBuf);
+    void HandleTAKESessionStart(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                PacketBuffer * msgBuf);
+    WEAVE_ERROR SendTAKEIdentifyToken(uint8_t takeConfig, bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK,
+                                      bool sendChallengerId);
+    static void HandleTAKEMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
+    static void HandleTAKEMessageResponder(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                           uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf);
+    WEAVE_ERROR ProcessTAKEIdentifyTokenResponse(const PacketBuffer * msgBuf);
     WEAVE_ERROR CreateTAKESecureSession(void);
     WEAVE_ERROR SendTAKEAuthenticateToken(void);
-    WEAVE_ERROR ProcessTAKEAuthenticateToken(const PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessTAKEAuthenticateToken(const PacketBuffer * msgBuf);
     WEAVE_ERROR SendTAKEAuthenticateTokenResponse(void);
-    WEAVE_ERROR ProcessTAKEAuthenticateTokenResponse(const PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessTAKEAuthenticateTokenResponse(const PacketBuffer * msgBuf);
     WEAVE_ERROR SendTAKEReAuthenticateToken(void);
-    WEAVE_ERROR ProcessTAKEReAuthenticateToken(const PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessTAKEReAuthenticateToken(const PacketBuffer * msgBuf);
     WEAVE_ERROR SendTAKEReAuthenticateTokenResponse(void);
-    WEAVE_ERROR ProcessTAKEReAuthenticateTokenResponse(const PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessTAKEReAuthenticateTokenResponse(const PacketBuffer * msgBuf);
     WEAVE_ERROR SendTAKETokenReconfigure(void);
-    WEAVE_ERROR ProcessTAKETokenReconfigure(uint8_t& config, const PacketBuffer *msgBuf);
+    WEAVE_ERROR ProcessTAKETokenReconfigure(uint8_t & config, const PacketBuffer * msgBuf);
     WEAVE_ERROR FinishTAKESetUp(void);
 
-    void HandleKeyErrorMsg(ExchangeContext *ec, PacketBuffer *msgBuf);
+    void HandleKeyErrorMsg(ExchangeContext * ec, PacketBuffer * msgBuf);
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    WEAVE_ERROR NewMsgCounterSyncExchange(const WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo, ExchangeContext *& ec);
+    WEAVE_ERROR NewMsgCounterSyncExchange(const WeaveMessageInfo * rcvdMsgInfo, const IPPacketInfo * rcvdMsgPacketInfo,
+                                          ExchangeContext *& ec);
 #endif
     WEAVE_ERROR NewSessionExchange(uint64_t peerNodeId, IPAddress peerAddr, uint16_t peerPort);
     WEAVE_ERROR HandleSessionEstablished(void);
     void HandleSessionComplete(void);
-    void HandleSessionError(WEAVE_ERROR err, PacketBuffer *statusReportMsgBuf);
-    static void HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
+    void HandleSessionError(WEAVE_ERROR err, PacketBuffer * statusReportMsgBuf);
+    static void HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
 
-    static WEAVE_ERROR SendStatusReport(WEAVE_ERROR localError, ExchangeContext *ec);
+    static WEAVE_ERROR SendStatusReport(WEAVE_ERROR localError, ExchangeContext * ec);
 
-    void HandleKeyExportRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
+    void HandleKeyExportRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                PacketBuffer * msgBuf);
     WEAVE_ERROR SendKeyExportRequest(uint8_t keyExportConfig, uint32_t keyId, bool signMessage);
-    WEAVE_ERROR SendKeyExportResponse(WeaveKeyExport& keyExport, uint8_t msgType, const WeaveMessageInfo *msgInfo);
-    static void HandleKeyExportMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                                uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf);
-    void HandleKeyExportError(WEAVE_ERROR err, PacketBuffer *statusReportMsgBuf);
+    WEAVE_ERROR SendKeyExportResponse(WeaveKeyExport & keyExport, uint8_t msgType, const WeaveMessageInfo * msgInfo);
+    static void HandleKeyExportMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                PacketBuffer * msgBuf);
+    void HandleKeyExportError(WEAVE_ERROR err, PacketBuffer * statusReportMsgBuf);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    static void WRMPHandleAckRcvd(ExchangeContext *ec, void *msgCtxt);
-    static void WRMPHandleSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt);
+    static void WRMPHandleAckRcvd(ExchangeContext * ec, void * msgCtxt);
+    static void WRMPHandleSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt);
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
     void Reset(void);
 
     void AsyncNotifySecurityManagerAvailable();
-    static void DoNotifySecurityManagerAvailable(System::Layer *systemLayer, void *appState, System::Error err);
+    static void DoNotifySecurityManagerAvailable(System::Layer * systemLayer, void * appState, System::Error err);
 
-    void ReserveSessionKey(WeaveSessionKey *sessionKey);
-    void ReleaseSessionKey(WeaveSessionKey *sessionKey);
+    void ReserveSessionKey(WeaveSessionKey * sessionKey);
+    void ReleaseSessionKey(WeaveSessionKey * sessionKey);
 };
 
 } // namespace Weave

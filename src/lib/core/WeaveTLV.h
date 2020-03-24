@@ -62,7 +62,8 @@ namespace TLV {
 
 using nl::Weave::System::PacketBuffer;
 
-enum {
+enum
+{
     kTLVControlByte_NotSpecified = 0xFFFF
 };
 
@@ -94,16 +95,16 @@ enum {
  */
 class NL_DLL_EXPORT TLVReader
 {
-friend class TLVWriter;
-friend class TLVUpdater;
+    friend class TLVWriter;
+    friend class TLVUpdater;
 
 public:
     // *** See WeaveTLVReader.cpp file for API documentation ***
 
-    void Init(const TLVReader &aReader);
-    void Init(const uint8_t *data, uint32_t dataLen);
-    void Init(PacketBuffer *buf, uint32_t maxLen = 0xFFFFFFFFUL);
-    void Init(PacketBuffer *buf, uint32_t maxLen, bool allowDiscontiguousBuffers);
+    void Init(const TLVReader & aReader);
+    void Init(const uint8_t * data, uint32_t dataLen);
+    void Init(PacketBuffer * buf, uint32_t maxLen = 0xFFFFFFFFUL);
+    void Init(PacketBuffer * buf, uint32_t maxLen, bool allowDiscontiguousBuffers);
 
     WEAVE_ERROR Next(void);
     WEAVE_ERROR Next(TLVType expectedType, uint64_t expectedTag);
@@ -113,51 +114,51 @@ public:
     uint32_t GetLength(void) const;
     uint16_t GetControlByte(void) const;
 
-    WEAVE_ERROR Get(bool& v);
-    WEAVE_ERROR Get(int8_t& v);
-    WEAVE_ERROR Get(int16_t& v);
-    WEAVE_ERROR Get(int32_t& v);
-    WEAVE_ERROR Get(int64_t& v);
-    WEAVE_ERROR Get(uint8_t& v);
-    WEAVE_ERROR Get(uint16_t& v);
-    WEAVE_ERROR Get(uint32_t& v);
-    WEAVE_ERROR Get(uint64_t& v);
-    WEAVE_ERROR Get(float& v);
-    WEAVE_ERROR Get(double& v);
-    WEAVE_ERROR GetBytes(uint8_t *buf, uint32_t bufSize);
-    WEAVE_ERROR DupBytes(uint8_t *& buf, uint32_t& dataLen);
-    WEAVE_ERROR GetString(char *buf, uint32_t bufSize);
+    WEAVE_ERROR Get(bool & v);
+    WEAVE_ERROR Get(int8_t & v);
+    WEAVE_ERROR Get(int16_t & v);
+    WEAVE_ERROR Get(int32_t & v);
+    WEAVE_ERROR Get(int64_t & v);
+    WEAVE_ERROR Get(uint8_t & v);
+    WEAVE_ERROR Get(uint16_t & v);
+    WEAVE_ERROR Get(uint32_t & v);
+    WEAVE_ERROR Get(uint64_t & v);
+    WEAVE_ERROR Get(float & v);
+    WEAVE_ERROR Get(double & v);
+    WEAVE_ERROR GetBytes(uint8_t * buf, uint32_t bufSize);
+    WEAVE_ERROR DupBytes(uint8_t *& buf, uint32_t & dataLen);
+    WEAVE_ERROR GetString(char * buf, uint32_t bufSize);
     WEAVE_ERROR DupString(char *& buf);
     WEAVE_ERROR GetDataPtr(const uint8_t *& data);
 
-    WEAVE_ERROR EnterContainer(TLVType& outerContainerType);
+    WEAVE_ERROR EnterContainer(TLVType & outerContainerType);
     WEAVE_ERROR ExitContainer(TLVType outerContainerType);
-    WEAVE_ERROR OpenContainer(TLVReader& containerReader);
-    WEAVE_ERROR CloseContainer(TLVReader& containerReader);
+    WEAVE_ERROR OpenContainer(TLVReader & containerReader);
+    WEAVE_ERROR CloseContainer(TLVReader & containerReader);
     TLVType GetContainerType(void) const;
     WEAVE_ERROR VerifyEndOfContainer(void);
 
     uint32_t GetLengthRead(void) const { return mLenRead; }
     uint32_t GetRemainingLength(void) const { return mMaxLen - mLenRead; }
 
-    const uint8_t *GetReadPoint(void) const { return mReadPoint; }
+    const uint8_t * GetReadPoint(void) const { return mReadPoint; }
     uintptr_t GetBufHandle(void) const { return mBufHandle; }
 
     WEAVE_ERROR Skip(void);
 
     uint32_t ImplicitProfileId;
-    void *AppData;
+    void * AppData;
 
-    typedef WEAVE_ERROR (*GetNextBufferFunct)(TLVReader& reader, uintptr_t& bufHandle, const uint8_t *& bufStart,
-            uint32_t& bufLen);
+    typedef WEAVE_ERROR (*GetNextBufferFunct)(TLVReader & reader, uintptr_t & bufHandle, const uint8_t *& bufStart,
+                                              uint32_t & bufLen);
     GetNextBufferFunct GetNextBuffer;
 
 protected:
     uint64_t mElemTag;
     uint64_t mElemLenOrVal;
     uintptr_t mBufHandle;
-    const uint8_t *mReadPoint;
-    const uint8_t *mBufEnd;
+    const uint8_t * mReadPoint;
+    const uint8_t * mBufEnd;
     uint32_t mLenRead;
     uint32_t mMaxLen;
     TLVType mContainerType;
@@ -177,24 +178,21 @@ protected:
     WEAVE_ERROR VerifyElement(void);
     uint64_t ReadTag(TLVTagControl tagControl, const uint8_t *& p);
     WEAVE_ERROR EnsureData(WEAVE_ERROR noDataErr);
-    WEAVE_ERROR ReadData(uint8_t *buf, uint32_t len);
-    WEAVE_ERROR GetElementHeadLength(uint8_t& elemHeadBytes) const;
+    WEAVE_ERROR ReadData(uint8_t * buf, uint32_t len);
+    WEAVE_ERROR GetElementHeadLength(uint8_t & elemHeadBytes) const;
     TLVElementType ElementType(void) const;
 
-    static WEAVE_ERROR GetNextPacketBuffer(TLVReader& reader, uintptr_t& bufHandle, const uint8_t *& bufStart,
-            uint32_t& bufLen);
-    static WEAVE_ERROR FailGetNextBuffer(TLVReader& reader, uintptr_t& bufHandle, const uint8_t *& bufStart,
-            uint32_t& bufLen);
+    static WEAVE_ERROR GetNextPacketBuffer(TLVReader & reader, uintptr_t & bufHandle, const uint8_t *& bufStart, uint32_t & bufLen);
+    static WEAVE_ERROR FailGetNextBuffer(TLVReader & reader, uintptr_t & bufHandle, const uint8_t *& bufStart, uint32_t & bufLen);
 
 #if WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-    static WEAVE_ERROR GetNextInetBuffer(TLVReader& reader, uintptr_t& bufHandle, const uint8_t *& bufStart,
-            uint32_t& bufLen);
+    static WEAVE_ERROR GetNextInetBuffer(TLVReader & reader, uintptr_t & bufHandle, const uint8_t *& bufStart, uint32_t & bufLen);
 #endif // WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
 };
 
 #if WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-inline WEAVE_ERROR TLVReader::GetNextInetBuffer(TLVReader& reader, uintptr_t& bufHandle, const uint8_t *& bufStart,
-    uint32_t& bufLen)
+inline WEAVE_ERROR TLVReader::GetNextInetBuffer(TLVReader & reader, uintptr_t & bufHandle, const uint8_t *& bufStart,
+                                                uint32_t & bufLen)
 {
     return GetNextPacketBuffer(reader, bufHandle, bufStart, bufLen);
 }
@@ -217,13 +215,14 @@ inline WEAVE_ERROR TLVReader::GetNextInetBuffer(TLVReader& reader, uintptr_t& bu
  */
 class NL_DLL_EXPORT TLVWriter
 {
-friend class TLVUpdater;
+    friend class TLVUpdater;
+
 public:
     // *** See WeaveTLVWriter.cpp file for API documentation ***
 
-    void Init(uint8_t *buf, uint32_t maxLen);
-    void Init(PacketBuffer *buf, uint32_t maxLen = 0xFFFFFFFFUL);
-    void Init(PacketBuffer *buf, uint32_t maxLen, bool allowDiscontiguousBuffers);
+    void Init(uint8_t * buf, uint32_t maxLen);
+    void Init(PacketBuffer * buf, uint32_t maxLen = 0xFFFFFFFFUL);
+    void Init(PacketBuffer * buf, uint32_t maxLen, bool allowDiscontiguousBuffers);
 
     WEAVE_ERROR Finalize(void);
 
@@ -246,52 +245,50 @@ public:
     WEAVE_ERROR Put(uint64_t tag, float v);
     WEAVE_ERROR Put(uint64_t tag, double v);
     WEAVE_ERROR PutBoolean(uint64_t tag, bool v);
-    WEAVE_ERROR PutBytes(uint64_t tag, const uint8_t *buf, uint32_t len);
-    WEAVE_ERROR PutString(uint64_t tag, const char *buf);
-    WEAVE_ERROR PutString(uint64_t tag, const char *buf, uint32_t len);
-    WEAVE_ERROR PutStringF(uint64_t tag, const char *fmt, ...);
-    WEAVE_ERROR VPutStringF(uint64_t tag, const char *fmt, va_list ap);
+    WEAVE_ERROR PutBytes(uint64_t tag, const uint8_t * buf, uint32_t len);
+    WEAVE_ERROR PutString(uint64_t tag, const char * buf);
+    WEAVE_ERROR PutString(uint64_t tag, const char * buf, uint32_t len);
+    WEAVE_ERROR PutStringF(uint64_t tag, const char * fmt, ...);
+    WEAVE_ERROR VPutStringF(uint64_t tag, const char * fmt, va_list ap);
     WEAVE_ERROR PutNull(uint64_t tag);
-    WEAVE_ERROR CopyElement(TLVReader& reader);
-    WEAVE_ERROR CopyElement(uint64_t tag, TLVReader& reader);
+    WEAVE_ERROR CopyElement(TLVReader & reader);
+    WEAVE_ERROR CopyElement(uint64_t tag, TLVReader & reader);
 
-    WEAVE_ERROR StartContainer(uint64_t tag, TLVType containerType, TLVType& outerContainerType);
+    WEAVE_ERROR StartContainer(uint64_t tag, TLVType containerType, TLVType & outerContainerType);
     WEAVE_ERROR EndContainer(TLVType outerContainerType);
-    WEAVE_ERROR OpenContainer(uint64_t tag, TLVType containerType, TLVWriter& containerWriter);
-    WEAVE_ERROR CloseContainer(TLVWriter& containerWriter);
-    WEAVE_ERROR PutPreEncodedContainer(uint64_t tag, TLVType containerType, const uint8_t *data, uint32_t dataLen);
-    WEAVE_ERROR CopyContainer(TLVReader& container);
-    WEAVE_ERROR CopyContainer(uint64_t tag, TLVReader& container);
+    WEAVE_ERROR OpenContainer(uint64_t tag, TLVType containerType, TLVWriter & containerWriter);
+    WEAVE_ERROR CloseContainer(TLVWriter & containerWriter);
+    WEAVE_ERROR PutPreEncodedContainer(uint64_t tag, TLVType containerType, const uint8_t * data, uint32_t dataLen);
+    WEAVE_ERROR CopyContainer(TLVReader & container);
+    WEAVE_ERROR CopyContainer(uint64_t tag, TLVReader & container);
     WEAVE_ERROR CopyContainer(uint64_t tag, const uint8_t * encodedContainer, uint16_t encodedContainerLen);
     TLVType GetContainerType(void) const;
 
     uint32_t GetLengthWritten(void);
 
     uint32_t ImplicitProfileId;
-    void *AppData;
+    void * AppData;
 
-    typedef WEAVE_ERROR (*GetNewBufferFunct)(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart,
-            uint32_t& bufLen);
+    typedef WEAVE_ERROR (*GetNewBufferFunct)(TLVWriter & writer, uintptr_t & bufHandle, uint8_t *& bufStart, uint32_t & bufLen);
     GetNewBufferFunct GetNewBuffer;
 
-    typedef WEAVE_ERROR (*FinalizeBufferFunct)(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart,
-            uint32_t bufLen);
+    typedef WEAVE_ERROR (*FinalizeBufferFunct)(TLVWriter & writer, uintptr_t bufHandle, uint8_t * bufStart, uint32_t bufLen);
     FinalizeBufferFunct FinalizeBuffer;
 
     // Implementations of GetNewBufferFunct/FinalizeBufferFunct that support writing into one or more
     // PacketBuffers.
-    static WEAVE_ERROR GetNewPacketBuffer(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart, uint32_t& bufLen);
-    static WEAVE_ERROR FinalizePacketBuffer(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart, uint32_t dataLen);
+    static WEAVE_ERROR GetNewPacketBuffer(TLVWriter & writer, uintptr_t & bufHandle, uint8_t *& bufStart, uint32_t & bufLen);
+    static WEAVE_ERROR FinalizePacketBuffer(TLVWriter & writer, uintptr_t bufHandle, uint8_t * bufStart, uint32_t dataLen);
 
 #if WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-    static WEAVE_ERROR GetNewInetBuffer(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart, uint32_t& bufLen);
-    static WEAVE_ERROR FinalizeInetBuffer(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart, uint32_t dataLen);
+    static WEAVE_ERROR GetNewInetBuffer(TLVWriter & writer, uintptr_t & bufHandle, uint8_t *& bufStart, uint32_t & bufLen);
+    static WEAVE_ERROR FinalizeInetBuffer(TLVWriter & writer, uintptr_t bufHandle, uint8_t * bufStart, uint32_t dataLen);
 #endif // WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
 
 protected:
     uintptr_t mBufHandle;
-    uint8_t *mBufStart;
-    uint8_t *mWritePoint;
+    uint8_t * mBufStart;
+    uint8_t * mWritePoint;
     uint32_t mRemainingLen;
     uint32_t mLenWritten;
     uint32_t mMaxLen;
@@ -305,7 +302,8 @@ protected:
     bool IsContainerOpen(void) const { return mContainerOpen; }
     void SetContainerOpen(bool aContainerOpen) { mContainerOpen = aContainerOpen; }
 
-    enum {
+    enum
+    {
         kEndOfContainerMarkerSize = 1, /**< Size of the EndOfContainer marker, used in reserving space. */
     };
 
@@ -326,20 +324,20 @@ protected:
     void SetCloseContainerReserved(bool aCloseContainerReserved) { mCloseContainerReserved = aCloseContainerReserved; }
 
 #if CONFIG_HAVE_VCBPRINTF
-    static void WeaveTLVWriterPutcharCB(uint8_t c, void *appState);
+    static void WeaveTLVWriterPutcharCB(uint8_t c, void * appState);
 #endif
     WEAVE_ERROR WriteElementHead(TLVElementType elemType, uint64_t tag, uint64_t lenOrVal);
-    WEAVE_ERROR WriteElementWithData(TLVType type, uint64_t tag, const uint8_t *data, uint32_t dataLen);
-    WEAVE_ERROR WriteData(const uint8_t *p, uint32_t len);
+    WEAVE_ERROR WriteElementWithData(TLVType type, uint64_t tag, const uint8_t * data, uint32_t dataLen);
+    WEAVE_ERROR WriteData(const uint8_t * p, uint32_t len);
 };
 
 #if WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-inline WEAVE_ERROR TLVWriter::GetNewInetBuffer(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart, uint32_t& bufLen)
+inline WEAVE_ERROR TLVWriter::GetNewInetBuffer(TLVWriter & writer, uintptr_t & bufHandle, uint8_t *& bufStart, uint32_t & bufLen)
 {
     return GetNewPacketBuffer(writer, bufHandle, bufStart, bufLen);
 }
 
-inline WEAVE_ERROR TLVWriter::FinalizeInetBuffer(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart, uint32_t dataLen)
+inline WEAVE_ERROR TLVWriter::FinalizeInetBuffer(TLVWriter & writer, uintptr_t bufHandle, uint8_t * bufStart, uint32_t dataLen)
 {
     return FinalizePacketBuffer(writer, bufHandle, bufStart, dataLen);
 }
@@ -382,8 +380,8 @@ inline WEAVE_ERROR TLVWriter::FinalizeInetBuffer(TLVWriter& writer, uintptr_t bu
 class NL_DLL_EXPORT TLVUpdater
 {
 public:
-    WEAVE_ERROR Init(uint8_t *buf, uint32_t dataLen, uint32_t maxLen);
-    WEAVE_ERROR Init(TLVReader& aReader, uint32_t freeLen);
+    WEAVE_ERROR Init(uint8_t * buf, uint32_t dataLen, uint32_t maxLen);
+    WEAVE_ERROR Init(TLVReader & aReader, uint32_t freeLen);
     WEAVE_ERROR Finalize(void) { return mUpdaterWriter.Finalize(); }
 
     // Common methods
@@ -391,27 +389,27 @@ public:
     uint32_t GetImplicitProfileId(void) { return mUpdaterReader.ImplicitProfileId; }
     WEAVE_ERROR Move(void);
     void MoveUntilEnd(void);
-    WEAVE_ERROR EnterContainer(TLVType& outerContainerType);
+    WEAVE_ERROR EnterContainer(TLVType & outerContainerType);
     WEAVE_ERROR ExitContainer(TLVType outerContainerType);
-    void GetReader(TLVReader& containerReader) { containerReader = mUpdaterReader; }
+    void GetReader(TLVReader & containerReader) { containerReader = mUpdaterReader; }
 
     // Reader methods
     WEAVE_ERROR Next(void);
 
-    WEAVE_ERROR Get(bool& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(int8_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(int16_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(int32_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(int64_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(uint8_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(uint16_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(uint32_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(uint64_t& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(float& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR Get(double& v) { return mUpdaterReader.Get(v); }
-    WEAVE_ERROR GetBytes(uint8_t *buf, uint32_t bufSize) { return mUpdaterReader.GetBytes(buf, bufSize); }
-    WEAVE_ERROR DupBytes(uint8_t *& buf, uint32_t& dataLen) { return mUpdaterReader.DupBytes(buf, dataLen); }
-    WEAVE_ERROR GetString(char *buf, uint32_t bufSize) { return mUpdaterReader.GetString(buf, bufSize); }
+    WEAVE_ERROR Get(bool & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(int8_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(int16_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(int32_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(int64_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(uint8_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(uint16_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(uint32_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(uint64_t & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(float & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR Get(double & v) { return mUpdaterReader.Get(v); }
+    WEAVE_ERROR GetBytes(uint8_t * buf, uint32_t bufSize) { return mUpdaterReader.GetBytes(buf, bufSize); }
+    WEAVE_ERROR DupBytes(uint8_t *& buf, uint32_t & dataLen) { return mUpdaterReader.DupBytes(buf, dataLen); }
+    WEAVE_ERROR GetString(char * buf, uint32_t bufSize) { return mUpdaterReader.GetString(buf, bufSize); }
     WEAVE_ERROR DupString(char *& buf) { return mUpdaterReader.DupString(buf); }
 
     TLVType GetType(void) const { return mUpdaterReader.GetType(); }
@@ -444,12 +442,15 @@ public:
     WEAVE_ERROR Put(uint64_t tag, double v) { return mUpdaterWriter.Put(tag, v); }
     WEAVE_ERROR PutBoolean(uint64_t tag, bool v) { return mUpdaterWriter.PutBoolean(tag, v); }
     WEAVE_ERROR PutNull(uint64_t tag) { return mUpdaterWriter.PutNull(tag); }
-    WEAVE_ERROR PutBytes(uint64_t tag, const uint8_t *buf, uint32_t len) { return mUpdaterWriter.PutBytes(tag, buf, len); }
-    WEAVE_ERROR PutString(uint64_t tag, const char *buf) { return mUpdaterWriter.PutString(tag, buf); }
-    WEAVE_ERROR PutString(uint64_t tag, const char *buf, uint32_t len) { return mUpdaterWriter.PutString(tag, buf, len); }
-    WEAVE_ERROR CopyElement(TLVReader& reader) { return mUpdaterWriter.CopyElement(reader); }
-    WEAVE_ERROR CopyElement(uint64_t tag, TLVReader& reader) { return mUpdaterWriter.CopyElement(tag, reader); }
-    WEAVE_ERROR StartContainer(uint64_t tag, TLVType containerType, TLVType& outerContainerType) { return mUpdaterWriter.StartContainer(tag, containerType, outerContainerType); }
+    WEAVE_ERROR PutBytes(uint64_t tag, const uint8_t * buf, uint32_t len) { return mUpdaterWriter.PutBytes(tag, buf, len); }
+    WEAVE_ERROR PutString(uint64_t tag, const char * buf) { return mUpdaterWriter.PutString(tag, buf); }
+    WEAVE_ERROR PutString(uint64_t tag, const char * buf, uint32_t len) { return mUpdaterWriter.PutString(tag, buf, len); }
+    WEAVE_ERROR CopyElement(TLVReader & reader) { return mUpdaterWriter.CopyElement(reader); }
+    WEAVE_ERROR CopyElement(uint64_t tag, TLVReader & reader) { return mUpdaterWriter.CopyElement(tag, reader); }
+    WEAVE_ERROR StartContainer(uint64_t tag, TLVType containerType, TLVType & outerContainerType)
+    {
+        return mUpdaterWriter.StartContainer(tag, containerType, outerContainerType);
+    }
     WEAVE_ERROR EndContainer(TLVType outerContainerType) { return mUpdaterWriter.EndContainer(outerContainerType); }
     uint32_t GetLengthWritten(void) { return mUpdaterWriter.GetLengthWritten(); }
     uint32_t GetRemainingFreeLength(void) { return mUpdaterWriter.mRemainingLen; }
@@ -458,8 +459,8 @@ private:
     void AdjustInternalWriterFreeSpace(void);
 
 private:
-    TLVWriter       mUpdaterWriter;
-    TLVReader       mUpdaterReader;
+    TLVWriter mUpdaterWriter;
+    TLVReader mUpdaterReader;
     const uint8_t * mElementStartAddr;
 };
 

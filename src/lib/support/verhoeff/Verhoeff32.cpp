@@ -94,12 +94,12 @@ int8_t Verhoeff32::sCharToValTable[] =
 
 char Verhoeff32::sValToCharTable[] = "0123456789ABCDEFGHJKLMNPRSTUVWXY";
 
-char Verhoeff32::ComputeCheckChar(const char *str)
+char Verhoeff32::ComputeCheckChar(const char * str)
 {
     return ComputeCheckChar(str, strlen(str));
 }
 
-char Verhoeff32::ComputeCheckChar(const char *str, size_t strLen)
+char Verhoeff32::ComputeCheckChar(const char * str, size_t strLen)
 {
     int c = 0;
 
@@ -125,22 +125,22 @@ char Verhoeff32::ComputeCheckChar(const char *str, size_t strLen)
     return ValToChar(c);
 }
 
-bool Verhoeff32::ValidateCheckChar(char checkChar, const char *str)
+bool Verhoeff32::ValidateCheckChar(char checkChar, const char * str)
 {
     return ValidateCheckChar(checkChar, str, strlen(str));
 }
 
-bool Verhoeff32::ValidateCheckChar(char checkChar, const char *str, size_t strLen)
+bool Verhoeff32::ValidateCheckChar(char checkChar, const char * str, size_t strLen)
 {
     return (ComputeCheckChar(str, strLen) == checkChar);
 }
 
-bool Verhoeff32::ValidateCheckChar(const char *str)
+bool Verhoeff32::ValidateCheckChar(const char * str)
 {
     return ValidateCheckChar(str, strlen(str));
 }
 
-bool Verhoeff32::ValidateCheckChar(const char *str, size_t strLen)
+bool Verhoeff32::ValidateCheckChar(const char * str, size_t strLen)
 {
     if (strLen == 0)
         return false;
@@ -150,7 +150,7 @@ bool Verhoeff32::ValidateCheckChar(const char *str, size_t strLen)
 int Verhoeff32::CharToVal(char ch)
 {
     if (ch >= '0' && ch <= 'y')
-        return sCharToValTable[(int)ch - '0'];
+        return sCharToValTable[(int) ch - '0'];
     else
         return -1;
 }

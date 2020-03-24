@@ -28,10 +28,10 @@
 
 #include <Weave/Support/ManagedNamespace.hpp>
 
-#if defined(WEAVE_CONFIG_BDX_NAMESPACE) \
-    && (WEAVE_CONFIG_BDX_NAMESPACE != kWeaveManagedNamespace_Current) \
-    && (WEAVE_CONFIG_BDX_NAMESPACE != kWeaveManagedNamespace_Development)
-#error "WEAVE_CONFIG_BDX_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Current or kWeaveManagedNamespace_Development"
+#if defined(WEAVE_CONFIG_BDX_NAMESPACE) && (WEAVE_CONFIG_BDX_NAMESPACE != kWeaveManagedNamespace_Current) &&                       \
+    (WEAVE_CONFIG_BDX_NAMESPACE != kWeaveManagedNamespace_Development)
+#error                                                                                                                             \
+    "WEAVE_CONFIG_BDX_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Current or kWeaveManagedNamespace_Development"
 #endif
 
 #ifndef WEAVE_CONFIG_BDX_NAMESPACE

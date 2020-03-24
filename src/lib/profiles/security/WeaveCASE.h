@@ -53,15 +53,14 @@ namespace Security {
 namespace CASE {
 
 using nl::Weave::ASN1::OID;
-using nl::Weave::TLV::TLVWriter;
+using nl::Weave::Crypto::EncodedECDSASignature;
+using nl::Weave::Crypto::EncodedECPrivateKey;
+using nl::Weave::Crypto::EncodedECPublicKey;
 using nl::Weave::Platform::Security::SHA1;
 using nl::Weave::Platform::Security::SHA256;
-using nl::Weave::Crypto::EncodedECPublicKey;
-using nl::Weave::Crypto::EncodedECPrivateKey;
-using nl::Weave::Crypto::EncodedECDSASignature;
+using nl::Weave::TLV::TLVWriter;
 
 class WeaveCASEEngine;
-
 
 // CASE Protocol Configuration Values
 // clang-format off
@@ -142,14 +141,13 @@ public:
 protected:
     enum
     {
-        kFlag_IsBeginSessionRequest     = 0x01,
-        kFlag_IsInitiator               = 0x02,
-        kFlag_PerformKeyConfirm         = 0x04,
+        kFlag_IsBeginSessionRequest = 0x01,
+        kFlag_IsInitiator           = 0x02,
+        kFlag_PerformKeyConfirm     = 0x04,
     };
 
     uint8_t Flags;
 };
-
 
 /**
  * Holds context information related to the generation or processing of a CASE BeginSessionRequest message.
@@ -159,8 +157,8 @@ class BeginSessionRequestContext : public BeginSessionContext
 public:
     enum
     {
-        kMaxAlternateProtocolConfigs    = 4,
-        kMaxAlternateCurveIds           = 4
+        kMaxAlternateProtocolConfigs = 4,
+        kMaxAlternateCurveIds        = 4
     };
 
     uint32_t AlternateConfigs[kMaxAlternateProtocolConfigs];
@@ -177,7 +175,6 @@ public:
     bool IsAltConfig(uint32_t config) const;
 };
 
-
 /**
  * Holds context information related to the generation or processing of a CASE BeginSessionRequest message.
  */
@@ -193,7 +190,6 @@ public:
     void Reset(void);
 };
 
-
 /**
  * Holds information related to the generation or processing of a CASE Reconfigure message.
  */
@@ -203,11 +199,10 @@ public:
     uint32_t ProtocolConfig;
     uint32_t CurveId;
 
-    WEAVE_ERROR Encode(PacketBuffer *buf);
+    WEAVE_ERROR Encode(PacketBuffer * buf);
     void Reset(void);
-    static WEAVE_ERROR Decode(PacketBuffer *buf, ReconfigureContext& msg);
+    static WEAVE_ERROR Decode(PacketBuffer * buf, ReconfigureContext & msg);
 };
-
 
 /**
  * Abstract interface to which authentication actions are delegated during CASE
@@ -216,7 +211,6 @@ public:
 class WeaveCASEAuthDelegate
 {
 public:
-
 #if !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
     // ===== Abstract Interface methods
@@ -241,9 +235,8 @@ public:
      * In cases where the node's private key is held in a local buffer, the GenerateAndEncodeWeaveECDSASignature()
      * utility function can be useful for implementing this method.
      */
-    virtual WEAVE_ERROR GenerateNodeSignature(const BeginSessionContext & msgCtx,
-            const uint8_t * msgHash, uint8_t msgHashLen,
-            TLVWriter & writer, uint64_t tag) = 0;
+    virtual WEAVE_ERROR GenerateNodeSignature(const BeginSessionContext & msgCtx, const uint8_t * msgHash, uint8_t msgHashLen,
+                                              TLVWriter & writer, uint64_t tag) = 0;
 
     /**
      * Encode an application-specific payload to be included in the CASE message to the peer.
@@ -251,8 +244,8 @@ public:
      * Implementing this method is optional.  The default implementation returns a zero-length
      * payload.
      */
-    virtual WEAVE_ERROR EncodeNodePayload(const BeginSessionContext & msgCtx,
-            uint8_t * payloadBuf, uint16_t payloadBufSize, uint16_t & payloadLen);
+    virtual WEAVE_ERROR EncodeNodePayload(const BeginSessionContext & msgCtx, uint8_t * payloadBuf, uint16_t payloadBufSize,
+                                          uint16_t & payloadLen);
 
     /**
      * Called at the start of certificate validation.
@@ -280,7 +273,7 @@ public:
      * that EndValidation() will be called exactly once for each successful call to BeginValidation().
      */
     virtual WEAVE_ERROR BeginValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) = 0;
+                                        WeaveCertificateSet & certSet) = 0;
 
     /**
      * Called after the peer's certificates have been loaded.
@@ -307,8 +300,8 @@ public:
      *
      * Implementing this method is optional. The default implementation does nothing.
      */
-    virtual WEAVE_ERROR OnPeerCertsLoaded(const BeginSessionContext & msgCtx, WeaveDN & subjectDN,
-            CertificateKeyId & subjectKeyId, ValidationContext & validCtx, WeaveCertificateSet& certSet);
+    virtual WEAVE_ERROR OnPeerCertsLoaded(const BeginSessionContext & msgCtx, WeaveDN & subjectDN, CertificateKeyId & subjectKeyId,
+                                          ValidationContext & validCtx, WeaveCertificateSet & certSet);
 
     /**
      * Called with the result of certificate validation.
@@ -328,7 +321,7 @@ public:
      * override the result to a different error value, but MUST NOT set the result to WEAVE_NO_ERROR.
      */
     virtual WEAVE_ERROR HandleValidationResult(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet, WEAVE_ERROR & validRes) = 0;
+                                               WeaveCertificateSet & certSet, WEAVE_ERROR & validRes) = 0;
 
     /** Called at the end of certificate validation.
      *
@@ -336,8 +329,7 @@ public:
      * Implementations are guaranteed that EndValidation() will be called exactly once for each
      * successful call to BeginValidation().
      */
-    virtual void EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) = 0;
+    virtual void EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx, WeaveCertificateSet & certSet) = 0;
 
 #else // !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
@@ -362,33 +354,30 @@ public:
     // Called with the results of validating the peer's certificate. If basic cert validation was successful, this method can
     // cause validation to fail by setting validRes, e.g. in the event that the peer's certificate is somehow unacceptable.
     virtual WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WEAVE_ERROR & validRes, WeaveCertificateData * peerCert,
-            uint64_t peerNodeId, WeaveCertificateSet & certSet, ValidationContext & validCtx) = 0;
+                                                   uint64_t peerNodeId, WeaveCertificateSet & certSet,
+                                                   ValidationContext & validCtx) = 0;
 
     // Called when peer certificate validation is complete.
     virtual WEAVE_ERROR EndCertValidation(WeaveCertificateSet & certSet, ValidationContext & validCtx) = 0;
 
 private:
-
     // ===== Private members that provide compatibility with the non-legacy interface.
 
     friend class WeaveCASEEngine;
 
-    WEAVE_ERROR GenerateNodeSignature(const BeginSessionContext & msgCtx,
-            const uint8_t * msgHash, uint8_t msgHashLen, TLVWriter & writer, uint64_t tag);
-    WEAVE_ERROR EncodeNodePayload(const BeginSessionContext & msgCtx,
-                uint8_t * payloadBuf, uint16_t payloadBufSize, uint16_t & payloadLen);
-    WEAVE_ERROR BeginValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet);
-    WEAVE_ERROR OnPeerCertsLoaded(const BeginSessionContext & msgCtx, WeaveDN & subjectDN,
-            CertificateKeyId & subjectKeyId, ValidationContext & validCtx, WeaveCertificateSet& certSet);
+    WEAVE_ERROR GenerateNodeSignature(const BeginSessionContext & msgCtx, const uint8_t * msgHash, uint8_t msgHashLen,
+                                      TLVWriter & writer, uint64_t tag);
+    WEAVE_ERROR EncodeNodePayload(const BeginSessionContext & msgCtx, uint8_t * payloadBuf, uint16_t payloadBufSize,
+                                  uint16_t & payloadLen);
+    WEAVE_ERROR BeginValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx, WeaveCertificateSet & certSet);
+    WEAVE_ERROR OnPeerCertsLoaded(const BeginSessionContext & msgCtx, WeaveDN & subjectDN, CertificateKeyId & subjectKeyId,
+                                  ValidationContext & validCtx, WeaveCertificateSet & certSet);
     WEAVE_ERROR HandleValidationResult(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet, WEAVE_ERROR & validRes);
-    void EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet);
+                                       WeaveCertificateSet & certSet, WEAVE_ERROR & validRes);
+    void EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx, WeaveCertificateSet & certSet);
 
 #endif // WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 };
-
 
 /**
  * Implements the core logic of the Weave CASE protocol.
@@ -398,19 +387,19 @@ class NL_DLL_EXPORT WeaveCASEEngine
 public:
     enum EngineState
     {
-        kState_Idle                             = 0,
-        kState_BeginRequestGenerated            = 1,
-        kState_BeginResponseProcessed           = 2,
-        kState_BeginRequestProcessed            = 3,
-        kState_BeginResponseGenerated           = 4,
-        kState_Complete                         = 5,
-        kState_Failed                           = 6
+        kState_Idle                   = 0,
+        kState_BeginRequestGenerated  = 1,
+        kState_BeginResponseProcessed = 2,
+        kState_BeginRequestProcessed  = 3,
+        kState_BeginResponseGenerated = 4,
+        kState_Complete               = 5,
+        kState_Failed                 = 6
     };
 
-    WeaveCASEAuthDelegate *AuthDelegate;                ///< Authentication delegate object
-    uint8_t State;                                      ///< [READ-ONLY] Current protocol state
-    uint8_t EncryptionType;                             ///< [READ-ONLY] Proposed Weave encryption type
-    uint16_t SessionKeyId;                              ///< [READ-ONLY] Proposed session key id
+    WeaveCASEAuthDelegate * AuthDelegate; ///< Authentication delegate object
+    uint8_t State;                        ///< [READ-ONLY] Current protocol state
+    uint8_t EncryptionType;               ///< [READ-ONLY] Proposed Weave encryption type
+    uint16_t SessionKeyId;                ///< [READ-ONLY] Proposed session key id
 
     void Init(void);
     void Shutdown(void);
@@ -422,7 +411,8 @@ public:
 
     WEAVE_ERROR GenerateBeginSessionRequest(BeginSessionRequestContext & reqCtx, PacketBuffer * msgBuf);
 
-    WEAVE_ERROR ProcessBeginSessionRequest(PacketBuffer * msgBuf, BeginSessionRequestContext & reqCtx, ReconfigureContext & reconfCtx);
+    WEAVE_ERROR ProcessBeginSessionRequest(PacketBuffer * msgBuf, BeginSessionRequestContext & reqCtx,
+                                           ReconfigureContext & reconfCtx);
 
     WEAVE_ERROR GenerateBeginSessionResponse(BeginSessionResponseContext & respCtx, PacketBuffer * msgBuf,
                                              BeginSessionRequestContext & reqCtx);
@@ -521,24 +511,20 @@ private:
     WEAVE_ERROR AppendPayload(BeginSessionContext & msgCtx, PacketBuffer * msgBuf);
     WEAVE_ERROR AppendSignature(BeginSessionContext & msgCtx, PacketBuffer * msgBuf, uint8_t * msgHash);
     WEAVE_ERROR VerifySignature(BeginSessionContext & msgCtx, PacketBuffer * msgBuf, uint8_t * msgHash);
-    static WEAVE_ERROR DecodeCertificateInfo(BeginSessionContext & msgCtx, WeaveCertificateSet & certSet,
-            WeaveDN & entityCertDN, CertificateKeyId & entityCertSubjectKeyId);
+    static WEAVE_ERROR DecodeCertificateInfo(BeginSessionContext & msgCtx, WeaveCertificateSet & certSet, WeaveDN & entityCertDN,
+                                             CertificateKeyId & entityCertSubjectKeyId);
     WEAVE_ERROR DeriveSessionKeys(EncodedECPublicKey & pubKey, const uint8_t * respMsgHash, uint8_t * responderKeyConfirmHash);
     void GenerateHash(const uint8_t * inData, uint16_t inDataLen, uint8_t * hash);
     void GenerateKeyConfirmHashes(const uint8_t * keyConfirmKey, uint8_t * singleHash, uint8_t * doubleHash);
 };
 
-
 // Utility Functions
 
-WEAVE_ERROR EncodeCASECertInfo(uint8_t * buf, uint16_t bufSize, uint16_t& certInfoLen,
-        const uint8_t * entityCert, uint16_t entityCertLen,
-        const uint8_t * intermediateCert, uint16_t intermediateCertLen);
+WEAVE_ERROR EncodeCASECertInfo(uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen, const uint8_t * entityCert,
+                               uint16_t entityCertLen, const uint8_t * intermediateCert, uint16_t intermediateCertLen);
 
-WEAVE_ERROR EncodeCASECertInfo(TLVWriter & writer,
-        const uint8_t * entityCert, uint16_t entityCertLen,
-        const uint8_t * intermediateCert, uint16_t intermediateCertLen);
-
+WEAVE_ERROR EncodeCASECertInfo(TLVWriter & writer, const uint8_t * entityCert, uint16_t entityCertLen,
+                               const uint8_t * intermediateCert, uint16_t intermediateCertLen);
 
 // Inline Methods
 
@@ -574,17 +560,17 @@ inline void BeginSessionContext::SetPerformKeyConfirm(bool val)
 
 inline uint16_t BeginSessionRequestContext::HeadLength(void)
 {
-    return (1 +                                 // control header
-            1 +                                 // alternate config count
-            1 +                                 // alternate curve count
-            1 +                                 // DH public key length
-            2 +                                 // certificate information length
-            2 +                                 // payload length
-            4 +                                 // proposed protocol config
-            4 +                                 // proposed elliptic curve
-            2 +                                 // session key id
-            (AlternateConfigCount * 4) +        // alternate config list
-            (AlternateCurveCount * 4));         // alternate curve list
+    return (1 +                          // control header
+            1 +                          // alternate config count
+            1 +                          // alternate curve count
+            1 +                          // DH public key length
+            2 +                          // certificate information length
+            2 +                          // payload length
+            4 +                          // proposed protocol config
+            4 +                          // proposed elliptic curve
+            2 +                          // session key id
+            (AlternateConfigCount * 4) + // alternate config list
+            (AlternateCurveCount * 4));  // alternate curve list
 }
 
 inline void BeginSessionRequestContext::Reset(void)
@@ -595,10 +581,10 @@ inline void BeginSessionRequestContext::Reset(void)
 
 inline uint16_t BeginSessionResponseContext::HeadLength(void)
 {
-    return (1 +                                 // control header
-            1 +                                 // DH public key length
-            2 +                                 // certificate information length
-            2);                                 // payload length
+    return (1 + // control header
+            1 + // DH public key length
+            2 + // certificate information length
+            2); // payload length
 }
 
 inline void BeginSessionResponseContext::Reset(void)
@@ -613,32 +599,33 @@ inline void ReconfigureContext::Reset(void)
 
 #if WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
-inline WEAVE_ERROR WeaveCASEAuthDelegate::EncodeNodePayload(const BeginSessionContext & msgCtx,
-        uint8_t * payloadBuf, uint16_t payloadBufSize, uint16_t & payloadLen)
+inline WEAVE_ERROR WeaveCASEAuthDelegate::EncodeNodePayload(const BeginSessionContext & msgCtx, uint8_t * payloadBuf,
+                                                            uint16_t payloadBufSize, uint16_t & payloadLen)
 {
     return GetNodePayload(msgCtx.IsInitiator(), payloadBuf, payloadBufSize, payloadLen);
 }
 
 inline WEAVE_ERROR WeaveCASEAuthDelegate::BeginValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-        WeaveCertificateSet & certSet)
+                                                          WeaveCertificateSet & certSet)
 {
     return BeginCertValidation(msgCtx.IsInitiator(), certSet, validCtx);
 }
 
 inline WEAVE_ERROR WeaveCASEAuthDelegate::OnPeerCertsLoaded(const BeginSessionContext & msgCtx, WeaveDN & subjectDN,
-        CertificateKeyId & subjectKeyId, ValidationContext & validCtx, WeaveCertificateSet& certSet)
+                                                            CertificateKeyId & subjectKeyId, ValidationContext & validCtx,
+                                                            WeaveCertificateSet & certSet)
 {
     return WEAVE_NO_ERROR;
 }
 
 inline WEAVE_ERROR WeaveCASEAuthDelegate::HandleValidationResult(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-        WeaveCertificateSet & certSet, WEAVE_ERROR & validRes)
+                                                                 WeaveCertificateSet & certSet, WEAVE_ERROR & validRes)
 {
     return HandleCertValidationResult(msgCtx.IsInitiator(), validRes, validCtx.SigningCert, msgCtx.PeerNodeId, certSet, validCtx);
 }
 
 inline void WeaveCASEAuthDelegate::EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-        WeaveCertificateSet & certSet)
+                                                 WeaveCertificateSet & certSet)
 {
     EndCertValidation(certSet, validCtx);
 }
@@ -796,7 +783,6 @@ inline void WeaveCASEEngine::SetUseKnownECDHKey(bool val)
 }
 
 #endif // WEAVE_CONFIG_SECURITY_TEST_MODE
-
 
 } // namespace CASE
 } // namespace Security

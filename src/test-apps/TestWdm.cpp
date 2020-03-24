@@ -52,54 +52,53 @@ using namespace nl;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles::DataManagement;
 
-
 namespace nl {
 namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current) {
 namespace Platform {
-    // for unit tests, the dummy critical section is sufficient.
-    void CriticalSectionEnter()
-    {
-        return;
-    }
-
-    void CriticalSectionExit()
-    {
-        return;
-    }
-} // Platform
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}
-}
+// for unit tests, the dummy critical section is sufficient.
+void CriticalSectionEnter()
+{
+    return;
 }
 
-static SubscriptionEngine *gSubscriptionEngine;
+void CriticalSectionExit()
+{
+    return;
+}
+} // namespace Platform
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
+
+static SubscriptionEngine * gSubscriptionEngine;
 
 SubscriptionEngine * SubscriptionEngine::GetInstance()
 {
     return gSubscriptionEngine;
 }
 
-static void TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite, void *inContext);
+static void TestCounterSubscription_BufferAllocFailure(nlTestSuite * inSuite, void * inContext);
 
 // Test Suite
 
 /**
  *  Test Suite that lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("Test Counter Subscription -- Buffer Allocation Failure", TestCounterSubscription_BufferAllocFailure),
+static const nlTest sTests[] = { NL_TEST_DEF("Test Counter Subscription -- Buffer Allocation Failure",
+                                             TestCounterSubscription_BufferAllocFailure),
 
-    NL_TEST_SENTINEL()
-};
+                                 NL_TEST_SENTINEL() };
 
 namespace nl {
 namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current) {
 
-class TestWdm {
+class TestWdm
+{
 public:
     TestWdm();
 
@@ -108,26 +107,25 @@ public:
     int Reset();
     int BuildAndProcessNotify();
 
-    void TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite);
+    void TestCounterSubscription_BufferAllocFailure(nlTestSuite * inSuite);
     void SpoofPublisherSubscription();
 
-    static void ClientSubscriptionEventCallback(void * const aAppState,
-                                        SubscriptionClient::EventID aEvent,
-                                        const SubscriptionClient::InEventParam & aInParam,
-                                        SubscriptionClient::OutEventParam & aOutParam);
+    static void ClientSubscriptionEventCallback(void * const aAppState, SubscriptionClient::EventID aEvent,
+                                                const SubscriptionClient::InEventParam & aInParam,
+                                                SubscriptionClient::OutEventParam & aOutParam);
 
     static void BindingEventCallback(void * const apAppState, const nl::Weave::Binding::EventType aEventType,
-                                            const nl::Weave::Binding::InEventParam & aInParam,
-                                            nl::Weave::Binding::OutEventParam & aOutParam);
+                                     const nl::Weave::Binding::InEventParam & aInParam,
+                                     nl::Weave::Binding::OutEventParam & aOutParam);
 
-    static void PublisherEventCallback (void * const aAppState,
-        SubscriptionHandler::EventID aEvent, const SubscriptionHandler::InEventParam & aInParam,
-        SubscriptionHandler::OutEventParam & aOutParam);
+    static void PublisherEventCallback(void * const aAppState, SubscriptionHandler::EventID aEvent,
+                                       const SubscriptionHandler::InEventParam & aInParam,
+                                       SubscriptionHandler::OutEventParam & aOutParam);
 
 private:
-    SubscriptionHandler *mSubHandler;
-    SubscriptionClient *mSubClient;
-    NotificationEngine *mNotificationEngine;
+    SubscriptionHandler * mSubHandler;
+    SubscriptionClient * mSubClient;
+    NotificationEngine * mNotificationEngine;
 
     SubscriptionEngine mSubscriptionEngine;
     WeaveExchangeManager mExchangeMgr;
@@ -137,7 +135,7 @@ private:
     SingleResourceSinkTraitCatalog::CatalogItem mSinkCatalogStore[4];
     SingleResourceSinkTraitCatalog mSinkCatalog;
 
-    Binding *mClientBinding;
+    Binding * mClientBinding;
     uint64_t mPeerSubscriptionId;
 
     uint32_t mTestCase;
@@ -145,123 +143,114 @@ private:
     bool mClientSubscriptionPresent;
 };
 
-TestWdm *gTestWdm;
+TestWdm * gTestWdm;
 
-TestWdm::TestWdm()
-    : mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, 4),
-      mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore, 4),
-      mClientBinding(NULL)
+TestWdm::TestWdm() :
+    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, 4),
+    mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore, 4), mClientBinding(NULL)
 {
     mTestCase = 0;
 }
 
 void TestWdm::SpoofPublisherSubscription()
 {
-    mSubHandler->mRefCount = 1;
+    mSubHandler->mRefCount            = 1;
     mSubHandler->mLivenessTimeoutMsec = 2000;
-    mSubHandler->mSubscriptionId = 1;
-    mPeerSubscriptionId = 1;
-    mSubHandler->mCurrentState = SubscriptionHandler::kState_SubscriptionEstablished_Idle;
+    mSubHandler->mSubscriptionId      = 1;
+    mPeerSubscriptionId               = 1;
+    mSubHandler->mCurrentState        = SubscriptionHandler::kState_SubscriptionEstablished_Idle;
 }
 
-void
-TestWdm::BindingEventCallback(void * const apAppState, const nl::Weave::Binding::EventType aEventType,
-                                            const nl::Weave::Binding::InEventParam & aInParam,
-                                            nl::Weave::Binding::OutEventParam & aOutParam)
+void TestWdm::BindingEventCallback(void * const apAppState, const nl::Weave::Binding::EventType aEventType,
+                                   const nl::Weave::Binding::InEventParam & aInParam, nl::Weave::Binding::OutEventParam & aOutParam)
 {
-    TestWdm *_this = static_cast<TestWdm*>(apAppState);
+    TestWdm * _this = static_cast<TestWdm *>(apAppState);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aEventType) {
-        case Binding::kEvent_PrepareRequested:
-        {
-            err = _this->mClientBinding->BeginConfiguration()
-                .Target_ServiceEndpoint(kServiceEndpoint_Data_Management)
-                .TargetAddress_WeaveService()
-                .Transport_UDP_WRM()
-                .Security_None()
-                .PrepareBinding();
-            SuccessOrExit(err);
-            break;
-        }
+    switch (aEventType)
+    {
+    case Binding::kEvent_PrepareRequested:
+    {
+        err = _this->mClientBinding->BeginConfiguration()
+                  .Target_ServiceEndpoint(kServiceEndpoint_Data_Management)
+                  .TargetAddress_WeaveService()
+                  .Transport_UDP_WRM()
+                  .Security_None()
+                  .PrepareBinding();
+        SuccessOrExit(err);
+        break;
+    }
 
-        case Binding::kEvent_BindingReady:
-        {
-            break;
-        }
+    case Binding::kEvent_BindingReady:
+    {
+        break;
+    }
 
-        case Binding::kEvent_PrepareFailed:
-        {
-            break;
-        }
+    case Binding::kEvent_PrepareFailed:
+    {
+        break;
+    }
 
-        case Binding::kEvent_BindingFailed:
-            break;
+    case Binding::kEvent_BindingFailed: break;
 
-        default:
-            // Fall through.
+    default:
+        // Fall through.
 
-        case Binding::kEvent_DefaultCheck:
-            Binding::DefaultEventHandler(apAppState, aEventType, aInParam, aOutParam);
-            break;
+    case Binding::kEvent_DefaultCheck: Binding::DefaultEventHandler(apAppState, aEventType, aInParam, aOutParam); break;
     }
 
 exit:
     return;
 }
 
-void
-TestWdm::ClientSubscriptionEventCallback (void * const aAppState,
-                                        SubscriptionClient::EventID aEvent,
-                                        const SubscriptionClient::InEventParam & aInParam,
-                                        SubscriptionClient::OutEventParam & aOutParam)
+void TestWdm::ClientSubscriptionEventCallback(void * const aAppState, SubscriptionClient::EventID aEvent,
+                                              const SubscriptionClient::InEventParam & aInParam,
+                                              SubscriptionClient::OutEventParam & aOutParam)
 {
-    TestWdm *_this = static_cast<TestWdm*>(aAppState);
-
-    switch (aEvent) {
-        case SubscriptionClient::kEvent_OnSubscribeRequestPrepareNeeded:
-            {
-                WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscribeRequestPrepareNeeded\n");
-
-                aOutParam.mSubscribeRequestPrepareNeeded.mPathList = NULL;
-                aOutParam.mSubscribeRequestPrepareNeeded.mPathListSize = 0;
-                aOutParam.mSubscribeRequestPrepareNeeded.mSubscriptionId = _this->mPeerSubscriptionId;
-
-                aOutParam.mSubscribeRequestPrepareNeeded.mNeedAllEvents = false;
-                aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventList = NULL;
-                aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventListSize = 0;
-                break;
-            }
-
-        case SubscriptionClient::kEvent_OnSubscriptionTerminated:
-            {
-                WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscriptionTerminated\n");
-                _this->mClientSubscriptionPresent = false;
-                break;
-            }
-
-        default:
-            break;
-    }
-}
-
-void
-TestWdm::PublisherEventCallback (void * const aAppState,
-        SubscriptionHandler::EventID aEvent, const SubscriptionHandler::InEventParam & aInParam,
-        SubscriptionHandler::OutEventParam & aOutParam)
-{
-    TestWdm *_this = static_cast<TestWdm *>(aAppState);
+    TestWdm * _this = static_cast<TestWdm *>(aAppState);
 
     switch (aEvent)
     {
-        case SubscriptionHandler::kEvent_OnSubscriptionTerminated:
-        {
-            WeaveLogDetail(DataManagement, "Publisher->kEvent_OnSubscriptionTerminated\n");
-            _this->mPublisherSubscriptionPresent = false;
-        }
+    case SubscriptionClient::kEvent_OnSubscribeRequestPrepareNeeded:
+    {
+        WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscribeRequestPrepareNeeded\n");
 
-        default:
-            break;
+        aOutParam.mSubscribeRequestPrepareNeeded.mPathList       = NULL;
+        aOutParam.mSubscribeRequestPrepareNeeded.mPathListSize   = 0;
+        aOutParam.mSubscribeRequestPrepareNeeded.mSubscriptionId = _this->mPeerSubscriptionId;
+
+        aOutParam.mSubscribeRequestPrepareNeeded.mNeedAllEvents             = false;
+        aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventList     = NULL;
+        aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventListSize = 0;
+        break;
+    }
+
+    case SubscriptionClient::kEvent_OnSubscriptionTerminated:
+    {
+        WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscriptionTerminated\n");
+        _this->mClientSubscriptionPresent = false;
+        break;
+    }
+
+    default: break;
+    }
+}
+
+void TestWdm::PublisherEventCallback(void * const aAppState, SubscriptionHandler::EventID aEvent,
+                                     const SubscriptionHandler::InEventParam & aInParam,
+                                     SubscriptionHandler::OutEventParam & aOutParam)
+{
+    TestWdm * _this = static_cast<TestWdm *>(aAppState);
+
+    switch (aEvent)
+    {
+    case SubscriptionHandler::kEvent_OnSubscriptionTerminated:
+    {
+        WeaveLogDetail(DataManagement, "Publisher->kEvent_OnSubscriptionTerminated\n");
+        _this->mPublisherSubscriptionPresent = false;
+    }
+
+    default: break;
     }
 }
 
@@ -289,18 +278,20 @@ int TestWdm::Setup()
     mSubHandler->mBinding = ExchangeMgr.NewBinding();
     mSubHandler->mBinding->BeginConfiguration().Transport_UDP().Target_NodeId(kServiceEndpoint_Data_Management);
 
-    mSubHandler->mAppState = gTestWdm;
+    mSubHandler->mAppState      = gTestWdm;
     mSubHandler->mEventCallback = PublisherEventCallback;
 
     mClientBinding = ExchangeMgr.NewBinding(BindingEventCallback, gTestWdm);
 
-    err = mSubscriptionEngine.NewClient(&mSubClient, mClientBinding, gTestWdm, TestWdm::ClientSubscriptionEventCallback, &mSinkCatalog, 0);
+    err = mSubscriptionEngine.NewClient(&mSubClient, mClientBinding, gTestWdm, TestWdm::ClientSubscriptionEventCallback,
+                                        &mSinkCatalog, 0);
     SuccessOrExit(err);
 
     mNotificationEngine = &mSubscriptionEngine.mNotificationEngine;
 
 exit:
-    if (err != WEAVE_NO_ERROR) {
+    if (err != WEAVE_NO_ERROR)
+    {
         WeaveLogError(DataManagement, "Error setting up test: %d", err);
     }
 
@@ -335,14 +326,14 @@ int TestWdm::BuildAndProcessNotify()
     bool isSubscriptionClean;
     NotificationEngine::NotifyRequestBuilder notifyRequest;
     NotificationRequest::Parser notify;
-    PacketBuffer *buf = NULL;
+    PacketBuffer * buf = NULL;
     TLVWriter writer;
     TLVReader reader;
     TLVType dummyType1, dummyType2;
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool neWriteInProgress = false;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    bool neWriteInProgress       = false;
     uint32_t maxNotificationSize = 0;
-    uint32_t maxPayloadSize = 0;
+    uint32_t maxPayloadSize      = 0;
 
     maxNotificationSize = mSubHandler->GetMaxNotificationSize();
 
@@ -395,14 +386,15 @@ int TestWdm::BuildAndProcessNotify()
     }
 
 exit:
-    if (buf) {
+    if (buf)
+    {
         PacketBuffer::Free(buf);
     }
 
     return err;
 }
 
-void TestWdm::TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite)
+void TestWdm::TestCounterSubscription_BufferAllocFailure(nlTestSuite * inSuite)
 {
     Reset();
 
@@ -410,13 +402,11 @@ void TestWdm::TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite)
     SpoofPublisherSubscription();
 
     mPublisherSubscriptionPresent = true;
-    mClientSubscriptionPresent = true;
+    mClientSubscriptionPresent    = true;
 
     // Trigger a packet buffer fault so that the ensuing counter subscription request fails
     // because it cannot allocate a packet buffer.
-    nl::Weave::System::FaultInjection::GetManager().FailAtFault(
-            nl::Weave::System::FaultInjection::kFault_PacketBufferNew,
-            0, 1);
+    nl::Weave::System::FaultInjection::GetManager().FailAtFault(nl::Weave::System::FaultInjection::kFault_PacketBufferNew, 0, 1);
 
     // Initiate a counter subscription request - this should trigger
     mSubClient->InitiateCounterSubscription(1000);
@@ -426,15 +416,15 @@ void TestWdm::TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, mPublisherSubscriptionPresent == false);
 }
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}
-}
-}
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 /**
  *  Set up the test suite.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     static TestWdm testWdm;
     gTestWdm = &testWdm;
@@ -445,12 +435,12 @@ static int TestSetup(void *inContext)
 /**
  *  Tear down the test suite.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     return gTestWdm->Teardown();
 }
 
-static void TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite, void *inContext)
+static void TestCounterSubscription_BufferAllocFailure(nlTestSuite * inSuite, void * inContext)
 {
     gTestWdm->TestCounterSubscription_BufferAllocFailure(inSuite);
 }
@@ -458,18 +448,13 @@ static void TestCounterSubscription_BufferAllocFailure(nlTestSuite *inSuite, voi
 /**
  *  Main
  */
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-    nlTestSuite theSuite = {
-        "weave-wdm",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-wdm", &sTests[0], TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);

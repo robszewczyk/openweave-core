@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Nest {
 namespace Test {
@@ -40,15 +38,17 @@ namespace TestFTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0xfe07U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0xfe07U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -79,19 +79,20 @@ struct TestFEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0xfe07U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0xfe07U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TestFEvent_array {
+struct TestFEvent_array
+{
     uint32_t num;
-    TestFEvent *buf;
+    TestFEvent * buf;
 };
-
 
 } // namespace TestFTrait
 } // namespace Trait

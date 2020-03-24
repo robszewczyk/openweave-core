@@ -22,7 +22,6 @@
  *
  */
 
-
 #include <Weave/DeviceLayer/internal/WeaveDeviceLayerInternal.h>
 
 #if WEAVE_DEVICE_CONFIG_ENABLE_TRAIT_MANAGER
@@ -40,8 +39,7 @@ using Schema::Weave::Trait::Auth::ApplicationKeysTrait::ApplicationKeysTraitData
 
 namespace {
 
-template <typename T>
-class TraitCatalogImpl : public TraitCatalogBase<T>
+template <typename T> class TraitCatalogImpl : public TraitCatalogBase<T>
 {
 public:
     enum
@@ -52,7 +50,8 @@ public:
     TraitCatalogImpl();
     virtual ~TraitCatalogImpl();
 
-    WEAVE_ERROR Add(const ResourceIdentifier & resId, const uint64_t & instanceId, PropertyPathHandle basePathHandle, T * traitInstance, TraitDataHandle & traitHandle);
+    WEAVE_ERROR Add(const ResourceIdentifier & resId, const uint64_t & instanceId, PropertyPathHandle basePathHandle,
+                    T * traitInstance, TraitDataHandle & traitHandle);
     WEAVE_ERROR Remove(T * traitInstance);
     WEAVE_ERROR PrepareSubscriptionPathList(TraitPath * pathList, uint16_t pathListSize, uint16_t & pathListLen);
 
@@ -65,12 +64,11 @@ public:
     virtual WEAVE_ERROR DispatchEvent(uint16_t aEvent, void * aContext) const;
     virtual void Iterate(IteratorCallback aCallback, void * aContext);
 #if WEAVE_CONFIG_ENABLE_WDM_UPDATE
-    virtual WEAVE_ERROR GetInstanceId(TraitDataHandle aHandle, uint64_t &aInstanceId) const;
-    virtual WEAVE_ERROR GetResourceId(TraitDataHandle aHandle, ResourceIdentifier &aResourceId) const;
+    virtual WEAVE_ERROR GetInstanceId(TraitDataHandle aHandle, uint64_t & aInstanceId) const;
+    virtual WEAVE_ERROR GetResourceId(TraitDataHandle aHandle, ResourceIdentifier & aResourceId) const;
 #endif // WEAVE_CONFIG_ENABLE_WDM_UPDATE
 
 private:
-
     struct CatalogEntry
     {
         ResourceIdentifier ResourceId;
@@ -82,9 +80,12 @@ private:
 
     CatalogEntry mEntries[kMaxEntries];
 
-    static inline uint8_t HandleIndex(TraitDataHandle handle) { return (uint8_t)handle; }
+    static inline uint8_t HandleIndex(TraitDataHandle handle) { return (uint8_t) handle; }
     static inline uint8_t HandleRevision(TraitDataHandle handle) { return (uint8_t)(handle >> 8); }
-    static inline TraitDataHandle MakeTraitDataHandle(uint8_t index, uint8_t revision) { return ((TraitDataHandle)revision) << 8 | index; }
+    static inline TraitDataHandle MakeTraitDataHandle(uint8_t index, uint8_t revision)
+    {
+        return ((TraitDataHandle) revision) << 8 | index;
+    }
 };
 
 typedef TraitCatalogImpl<TraitDataSink> TraitSinkCatalog;
@@ -130,7 +131,7 @@ WEAVE_ERROR TraitManager::SetServiceSubscribeConfirmIntervalMS(uint32_t val) con
 }
 
 WEAVE_ERROR TraitManager::SubscribeServiceTrait(const ResourceIdentifier & resId, const uint64_t & instanceId,
-        PropertyPathHandle basePathHandle, TraitDataSink * dataSink)
+                                                PropertyPathHandle basePathHandle, TraitDataSink * dataSink)
 {
     TraitDataHandle traitHandle;
     return SubscribedServiceTraits.Add(resId, instanceId, basePathHandle, dataSink, traitHandle);
@@ -161,7 +162,7 @@ WEAVE_ERROR TraitManager::UnpublishTrait(TraitDataSource * dataSource)
 
 WEAVE_ERROR TraitManager::Init(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err          = WEAVE_NO_ERROR;
     Binding * serviceBinding = NULL;
 
     err = WdmSubscriptionEngine.Init(&ExchangeMgr, NULL, HandleSubscriptionEngineEvent);
@@ -170,12 +171,9 @@ WEAVE_ERROR TraitManager::Init(void)
     serviceBinding = ExchangeMgr.NewBinding(HandleServiceBindingEvent, this);
     VerifyOrExit(NULL != serviceBinding, err = WEAVE_ERROR_NO_MEMORY);
 
-    err = SubscriptionEngine::GetInstance()->NewClient(&mServiceSubClient,
-            serviceBinding,
-            this,
-            HandleOutboundServiceSubscriptionEvent,
-            &SubscribedServiceTraits,
-            5000); // TODO: set default subscribe response timeout properly this
+    err = SubscriptionEngine::GetInstance()->NewClient(&mServiceSubClient, serviceBinding, this,
+                                                       HandleOutboundServiceSubscriptionEvent, &SubscribedServiceTraits,
+                                                       5000); // TODO: set default subscribe response timeout properly this
     SuccessOrExit(err);
 
     serviceBinding->Release();
@@ -196,16 +194,16 @@ WEAVE_ERROR TraitManager::Init(void)
         SuccessOrExit(err);
     }
 
-    mServiceSubMode = kServiceSubscriptionMode_Enabled;
-    mServicePathList = NULL;
+    mServiceSubMode           = kServiceSubscriptionMode_Enabled;
+    mServicePathList          = NULL;
     mServiceCounterSubHandler = NULL;
-    mFlags = 0;
+    mFlags                    = 0;
 
 exit:
     return err;
 }
 
-void TraitManager::OnPlatformEvent(const WeaveDeviceEvent* event)
+void TraitManager::OnPlatformEvent(const WeaveDeviceEvent * event)
 {
     // If connectivity to the service has changed...
     if (event->Type == DeviceEventType::kServiceConnectivityChange)
@@ -217,10 +215,8 @@ void TraitManager::OnPlatformEvent(const WeaveDeviceEvent* event)
 
 void TraitManager::DriveServiceSubscriptionState(bool serviceConnectivityChanged)
 {
-    bool serviceSubShouldBeActivated =
-            (mServiceSubMode == kServiceSubscriptionMode_Enabled &&
-             ConnectivityMgr().IsWiFiStationProvisioned() &&
-             ConfigurationMgr().IsPairedToAccount());
+    bool serviceSubShouldBeActivated = (mServiceSubMode == kServiceSubscriptionMode_Enabled &&
+                                        ConnectivityMgr().IsWiFiStationProvisioned() && ConfigurationMgr().IsPairedToAccount());
 
     // If the service subscription activation state needs to change...
     if (GetFlag(mFlags, kFlag_ServiceSubscriptionActivated) != serviceSubShouldBeActivated)
@@ -255,7 +251,7 @@ void TraitManager::DriveServiceSubscriptionState(bool serviceConnectivityChanged
                 {
                     ClearFlag(sInstance.mFlags, kFlag_ServiceSubscriptionEstablished);
                     WeaveDeviceEvent event;
-                    event.Type = DeviceEventType::kServiceSubscriptionStateChange;
+                    event.Type                                  = DeviceEventType::kServiceSubscriptionStateChange;
                     event.ServiceSubscriptionStateChange.Result = kConnectivity_Lost;
                     PlatformMgr().PostEvent(&event);
                 }
@@ -265,8 +261,8 @@ void TraitManager::DriveServiceSubscriptionState(bool serviceConnectivityChanged
 
     // Otherwise, if service connectivity has just been established, and a service subscription should
     // be active, but currently isn't, kick-start the resubscription process.
-    else if (serviceConnectivityChanged && ConnectivityMgr().HaveServiceConnectivity() &&
-             serviceSubShouldBeActivated && !mServiceSubClient->IsInProgressOrEstablished())
+    else if (serviceConnectivityChanged && ConnectivityMgr().HaveServiceConnectivity() && serviceSubShouldBeActivated &&
+             !mServiceSubClient->IsInProgressOrEstablished())
     {
         mServiceSubClient->ResetResubscribe();
     }
@@ -284,29 +280,29 @@ void TraitManager::ActivateServiceSubscription(intptr_t arg)
 }
 
 void TraitManager::HandleSubscriptionEngineEvent(void * appState, SubscriptionEngine::EventID eventType,
-        const SubscriptionEngine::InEventParam & inParam, SubscriptionEngine::OutEventParam & outParam)
+                                                 const SubscriptionEngine::InEventParam & inParam,
+                                                 SubscriptionEngine::OutEventParam & outParam)
 {
     switch (eventType)
     {
     case SubscriptionEngine::kEvent_OnIncomingSubscribeRequest:
         outParam.mIncomingSubscribeRequest.mHandlerEventCallback = HandleInboundSubscriptionEvent;
-        outParam.mIncomingSubscribeRequest.mHandlerAppState = NULL;
-        outParam.mIncomingSubscribeRequest.mRejectRequest = false;
+        outParam.mIncomingSubscribeRequest.mHandlerAppState      = NULL;
+        outParam.mIncomingSubscribeRequest.mRejectRequest        = false;
         // TODO: Is this necessary?  Why isn't the counter subscription using the same Binding as the client subscription?
         // inParam.mIncomingSubscribeRequest.mBinding->SetDefaultResponseTimeout(kResponseTimeoutMsec);
         // inParam.mIncomingSubscribeRequest.mBinding->SetDefaultWRMPConfig(gWRMPConfig);
         break;
 
-    // TODO: Add support for subscriptionless notifies
+        // TODO: Add support for subscriptionless notifies
 
-    default:
-        SubscriptionEngine::DefaultEventHandler(eventType, inParam, outParam);
-        break;
+    default: SubscriptionEngine::DefaultEventHandler(eventType, inParam, outParam); break;
     }
 }
 
 void TraitManager::HandleServiceBindingEvent(void * appState, ::nl::Weave::Binding::EventType eventType,
-    const ::nl::Weave::Binding::InEventParam & inParam, ::nl::Weave::Binding::OutEventParam & outParam)
+                                             const ::nl::Weave::Binding::InEventParam & inParam,
+                                             ::nl::Weave::Binding::OutEventParam & outParam)
 {
     Binding * binding = inParam.Source;
 
@@ -317,10 +313,10 @@ void TraitManager::HandleServiceBindingEvent(void * appState, ::nl::Weave::Bindi
         // TODO: set response timeout
         // TODO: set WRM config
         outParam.PrepareRequested.PrepareError = binding->BeginConfiguration()
-            .Target_ServiceEndpoint(kServiceEndpoint_Data_Management)
-            .Transport_UDP_WRM()
-            .Security_SharedCASESession()
-            .PrepareBinding();
+                                                     .Target_ServiceEndpoint(kServiceEndpoint_Data_Management)
+                                                     .Transport_UDP_WRM()
+                                                     .Security_SharedCASESession()
+                                                     .PrepareBinding();
         break;
 
     case nl::Weave::Binding::kEvent_PrepareFailed:
@@ -331,17 +327,15 @@ void TraitManager::HandleServiceBindingEvent(void * appState, ::nl::Weave::Bindi
         WeaveLogProgress(DeviceLayer, "Service subscription binding failed: %s", ErrorStr(inParam.BindingFailed.Reason));
         break;
 
-    case nl::Weave::Binding::kEvent_BindingReady:
-        WeaveLogProgress(DeviceLayer, "Service subscription binding ready");
-        break;
+    case nl::Weave::Binding::kEvent_BindingReady: WeaveLogProgress(DeviceLayer, "Service subscription binding ready"); break;
 
-    default:
-        nl::Weave::Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
+    default: nl::Weave::Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
     }
 }
 
 void TraitManager::HandleOutboundServiceSubscriptionEvent(void * appState, SubscriptionClient::EventID eventType,
-        const SubscriptionClient::InEventParam & inParam, SubscriptionClient::OutEventParam & outParam)
+                                                          const SubscriptionClient::InEventParam & inParam,
+                                                          SubscriptionClient::OutEventParam & outParam)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -359,17 +353,18 @@ void TraitManager::HandleOutboundServiceSubscriptionEvent(void * appState, Subsc
             sInstance.mServicePathList = new TraitPath[TraitSinkCatalog::kMaxEntries];
         }
 
-        err = SubscribedServiceTraits.PrepareSubscriptionPathList(sInstance.mServicePathList, TraitSinkCatalog::kMaxEntries, pathListLen);
+        err = SubscribedServiceTraits.PrepareSubscriptionPathList(sInstance.mServicePathList, TraitSinkCatalog::kMaxEntries,
+                                                                  pathListLen);
         SuccessOrExit(err);
 
-        outParam.mSubscribeRequestPrepareNeeded.mPathList = sInstance.mServicePathList;
-        outParam.mSubscribeRequestPrepareNeeded.mPathListSize = pathListLen;
-        outParam.mSubscribeRequestPrepareNeeded.mVersionedPathList = NULL;
-        outParam.mSubscribeRequestPrepareNeeded.mNeedAllEvents = false;
-        outParam.mSubscribeRequestPrepareNeeded.mLastObservedEventList = NULL;
+        outParam.mSubscribeRequestPrepareNeeded.mPathList                  = sInstance.mServicePathList;
+        outParam.mSubscribeRequestPrepareNeeded.mPathListSize              = pathListLen;
+        outParam.mSubscribeRequestPrepareNeeded.mVersionedPathList         = NULL;
+        outParam.mSubscribeRequestPrepareNeeded.mNeedAllEvents             = false;
+        outParam.mSubscribeRequestPrepareNeeded.mLastObservedEventList     = NULL;
         outParam.mSubscribeRequestPrepareNeeded.mLastObservedEventListSize = 0;
-        outParam.mSubscribeRequestPrepareNeeded.mTimeoutSecMin = 30; // TODO: set these properly
-        outParam.mSubscribeRequestPrepareNeeded.mTimeoutSecMax = 60;
+        outParam.mSubscribeRequestPrepareNeeded.mTimeoutSecMin             = 30; // TODO: set these properly
+        outParam.mSubscribeRequestPrepareNeeded.mTimeoutSecMax             = 60;
 
         WeaveLogProgress(DeviceLayer, "Sending outbound service subscribe request (path count %" PRIu16 ")", pathListLen);
 
@@ -377,12 +372,13 @@ void TraitManager::HandleOutboundServiceSubscriptionEvent(void * appState, Subsc
     }
     case SubscriptionClient::kEvent_OnSubscriptionEstablished:
         WeaveLogProgress(DeviceLayer, "Outbound service subscription established (sub id %016" PRIX64 ")",
-                inParam.mSubscriptionEstablished.mSubscriptionId);
+                         inParam.mSubscriptionEstablished.mSubscriptionId);
         break;
 
     case SubscriptionClient::kEvent_OnSubscriptionTerminated:
-        WeaveLogProgress(DeviceLayer, "Outbound service subscription terminated: %s",
-                (inParam.mSubscriptionTerminated.mIsStatusCodeValid)
+        WeaveLogProgress(
+            DeviceLayer, "Outbound service subscription terminated: %s",
+            (inParam.mSubscriptionTerminated.mIsStatusCodeValid)
                 ? StatusReportStr(inParam.mSubscriptionTerminated.mStatusProfileId, inParam.mSubscriptionTerminated.mStatusCode)
                 : ErrorStr(inParam.mSubscriptionTerminated.mReason));
         // If prior to this the service subscription was fully established (including the service's counter subscription)
@@ -391,15 +387,13 @@ void TraitManager::HandleOutboundServiceSubscriptionEvent(void * appState, Subsc
         {
             ClearFlag(sInstance.mFlags, kFlag_ServiceSubscriptionEstablished);
             WeaveDeviceEvent event;
-            event.Type = DeviceEventType::kServiceSubscriptionStateChange;
+            event.Type                                  = DeviceEventType::kServiceSubscriptionStateChange;
             event.ServiceSubscriptionStateChange.Result = kConnectivity_Lost;
             PlatformMgr().PostEvent(&event);
         }
         break;
 
-    default:
-        SubscriptionClient::DefaultEventHandler(eventType, inParam, outParam);
-        break;
+    default: SubscriptionClient::DefaultEventHandler(eventType, inParam, outParam); break;
     }
 
 exit:
@@ -407,7 +401,8 @@ exit:
 }
 
 void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, SubscriptionHandler::EventID eventType,
-        const SubscriptionHandler::InEventParam & inParam, SubscriptionHandler::OutEventParam & outParam)
+                                                  const SubscriptionHandler::InEventParam & inParam,
+                                                  SubscriptionHandler::OutEventParam & outParam)
 {
     switch (eventType)
     {
@@ -415,9 +410,10 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
         if (inParam.mSubscribeRequestParsed.mIsSubscriptionIdValid &&
             inParam.mSubscribeRequestParsed.mMsgInfo->SourceNodeId == kServiceEndpoint_Data_Management)
         {
-            WeaveLogProgress(DeviceLayer, "Inbound service counter-subscription request received (sub id %016" PRIX64 ", path count %" PRId16 ")",
-                    inParam.mSubscribeRequestParsed.mSubscriptionId,
-                    inParam.mSubscribeRequestParsed.mNumTraitInstances);
+            WeaveLogProgress(DeviceLayer,
+                             "Inbound service counter-subscription request received (sub id %016" PRIX64 ", path count %" PRId16
+                             ")",
+                             inParam.mSubscribeRequestParsed.mSubscriptionId, inParam.mSubscribeRequestParsed.mNumTraitInstances);
 
             sInstance.mServiceCounterSubHandler = inParam.mSubscribeRequestParsed.mHandler;
         }
@@ -426,9 +422,8 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
 #if WEAVE_PROGRESS_LOGGING
             char peerDesc[kWeavePeerDescription_MaxLength];
             WeaveMessageLayer::GetPeerDescription(peerDesc, sizeof(peerDesc), inParam.mSubscribeRequestParsed.mMsgInfo);
-            WeaveLogProgress(DeviceLayer, "Inbound subscription request received from node %s (path count %" PRId16 ")",
-                    peerDesc,
-                    inParam.mSubscribeRequestParsed.mNumTraitInstances);
+            WeaveLogProgress(DeviceLayer, "Inbound subscription request received from node %s (path count %" PRId16 ")", peerDesc,
+                             inParam.mSubscribeRequestParsed.mNumTraitInstances);
 #endif // WEAVE_PROGRESS_LOGGING
         }
 
@@ -448,7 +443,7 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
             // Raise an event announcing the establishment of the subscription.
             {
                 WeaveDeviceEvent event;
-                event.Type = DeviceEventType::kServiceSubscriptionStateChange;
+                event.Type                                  = DeviceEventType::kServiceSubscriptionStateChange;
                 event.ServiceSubscriptionStateChange.Result = kConnectivity_Established;
                 PlatformMgr().PostEvent(&event);
             }
@@ -460,7 +455,7 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
             uint64_t subId;
             inParam.mSubscriptionEstablished.mHandler->GetSubscriptionId(&subId);
             WeaveLogProgress(DeviceLayer, "Inbound subscription established with node %016" PRIX64 "(sub id %016" PRIX64 ")",
-                    peerNodeId, subId);
+                             peerNodeId, subId);
 #endif // WEAVE_PROGRESS_LOGGING
         }
         break;
@@ -468,10 +463,9 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
     case SubscriptionHandler::kEvent_OnSubscriptionTerminated:
     {
 #if WEAVE_PROGRESS_LOGGING
-        const char * termDesc =
-                (inParam.mSubscriptionTerminated.mReason == WEAVE_ERROR_STATUS_REPORT_RECEIVED)
-                ? StatusReportStr(inParam.mSubscriptionTerminated.mStatusProfileId, inParam.mSubscriptionTerminated.mStatusCode)
-                : ErrorStr(inParam.mSubscriptionTerminated.mReason);
+        const char * termDesc = (inParam.mSubscriptionTerminated.mReason == WEAVE_ERROR_STATUS_REPORT_RECEIVED)
+            ? StatusReportStr(inParam.mSubscriptionTerminated.mStatusProfileId, inParam.mSubscriptionTerminated.mStatusCode)
+            : ErrorStr(inParam.mSubscriptionTerminated.mReason);
 #endif // WEAVE_PROGRESS_LOGGING
         if (inParam.mSubscriptionTerminated.mHandler == sInstance.mServiceCounterSubHandler)
         {
@@ -485,7 +479,7 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
             {
                 ClearFlag(sInstance.mFlags, kFlag_ServiceSubscriptionEstablished);
                 WeaveDeviceEvent event;
-                event.Type = DeviceEventType::kServiceSubscriptionStateChange;
+                event.Type                                  = DeviceEventType::kServiceSubscriptionStateChange;
                 event.ServiceSubscriptionStateChange.Result = kConnectivity_Lost;
                 PlatformMgr().PostEvent(&event);
             }
@@ -497,41 +491,35 @@ void TraitManager::HandleInboundSubscriptionEvent(void * aAppState, Subscription
             uint64_t subId;
             inParam.mSubscriptionTerminated.mHandler->GetSubscriptionId(&subId);
             WeaveLogProgress(DeviceLayer, "Inbound subscription terminated with node %016" PRIX64 "(sub id %016" PRIX64 "): %s",
-                    peerNodeId, subId, termDesc);
+                             peerNodeId, subId, termDesc);
 #endif // WEAVE_PROGRESS_LOGGING
         }
         break;
     }
 
-    default:
-        SubscriptionHandler::DefaultEventHandler(eventType, inParam, outParam);
-        break;
+    default: SubscriptionHandler::DefaultEventHandler(eventType, inParam, outParam); break;
     }
 }
-
 
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
 
-
 namespace {
 
-template <typename T>
-TraitCatalogImpl<T>::TraitCatalogImpl()
+template <typename T> TraitCatalogImpl<T>::TraitCatalogImpl()
 {
     // Nothing to do.
 }
 
-template <typename T>
-TraitCatalogImpl<T>::~TraitCatalogImpl()
+template <typename T> TraitCatalogImpl<T>::~TraitCatalogImpl()
 {
     // Nothing to do.
 }
 
 template <typename T>
 WEAVE_ERROR TraitCatalogImpl<T>::Add(const ResourceIdentifier & resId, const uint64_t & instanceId,
-        PropertyPathHandle basePathHandle, T * traitInstance, TraitDataHandle & traitHandle)
+                                     PropertyPathHandle basePathHandle, T * traitInstance, TraitDataHandle & traitHandle)
 {
     uint8_t freeIndex = kMaxEntries;
 
@@ -554,9 +542,9 @@ WEAVE_ERROR TraitCatalogImpl<T>::Add(const ResourceIdentifier & resId, const uin
             mEntries[i].Item->GetSchemaEngine()->GetProfileId() == traitInstance->GetSchemaEngine()->GetProfileId() &&
             mEntries[i].InstanceId == instanceId)
         {
-            mEntries[i].Item = traitInstance;
+            mEntries[i].Item           = traitInstance;
             mEntries[i].BasePathHandle = basePathHandle;
-            traitHandle = MakeTraitDataHandle(i, mEntries[i].EntryRevision);
+            traitHandle                = MakeTraitDataHandle(i, mEntries[i].EntryRevision);
             return WEAVE_NO_ERROR;
         }
     }
@@ -568,9 +556,9 @@ WEAVE_ERROR TraitCatalogImpl<T>::Add(const ResourceIdentifier & resId, const uin
     }
 
     // Add the new trait instance.
-    mEntries[freeIndex].ResourceId = resId;
-    mEntries[freeIndex].InstanceId = instanceId;
-    mEntries[freeIndex].Item = traitInstance;
+    mEntries[freeIndex].ResourceId     = resId;
+    mEntries[freeIndex].InstanceId     = instanceId;
+    mEntries[freeIndex].Item           = traitInstance;
     mEntries[freeIndex].BasePathHandle = basePathHandle;
     mEntries[freeIndex].EntryRevision++;
 
@@ -579,8 +567,7 @@ WEAVE_ERROR TraitCatalogImpl<T>::Add(const ResourceIdentifier & resId, const uin
     return WEAVE_NO_ERROR;
 }
 
-template <typename T>
-WEAVE_ERROR TraitCatalogImpl<T>::Remove(T * traitInstance)
+template <typename T> WEAVE_ERROR TraitCatalogImpl<T>::Remove(T * traitInstance)
 {
     for (TraitDataHandle i = 0; i < kMaxEntries; i++)
     {
@@ -616,7 +603,7 @@ exit:
 }
 
 WEAVE_ERROR DecodeTraitInstancePath(TLV::TLVReader & aReader, ResourceIdentifier & resourceId, uint32_t & profileId,
-        SchemaVersionRange & aSchemaVersionRange, uint64_t & instanceId)
+                                    SchemaVersionRange & aSchemaVersionRange, uint64_t & instanceId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Path::Parser path;
@@ -663,7 +650,7 @@ exit:
 
 template <typename T>
 WEAVE_ERROR TraitCatalogImpl<T>::AddressToHandle(TLV::TLVReader & aReader, TraitDataHandle & aHandle,
-        SchemaVersionRange & aSchemaVersionRange) const
+                                                 SchemaVersionRange & aSchemaVersionRange) const
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     ResourceIdentifier resourceId;
@@ -678,12 +665,10 @@ WEAVE_ERROR TraitCatalogImpl<T>::AddressToHandle(TLV::TLVReader & aReader, Trait
     {
         const CatalogEntry * entry = &mEntries[i];
 
-        if (entry->Item != NULL &&
-            entry->ResourceId == resourceId &&
-            entry->Item->GetSchemaEngine()->GetProfileId() == profileId &&
+        if (entry->Item != NULL && entry->ResourceId == resourceId && entry->Item->GetSchemaEngine()->GetProfileId() == profileId &&
             entry->InstanceId == instanceId)
         {
-            err = WEAVE_NO_ERROR;
+            err     = WEAVE_NO_ERROR;
             aHandle = MakeTraitDataHandle(i, entry->EntryRevision);
             break;
         }
@@ -695,7 +680,7 @@ exit:
 }
 
 WEAVE_ERROR EncodeTraitInstancePath(TLV::TLVWriter & writer, const ResourceIdentifier & resourceId, uint32_t profileId,
-        SchemaVersionRange & schemaVersionRange, const uint64_t & instanceId)
+                                    SchemaVersionRange & schemaVersionRange, const uint64_t & instanceId)
 {
     WEAVE_ERROR err;
     TLV::TLVType containerType;
@@ -755,14 +740,14 @@ exit:
 }
 
 template <typename T>
-WEAVE_ERROR TraitCatalogImpl<T>::HandleToAddress(TraitDataHandle aHandle, TLV::TLVWriter& aWriter,
-        SchemaVersionRange& aSchemaVersionRange) const
+WEAVE_ERROR TraitCatalogImpl<T>::HandleToAddress(TraitDataHandle aHandle, TLV::TLVWriter & aWriter,
+                                                 SchemaVersionRange & aSchemaVersionRange) const
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     const CatalogEntry * entry;
     uint32_t profileId;
     uint8_t handleIndex = HandleIndex(aHandle);
-    uint8_t handleRev = HandleRevision(aHandle);
+    uint8_t handleRev   = HandleRevision(aHandle);
 
     VerifyOrExit(handleIndex < kMaxEntries, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -779,11 +764,10 @@ exit:
     return err;
 }
 
-template <typename T>
-WEAVE_ERROR TraitCatalogImpl<T>::Locate(TraitDataHandle aHandle, T ** aTraitInstance) const
+template <typename T> WEAVE_ERROR TraitCatalogImpl<T>::Locate(TraitDataHandle aHandle, T ** aTraitInstance) const
 {
     uint8_t handleIndex = HandleIndex(aHandle);
-    uint8_t handleRev = HandleRevision(aHandle);
+    uint8_t handleRev   = HandleRevision(aHandle);
 
     if (handleIndex < kMaxEntries && mEntries[handleIndex].Item != NULL && mEntries[handleIndex].EntryRevision == handleRev)
     {
@@ -794,8 +778,7 @@ WEAVE_ERROR TraitCatalogImpl<T>::Locate(TraitDataHandle aHandle, T ** aTraitInst
     return WEAVE_ERROR_INVALID_ARGUMENT;
 }
 
-template <typename T>
-WEAVE_ERROR TraitCatalogImpl<T>::Locate(T * aTraitInstance, TraitDataHandle & aHandle) const
+template <typename T> WEAVE_ERROR TraitCatalogImpl<T>::Locate(T * aTraitInstance, TraitDataHandle & aHandle) const
 {
     for (uint8_t i = 0; i < kMaxEntries; i++)
     {
@@ -809,8 +792,7 @@ WEAVE_ERROR TraitCatalogImpl<T>::Locate(T * aTraitInstance, TraitDataHandle & aH
     return WEAVE_ERROR_INVALID_ARGUMENT;
 }
 
-template <typename T>
-WEAVE_ERROR TraitCatalogImpl<T>::DispatchEvent(uint16_t aEvent, void * aContext) const
+template <typename T> WEAVE_ERROR TraitCatalogImpl<T>::DispatchEvent(uint16_t aEvent, void * aContext) const
 {
     for (uint8_t i = 0; i < kMaxEntries; i++)
     {
@@ -823,8 +805,7 @@ WEAVE_ERROR TraitCatalogImpl<T>::DispatchEvent(uint16_t aEvent, void * aContext)
     return WEAVE_NO_ERROR;
 }
 
-template <typename T>
-void TraitCatalogImpl<T>::Iterate(IteratorCallback aCallback, void * aContext)
+template <typename T> void TraitCatalogImpl<T>::Iterate(IteratorCallback aCallback, void * aContext)
 {
     for (uint8_t i = 0; i < kMaxEntries; i++)
     {

@@ -61,9 +61,9 @@
 #endif // HAVE_SYS_SOCKET_H
 
 /*
- * Some systems define both IPV6_{ADD,DROP}_MEMBERSHIP and
- * IPV6_{JOIN,LEAVE}_GROUP while others only define
- * IPV6_{JOIN,LEAVE}_GROUP. Prefer the "_MEMBERSHIP" flavor for
+ * Some systems define both IPV6_ {ADD,DROP}_MEMBERSHIP and
+ * IPV6_ {JOIN,LEAVE}_GROUP while others only define
+ * IPV6_ {JOIN,LEAVE}_GROUP. Prefer the "_MEMBERSHIP" flavor for
  * parallelism with IPv4 and create the alias to the availabile
  * definitions.
  */
@@ -72,7 +72,8 @@
 #elif defined(IPV6_ADD_MEMBERSHIP)
 #define INET_IPV6_ADD_MEMBERSHIP IPV6_ADD_MEMBERSHIP
 #else
-#error "Neither IPV6_ADD_MEMBERSHIP nor IPV6_JOIN_GROUP are defined which are required for generalized IPv6 multicast group support."
+#error                                                                                                                             \
+    "Neither IPV6_ADD_MEMBERSHIP nor IPV6_JOIN_GROUP are defined which are required for generalized IPv6 multicast group support."
 #endif // !defined(IPV6_ADD_MEMBERSHIP) && defined(IPV6_JOIN_GROUP)
 
 #if !defined(IPV6_DROP_MEMBERSHIP) && defined(IPV6_LEAVE_GROUP)
@@ -80,7 +81,8 @@
 #elif defined(IPV6_DROP_MEMBERSHIP)
 #define INET_IPV6_DROP_MEMBERSHIP IPV6_DROP_MEMBERSHIP
 #else
-#error "Neither IPV6_DROP_MEMBERSHIP nor IPV6_LEAVE_GROUP are defined which are required for generalized IPv6 multicast group support."
+#error                                                                                                                             \
+    "Neither IPV6_DROP_MEMBERSHIP nor IPV6_LEAVE_GROUP are defined which are required for generalized IPv6 multicast group support."
 #endif // !defined(IPV6_DROP_MEMBERSHIP) && defined(IPV6_LEAVE_GROUP)
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 
@@ -92,8 +94,8 @@ using Weave::System::PacketBuffer;
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 union PeerSockAddr
 {
-    sockaddr     any;
-    sockaddr_in  in;
+    sockaddr any;
+    sockaddr_in in;
     sockaddr_in6 in6;
 };
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
@@ -106,17 +108,19 @@ union PeerSockAddr
 #define LWIP_IPV6_ADDR_T           ip6_addr_t
 #define IPV6_TO_LWIPADDR(aAddress) (aAddress).ToIPv6()
 
-#if !defined(RAW_FLAGS_MULTICAST_LOOP) || !defined(UDP_FLAGS_MULTICAST_LOOP) || !defined(raw_clear_flags) || !defined(raw_set_flags) || !defined(udp_clear_flags) || !defined(udp_set_flags)
+#if !defined(RAW_FLAGS_MULTICAST_LOOP) || !defined(UDP_FLAGS_MULTICAST_LOOP) || !defined(raw_clear_flags) ||                       \
+    !defined(raw_set_flags) || !defined(udp_clear_flags) || !defined(udp_set_flags)
 #define HAVE_LWIP_MULTICAST_LOOP 0
 #else
 #define HAVE_LWIP_MULTICAST_LOOP 1
-#endif // !defined(RAW_FLAGS_MULTICAST_LOOP) || !defined(UDP_FLAGS_MULTICAST_LOOP) || !defined(raw_clear_flags) || !defined(raw_set_flags) || !defined(udp_clear_flags) || !defined(udp_set_flags)
+#endif // !defined(RAW_FLAGS_MULTICAST_LOOP) || !defined(UDP_FLAGS_MULTICAST_LOOP) || !defined(raw_clear_flags) ||
+       // !defined(raw_set_flags) || !defined(udp_clear_flags) || !defined(udp_set_flags)
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-static INET_ERROR CheckMulticastGroupArgs(InterfaceId aInterfaceId, const IPAddress &aAddress)
+static INET_ERROR CheckMulticastGroupArgs(InterfaceId aInterfaceId, const IPAddress & aAddress)
 {
-    INET_ERROR          lRetval = INET_NO_ERROR;
-    bool                lIsPresent, lIsMulticast;
+    INET_ERROR lRetval = INET_NO_ERROR;
+    bool lIsPresent, lIsMulticast;
 
     lIsPresent = IsInterfaceIdPresent(aInterfaceId);
     VerifyOrExit(lIsPresent, lRetval = INET_ERROR_UNKNOWN_INTERFACE);
@@ -131,12 +135,13 @@ exit:
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if INET_CONFIG_ENABLE_IPV4
 #if LWIP_IPV4 && LWIP_IGMP
-static INET_ERROR LwIPIPv4JoinLeaveMulticastGroup(InterfaceId aInterfaceId, const IPAddress &aAddress, err_t (*aMethod)(struct netif *, const LWIP_IPV4_ADDR_T *))
+static INET_ERROR LwIPIPv4JoinLeaveMulticastGroup(InterfaceId aInterfaceId, const IPAddress & aAddress,
+                                                  err_t (*aMethod)(struct netif *, const LWIP_IPV4_ADDR_T *))
 {
-    INET_ERROR        lRetval = INET_NO_ERROR;
-    err_t             lStatus;
-    struct netif *    lNetif;
-    LWIP_IPV4_ADDR_T  lIPv4Address;
+    INET_ERROR lRetval = INET_NO_ERROR;
+    err_t lStatus;
+    struct netif * lNetif;
+    LWIP_IPV4_ADDR_T lIPv4Address;
 
     lNetif = IPEndPointBasis::FindNetifFromInterfaceId(aInterfaceId);
     VerifyOrExit(lNetif != NULL, lRetval = INET_ERROR_UNKNOWN_INTERFACE);
@@ -148,14 +153,9 @@ static INET_ERROR LwIPIPv4JoinLeaveMulticastGroup(InterfaceId aInterfaceId, cons
     switch (lStatus)
     {
 
-    case ERR_MEM:
-        lRetval = INET_ERROR_NO_MEMORY;
-        break;
+    case ERR_MEM: lRetval = INET_ERROR_NO_MEMORY; break;
 
-    default:
-        lRetval = Weave::System::MapErrorLwIP(lStatus);
-        break;
-
+    default: lRetval = Weave::System::MapErrorLwIP(lStatus); break;
     }
 
 exit:
@@ -165,12 +165,13 @@ exit:
 #endif // INET_CONFIG_ENABLE_IPV4
 
 #if LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-static INET_ERROR LwIPIPv6JoinLeaveMulticastGroup(InterfaceId aInterfaceId, const IPAddress &aAddress, err_t (*aMethod)(struct netif *, const LWIP_IPV6_ADDR_T *))
+static INET_ERROR LwIPIPv6JoinLeaveMulticastGroup(InterfaceId aInterfaceId, const IPAddress & aAddress,
+                                                  err_t (*aMethod)(struct netif *, const LWIP_IPV6_ADDR_T *))
 {
-    INET_ERROR        lRetval = INET_NO_ERROR;
-    err_t             lStatus;
-    struct netif *    lNetif;
-    LWIP_IPV6_ADDR_T  lIPv6Address;
+    INET_ERROR lRetval = INET_NO_ERROR;
+    err_t lStatus;
+    struct netif * lNetif;
+    LWIP_IPV6_ADDR_T lIPv6Address;
 
     lNetif = IPEndPointBasis::FindNetifFromInterfaceId(aInterfaceId);
     VerifyOrExit(lNetif != NULL, lRetval = INET_ERROR_UNKNOWN_INTERFACE);
@@ -182,14 +183,9 @@ static INET_ERROR LwIPIPv6JoinLeaveMulticastGroup(InterfaceId aInterfaceId, cons
     switch (lStatus)
     {
 
-    case ERR_MEM:
-        lRetval = INET_ERROR_NO_MEMORY;
-        break;
+    case ERR_MEM: lRetval = INET_ERROR_NO_MEMORY; break;
 
-    default:
-        lRetval = Weave::System::MapErrorLwIP(lStatus);
-        break;
-
+    default: lRetval = Weave::System::MapErrorLwIP(lStatus); break;
     }
 
 exit:
@@ -201,11 +197,11 @@ exit:
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 static INET_ERROR SocketsSetMulticastLoopback(int aSocket, bool aLoopback, int aProtocol, int aOption)
 {
-    INET_ERROR    lRetval = INET_NO_ERROR;
-    int           lStatus;
-    unsigned int  lValue = aLoopback;
+    INET_ERROR lRetval = INET_NO_ERROR;
+    int lStatus;
+    unsigned int lValue = aLoopback;
 
-    lStatus = setsockopt(aSocket, aProtocol, aOption, &lValue, sizeof (lValue));
+    lStatus = setsockopt(aSocket, aProtocol, aOption, &lValue, sizeof(lValue));
     VerifyOrExit(lStatus == 0, lRetval = Weave::System::MapErrorPOSIX(errno));
 
 exit:
@@ -214,37 +210,31 @@ exit:
 
 static INET_ERROR SocketsSetMulticastLoopback(int aSocket, IPVersion aIPVersion, bool aLoopback)
 {
-    INET_ERROR  lRetval;
+    INET_ERROR lRetval;
 
     switch (aIPVersion)
     {
 
-    case kIPVersion_6:
-        lRetval = SocketsSetMulticastLoopback(aSocket, aLoopback, IPPROTO_IPV6, IPV6_MULTICAST_LOOP);
-        break;
+    case kIPVersion_6: lRetval = SocketsSetMulticastLoopback(aSocket, aLoopback, IPPROTO_IPV6, IPV6_MULTICAST_LOOP); break;
 
 #if INET_CONFIG_ENABLE_IPV4
-    case kIPVersion_4:
-        lRetval = SocketsSetMulticastLoopback(aSocket, aLoopback, IPPROTO_IP, IP_MULTICAST_LOOP);
-        break;
+    case kIPVersion_4: lRetval = SocketsSetMulticastLoopback(aSocket, aLoopback, IPPROTO_IP, IP_MULTICAST_LOOP); break;
 #endif // INET_CONFIG_ENABLE_IPV4
 
-    default:
-        lRetval = INET_ERROR_WRONG_ADDRESS_TYPE;
-        break;
-
+    default: lRetval = INET_ERROR_WRONG_ADDRESS_TYPE; break;
     }
 
     return (lRetval);
 }
 
 #if INET_CONFIG_ENABLE_IPV4
-static INET_ERROR SocketsIPv4JoinLeaveMulticastGroup(int aSocket, InterfaceId aInterfaceId, const IPAddress &aAddress, int aCommand)
+static INET_ERROR SocketsIPv4JoinLeaveMulticastGroup(int aSocket, InterfaceId aInterfaceId, const IPAddress & aAddress,
+                                                     int aCommand)
 {
-    INET_ERROR       lRetval = INET_NO_ERROR;
-    IPAddress        lInterfaceAddress;
-    bool             lInterfaceAddressFound = false;
-    struct ip_mreq   lMulticastRequest;
+    INET_ERROR lRetval = INET_NO_ERROR;
+    IPAddress lInterfaceAddress;
+    bool lInterfaceAddressFound = false;
+    struct ip_mreq lMulticastRequest;
 
     for (InterfaceAddressIterator lAddressIterator; lAddressIterator.HasCurrent(); lAddressIterator.Next())
     {
@@ -255,7 +245,7 @@ static INET_ERROR SocketsIPv4JoinLeaveMulticastGroup(int aSocket, InterfaceId aI
             if (lCurrentAddress.IsIPv4())
             {
                 lInterfaceAddressFound = true;
-                lInterfaceAddress = lCurrentAddress;
+                lInterfaceAddress      = lCurrentAddress;
                 break;
             }
         }
@@ -263,11 +253,11 @@ static INET_ERROR SocketsIPv4JoinLeaveMulticastGroup(int aSocket, InterfaceId aI
 
     VerifyOrExit(lInterfaceAddressFound, lRetval = INET_ERROR_ADDRESS_NOT_FOUND);
 
-    memset(&lMulticastRequest, 0, sizeof (lMulticastRequest));
+    memset(&lMulticastRequest, 0, sizeof(lMulticastRequest));
     lMulticastRequest.imr_interface = lInterfaceAddress.ToIPv4();
     lMulticastRequest.imr_multiaddr = aAddress.ToIPv4();
 
-    lRetval = setsockopt(aSocket, IPPROTO_IP, aCommand, &lMulticastRequest, sizeof (lMulticastRequest));
+    lRetval = setsockopt(aSocket, IPPROTO_IP, aCommand, &lMulticastRequest, sizeof(lMulticastRequest));
     VerifyOrExit(lRetval == 0, lRetval = Weave::System::MapErrorPOSIX(errno));
 
 exit:
@@ -275,17 +265,18 @@ exit:
 }
 #endif // INET_CONFIG_ENABLE_IPV4
 
-static INET_ERROR SocketsIPv6JoinLeaveMulticastGroup(int aSocket, InterfaceId aInterfaceId, const IPAddress &aAddress, int aCommand)
+static INET_ERROR SocketsIPv6JoinLeaveMulticastGroup(int aSocket, InterfaceId aInterfaceId, const IPAddress & aAddress,
+                                                     int aCommand)
 {
-    INET_ERROR       lRetval = INET_NO_ERROR;
-    const int        lIfIndex = static_cast<int>(aInterfaceId);
+    INET_ERROR lRetval = INET_NO_ERROR;
+    const int lIfIndex = static_cast<int>(aInterfaceId);
     struct ipv6_mreq lMulticastRequest;
 
-    memset(&lMulticastRequest, 0, sizeof (lMulticastRequest));
+    memset(&lMulticastRequest, 0, sizeof(lMulticastRequest));
     lMulticastRequest.ipv6mr_interface = lIfIndex;
     lMulticastRequest.ipv6mr_multiaddr = aAddress.ToIPv6();
 
-    lRetval = setsockopt(aSocket, IPPROTO_IPV6, aCommand, &lMulticastRequest, sizeof (lMulticastRequest));
+    lRetval = setsockopt(aSocket, IPPROTO_IPV6, aCommand, &lMulticastRequest, sizeof(lMulticastRequest));
     VerifyOrExit(lRetval == 0, lRetval = Weave::System::MapErrorPOSIX(errno));
 
 exit:
@@ -312,12 +303,13 @@ exit:
  */
 INET_ERROR IPEndPointBasis::SetMulticastLoopback(IPVersion aIPVersion, bool aLoopback)
 {
-    INET_ERROR          lRetval = INET_ERROR_NOT_IMPLEMENTED;
+    INET_ERROR lRetval = INET_ERROR_NOT_IMPLEMENTED;
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP || WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if !HAVE_LWIP_MULTICAST_LOOP
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
 The version of LwIP appears older than that required for multicast loopback support.\n \
 Please upgrade your version of LwIP for SetMulticastLoopback support."
     lRetval = INET_ERROR_NOT_SUPPORTED;
@@ -328,21 +320,14 @@ Please upgrade your version of LwIP for SetMulticastLoopback support."
         {
 
 #if INET_CONFIG_ENABLE_RAW_ENDPOINT
-        case kLwIPEndPointType_Raw:
-            raw_set_flags(mRaw, RAW_FLAGS_MULTICAST_LOOP);
-            break;
+        case kLwIPEndPointType_Raw: raw_set_flags(mRaw, RAW_FLAGS_MULTICAST_LOOP); break;
 #endif // INET_CONFIG_ENABLE_RAW_ENDPOINT
 
 #if INET_CONFIG_ENABLE_UDP_ENDPOINT
-        case kLwIPEndPointType_UDP:
-            udp_set_flags(mUDP, UDP_FLAGS_MULTICAST_LOOP);
-            break;
+        case kLwIPEndPointType_UDP: udp_set_flags(mUDP, UDP_FLAGS_MULTICAST_LOOP); break;
 #endif // INET_CONFIG_ENABLE_UDP_ENDPOINT
 
-        default:
-            lRetval = INET_ERROR_NOT_SUPPORTED;
-            break;
-
+        default: lRetval = INET_ERROR_NOT_SUPPORTED; break;
         }
     }
     else
@@ -351,21 +336,14 @@ Please upgrade your version of LwIP for SetMulticastLoopback support."
         {
 
 #if INET_CONFIG_ENABLE_RAW_ENDPOINT
-        case kLwIPEndPointType_Raw:
-            raw_clear_flags(mRaw, RAW_FLAGS_MULTICAST_LOOP);
-            break;
+        case kLwIPEndPointType_Raw: raw_clear_flags(mRaw, RAW_FLAGS_MULTICAST_LOOP); break;
 #endif // INET_CONFIG_ENABLE_RAW_ENDPOINT
 
 #if INET_CONFIG_ENABLE_UDP_ENDPOINT
-        case kLwIPEndPointType_UDP:
-            udp_clear_flags(mUDP, UDP_FLAGS_MULTICAST_LOOP);
-            break;
+        case kLwIPEndPointType_UDP: udp_clear_flags(mUDP, UDP_FLAGS_MULTICAST_LOOP); break;
 #endif // INET_CONFIG_ENABLE_UDP_ENDPOINT
 
-        default:
-            lRetval = INET_ERROR_NOT_SUPPORTED;
-            break;
-
+        default: lRetval = INET_ERROR_NOT_SUPPORTED; break;
         }
     }
 
@@ -410,10 +388,10 @@ exit:
  *     specified interface.
  *
  */
-INET_ERROR IPEndPointBasis::JoinMulticastGroup(InterfaceId aInterfaceId, const IPAddress &aAddress)
+INET_ERROR IPEndPointBasis::JoinMulticastGroup(InterfaceId aInterfaceId, const IPAddress & aAddress)
 {
     const IPAddressType lAddrType = aAddress.Type();
-    INET_ERROR          lRetval = INET_ERROR_NOT_IMPLEMENTED;
+    INET_ERROR lRetval            = INET_ERROR_NOT_IMPLEMENTED;
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP || WEAVE_SYSTEM_CONFIG_USE_SOCKETS
     lRetval = CheckMulticastGroupArgs(aInterfaceId, aAddress);
@@ -424,49 +402,49 @@ INET_ERROR IPEndPointBasis::JoinMulticastGroup(InterfaceId aInterfaceId, const I
 
 #if INET_CONFIG_ENABLE_IPV4
     case kIPAddressType_IPv4:
-        {
+    {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if LWIP_IPV4 && LWIP_IGMP
-            lRetval = LwIPIPv4JoinLeaveMulticastGroup(aInterfaceId, aAddress, igmp_joingroup_netif);
+        lRetval = LwIPIPv4JoinLeaveMulticastGroup(aInterfaceId, aAddress, igmp_joingroup_netif);
 #else // LWIP_IPV4 && LWIP_IGMP
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
 Please enable LWIP_IPV4 and LWIP_IGMP for IPv4 JoinMulticastGroup and LeaveMulticastGroup support."
-            lRetval = INET_ERROR_NOT_SUPPORTED;
+        lRetval = INET_ERROR_NOT_SUPPORTED;
 #endif // LWIP_IPV4 && LWIP_IGMP
-            SuccessOrExit(lRetval);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-            lRetval = SocketsIPv4JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, IP_ADD_MEMBERSHIP);
-            SuccessOrExit(lRetval);
+        lRetval = SocketsIPv4JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, IP_ADD_MEMBERSHIP);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-        }
-        break;
+    }
+    break;
 #endif // INET_CONFIG_ENABLE_IPV4
 
     case kIPAddressType_IPv6:
-        {
+    {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-            lRetval = LwIPIPv6JoinLeaveMulticastGroup(aInterfaceId, aAddress, mld6_joingroup_netif);
+        lRetval = LwIPIPv6JoinLeaveMulticastGroup(aInterfaceId, aAddress, mld6_joingroup_netif);
 #else // LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
 Please enable LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6 for IPv6 JoinMulticastGroup and LeaveMulticastGroup support."
-            lRetval = INET_ERROR_NOT_SUPPORTED;
+        lRetval = INET_ERROR_NOT_SUPPORTED;
 #endif // LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-            SuccessOrExit(lRetval);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-            lRetval = SocketsIPv6JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, INET_IPV6_ADD_MEMBERSHIP);
-            SuccessOrExit(lRetval);
+        lRetval = SocketsIPv6JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, INET_IPV6_ADD_MEMBERSHIP);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-        }
-        break;
+    }
+    break;
 
-    default:
-        lRetval = INET_ERROR_WRONG_ADDRESS_TYPE;
-        break;
+    default: lRetval = INET_ERROR_WRONG_ADDRESS_TYPE; break;
     }
 
 exit:
@@ -501,10 +479,10 @@ exit:
  *     specified interface.
  *
  */
-INET_ERROR IPEndPointBasis::LeaveMulticastGroup(InterfaceId aInterfaceId, const IPAddress &aAddress)
+INET_ERROR IPEndPointBasis::LeaveMulticastGroup(InterfaceId aInterfaceId, const IPAddress & aAddress)
 {
     const IPAddressType lAddrType = aAddress.Type();
-    INET_ERROR          lRetval = INET_ERROR_NOT_IMPLEMENTED;
+    INET_ERROR lRetval            = INET_ERROR_NOT_IMPLEMENTED;
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP || WEAVE_SYSTEM_CONFIG_USE_SOCKETS
     lRetval = CheckMulticastGroupArgs(aInterfaceId, aAddress);
@@ -515,49 +493,49 @@ INET_ERROR IPEndPointBasis::LeaveMulticastGroup(InterfaceId aInterfaceId, const 
 
 #if INET_CONFIG_ENABLE_IPV4
     case kIPAddressType_IPv4:
-        {
+    {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if LWIP_IPV4 && LWIP_IGMP
-            lRetval = LwIPIPv4JoinLeaveMulticastGroup(aInterfaceId, aAddress, igmp_leavegroup_netif);
+        lRetval = LwIPIPv4JoinLeaveMulticastGroup(aInterfaceId, aAddress, igmp_leavegroup_netif);
 #else // LWIP_IPV4 && LWIP_IGMP
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
 Please enable LWIP_IPV4 and LWIP_IGMP for IPv4 JoinMulticastGroup and LeaveMulticastGroup support."
-            lRetval = INET_ERROR_NOT_SUPPORTED;
+        lRetval = INET_ERROR_NOT_SUPPORTED;
 #endif // LWIP_IPV4 && LWIP_IGMP
-            SuccessOrExit(lRetval);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-            lRetval = SocketsIPv4JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, IP_DROP_MEMBERSHIP);
-            SuccessOrExit(lRetval);
+        lRetval = SocketsIPv4JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, IP_DROP_MEMBERSHIP);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-        }
-        break;
+    }
+    break;
 #endif // INET_CONFIG_ENABLE_IPV4
 
     case kIPAddressType_IPv6:
-        {
+    {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-            lRetval = LwIPIPv6JoinLeaveMulticastGroup(aInterfaceId, aAddress, mld6_leavegroup_netif);
+        lRetval = LwIPIPv6JoinLeaveMulticastGroup(aInterfaceId, aAddress, mld6_leavegroup_netif);
 #else // LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-#pragma message "\n \
+#pragma message                                                                                                                    \
+    "\n \
 Please enable LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6 for IPv6 JoinMulticastGroup and LeaveMulticastGroup support."
-            lRetval = INET_ERROR_NOT_SUPPORTED;
+        lRetval = INET_ERROR_NOT_SUPPORTED;
 #endif // LWIP_IPV6_MLD && LWIP_IPV6_ND && LWIP_IPV6
-            SuccessOrExit(lRetval);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-            lRetval = SocketsIPv6JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, INET_IPV6_DROP_MEMBERSHIP);
-            SuccessOrExit(lRetval);
+        lRetval = SocketsIPv6JoinLeaveMulticastGroup(mSocket, aInterfaceId, aAddress, INET_IPV6_DROP_MEMBERSHIP);
+        SuccessOrExit(lRetval);
 #endif // WEAVE_SYSTEM_CONFIG_USE_SOCKETS
-        }
-        break;
+    }
+    break;
 
-    default:
-        lRetval = INET_ERROR_WRONG_ADDRESS_TYPE;
-        break;
+    default: lRetval = INET_ERROR_WRONG_ADDRESS_TYPE; break;
     }
 
 exit:
@@ -565,7 +543,7 @@ exit:
     return (lRetval);
 }
 
-void IPEndPointBasis::Init(InetLayer *aInetLayer)
+void IPEndPointBasis::Init(InetLayer * aInetLayer)
 {
     InitEndPointBasis(*aInetLayer);
 
@@ -575,16 +553,16 @@ void IPEndPointBasis::Init(InetLayer *aInetLayer)
 }
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-void IPEndPointBasis::HandleDataReceived(PacketBuffer *aBuffer)
+void IPEndPointBasis::HandleDataReceived(PacketBuffer * aBuffer)
 {
     if ((mState == kState_Listening) && (OnMessageReceived != NULL))
     {
-        const IPPacketInfo *pktInfo = GetPacketInfo(aBuffer);
+        const IPPacketInfo * pktInfo = GetPacketInfo(aBuffer);
 
         if (pktInfo != NULL)
         {
-            const IPPacketInfo pktInfoCopy = *pktInfo;  // copy the address info so that the app can free the
-                                                        // PacketBuffer without affecting access to address info.
+            const IPPacketInfo pktInfoCopy = *pktInfo; // copy the address info so that the app can free the
+                                                       // PacketBuffer without affecting access to address info.
             OnMessageReceived(this, aBuffer, &pktInfoCopy);
         }
         else
@@ -626,23 +604,23 @@ void IPEndPointBasis::HandleDataReceived(PacketBuffer *aBuffer)
  *     packets that arrive without an Ethernet header.
  *
  */
-IPPacketInfo *IPEndPointBasis::GetPacketInfo(PacketBuffer *aBuffer)
+IPPacketInfo * IPEndPointBasis::GetPacketInfo(PacketBuffer * aBuffer)
 {
-    uintptr_t       lStart;
-    uintptr_t       lPacketInfoStart;
-    IPPacketInfo *  lPacketInfo = NULL;
+    uintptr_t lStart;
+    uintptr_t lPacketInfoStart;
+    IPPacketInfo * lPacketInfo = NULL;
 
-    if (!aBuffer->EnsureReservedSize(sizeof (IPPacketInfo) + 3))
+    if (!aBuffer->EnsureReservedSize(sizeof(IPPacketInfo) + 3))
         goto done;
 
-    lStart           = (uintptr_t)aBuffer->Start();
-    lPacketInfoStart = lStart - sizeof (IPPacketInfo);
+    lStart           = (uintptr_t) aBuffer->Start();
+    lPacketInfoStart = lStart - sizeof(IPPacketInfo);
 
     // Align to a 4-byte boundary
 
-    lPacketInfo      = reinterpret_cast<IPPacketInfo *>(lPacketInfoStart & ~(sizeof (uint32_t) - 1));
+    lPacketInfo = reinterpret_cast<IPPacketInfo *>(lPacketInfoStart & ~(sizeof(uint32_t) - 1));
 
- done:
+done:
     return (lPacketInfo);
 }
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
@@ -656,7 +634,7 @@ INET_ERROR IPEndPointBasis::Bind(IPAddressType aAddressType, IPAddress aAddress,
     {
         struct sockaddr_in6 sa;
 
-        memset(&sa, 0, sizeof (sa));
+        memset(&sa, 0, sizeof(sa));
 
         sa.sin6_family   = AF_INET6;
         sa.sin6_port     = htons(aPort);
@@ -664,21 +642,21 @@ INET_ERROR IPEndPointBasis::Bind(IPAddressType aAddressType, IPAddress aAddress,
         sa.sin6_addr     = aAddress.ToIPv6();
         sa.sin6_scope_id = aInterfaceId;
 
-        if (bind(mSocket, (const sockaddr *) &sa, (unsigned) sizeof (sa)) != 0)
+        if (bind(mSocket, (const sockaddr *) &sa, (unsigned) sizeof(sa)) != 0)
             lRetval = Weave::System::MapErrorPOSIX(errno);
 
-        // Instruct the kernel that any messages to multicast destinations should be
-        // sent down the interface specified by the caller.
+            // Instruct the kernel that any messages to multicast destinations should be
+            // sent down the interface specified by the caller.
 #ifdef IPV6_MULTICAST_IF
         if (lRetval == INET_NO_ERROR)
-            setsockopt(mSocket, IPPROTO_IPV6, IPV6_MULTICAST_IF, &aInterfaceId, sizeof (aInterfaceId));
+            setsockopt(mSocket, IPPROTO_IPV6, IPV6_MULTICAST_IF, &aInterfaceId, sizeof(aInterfaceId));
 #endif // defined(IPV6_MULTICAST_IF)
 
-        // Instruct the kernel that any messages to multicast destinations should be
-        // set with the configured hop limit value.
+            // Instruct the kernel that any messages to multicast destinations should be
+            // set with the configured hop limit value.
 #ifdef IPV6_MULTICAST_HOPS
         int hops = INET_CONFIG_IP_MULTICAST_HOP_LIMIT;
-        setsockopt(mSocket, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hops, sizeof (hops));
+        setsockopt(mSocket, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hops, sizeof(hops));
 #endif // defined(IPV6_MULTICAST_HOPS)
     }
 #if INET_CONFIG_ENABLE_IPV4
@@ -687,32 +665,32 @@ INET_ERROR IPEndPointBasis::Bind(IPAddressType aAddressType, IPAddress aAddress,
         struct sockaddr_in sa;
         int enable = 1;
 
-        memset(&sa, 0, sizeof (sa));
+        memset(&sa, 0, sizeof(sa));
 
         sa.sin_family = AF_INET;
         sa.sin_port   = htons(aPort);
         sa.sin_addr   = aAddress.ToIPv4();
 
-        if (bind(mSocket, (const sockaddr *) &sa, (unsigned) sizeof (sa)) != 0)
+        if (bind(mSocket, (const sockaddr *) &sa, (unsigned) sizeof(sa)) != 0)
             lRetval = Weave::System::MapErrorPOSIX(errno);
 
-        // Instruct the kernel that any messages to multicast destinations should be
-        // sent down the interface to which the specified IPv4 address is bound.
+            // Instruct the kernel that any messages to multicast destinations should be
+            // sent down the interface to which the specified IPv4 address is bound.
 #ifdef IP_MULTICAST_IF
         if (lRetval == INET_NO_ERROR)
-            setsockopt(mSocket, IPPROTO_IP, IP_MULTICAST_IF, &sa, sizeof (sa));
+            setsockopt(mSocket, IPPROTO_IP, IP_MULTICAST_IF, &sa, sizeof(sa));
 #endif // defined(IP_MULTICAST_IF)
 
-        // Instruct the kernel that any messages to multicast destinations should be
-        // set with the configured hop limit value.
+            // Instruct the kernel that any messages to multicast destinations should be
+            // set with the configured hop limit value.
 #ifdef IP_MULTICAST_TTL
         int ttl = INET_CONFIG_IP_MULTICAST_HOP_LIMIT;
-        setsockopt(mSocket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof (ttl));
+        setsockopt(mSocket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
 #endif // defined(IP_MULTICAST_TTL)
 
         // Allow socket transmitting broadcast packets.
         if (lRetval == INET_NO_ERROR)
-            setsockopt(mSocket, SOL_SOCKET, SO_BROADCAST, &enable, sizeof (enable));
+            setsockopt(mSocket, SOL_SOCKET, SO_BROADCAST, &enable, sizeof(enable));
     }
 #endif // INET_CONFIG_ENABLE_IPV4
     else
@@ -728,7 +706,7 @@ INET_ERROR IPEndPointBasis::BindInterface(IPAddressType aAddressType, InterfaceI
 #if HAVE_SO_BINDTODEVICE
     if (aInterfaceId == INET_NULL_INTERFACEID)
     {
-        //Stop interface-based filtering.
+        // Stop interface-based filtering.
         if (setsockopt(mSocket, SOL_SOCKET, SO_BINDTODEVICE, "", 0) == -1)
         {
             lRetval = Weave::System::MapErrorPOSIX(errno);
@@ -736,7 +714,7 @@ INET_ERROR IPEndPointBasis::BindInterface(IPAddressType aAddressType, InterfaceI
     }
     else
     {
-        //Start filtering on the passed interface.
+        // Start filtering on the passed interface.
         char lInterfaceName[IF_NAMESIZE];
 
         if (if_indextoname(aInterfaceId, lInterfaceName) == NULL)
@@ -744,7 +722,8 @@ INET_ERROR IPEndPointBasis::BindInterface(IPAddressType aAddressType, InterfaceI
             lRetval = Weave::System::MapErrorPOSIX(errno);
         }
 
-        if (lRetval == INET_NO_ERROR && setsockopt(mSocket, SOL_SOCKET, SO_BINDTODEVICE, lInterfaceName, strlen(lInterfaceName)) == -1)
+        if (lRetval == INET_NO_ERROR &&
+            setsockopt(mSocket, SOL_SOCKET, SO_BINDTODEVICE, lInterfaceName, strlen(lInterfaceName)) == -1)
         {
             lRetval = Weave::System::MapErrorPOSIX(errno);
         }
@@ -753,21 +732,21 @@ INET_ERROR IPEndPointBasis::BindInterface(IPAddressType aAddressType, InterfaceI
     if (lRetval == INET_NO_ERROR)
         mBoundIntfId = aInterfaceId;
 
-#else // !HAVE_SO_BINDTODEVICE
+#else  // !HAVE_SO_BINDTODEVICE
     lRetval = INET_ERROR_NOT_IMPLEMENTED;
 #endif // HAVE_SO_BINDTODEVICE
 
     return (lRetval);
 }
 
-INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo *aPktInfo, Weave::System::PacketBuffer *aBuffer, uint16_t aSendFlags)
+INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo * aPktInfo, Weave::System::PacketBuffer * aBuffer, uint16_t aSendFlags)
 {
-    INET_ERROR     res = INET_NO_ERROR;
-    PeerSockAddr   peerSockAddr;
-    struct iovec   msgIOV;
-    uint8_t        controlData[256];
-    struct msghdr  msgHeader;
-    InterfaceId    intfId = aPktInfo->Interface;
+    INET_ERROR res = INET_NO_ERROR;
+    PeerSockAddr peerSockAddr;
+    struct iovec msgIOV;
+    uint8_t controlData[256];
+    struct msghdr msgHeader;
+    InterfaceId intfId = aPktInfo->Interface;
 
     // Ensure the destination address type is compatible with the endpoint address type.
     VerifyOrExit(mAddrType == aPktInfo->DestAddress.Type(), res = INET_ERROR_BAD_ARGS);
@@ -775,7 +754,7 @@ INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo *aPktInfo, Weave::System:
     // For now the entire message must fit within a single buffer.
     VerifyOrExit(aBuffer->Next() == NULL, res = INET_ERROR_MESSAGE_TOO_LONG);
 
-    memset(&msgHeader, 0, sizeof (msgHeader));
+    memset(&msgHeader, 0, sizeof(msgHeader));
 
     msgIOV.iov_base      = aBuffer->Start();
     msgIOV.iov_len       = aBuffer->DataLength();
@@ -783,24 +762,24 @@ INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo *aPktInfo, Weave::System:
     msgHeader.msg_iovlen = 1;
 
     // Construct a sockaddr_in/sockaddr_in6 structure containing the destination information.
-    memset(&peerSockAddr, 0, sizeof (peerSockAddr));
+    memset(&peerSockAddr, 0, sizeof(peerSockAddr));
     msgHeader.msg_name = &peerSockAddr;
     if (mAddrType == kIPAddressType_IPv6)
     {
-        peerSockAddr.in6.sin6_family    = AF_INET6;
-        peerSockAddr.in6.sin6_port      = htons(aPktInfo->DestPort);
-        peerSockAddr.in6.sin6_flowinfo  = 0;
-        peerSockAddr.in6.sin6_addr      = aPktInfo->DestAddress.ToIPv6();
-        peerSockAddr.in6.sin6_scope_id  = aPktInfo->Interface;
-        msgHeader.msg_namelen           = sizeof(sockaddr_in6);
+        peerSockAddr.in6.sin6_family   = AF_INET6;
+        peerSockAddr.in6.sin6_port     = htons(aPktInfo->DestPort);
+        peerSockAddr.in6.sin6_flowinfo = 0;
+        peerSockAddr.in6.sin6_addr     = aPktInfo->DestAddress.ToIPv6();
+        peerSockAddr.in6.sin6_scope_id = aPktInfo->Interface;
+        msgHeader.msg_namelen          = sizeof(sockaddr_in6);
     }
 #if INET_CONFIG_ENABLE_IPV4
     else
     {
-        peerSockAddr.in.sin_family      = AF_INET;
-        peerSockAddr.in.sin_port        = htons(aPktInfo->DestPort);
-        peerSockAddr.in.sin_addr        = aPktInfo->DestAddress.ToIPv4();
-        msgHeader.msg_namelen           = sizeof(sockaddr_in);
+        peerSockAddr.in.sin_family = AF_INET;
+        peerSockAddr.in.sin_port   = htons(aPktInfo->DestPort);
+        peerSockAddr.in.sin_addr   = aPktInfo->DestAddress.ToIPv4();
+        msgHeader.msg_namelen      = sizeof(sockaddr_in);
     }
 #endif // INET_CONFIG_ENABLE_IPV4
 
@@ -821,10 +800,10 @@ INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo *aPktInfo, Weave::System:
     {
 #if defined(IP_PKTINFO) || defined(IPV6_PKTINFO)
         memset(controlData, 0, sizeof(controlData));
-        msgHeader.msg_control = controlData;
+        msgHeader.msg_control    = controlData;
         msgHeader.msg_controllen = sizeof(controlData);
 
-        struct cmsghdr *controlHdr = CMSG_FIRSTHDR(&msgHeader);
+        struct cmsghdr * controlHdr = CMSG_FIRSTHDR(&msgHeader);
 
 #if INET_CONFIG_ENABLE_IPV4
 
@@ -835,12 +814,12 @@ INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo *aPktInfo, Weave::System:
             controlHdr->cmsg_type  = IP_PKTINFO;
             controlHdr->cmsg_len   = CMSG_LEN(sizeof(in_pktinfo));
 
-            struct in_pktinfo *pktInfo = (struct in_pktinfo *)CMSG_DATA(controlHdr);
-            pktInfo->ipi_ifindex = intfId;
-            pktInfo->ipi_spec_dst = aPktInfo->SrcAddress.ToIPv4();
+            struct in_pktinfo * pktInfo = (struct in_pktinfo *) CMSG_DATA(controlHdr);
+            pktInfo->ipi_ifindex        = intfId;
+            pktInfo->ipi_spec_dst       = aPktInfo->SrcAddress.ToIPv4();
 
             msgHeader.msg_controllen = CMSG_SPACE(sizeof(in_pktinfo));
-#else // !defined(IP_PKTINFO)
+#else  // !defined(IP_PKTINFO)
             ExitNow(res = INET_ERROR_NOT_SUPPORTED);
 #endif // !defined(IP_PKTINFO)
         }
@@ -854,12 +833,12 @@ INET_ERROR IPEndPointBasis::SendMsg(const IPPacketInfo *aPktInfo, Weave::System:
             controlHdr->cmsg_type  = IPV6_PKTINFO;
             controlHdr->cmsg_len   = CMSG_LEN(sizeof(in6_pktinfo));
 
-            struct in6_pktinfo *pktInfo = (struct in6_pktinfo *)CMSG_DATA(controlHdr);
-            pktInfo->ipi6_ifindex = intfId;
-            pktInfo->ipi6_addr = aPktInfo->SrcAddress.ToIPv6();
+            struct in6_pktinfo * pktInfo = (struct in6_pktinfo *) CMSG_DATA(controlHdr);
+            pktInfo->ipi6_ifindex        = intfId;
+            pktInfo->ipi6_addr           = aPktInfo->SrcAddress.ToIPv6();
 
             msgHeader.msg_controllen = CMSG_SPACE(sizeof(in6_pktinfo));
-#else // !defined(IPV6_PKTINFO)
+#else  // !defined(IPV6_PKTINFO)
             ExitNow(res = INET_ERROR_NOT_SUPPORTED);
 #endif // !defined(IPV6_PKTINFO)
         }
@@ -895,18 +874,13 @@ INET_ERROR IPEndPointBasis::GetSocket(IPAddressType aAddressType, int aType, int
 
         switch (aAddressType)
         {
-        case kIPAddressType_IPv6:
-            family = PF_INET6;
-            break;
+        case kIPAddressType_IPv6: family = PF_INET6; break;
 
 #if INET_CONFIG_ENABLE_IPV4
-        case kIPAddressType_IPv4:
-            family = PF_INET;
-            break;
+        case kIPAddressType_IPv4: family = PF_INET; break;
 #endif // INET_CONFIG_ENABLE_IPV4
 
-        default:
-            return INET_ERROR_WRONG_ADDRESS_TYPE;
+        default: return INET_ERROR_WRONG_ADDRESS_TYPE;
         }
 
         mSocket = ::socket(family, aType, aProtocol);
@@ -924,11 +898,11 @@ INET_ERROR IPEndPointBasis::GetSocket(IPAddressType aAddressType, int aType, int
         // logic up to check for implementations of these options and
         // to provide appropriate HAVE_xxxxx definitions accordingly.
 
-        res = setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR,  (void*)&one, sizeof (one));
+        res = setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, (void *) &one, sizeof(one));
         static_cast<void>(res);
 
 #ifdef SO_REUSEPORT
-        res = setsockopt(mSocket, SOL_SOCKET, SO_REUSEPORT,  (void*)&one, sizeof (one));
+        res = setsockopt(mSocket, SOL_SOCKET, SO_REUSEPORT, (void *) &one, sizeof(one));
         if (res != 0)
         {
             WeaveLogError(Inet, "SO_REUSEPORT failed: %d", errno);
@@ -942,7 +916,7 @@ INET_ERROR IPEndPointBasis::GetSocket(IPAddressType aAddressType, int aType, int
 #ifdef IPV6_V6ONLY
         if (aAddressType == kIPAddressType_IPv6)
         {
-            res = setsockopt(mSocket, IPPROTO_IPV6, IPV6_V6ONLY, (void *) &one, sizeof (one));
+            res = setsockopt(mSocket, IPPROTO_IPV6, IPV6_V6ONLY, (void *) &one, sizeof(one));
             if (res != 0)
             {
                 WeaveLogError(Inet, "IPV6_V6ONLY failed: %d", errno);
@@ -954,7 +928,7 @@ INET_ERROR IPEndPointBasis::GetSocket(IPAddressType aAddressType, int aType, int
 #ifdef IP_PKTINFO
         if (aAddressType == kIPAddressType_IPv4)
         {
-            res = setsockopt(mSocket, IPPROTO_IP, IP_PKTINFO, (void *) &one, sizeof (one));
+            res = setsockopt(mSocket, IPPROTO_IP, IP_PKTINFO, (void *) &one, sizeof(one));
             if (res != 0)
             {
                 WeaveLogError(Inet, "IP_PKTINFO failed: %d", errno);
@@ -966,7 +940,7 @@ INET_ERROR IPEndPointBasis::GetSocket(IPAddressType aAddressType, int aType, int
 #ifdef IPV6_RECVPKTINFO
         if (aAddressType == kIPAddressType_IPv6)
         {
-            res = setsockopt(mSocket, IPPROTO_IPV6, IPV6_RECVPKTINFO, (void *) &one, sizeof (one));
+            res = setsockopt(mSocket, IPPROTO_IPV6, IPV6_RECVPKTINFO, (void *) &one, sizeof(one));
             if (res != 0)
             {
                 WeaveLogError(Inet, "IPV6_PKTINFO failed: %d", errno);
@@ -980,14 +954,13 @@ INET_ERROR IPEndPointBasis::GetSocket(IPAddressType aAddressType, int aType, int
         // SIGPIPEs on unconnected UDP sockets.
 #ifdef SO_NOSIGPIPE
         {
-            res = setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof (one));
+            res = setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
             if (res != 0)
             {
                 WeaveLogError(Inet, "SO_NOSIGPIPE failed: %d", errno);
             }
         }
 #endif // defined(SO_NOSIGPIPE)
-
     }
     else if (mAddrType != aAddressType)
     {
@@ -1009,9 +982,9 @@ SocketEvents IPEndPointBasis::PrepareIO(void)
 
 void IPEndPointBasis::HandlePendingIO(uint16_t aPort)
 {
-    INET_ERROR      lStatus = INET_NO_ERROR;
-    IPPacketInfo    lPacketInfo;
-    PacketBuffer *  lBuffer;
+    INET_ERROR lStatus = INET_NO_ERROR;
+    IPPacketInfo lPacketInfo;
+    PacketBuffer * lBuffer;
 
     lPacketInfo.Clear();
     lPacketInfo.DestPort = aPort;
@@ -1026,18 +999,18 @@ void IPEndPointBasis::HandlePendingIO(uint16_t aPort)
         struct msghdr msgHeader;
 
         msgIOV.iov_base = lBuffer->Start();
-        msgIOV.iov_len = lBuffer->AvailableDataLength();
+        msgIOV.iov_len  = lBuffer->AvailableDataLength();
 
-        memset(&lPeerSockAddr, 0, sizeof (lPeerSockAddr));
+        memset(&lPeerSockAddr, 0, sizeof(lPeerSockAddr));
 
-        memset(&msgHeader, 0, sizeof (msgHeader));
+        memset(&msgHeader, 0, sizeof(msgHeader));
 
-        msgHeader.msg_name = &lPeerSockAddr;
-        msgHeader.msg_namelen = sizeof (lPeerSockAddr);
-        msgHeader.msg_iov = &msgIOV;
-        msgHeader.msg_iovlen = 1;
-        msgHeader.msg_control = controlData;
-        msgHeader.msg_controllen = sizeof (controlData);
+        msgHeader.msg_name       = &lPeerSockAddr;
+        msgHeader.msg_namelen    = sizeof(lPeerSockAddr);
+        msgHeader.msg_iov        = &msgIOV;
+        msgHeader.msg_iovlen     = 1;
+        msgHeader.msg_control    = controlData;
+        msgHeader.msg_controllen = sizeof(controlData);
 
         ssize_t rcvLen = recvmsg(mSocket, &msgHeader, MSG_DONTWAIT);
 
@@ -1056,13 +1029,13 @@ void IPEndPointBasis::HandlePendingIO(uint16_t aPort)
             if (lPeerSockAddr.any.sa_family == AF_INET6)
             {
                 lPacketInfo.SrcAddress = IPAddress::FromIPv6(lPeerSockAddr.in6.sin6_addr);
-                lPacketInfo.SrcPort = ntohs(lPeerSockAddr.in6.sin6_port);
+                lPacketInfo.SrcPort    = ntohs(lPeerSockAddr.in6.sin6_port);
             }
 #if INET_CONFIG_ENABLE_IPV4
             else if (lPeerSockAddr.any.sa_family == AF_INET)
             {
                 lPacketInfo.SrcAddress = IPAddress::FromIPv4(lPeerSockAddr.in.sin_addr);
-                lPacketInfo.SrcPort = ntohs(lPeerSockAddr.in.sin_port);
+                lPacketInfo.SrcPort    = ntohs(lPeerSockAddr.in.sin_port);
             }
 #endif // INET_CONFIG_ENABLE_IPV4
             else
@@ -1073,17 +1046,16 @@ void IPEndPointBasis::HandlePendingIO(uint16_t aPort)
 
         if (lStatus == INET_NO_ERROR)
         {
-            for (struct cmsghdr *controlHdr = CMSG_FIRSTHDR(&msgHeader);
-                 controlHdr != NULL;
-                 controlHdr = CMSG_NXTHDR(&msgHeader, controlHdr))
+            for (struct cmsghdr * controlHdr = CMSG_FIRSTHDR(&msgHeader); controlHdr != NULL;
+                 controlHdr                  = CMSG_NXTHDR(&msgHeader, controlHdr))
             {
 #if INET_CONFIG_ENABLE_IPV4
 #ifdef IP_PKTINFO
                 if (controlHdr->cmsg_level == IPPROTO_IP && controlHdr->cmsg_type == IP_PKTINFO)
                 {
-                    struct in_pktinfo *inPktInfo = (struct in_pktinfo *)CMSG_DATA(controlHdr);
-                    lPacketInfo.Interface = inPktInfo->ipi_ifindex;
-                    lPacketInfo.DestAddress = IPAddress::FromIPv4(inPktInfo->ipi_addr);
+                    struct in_pktinfo * inPktInfo = (struct in_pktinfo *) CMSG_DATA(controlHdr);
+                    lPacketInfo.Interface         = inPktInfo->ipi_ifindex;
+                    lPacketInfo.DestAddress       = IPAddress::FromIPv4(inPktInfo->ipi_addr);
                     continue;
                 }
 #endif // defined(IP_PKTINFO)
@@ -1092,9 +1064,9 @@ void IPEndPointBasis::HandlePendingIO(uint16_t aPort)
 #ifdef IPV6_PKTINFO
                 if (controlHdr->cmsg_level == IPPROTO_IPV6 && controlHdr->cmsg_type == IPV6_PKTINFO)
                 {
-                    struct in6_pktinfo *in6PktInfo = (struct in6_pktinfo *)CMSG_DATA(controlHdr);
-                    lPacketInfo.Interface = in6PktInfo->ipi6_ifindex;
-                    lPacketInfo.DestAddress = IPAddress::FromIPv6(in6PktInfo->ipi6_addr);
+                    struct in6_pktinfo * in6PktInfo = (struct in6_pktinfo *) CMSG_DATA(controlHdr);
+                    lPacketInfo.Interface           = in6PktInfo->ipi6_ifindex;
+                    lPacketInfo.DestAddress         = IPAddress::FromIPv6(in6PktInfo->ipi6_addr);
                     continue;
                 }
 #endif // defined(IPV6_PKTINFO)
@@ -1111,9 +1083,7 @@ void IPEndPointBasis::HandlePendingIO(uint16_t aPort)
     else
     {
         PacketBuffer::Free(lBuffer);
-        if (OnReceiveError != NULL
-            && lStatus != Weave::System::MapErrorPOSIX(EAGAIN)
-           )
+        if (OnReceiveError != NULL && lStatus != Weave::System::MapErrorPOSIX(EAGAIN))
             OnReceiveError(this, lStatus, NULL);
     }
 

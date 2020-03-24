@@ -48,8 +48,8 @@
 
 #define NL_BLE_TRANSFER_PROTOCOL_HEADER_FLAGS_SIZE 1 // Size in bytes of enocded BTP fragment header flag bits
 #define NL_BLE_TRANSFER_PROTOCOL_SEQUENCE_NUM_SIZE 1 // Size in bytes of encoded BTP sequence number
-#define NL_BLE_TRANSFER_PROTOCOL_ACK_SIZE 1          // Size in bytes of encoded BTP fragment acknowledgement number
-#define NL_BLE_TRANSFER_PROTOCOL_MSG_LEN_SIZE 2      // Size in byte of encoded BTP total fragmented message length
+#define NL_BLE_TRANSFER_PROTOCOL_ACK_SIZE          1 // Size in bytes of encoded BTP fragment acknowledgement number
+#define NL_BLE_TRANSFER_PROTOCOL_MSG_LEN_SIZE      2 // Size in byte of encoded BTP total fragmented message length
 
 #define NL_BLE_TRANSFER_PROTOCOL_MAX_HEADER_SIZE                                                                                   \
     (NL_BLE_TRANSFER_PROTOCOL_HEADER_FLAGS_SIZE + NL_BLE_TRANSFER_PROTOCOL_ACK_SIZE + NL_BLE_TRANSFER_PROTOCOL_SEQUENCE_NUM_SIZE + \
@@ -71,8 +71,7 @@ static inline void IncSeqNum(SequenceNumber_t & a_seq_num)
 
 static inline bool DidReceiveData(uint8_t rx_flags)
 {
-    return (GetFlag(rx_flags, WoBle::kHeaderFlag_StartMessage) ||
-            GetFlag(rx_flags, WoBle::kHeaderFlag_ContinueMessage) ||
+    return (GetFlag(rx_flags, WoBle::kHeaderFlag_StartMessage) || GetFlag(rx_flags, WoBle::kHeaderFlag_ContinueMessage) ||
             GetFlag(rx_flags, WoBle::kHeaderFlag_EndMessage));
 }
 
@@ -528,9 +527,8 @@ bool WoBle::HandleCharacteristicSend(PacketBuffer * data, bool send_ack)
         characteristic += mTxFragmentSize;
 
         // prepend header
-        characteristic -= send_ack
-            ? NL_BLE_TRANSFER_PROTOCOL_MID_FRAGMENT_MAX_HEADER_SIZE
-            : (NL_BLE_TRANSFER_PROTOCOL_MID_FRAGMENT_MAX_HEADER_SIZE - NL_BLE_TRANSFER_PROTOCOL_ACK_SIZE);
+        characteristic -= send_ack ? NL_BLE_TRANSFER_PROTOCOL_MID_FRAGMENT_MAX_HEADER_SIZE
+                                   : (NL_BLE_TRANSFER_PROTOCOL_MID_FRAGMENT_MAX_HEADER_SIZE - NL_BLE_TRANSFER_PROTOCOL_ACK_SIZE);
         mTxBuf->SetStart(characteristic);
         uint8_t cursor = 1; // first position past header flags byte
 

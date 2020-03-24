@@ -47,7 +47,7 @@ namespace AppKeys {
  */
 enum WeaveAppGroupGlobalId
 {
-    kWeaveAppGroupGlobalId_Unspecified           = 0,        /**< Application Group Global ID is not specified. */
+    kWeaveAppGroupGlobalId_Unspecified = 0, /**< Application Group Global ID is not specified. */
 
     /**
      * @brief Nest Labs Application Group Global IDs.
@@ -59,10 +59,10 @@ enum WeaveAppGroupGlobalId
      *
      *  @{
      */
-    kWeaveAppGroupGlobalId_NestPhysicalAccess    = (kWeaveVendor_NestLabs << 16) | 0x0001,  /**< Nest Physical Access Group. */
-    kWeaveAppGroupGlobalId_NestStructureSecurity = (kWeaveVendor_NestLabs << 16) | 0x0002,  /**< Nest Structure Security Group. */
-    kWeaveAppGroupGlobalId_NestHVAC              = (kWeaveVendor_NestLabs << 16) | 0x0003,  /**< Nest HVAC Group. */
-    kWeaveAppGroupGlobalId_NestSecurityControl   = (kWeaveVendor_NestLabs << 16) | 0x0004,  /**< Nest Security Control Group. */
+    kWeaveAppGroupGlobalId_NestPhysicalAccess    = (kWeaveVendor_NestLabs << 16) | 0x0001, /**< Nest Physical Access Group. */
+    kWeaveAppGroupGlobalId_NestStructureSecurity = (kWeaveVendor_NestLabs << 16) | 0x0002, /**< Nest Structure Security Group. */
+    kWeaveAppGroupGlobalId_NestHVAC              = (kWeaveVendor_NestLabs << 16) | 0x0003, /**< Nest HVAC Group. */
+    kWeaveAppGroupGlobalId_NestSecurityControl   = (kWeaveVendor_NestLabs << 16) | 0x0004, /**< Nest Security Control Group. */
 
     /**
      *  @}

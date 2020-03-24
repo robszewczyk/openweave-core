@@ -35,23 +35,21 @@ namespace Profiles {
 namespace Security {
 
 using nl::Weave::ASN1::OID;
-using nl::Weave::Crypto::EncodedECPublicKey;
 using nl::Weave::Crypto::EncodedECPrivateKey;
+using nl::Weave::Crypto::EncodedECPublicKey;
 
 // Utility functions for encoding/decoding private keys in Weave TLV format.
 
-extern WEAVE_ERROR EncodeWeaveECPrivateKey(uint32_t weaveCurveId,
-                                           const EncodedECPublicKey *pubKey,
-                                           const EncodedECPrivateKey& privKey,
-                                           uint8_t *outBuf, uint32_t outBufSize, uint32_t& outLen);
+extern WEAVE_ERROR EncodeWeaveECPrivateKey(uint32_t weaveCurveId, const EncodedECPublicKey * pubKey,
+                                           const EncodedECPrivateKey & privKey, uint8_t * outBuf, uint32_t outBufSize,
+                                           uint32_t & outLen);
 
-extern WEAVE_ERROR DecodeWeaveECPrivateKey(const uint8_t *buf, uint32_t len, uint32_t& weaveCurveId,
-                                           EncodedECPublicKey& pubKey, EncodedECPrivateKey& privKey);
+extern WEAVE_ERROR DecodeWeaveECPrivateKey(const uint8_t * buf, uint32_t len, uint32_t & weaveCurveId, EncodedECPublicKey & pubKey,
+                                           EncodedECPrivateKey & privKey);
 
 } // namespace Security
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif /* WEAVEPRIVATEKEY_H_ */

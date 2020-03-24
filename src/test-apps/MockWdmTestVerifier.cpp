@@ -38,7 +38,7 @@ using namespace nl::Weave;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles::DataManagement;
 
-static void SimpleDumpWriter(const char *aFormat, ...)
+static void SimpleDumpWriter(const char * aFormat, ...)
 {
     va_list args;
 
@@ -49,24 +49,24 @@ static void SimpleDumpWriter(const char *aFormat, ...)
     va_end(args);
 }
 
-//Return a Standard Internet Checksum as described in RFC 1071.
-//Code adapted from Section 4.0 "Implementation Examples", Subsection 4.1 "C".
-//Verified correct behavior comparing to <http://ask.wireshark.org/questions/11061/icmp-checksum>
-//And also comparing with <http://www.erg.abdn.ac.uk/~gorry/course/inet-pages/packet-dec2.html>
-static uint16_t CalculateChecksum(uint8_t *startpos, uint8_t checklen)
+// Return a Standard Internet Checksum as described in RFC 1071.
+// Code adapted from Section 4.0 "Implementation Examples", Subsection 4.1 "C".
+// Verified correct behavior comparing to <http://ask.wireshark.org/questions/11061/icmp-checksum>
+// And also comparing with <http://www.erg.abdn.ac.uk/~gorry/course/inet-pages/packet-dec2.html>
+static uint16_t CalculateChecksum(uint8_t * startpos, uint8_t checklen)
 {
-    uint32_t sum   = 0;
-    uint16_t n     = 0;
-    uint16_t answer= 0;
+    uint32_t sum    = 0;
+    uint16_t n      = 0;
+    uint16_t answer = 0;
 
     while (checklen > 0)
     {
-        n = (uint16_t) (*startpos++);
+        n = (uint16_t)(*startpos++);
         checklen--;
         if (checklen > 0)
         {
-            n += ((uint16_t) (*startpos++))<<8;
-            checklen --;
+            n += ((uint16_t)(*startpos++)) << 8;
+            checklen--;
         }
         sum += n;
     }
@@ -80,8 +80,7 @@ static uint16_t CalculateChecksum(uint8_t *startpos, uint8_t checklen)
     return answer;
 }
 
-
-uint16_t ChecksumTLV(uint8_t *inBuffer, uint32_t inLen, const char *inChecksumType)
+uint16_t ChecksumTLV(uint8_t * inBuffer, uint32_t inLen, const char * inChecksumType)
 {
     nl::Weave::TLV::TLVReader reader;
     uint16_t checksum = -1;
@@ -96,15 +95,14 @@ uint16_t ChecksumTLV(uint8_t *inBuffer, uint32_t inLen, const char *inChecksumTy
     return checksum;
 }
 
-
-uint16_t DumpPublisherTraitChecksum(TraitDataSource *inTraitDataSource)
+uint16_t DumpPublisherTraitChecksum(TraitDataSource * inTraitDataSource)
 {
     WEAVE_ERROR err;
     uint8_t buffer[2048] = { 0 };
     TLVType dummyContainerType;
     nl::Weave::TLV::TLVWriter writer;
     uint32_t encodedLen = 0;
-    uint16_t checksum = -1;
+    uint16_t checksum   = -1;
     writer.Init(buffer, sizeof(buffer));
     err = writer.StartContainer(AnonymousTag, kTLVType_Structure, dummyContainerType);
     SuccessOrExit(err);
@@ -119,7 +117,7 @@ uint16_t DumpPublisherTraitChecksum(TraitDataSource *inTraitDataSource)
     SuccessOrExit(err);
 
     encodedLen = writer.GetLengthWritten();
-    checksum = ChecksumTLV(buffer, encodedLen, "Publisher");
+    checksum   = ChecksumTLV(buffer, encodedLen, "Publisher");
 
 exit:
     WeaveLogFunctError(err);
@@ -127,14 +125,14 @@ exit:
     return checksum;
 }
 
-uint16_t DumpClientTraitChecksum(const TraitSchemaEngine *inSchemaEngine, TraitSchemaEngine::IGetDataDelegate *inTraitDataSource)
+uint16_t DumpClientTraitChecksum(const TraitSchemaEngine * inSchemaEngine, TraitSchemaEngine::IGetDataDelegate * inTraitDataSource)
 {
     WEAVE_ERROR err;
     uint8_t buffer[2048] = { 0 };
     TLVType dummyContainerType;
     nl::Weave::TLV::TLVWriter writer;
     uint32_t encodedLen = 0;
-    uint16_t checksum = -1;
+    uint16_t checksum   = -1;
 
     writer.Init(buffer, sizeof(buffer));
     err = writer.StartContainer(AnonymousTag, kTLVType_Structure, dummyContainerType);
@@ -150,7 +148,7 @@ uint16_t DumpClientTraitChecksum(const TraitSchemaEngine *inSchemaEngine, TraitS
     SuccessOrExit(err);
 
     encodedLen = writer.GetLengthWritten();
-    checksum = ChecksumTLV(buffer, encodedLen, "Client");
+    checksum   = ChecksumTLV(buffer, encodedLen, "Client");
 
 exit:
     WeaveLogFunctError(err);

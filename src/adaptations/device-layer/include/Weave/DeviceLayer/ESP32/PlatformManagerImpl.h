@@ -34,9 +34,7 @@ namespace DeviceLayer {
 /**
  * Concrete implementation of the PlatformManager singleton object for the ESP32 platform.
  */
-class PlatformManagerImpl final
-    : public PlatformManager,
-      public Internal::GenericPlatformManagerImpl_FreeRTOS<PlatformManagerImpl>
+class PlatformManagerImpl final : public PlatformManager, public Internal::GenericPlatformManagerImpl_FreeRTOS<PlatformManagerImpl>
 {
     // Allow the PlatformManager interface class to delegate method calls to
     // the implementation methods provided by this class.
@@ -47,14 +45,12 @@ class PlatformManagerImpl final
     friend Internal::GenericPlatformManagerImpl_FreeRTOS<PlatformManagerImpl>;
 
 public:
-
     // ===== Platform-specific members that may be accessed directly by the application.
 
     WEAVE_ERROR InitLwIPCoreLock(void);
     static esp_err_t HandleESPSystemEvent(void * ctx, system_event_t * event);
 
 private:
-
     // ===== Methods that implement the PlatformManager abstract interface.
 
     WEAVE_ERROR _InitWeaveStack(void);

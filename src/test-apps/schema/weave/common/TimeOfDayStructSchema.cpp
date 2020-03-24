@@ -30,31 +30,19 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
+const nl::FieldDescriptor TimeOfDayFieldDescriptors[] = {
+    { NULL, offsetof(TimeOfDay, hour), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt8, 0), 5 },
 
-const nl::FieldDescriptor TimeOfDayFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(TimeOfDay, hour), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt8, 0), 5
-    },
+    { NULL, offsetof(TimeOfDay, minute), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt8, 0), 6 },
 
-    {
-        NULL, offsetof(TimeOfDay, minute), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt8, 0), 6
-    },
-
-    {
-        NULL, offsetof(TimeOfDay, second), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt8, 0), 7
-    },
+    { NULL, offsetof(TimeOfDay, second), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt8, 0), 7 },
 
 };
 
-const nl::SchemaFieldDescriptor TimeOfDay::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(TimeOfDayFieldDescriptors)/sizeof(TimeOfDayFieldDescriptors[0]),
-    .mFields = TimeOfDayFieldDescriptors,
-    .mSize = sizeof(TimeOfDay)
-};
-
-
+const nl::SchemaFieldDescriptor TimeOfDay::FieldSchema = { .mNumFieldDescriptorElements = sizeof(TimeOfDayFieldDescriptors) /
+                                                               sizeof(TimeOfDayFieldDescriptors[0]),
+                                                           .mFields = TimeOfDayFieldDescriptors,
+                                                           .mSize   = sizeof(TimeOfDay) };
 
 } // namespace Common
 } // namespace Weave

@@ -46,9 +46,9 @@ using namespace ::nl::Weave::Profiles::ServiceDirectory;
 using namespace ::nl::Weave::Profiles::StatusReporting;
 using namespace ::nl::Weave::Profiles::DataManagement;
 
-using nl::Weave::WeaveConnection;
 using nl::Weave::ExchangeContext;
 using nl::Weave::ExchangeMgr;
+using nl::Weave::WeaveConnection;
 
 /**
  *  @brief
@@ -69,9 +69,9 @@ using nl::Weave::ExchangeMgr;
  *                                  closure.
  */
 
-void ConnectionClosedHandler(WeaveConnection *aConnection, WEAVE_ERROR aError)
+void ConnectionClosedHandler(WeaveConnection * aConnection, WEAVE_ERROR aError)
 {
-    Binding *binding = static_cast<Binding *>(aConnection->AppState);
+    Binding * binding = static_cast<Binding *>(aConnection->AppState);
     StatusReport report;
 
     /*
@@ -106,9 +106,9 @@ void ConnectionClosedHandler(WeaveConnection *aConnection, WEAVE_ERROR aError)
  *                                  connection failed.
  */
 
-void ConnectionCompleteHandler(WeaveConnection *aConnection, WEAVE_ERROR aError)
+void ConnectionCompleteHandler(WeaveConnection * aConnection, WEAVE_ERROR aError)
 {
-    Binding *binding = static_cast<Binding *>(aConnection->AppState);
+    Binding * binding = static_cast<Binding *>(aConnection->AppState);
 
     /*
      * someone may have made an incomplete or unbind request while we
@@ -175,9 +175,9 @@ void ConnectionCompleteHandler(WeaveConnection *aConnection, WEAVE_ERROR aError)
  *                                      will be NULL.
  */
 
-void ServiceMgrStatusHandler(void* aAppState, WEAVE_ERROR aError, StatusReport *aReport)
+void ServiceMgrStatusHandler(void * aAppState, WEAVE_ERROR aError, StatusReport * aReport)
 {
-    Binding *binding = static_cast<Binding *>(aAppState);
+    Binding * binding = static_cast<Binding *>(aAppState);
 
     if (aReport)
     {
@@ -241,7 +241,7 @@ Binding::~Binding(void)
  *  under-specified.
  */
 
-WEAVE_ERROR Binding::Init(const uint64_t &aPeerNodeId, uint8_t aTransport)
+WEAVE_ERROR Binding::Init(const uint64_t & aPeerNodeId, uint8_t aTransport)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -251,11 +251,13 @@ WEAVE_ERROR Binding::Init(const uint64_t &aPeerNodeId, uint8_t aTransport)
      * unicast-able node as opposed to a broadcast address.
      */
 
-    if (aPeerNodeId == kNodeIdNotSpecified || (aPeerNodeId == kAnyNodeId && (
+    if (aPeerNodeId == kNodeIdNotSpecified ||
+        (aPeerNodeId == kAnyNodeId &&
+         (
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-                                                   aTransport == kTransport_WRMP ||
+             aTransport == kTransport_WRMP ||
 #endif
-                                                   aTransport == kTransport_TCP)))
+             aTransport == kTransport_TCP)))
     {
 
         err = WEAVE_ERROR_INVALID_ARGUMENT;
@@ -266,7 +268,7 @@ WEAVE_ERROR Binding::Init(const uint64_t &aPeerNodeId, uint8_t aTransport)
         Finalize();
 
         mPeerNodeId = aPeerNodeId;
-        mTransport = aTransport;
+        mTransport  = aTransport;
 
         if (aTransport == kTransport_TCP)
             mState = kState_Incomplete;
@@ -309,7 +311,7 @@ WEAVE_ERROR Binding::Init(const uint64_t &aPeerNodeId, uint8_t aTransport)
  *  under-specified.
  */
 
-WEAVE_ERROR Binding::Init(const uint64_t &aServiceEpt, WeaveServiceManager *aServiceMgr, WeaveAuthMode aAuthMode)
+WEAVE_ERROR Binding::Init(const uint64_t & aServiceEpt, WeaveServiceManager * aServiceMgr, WeaveAuthMode aAuthMode)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -329,10 +331,10 @@ WEAVE_ERROR Binding::Init(const uint64_t &aServiceEpt, WeaveServiceManager *aSer
 
         mPeerNodeId = aServiceEpt;
         mServiceMgr = aServiceMgr;
-        mAuthMode = aAuthMode;
+        mAuthMode   = aAuthMode;
 
         mTransport = kTransport_TCP;
-        mState = kState_Incomplete;
+        mState     = kState_Incomplete;
     }
 
     return err;
@@ -359,7 +361,7 @@ WEAVE_ERROR Binding::Init(const uint64_t &aServiceEpt, WeaveServiceManager *aSer
  *  under-specified.
  */
 
-WEAVE_ERROR Binding::Init(WeaveConnection *aConnection)
+WEAVE_ERROR Binding::Init(WeaveConnection * aConnection)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -372,10 +374,10 @@ WEAVE_ERROR Binding::Init(WeaveConnection *aConnection)
     {
         Finalize();
 
-        mTransport = kTransport_TCP;
+        mTransport  = kTransport_TCP;
         mConnection = aConnection;
         mPeerNodeId = aConnection->PeerNodeId;
-        mState = kState_Complete;
+        mState      = kState_Complete;
     }
 
     return err;
@@ -402,7 +404,7 @@ WEAVE_ERROR Binding::Init(WeaveConnection *aConnection)
  *  @retval #WEAVE_ERROR_INVALID_ARGUMENT If the connection is NULL.
  */
 
-WEAVE_ERROR Binding::Connect(WeaveConnection *aConnection)
+WEAVE_ERROR Binding::Connect(WeaveConnection * aConnection)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -414,7 +416,7 @@ WEAVE_ERROR Binding::Connect(WeaveConnection *aConnection)
     else if (aConnection)
     {
         aConnection->OnConnectionClosed = ConnectionClosedHandler;
-        mConnection = aConnection;
+        mConnection                     = aConnection;
 
         mPeerNodeId = aConnection->PeerNodeId;
 
@@ -493,7 +495,7 @@ void Binding::Free(void)
     mServiceMgr = NULL;
 #endif
 
-    mAuthMode = kWeaveAuthMode_Unauthenticated;
+    mAuthMode   = kWeaveAuthMode_Unauthenticated;
     mConnection = NULL;
 
     mEngine = NULL;
@@ -551,10 +553,10 @@ bool Binding::IsFree(void)
  *  connect.
  */
 
-WEAVE_ERROR Binding::CompleteRequest(ProtocolEngine *aEngine)
+WEAVE_ERROR Binding::CompleteRequest(ProtocolEngine * aEngine)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveConnection *con;
+    WeaveConnection * con;
 
     mEngine = aEngine;
 
@@ -584,7 +586,7 @@ WEAVE_ERROR Binding::CompleteRequest(ProtocolEngine *aEngine)
 
         else
 #endif
-        if (mTransport == kTransport_TCP)
+            if (mTransport == kTransport_TCP)
         {
             con = aEngine->mExchangeMgr->MessageLayer->NewConnection();
 
@@ -598,7 +600,7 @@ WEAVE_ERROR Binding::CompleteRequest(ProtocolEngine *aEngine)
                 mState = kState_Completing;
 
                 con->OnConnectionComplete = ConnectionCompleteHandler;
-                con->AppState = this;
+                con->AppState             = this;
 
                 err = con->Connect(mPeerNodeId);
             }
@@ -631,7 +633,7 @@ WEAVE_ERROR Binding::CompleteRequest(ProtocolEngine *aEngine)
  *                                      target.
  */
 
-void Binding::CompleteConfirm(WeaveConnection *aConnection)
+void Binding::CompleteConfirm(WeaveConnection * aConnection)
 {
     Connect(aConnection);
 
@@ -646,7 +648,7 @@ void Binding::CompleteConfirm(WeaveConnection *aConnection)
  *                                      object describing the failure.
  */
 
-void Binding::CompleteConfirm(StatusReport &aReport)
+void Binding::CompleteConfirm(StatusReport & aReport)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -766,7 +768,7 @@ void Binding::UncompleteRequest(void)
  *                                      describing what went wrong.
  */
 
-void Binding::IncompleteIndication(StatusReport &aReport)
+void Binding::IncompleteIndication(StatusReport & aReport)
 {
     WeaveLogProgress(DataManagement, "Binding::IncompleteIndication() - %s", ErrorStr(aReport.mError));
 
@@ -798,9 +800,9 @@ void Binding::IncompleteIndication(StatusReport &aReport)
  *  failure.
  */
 
-ExchangeContext *Binding::GetExchangeCtx(WeaveExchangeManager *aExchangeMgr, void *aAppState)
+ExchangeContext * Binding::GetExchangeCtx(WeaveExchangeManager * aExchangeMgr, void * aAppState)
 {
-    ExchangeContext *retVal = NULL;
+    ExchangeContext * retVal = NULL;
 
     if (mConnection)
         retVal = aExchangeMgr->NewContext(mConnection, aAppState);

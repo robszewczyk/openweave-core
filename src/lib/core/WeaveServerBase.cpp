@@ -62,8 +62,8 @@ using namespace nl::Weave::TLV;
  * @retval true             If the message should be accepted and processed as normal.
  * @retval false            If message processing should stop and the message the should be discarded.
  */
-bool WeaveServerBase::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, WeaveServerDelegateBase *delegate)
+bool WeaveServerBase::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                           const WeaveMessageInfo * msgInfo, WeaveServerDelegateBase * delegate)
 {
     // Reject all messages if the application hasn't specified a delegate object.
     if (delegate == NULL)
@@ -94,8 +94,8 @@ bool WeaveServerBase::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProf
         if (res != WeaveServerDelegateBase::kAccessControlResult_Rejected_RespSent &&
             res != WeaveServerDelegateBase::kAccessControlResult_Rejected_Silent)
         {
-            uint16_t statusCode = (msgInfo->PeerAuthMode == kWeaveAuthMode_None)
-                    ? Common::kStatus_AuthenticationRequired : Common::kStatus_AccessDenied;
+            uint16_t statusCode = (msgInfo->PeerAuthMode == kWeaveAuthMode_None) ? Common::kStatus_AuthenticationRequired
+                                                                                 : Common::kStatus_AccessDenied;
             WeaveServerBase::SendStatusReport(ec, kWeaveProfile_Common, statusCode, WEAVE_NO_ERROR);
         }
 
@@ -120,7 +120,8 @@ bool WeaveServerBase::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProf
  *                                 with the status code.
  *
  */
-WEAVE_ERROR WeaveServerBase::SendStatusReport(ExchangeContext *ec, uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError)
+WEAVE_ERROR WeaveServerBase::SendStatusReport(ExchangeContext * ec, uint32_t statusProfileId, uint16_t statusCode,
+                                              WEAVE_ERROR sysError)
 {
     const uint16_t sendFlags = 0;
 
@@ -146,12 +147,14 @@ WEAVE_ERROR WeaveServerBase::SendStatusReport(ExchangeContext *ec, uint32_t stat
  *                                 status report being sent.
  *
  */
-WEAVE_ERROR WeaveServerBase::SendStatusReport(ExchangeContext *ec, uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError, uint16_t sendFlags)
+WEAVE_ERROR WeaveServerBase::SendStatusReport(ExchangeContext * ec, uint32_t statusProfileId, uint16_t statusCode,
+                                              WEAVE_ERROR sysError, uint16_t sendFlags)
 {
-    WEAVE_ERROR     err;
-    PacketBuffer*   respBuf;
-    uint8_t*        p;
-    uint8_t         respLen = 18; // sizeof(statusProfileId) + sizeof(statusCode) + StartContainer(1) + kTag_SystemErrorCode TLV Len (10), EndContainer (1)
+    WEAVE_ERROR err;
+    PacketBuffer * respBuf;
+    uint8_t * p;
+    uint8_t respLen = 18; // sizeof(statusProfileId) + sizeof(statusCode) + StartContainer(1) + kTag_SystemErrorCode TLV Len (10),
+                          // EndContainer (1)
 
     respBuf = PacketBuffer::NewWithAvailableSize(respLen);
     VerifyOrExit(respBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -182,7 +185,7 @@ WEAVE_ERROR WeaveServerBase::SendStatusReport(ExchangeContext *ec, uint32_t stat
         SuccessOrExit(err);
     }
 
-    err = ec->SendMessage(kWeaveProfile_Common, Common::kMsgType_StatusReport, respBuf, sendFlags);
+    err     = ec->SendMessage(kWeaveProfile_Common, Common::kMsgType_StatusReport, respBuf, sendFlags);
     respBuf = NULL;
 
 exit:
@@ -223,13 +226,12 @@ exit:
  *                          is expected to represent the final assessment of access control policy for the
  *                          message.
  */
-void WeaveServerDelegateBase::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void WeaveServerDelegateBase::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                   const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     // Mark the result as 'Final', confirming that the subclass properly called up to the base class.
     result |= kAccessControlResult_IsFinal;
 }
-
 
 } // namespace Weave
 } // namespace nl

@@ -149,24 +149,25 @@ enum
 };
 
 namespace Platform {
-    extern WEAVE_ERROR LoadPersistentServiceDir(uint8_t *buf, uint16_t bufsize, uint16_t &len, uint8_t version);
-    extern WEAVE_ERROR StorePersistentServiceDir(uint8_t *buf, uint16_t len, uint8_t version);
-    extern WEAVE_ERROR ClearPersistentServiceDir();
-    extern bool IsPersistentServiceDirPresent(uint8_t version);
-}
+extern WEAVE_ERROR LoadPersistentServiceDir(uint8_t * buf, uint16_t bufsize, uint16_t & len, uint8_t version);
+extern WEAVE_ERROR StorePersistentServiceDir(uint8_t * buf, uint16_t len, uint8_t version);
+extern WEAVE_ERROR ClearPersistentServiceDir();
+extern bool IsPersistentServiceDirPresent(uint8_t version);
+} // namespace Platform
 #endif // WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
 
-#define kServiceEndpoint_Directory              (0x18B4300200000001ull)     ///< Directory profile endpoint
-#define kServiceEndpoint_SoftwareUpdate         (0x18B4300200000002ull)     ///< Software update profile endpoint
-#define kServiceEndpoint_Data_Management        (0x18B4300200000003ull)     ///< Core Weave data management protocol endpoint
-#define kServiceEndpoint_Log_Upload             (0x18B4300200000004ull)     ///< Bulk data transfer profile endpoint for log uploads
-#define kServiceEndpoint_TimeService            (0x18B4300200000005ull)     ///< Time service endpoint
-#define kServiceEndpoint_ServiceProvisioning    (0x18B4300200000010ull)     ///< Service provisioning profile endpoint
-#define kServiceEndpoint_WeaveTunneling         (0x18B4300200000011ull)     ///< Weave tunneling endpoint
-#define kServiceEndpoint_CoreRouter             (0x18B4300200000012ull)     ///< Core router endpoint
-#define kServiceEndpoint_FileDownload           (0x18B4300200000013ull)     ///< File download profile endpoint
-#define kServiceEndpoint_Bastion                (0x18B4300200000014ull)     ///< Nest Bastion service endpoint
-#define kServiceEndpoint_DeviceOperationalCA    (0x18B4300200000016ull)     ///< Nest device operational certification authority service endpoint
+#define kServiceEndpoint_Directory           (0x18B4300200000001ull) ///< Directory profile endpoint
+#define kServiceEndpoint_SoftwareUpdate      (0x18B4300200000002ull) ///< Software update profile endpoint
+#define kServiceEndpoint_Data_Management     (0x18B4300200000003ull) ///< Core Weave data management protocol endpoint
+#define kServiceEndpoint_Log_Upload          (0x18B4300200000004ull) ///< Bulk data transfer profile endpoint for log uploads
+#define kServiceEndpoint_TimeService         (0x18B4300200000005ull) ///< Time service endpoint
+#define kServiceEndpoint_ServiceProvisioning (0x18B4300200000010ull) ///< Service provisioning profile endpoint
+#define kServiceEndpoint_WeaveTunneling      (0x18B4300200000011ull) ///< Weave tunneling endpoint
+#define kServiceEndpoint_CoreRouter          (0x18B4300200000012ull) ///< Core router endpoint
+#define kServiceEndpoint_FileDownload        (0x18B4300200000013ull) ///< File download profile endpoint
+#define kServiceEndpoint_Bastion             (0x18B4300200000014ull) ///< Nest Bastion service endpoint
+#define kServiceEndpoint_DeviceOperationalCA                                                                                       \
+    (0x18B4300200000016ull) ///< Nest device operational certification authority service endpoint
 
 /**
  * @class WeaveServiceManager
@@ -184,7 +185,6 @@ namespace Platform {
 class NL_DLL_EXPORT WeaveServiceManager
 {
 public:
-
     /**
      * @typedef RootDirectoryAccessor
      *
@@ -205,7 +205,7 @@ public:
      * @return #WEAVE_NO_ERROR on success, otherwise the loading process
      *   would be aborted.
      */
-    typedef WEAVE_ERROR(*RootDirectoryAccessor)(uint8_t *aDirectory, uint16_t aLength);
+    typedef WEAVE_ERROR (*RootDirectoryAccessor)(uint8_t * aDirectory, uint16_t aLength);
 
     /**
      * @typedef StatusHandler
@@ -232,7 +232,7 @@ public:
      *   is passed in the previous argument.
      *
      */
-    typedef void (*StatusHandler)(void * anAppState, WEAVE_ERROR anError, StatusReport *aStatusReport);
+    typedef void (*StatusHandler)(void * anAppState, WEAVE_ERROR anError, StatusReport * aStatusReport);
 
     /**
      * @typedef OnServiceEndpointQueryEndWithTimeInfo
@@ -281,32 +281,22 @@ public:
     WeaveServiceManager(void);
     ~WeaveServiceManager(void);
 
-    WEAVE_ERROR init(WeaveExchangeManager *aExchangeMgr,
-                     uint8_t *aCache,
-                     uint16_t aCacheLen,
-                     RootDirectoryAccessor aAccessor,
-                     WeaveAuthMode aDirAuthMode = kWeaveAuthMode_Unauthenticated,
-                     OnServiceEndpointQueryBegin aServiceEndpointQueryBegin = NULL,
+    WEAVE_ERROR init(WeaveExchangeManager * aExchangeMgr, uint8_t * aCache, uint16_t aCacheLen, RootDirectoryAccessor aAccessor,
+                     WeaveAuthMode aDirAuthMode                                                 = kWeaveAuthMode_Unauthenticated,
+                     OnServiceEndpointQueryBegin aServiceEndpointQueryBegin                     = NULL,
                      OnServiceEndpointQueryEndWithTimeInfo aServiceEndpointQueryEndWithTimeInfo = NULL,
-                     OnConnectBegin aConnectBegin = NULL);
+                     OnConnectBegin aConnectBegin                                               = NULL);
 
-    WEAVE_ERROR connect(uint64_t  aServiceEp,
-                        WeaveAuthMode aAuthMode,
-                        void *aAppState,
-                        StatusHandler aStatusHandler,
+    WEAVE_ERROR connect(uint64_t aServiceEp, WeaveAuthMode aAuthMode, void * aAppState, StatusHandler aStatusHandler,
                         WeaveConnection::ConnectionCompleteFunct aConnectionCompleteHandler,
-                        const uint32_t aConnectTimeoutMsecs = 0,
-                        const InterfaceId aConnectIntf = INET_NULL_INTERFACEID);
+                        const uint32_t aConnectTimeoutMsecs = 0, const InterfaceId aConnectIntf = INET_NULL_INTERFACEID);
 
-    WEAVE_ERROR lookup(uint64_t aServiceEp, HostPortList *outHostPortList);
-    WEAVE_ERROR lookup(uint64_t aServiceEp, uint8_t *aControlByte, uint8_t **aDirectoryEntry);
+    WEAVE_ERROR lookup(uint64_t aServiceEp, HostPortList * outHostPortList);
+    WEAVE_ERROR lookup(uint64_t aServiceEp, uint8_t * aControlByte, uint8_t ** aDirectoryEntry);
 
-    WEAVE_ERROR replaceOrAddCacheEntry(uint16_t port,
-                                       const char *hostName,
-                                       uint8_t hostLen,
-                                       uint64_t serviceEndpointId);
+    WEAVE_ERROR replaceOrAddCacheEntry(uint16_t port, const char * hostName, uint8_t hostLen, uint64_t serviceEndpointId);
 
-    void cancel(uint64_t aServiceEp, void *aAppState);
+    void cancel(uint64_t aServiceEp, void * aAppState);
 
     void unresolve(WEAVE_ERROR aError);
     void unresolve(void);
@@ -321,7 +311,7 @@ public:
 
     void onConnectionComplete(WEAVE_ERROR aError);
     void onConnectionClosed(WEAVE_ERROR aError);
-    void onResponseReceived(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aMsg);
+    void onResponseReceived(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aMsg);
     void onResponseTimeout(void);
 
     // Clear cache and reset state so that the next connect request
@@ -348,15 +338,9 @@ public:
     class ConnectRequest
     {
     public:
-
-        WEAVE_ERROR init(WeaveServiceManager *aManager,
-                         const uint64_t &aServiceEp,
-                         WeaveAuthMode aAuthMode,
-                         void *aAppState,
-                         StatusHandler aStatusHandler,
-                         WeaveConnection::ConnectionCompleteFunct aCompleteHandler,
-                         const uint32_t aConnectTimeoutMsecs,
-                         const InterfaceId aConnIntf);
+        WEAVE_ERROR init(WeaveServiceManager * aManager, const uint64_t & aServiceEp, WeaveAuthMode aAuthMode, void * aAppState,
+                         StatusHandler aStatusHandler, WeaveConnection::ConnectionCompleteFunct aCompleteHandler,
+                         const uint32_t aConnectTimeoutMsecs, const InterfaceId aConnIntf);
 
         void free(void);
 
@@ -375,7 +359,7 @@ public:
          *
          *  @return true if the test passes, false otherwise.
          */
-        inline bool isAllocatedTo(const uint64_t &aServiceEp, void *aAppState)
+        inline bool isAllocatedTo(const uint64_t & aServiceEp, void * aAppState)
         {
             return (mServiceEp == aServiceEp && mAppState == aAppState);
         }
@@ -386,28 +370,25 @@ public:
          *
          *  @return true if the test passes, false otherwise.
          */
-        inline bool isFree(void)
-        {
-            return (mServiceEp == 0 && !mAppState);
-        }
+        inline bool isFree(void) { return (mServiceEp == 0 && !mAppState); }
 
         void onConnectionComplete(WEAVE_ERROR aError);
 
         // data members (basically the connect call arguments)
 
-        uint64_t        mServiceEp;
-        WeaveAuthMode   mAuthMode;
-        void            *mAppState;
+        uint64_t mServiceEp;
+        WeaveAuthMode mAuthMode;
+        void * mAppState;
 
         /// A connection to stash here while it's awaiting completion.
-        WeaveConnection *mConnection;
+        WeaveConnection * mConnection;
 
-        uint32_t        mConnectTimeoutMsecs;         ///< the timeout for the Connect call to succeed or return an error.
-        InterfaceId     mConnIntf;                    ///< the interface over which the connection is to be set up.
+        uint32_t mConnectTimeoutMsecs; ///< the timeout for the Connect call to succeed or return an error.
+        InterfaceId mConnIntf;         ///< the interface over which the connection is to be set up.
 
         /// A pointer to a function which would be called when a status report is
         /// received.
-        StatusHandler   mStatusHandler;
+        StatusHandler mStatusHandler;
 
         /// A pointer to a function which would be called when a connection to
         /// destination service endpoint has been completed.
@@ -415,32 +396,27 @@ public:
     };
 
 private:
-
     struct Extent
     {
-        uint8_t *base;
-        size_t  length;
+        uint8_t * base;
+        size_t length;
     };
 
     void freeConnectRequests(void);
     void finalizeConnectRequests(void);
-    ConnectRequest *getAvailableRequest(void);
+    ConnectRequest * getAvailableRequest(void);
 
-    WEAVE_ERROR lookupAndConnect(WeaveConnection *aConnection,
-                                 uint64_t aServiceEp,
-                                 WeaveAuthMode aAuthMode,
-                                 void *aAppState,
-                                 WeaveConnection::ConnectionCompleteFunct aHandler,
-                                 const uint32_t aConnectTimeoutMsecs = 0,
+    WEAVE_ERROR lookupAndConnect(WeaveConnection * aConnection, uint64_t aServiceEp, WeaveAuthMode aAuthMode, void * aAppState,
+                                 WeaveConnection::ConnectionCompleteFunct aHandler, const uint32_t aConnectTimeoutMsecs = 0,
                                  const InterfaceId aConnectIntf = INET_NULL_INTERFACEID);
 
 #if WEAVE_CONFIG_PERSIST_SERVICE_DIRECTORY
     WEAVE_ERROR loadPersistentServiceDirIntoCache();
 #endif
-    WEAVE_ERROR unpackPacketBuffer(PacketBuffer *aMsg, bool useTimePresent, bool *redir = NULL);
+    WEAVE_ERROR unpackPacketBuffer(PacketBuffer * aMsg, bool useTimePresent, bool * redir = NULL);
     WEAVE_ERROR cacheDirectory(MessageIterator &, uint8_t, uint8_t *&);
     WEAVE_ERROR cacheSuffixes(MessageIterator &, uint8_t, uint8_t *&);
-    WEAVE_ERROR calculateEntryLength(uint8_t *entryStart, uint8_t entryCtrlByte, uint16_t *entryLen);
+    WEAVE_ERROR calculateEntryLength(uint8_t * entryStart, uint8_t entryCtrlByte, uint16_t * entryLen);
     /*
      *  A group of methods that clear up working state and free
      *  resources - generally in the case of a failure. one of
@@ -451,7 +427,7 @@ private:
 
     void fail(WEAVE_ERROR aError);
     void transactionsErrorOut(WEAVE_ERROR);
-    void transactionsReportStatus(StatusReport &aReport);
+    void transactionsReportStatus(StatusReport & aReport);
     void cleanupExchangeContext(void);
     void cleanupExchangeContext(WEAVE_ERROR aErr);
     void clearWorkingState(void);
@@ -462,26 +438,26 @@ private:
      */
     inline void clearCacheState(void)
     {
-        mCacheState = kServiceMgrState_Initial;
+        mCacheState   = kServiceMgrState_Initial;
         mWasRelocated = false;
     }
 
-    WEAVE_ERROR handleTimeInfo(MessageIterator &itMsg);
+    WEAVE_ERROR handleTimeInfo(MessageIterator & itMsg);
 
     // data members
 
-    ConnectRequest          mConnectRequestPool[kConnectRequestPoolSize];
-    WeaveExchangeManager    *mExchangeManager;            ///< the exchange manager to use for everything
-    WeaveConnection         *mConnection;                 ///< a connection to stash here while it's awaiting completion
-    ExchangeContext         *mExchangeContext;            ///< the exchange context specifically for directory profile exchanges
-    RootDirectoryAccessor   mAccessor;                    ///< how to get at the root directory
-    Extent                  mDirectory;                   ///< the working directory
-    Extent                  mSuffixTable;                 ///< the (optional) suffix table
-    Extent                  mCache;                       ///< all of this stuff needs to be cached somewhere in memory
-    uint8_t                 mCacheState;                  ///< and the state of the cache | initial, resolving, resolved |
-    bool                    mWasRelocated;                ///< true iff the service manager has been relocated once.
-    WeaveAuthMode           mDirAuthMode;                 ///< the authentication mode to use when talking to the directory service.
-    uint32_t                mDirAndSuffTableSize;         ///< the size of the directory and suffix table  in the cache.
+    ConnectRequest mConnectRequestPool[kConnectRequestPoolSize];
+    WeaveExchangeManager * mExchangeManager; ///< the exchange manager to use for everything
+    WeaveConnection * mConnection;           ///< a connection to stash here while it's awaiting completion
+    ExchangeContext * mExchangeContext;      ///< the exchange context specifically for directory profile exchanges
+    RootDirectoryAccessor mAccessor;         ///< how to get at the root directory
+    Extent mDirectory;                       ///< the working directory
+    Extent mSuffixTable;                     ///< the (optional) suffix table
+    Extent mCache;                           ///< all of this stuff needs to be cached somewhere in memory
+    uint8_t mCacheState;                     ///< and the state of the cache | initial, resolving, resolved |
+    bool mWasRelocated;                      ///< true iff the service manager has been relocated once.
+    WeaveAuthMode mDirAuthMode;              ///< the authentication mode to use when talking to the directory service.
+    uint32_t mDirAndSuffTableSize;           ///< the size of the directory and suffix table  in the cache.
 
     /**
      *  Callback happens right before we send out the service endpoint query request
@@ -505,12 +481,8 @@ private:
  */
 struct ServiceConnectBeginArgs
 {
-    ServiceConnectBeginArgs(uint64_t inServiceEndpoint,
-                            WeaveConnection *inConnection,
-                            HostPortList *inEndpointHostPortList,
-                            InterfaceId inConnectIntf,
-                            WeaveAuthMode inAuthMode,
-                            uint8_t inDNSOptions);
+    ServiceConnectBeginArgs(uint64_t inServiceEndpoint, WeaveConnection * inConnection, HostPortList * inEndpointHostPortList,
+                            InterfaceId inConnectIntf, WeaveAuthMode inAuthMode, uint8_t inDNSOptions);
     /** The service endpoint to which the connect is being established. */
     const uint64_t ServiceEndpoint;
 
@@ -541,11 +513,10 @@ inline void WeaveServiceManager::SetConnectBeginCallback(OnConnectBegin aConnect
     mConnectBegin = aConnectBegin;
 }
 
-
-}; // ServiceDirectory
-}; // Profiles
-}; // Weave
-}; // nl
+}; // namespace ServiceDirectory
+}; // namespace Profiles
+}; // namespace Weave
+}; // namespace nl
 
 #endif //  WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
 #endif // _WSD_PROFILE_H

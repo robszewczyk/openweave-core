@@ -35,44 +35,43 @@ enum TLVCommonProfiles
      * Used to indicate the absence of a profile id in a variable or member.
      * This is essentially the same as kWeaveProfile_NotSpecified defined in WeaveProfiles.h
      */
-    kProfileIdNotSpecified                      = 0xFFFFFFFF,
+    kProfileIdNotSpecified = 0xFFFFFFFF,
 
     // TODO: Replace with nl::Weave::Profiles::kWeaveProfile_Common
-    kCommonProfileId                            = 0
+    kCommonProfileId = 0
 };
 
 // TODO: Move to private namespace
 enum TLVTagFields
 {
-    kProfileIdMask                              = 0xFFFFFFFF00000000ULL,
-    kProfileIdShift                             = 32,
-    kVendorIdShift                              = 48,
-    kProfileNumShift                            = 32,
-    kTagNumMask                                 = 0x00000000FFFFFFFFULL,
-    kSpecialTagMarker                           = 0xFFFFFFFF00000000ULL,
-    kContextTagMaxNum                           = 256
+    kProfileIdMask    = 0xFFFFFFFF00000000ULL,
+    kProfileIdShift   = 32,
+    kVendorIdShift    = 48,
+    kProfileNumShift  = 32,
+    kTagNumMask       = 0x00000000FFFFFFFFULL,
+    kSpecialTagMarker = 0xFFFFFFFF00000000ULL,
+    kContextTagMaxNum = 256
 };
 
 // TODO: Move to private namespace
 enum TLVTagControl
 {
-    kTLVTagControl_Anonymous                    = 0x00,
-    kTLVTagControl_ContextSpecific              = 0x20,
-    kTLVTagControl_CommonProfile_2Bytes         = 0x40,
-    kTLVTagControl_CommonProfile_4Bytes         = 0x60,
-    kTLVTagControl_ImplicitProfile_2Bytes       = 0x80,
-    kTLVTagControl_ImplicitProfile_4Bytes       = 0xA0,
-    kTLVTagControl_FullyQualified_6Bytes        = 0xC0,
-    kTLVTagControl_FullyQualified_8Bytes        = 0xE0
+    kTLVTagControl_Anonymous              = 0x00,
+    kTLVTagControl_ContextSpecific        = 0x20,
+    kTLVTagControl_CommonProfile_2Bytes   = 0x40,
+    kTLVTagControl_CommonProfile_4Bytes   = 0x60,
+    kTLVTagControl_ImplicitProfile_2Bytes = 0x80,
+    kTLVTagControl_ImplicitProfile_4Bytes = 0xA0,
+    kTLVTagControl_FullyQualified_6Bytes  = 0xC0,
+    kTLVTagControl_FullyQualified_8Bytes  = 0xE0
 };
 
 // TODO: Move to private namespace
 enum
 {
-    kTLVTagControlMask                          = 0xE0,
-    kTLVTagControlShift                         = 5
+    kTLVTagControlMask  = 0xE0,
+    kTLVTagControlShift = 5
 };
-
 
 /**
  * Generates the API representation of a profile-specific TLV tag from a profile id and tag number
@@ -81,7 +80,10 @@ enum
  * @param[in]   tagNum          The profile-specific tag number assigned to the tag.
  * @return                      A 64-bit integer representing the tag.
  */
-inline uint64_t ProfileTag(uint32_t profileId, uint32_t tagNum) { return (((uint64_t)profileId) << kProfileIdShift) | tagNum; }
+inline uint64_t ProfileTag(uint32_t profileId, uint32_t tagNum)
+{
+    return (((uint64_t) profileId) << kProfileIdShift) | tagNum;
+}
 
 /**
  * Generates the API representation of a profile-specific TLV tag from a vendor id, profile number and tag number
@@ -91,7 +93,10 @@ inline uint64_t ProfileTag(uint32_t profileId, uint32_t tagNum) { return (((uint
  * @param[in]   tagNum          The profile-specific tag number assigned to the tag.
  * @return                      A 64-bit integer representing the tag.
  */
-inline uint64_t ProfileTag(uint16_t vendorId, uint16_t profileNum, uint32_t tagNum) { return (((uint64_t)vendorId) << kVendorIdShift) | (((uint64_t)profileNum) << kProfileNumShift) | tagNum; }
+inline uint64_t ProfileTag(uint16_t vendorId, uint16_t profileNum, uint32_t tagNum)
+{
+    return (((uint64_t) vendorId) << kVendorIdShift) | (((uint64_t) profileNum) << kProfileNumShift) | tagNum;
+}
 
 /**
  * Generates the API representation for of context-specific TLV tag
@@ -99,7 +104,10 @@ inline uint64_t ProfileTag(uint16_t vendorId, uint16_t profileNum, uint32_t tagN
  * @param[in]   tagNum          The context-specific tag number assigned to the tag.
  * @return                      A 64-bit integer representing the tag.
  */
-inline uint64_t ContextTag(uint8_t tagNum) { return kSpecialTagMarker | tagNum; }
+inline uint64_t ContextTag(uint8_t tagNum)
+{
+    return kSpecialTagMarker | tagNum;
+}
 
 /**
  * Generates the API representation of a common profile TLV tag
@@ -107,7 +115,10 @@ inline uint64_t ContextTag(uint8_t tagNum) { return kSpecialTagMarker | tagNum; 
  * @param[in]   tagNum          The common profile tag number assigned to the tag.
  * @return                      A 64-bit integer representing the tag.
  */
-inline uint64_t CommonTag(uint32_t tagNum) { return ProfileTag(kCommonProfileId, tagNum); }
+inline uint64_t CommonTag(uint32_t tagNum)
+{
+    return ProfileTag(kCommonProfileId, tagNum);
+}
 
 enum
 {
@@ -120,7 +131,6 @@ enum
     UnknownImplicitTag = kSpecialTagMarker | 0x00000000FFFFFFFEULL
 };
 
-
 /**
  * Returns the profile id from a TLV tag
  *
@@ -129,8 +139,10 @@ enum
  * @param[in]   tag             The API representation of a profile-specific TLV tag.
  * @return                      The profile id.
  */
-inline uint32_t ProfileIdFromTag(uint64_t tag) { return (uint32_t)((tag & kProfileIdMask) >> kProfileIdShift); }
-
+inline uint32_t ProfileIdFromTag(uint64_t tag)
+{
+    return (uint32_t)((tag & kProfileIdMask) >> kProfileIdShift);
+}
 
 /**
  * Returns the profile number from a TLV tag
@@ -140,8 +152,10 @@ inline uint32_t ProfileIdFromTag(uint64_t tag) { return (uint32_t)((tag & kProfi
  * @param[in]   tag             The API representation of a profile-specific TLV tag.
  * @return                      The associated profile number.
  */
-inline uint16_t ProfileNumFromTag(uint64_t tag) { return (uint16_t) ((tag & kProfileIdMask) >> kProfileIdShift); }
-
+inline uint16_t ProfileNumFromTag(uint64_t tag)
+{
+    return (uint16_t)((tag & kProfileIdMask) >> kProfileIdShift);
+}
 
 /**
  * Returns the tag number from a TLV tag
@@ -154,8 +168,10 @@ inline uint16_t ProfileNumFromTag(uint64_t tag) { return (uint16_t) ((tag & kPro
  * @param[in]   tag             The API representation of a profile-specific or context-specific TLV tag.
  * @return                      The associated tag number.
  */
-inline uint32_t TagNumFromTag(uint64_t tag) { return (uint32_t)(tag & kTagNumMask); }
-
+inline uint32_t TagNumFromTag(uint64_t tag)
+{
+    return (uint32_t)(tag & kTagNumMask);
+}
 
 /**
  * Returns the vendor id from a TLV tag
@@ -165,23 +181,32 @@ inline uint32_t TagNumFromTag(uint64_t tag) { return (uint32_t)(tag & kTagNumMas
  * @param[in]   tag             The API representation of a profile-specific TLV tag.
  * @return                      The associated vendor id.
  */
-inline uint16_t VendorIdFromTag(uint64_t tag) { return (uint16_t)((tag & kProfileIdMask) >> kVendorIdShift); }
-
+inline uint16_t VendorIdFromTag(uint64_t tag)
+{
+    return (uint16_t)((tag & kProfileIdMask) >> kVendorIdShift);
+}
 
 /**
  * Returns true of the supplied tag is a profile-specific tag.
  */
-inline bool IsProfileTag(uint64_t tag) { return (tag & kProfileIdMask) != kSpecialTagMarker; }
-
+inline bool IsProfileTag(uint64_t tag)
+{
+    return (tag & kProfileIdMask) != kSpecialTagMarker;
+}
 
 /**
  * Returns true if the supplied tag is a context-specific tag.
  */
-inline bool IsContextTag(uint64_t tag) { return (tag & kProfileIdMask) == kSpecialTagMarker && TagNumFromTag(tag) < kContextTagMaxNum; }
-
+inline bool IsContextTag(uint64_t tag)
+{
+    return (tag & kProfileIdMask) == kSpecialTagMarker && TagNumFromTag(tag) < kContextTagMaxNum;
+}
 
 // TODO: move to private namespace
-inline bool IsSpecialTag(uint64_t tag) { return (tag & kProfileIdMask) == kSpecialTagMarker; }
+inline bool IsSpecialTag(uint64_t tag)
+{
+    return (tag & kProfileIdMask) == kSpecialTagMarker;
+}
 
 } // namespace TLV
 } // namespace Weave

@@ -45,21 +45,11 @@ using namespace ::nl::Weave::Profiles::StatusReporting;
  * note that the defaults here are set up for sleepy 802.15.4 devices.
  * in another context they should be changed on initialization.
  */
-SendInit::SendInit()
-    : mVersion(0)
-    , mSenderDriveSupported(true)
-    , mReceiverDriveSupported(false)
-    , mAsynchronousModeSupported(false)
-    , mDefiniteLength(true)
-    , mStartOffsetPresent(false)
-    , mWideRange(false)
-    , mMaxBlockSize(32)
-    , mStartOffset(0)
-    , mLength(0)
-    , mMetaDataWriteCallback(NULL)
-    , mMetaDataAppState(NULL)
-{
-}
+SendInit::SendInit() :
+    mVersion(0), mSenderDriveSupported(true), mReceiverDriveSupported(false), mAsynchronousModeSupported(false),
+    mDefiniteLength(true), mStartOffsetPresent(false), mWideRange(false), mMaxBlockSize(32), mStartOffset(0), mLength(0),
+    mMetaDataWriteCallback(NULL), mMetaDataAppState(NULL)
+{ }
 
 /**
  * @brief
@@ -78,17 +68,17 @@ SendInit::SendInit()
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode,
-                           uint16_t aMaxBlockSize, uint64_t aStartOffset, uint64_t aLength,
-                           ReferencedString &aFileDesignator, ReferencedTLVData *aMetaData = NULL)
+WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                           uint64_t aStartOffset, uint64_t aLength, ReferencedString & aFileDesignator,
+                           ReferencedTLVData * aMetaData = NULL)
 {
     // Version is 8 bits maximum
-    mVersion = aVersion;
-    mWideRange = true;
-    mSenderDriveSupported = aSenderDrive;
-    mReceiverDriveSupported = aReceiverDrive;
+    mVersion                   = aVersion;
+    mWideRange                 = true;
+    mSenderDriveSupported      = aSenderDrive;
+    mReceiverDriveSupported    = aReceiverDrive;
     mAsynchronousModeSupported = aAsynchMode;
-    mMaxBlockSize = aMaxBlockSize;
+    mMaxBlockSize              = aMaxBlockSize;
 
     mStartOffset = aStartOffset;
     if (mStartOffset > 0)
@@ -102,9 +92,9 @@ WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDr
         mDefiniteLength = false;
     }
 
-    mFileDesignator = aFileDesignator;
+    mFileDesignator        = aFileDesignator;
     mMetaDataWriteCallback = NULL;
-    mMetaDataAppState = NULL;
+    mMetaDataAppState      = NULL;
     if (aMetaData != NULL)
     {
         mMetaData = *aMetaData;
@@ -130,14 +120,14 @@ WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDr
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode,
-                           uint16_t aMaxBlockSize, uint32_t aStartOffset, uint32_t aLength,
-                           ReferencedString &aFileDesignator, ReferencedTLVData *aMetaData = NULL)
+WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                           uint32_t aStartOffset, uint32_t aLength, ReferencedString & aFileDesignator,
+                           ReferencedTLVData * aMetaData = NULL)
 {
     mWideRange = false;
 
-    return init(aVersion, aSenderDrive, aReceiverDrive, aAsynchMode, aMaxBlockSize,
-                (uint64_t)aStartOffset, (uint64_t)aLength, aFileDesignator, aMetaData);
+    return init(aVersion, aSenderDrive, aReceiverDrive, aAsynchMode, aMaxBlockSize, (uint64_t) aStartOffset, (uint64_t) aLength,
+                aFileDesignator, aMetaData);
 }
 
 /**
@@ -158,17 +148,17 @@ WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDr
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode,
-                           uint16_t aMaxBlockSize, uint64_t aStartOffset, uint64_t aLength,
-                           ReferencedString &aFileDesignator, MetaDataTLVWriteCallback aMetaDataWriteCallback = NULL, void *aMetaDataAppState = NULL)
+WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                           uint64_t aStartOffset, uint64_t aLength, ReferencedString & aFileDesignator,
+                           MetaDataTLVWriteCallback aMetaDataWriteCallback = NULL, void * aMetaDataAppState = NULL)
 {
     // Version is 8 bits maximum
-    mVersion = aVersion;
-    mWideRange = true;
-    mSenderDriveSupported = aSenderDrive;
-    mReceiverDriveSupported = aReceiverDrive;
+    mVersion                   = aVersion;
+    mWideRange                 = true;
+    mSenderDriveSupported      = aSenderDrive;
+    mReceiverDriveSupported    = aReceiverDrive;
     mAsynchronousModeSupported = aAsynchMode;
-    mMaxBlockSize = aMaxBlockSize;
+    mMaxBlockSize              = aMaxBlockSize;
 
     mStartOffset = aStartOffset;
     if (mStartOffset > 0)
@@ -185,7 +175,7 @@ WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDr
     mFileDesignator = aFileDesignator;
 
     mMetaDataWriteCallback = aMetaDataWriteCallback;
-    mMetaDataAppState = aMetaDataAppState;
+    mMetaDataAppState      = aMetaDataAppState;
 
     return WEAVE_NO_ERROR;
 }
@@ -208,14 +198,14 @@ WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDr
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode,
-                           uint16_t aMaxBlockSize, uint32_t aStartOffset, uint32_t aLength,
-                           ReferencedString &aFileDesignator, MetaDataTLVWriteCallback aMetaDataWriteCallback = NULL, void *aMetaDataAppState = NULL)
+WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                           uint32_t aStartOffset, uint32_t aLength, ReferencedString & aFileDesignator,
+                           MetaDataTLVWriteCallback aMetaDataWriteCallback = NULL, void * aMetaDataAppState = NULL)
 {
     mWideRange = false;
 
-    return init(aVersion, aSenderDrive, aReceiverDrive, aAsynchMode, aMaxBlockSize,
-                (uint64_t)aStartOffset, (uint64_t)aLength, aFileDesignator, aMetaDataWriteCallback, aMetaDataAppState);
+    return init(aVersion, aSenderDrive, aReceiverDrive, aAsynchMode, aMaxBlockSize, (uint64_t) aStartOffset, (uint64_t) aLength,
+                aFileDesignator, aMetaDataWriteCallback, aMetaDataAppState);
 }
 
 /**
@@ -227,7 +217,7 @@ WEAVE_ERROR SendInit::init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDr
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR SendInit::pack(PacketBuffer *aBuffer)
+WEAVE_ERROR SendInit::pack(PacketBuffer * aBuffer)
 {
     MessageIterator i(aBuffer);
     i.append();
@@ -238,17 +228,23 @@ WEAVE_ERROR SendInit::pack(PacketBuffer *aBuffer)
     // First four bits are the version of this message
     ptcByte |= mVersion & VERSION_MASK;
     // pack the transfer control byte
-    if (mSenderDriveSupported) ptcByte |= kMode_SenderDrive;
-    if (mReceiverDriveSupported) ptcByte |= kMode_ReceiverDrive;
-    if (mAsynchronousModeSupported) ptcByte |= kMode_Asynchronous;
+    if (mSenderDriveSupported)
+        ptcByte |= kMode_SenderDrive;
+    if (mReceiverDriveSupported)
+        ptcByte |= kMode_ReceiverDrive;
+    if (mAsynchronousModeSupported)
+        ptcByte |= kMode_Asynchronous;
 
     err = i.writeByte(ptcByte);
     SuccessOrExit(err);
 
     // pack the range control byte
-    if (mDefiniteLength) rangeCtl |= kRangeCtl_DefiniteLength;
-    if (mStartOffsetPresent) rangeCtl |= kRangeCtl_StartOffsetPresent;
-    if (mWideRange) rangeCtl |= kRangeCtl_WideRange;
+    if (mDefiniteLength)
+        rangeCtl |= kRangeCtl_DefiniteLength;
+    if (mStartOffsetPresent)
+        rangeCtl |= kRangeCtl_StartOffsetPresent;
+    if (mWideRange)
+        rangeCtl |= kRangeCtl_WideRange;
 
     err = i.writeByte(rangeCtl);
     SuccessOrExit(err);
@@ -263,7 +259,7 @@ WEAVE_ERROR SendInit::pack(PacketBuffer *aBuffer)
         }
         else
         {
-            err = i.write32((uint32_t)mStartOffset);
+            err = i.write32((uint32_t) mStartOffset);
         }
 
         SuccessOrExit(err);
@@ -276,7 +272,7 @@ WEAVE_ERROR SendInit::pack(PacketBuffer *aBuffer)
         }
         else
         {
-            err = i.write32((uint32_t)mLength);
+            err = i.write32((uint32_t) mLength);
         }
 
         SuccessOrExit(err);
@@ -286,12 +282,12 @@ WEAVE_ERROR SendInit::pack(PacketBuffer *aBuffer)
 
     if (mMetaDataWriteCallback)
     {
-        PacketBuffer *lPacketBuffer = i.GetBuffer();
-        uint8_t *buf = lPacketBuffer->Start() + lPacketBuffer->DataLength();
-        uint16_t bufLength =
-            (lPacketBuffer->AvailableDataLength() < WEAVE_CONFIG_BDX_SEND_INIT_MAX_METADATA_BYTES)
-            ? lPacketBuffer->AvailableDataLength() : WEAVE_CONFIG_BDX_SEND_INIT_MAX_METADATA_BYTES;
-        uint16_t bytesWritten = 0;
+        PacketBuffer * lPacketBuffer = i.GetBuffer();
+        uint8_t * buf                = lPacketBuffer->Start() + lPacketBuffer->DataLength();
+        uint16_t bufLength           = (lPacketBuffer->AvailableDataLength() < WEAVE_CONFIG_BDX_SEND_INIT_MAX_METADATA_BYTES)
+            ? lPacketBuffer->AvailableDataLength()
+            : WEAVE_CONFIG_BDX_SEND_INIT_MAX_METADATA_BYTES;
+        uint16_t bytesWritten   = 0;
         uint16_t prevDataLength = lPacketBuffer->DataLength();
 
         err = mMetaDataWriteCallback(buf, bufLength, bytesWritten, mMetaDataAppState);
@@ -341,7 +337,7 @@ uint16_t SendInit::GetWrittenMetaDataCallbackLength(void)
 
         mMetaDataWriteCallback(buf, sizeof(buf), bytesWritten, mMetaDataAppState);
 
-        length = (uint16_t)bytesWritten;
+        length = (uint16_t) bytesWritten;
     }
 
     return length;
@@ -357,8 +353,8 @@ uint16_t SendInit::packedLength()
 {
     // <xfer cctl>+<range ctl>+<max block>+<start offset (optional)>+<length (optional)>+<designator>+<metadata (optional)>
     uint16_t startOffsetLength = mStartOffsetPresent ? (mWideRange ? 8 : 4) : 0;
-    uint16_t lengthLength = mDefiniteLength ? (mWideRange ? 8 : 4) : 0;
-    uint16_t metaDataLength = 0;
+    uint16_t lengthLength      = mDefiniteLength ? (mWideRange ? 8 : 4) : 0;
+    uint16_t metaDataLength    = 0;
 
     if (mMetaDataWriteCallback)
     {
@@ -382,7 +378,7 @@ uint16_t SendInit::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR SendInit::parse(PacketBuffer *aBuffer, SendInit &aRequest)
+WEAVE_ERROR SendInit::parse(PacketBuffer * aBuffer, SendInit & aRequest)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -394,18 +390,18 @@ WEAVE_ERROR SendInit::parse(PacketBuffer *aBuffer, SendInit &aRequest)
     err = i.readByte(&ptcByte);
     SuccessOrExit(err);
 
-    aRequest.mVersion = ptcByte & VERSION_MASK;
-    aRequest.mSenderDriveSupported = ((ptcByte & kMode_SenderDrive) != 0);
-    aRequest.mReceiverDriveSupported = ((ptcByte & kMode_ReceiverDrive) != 0);
+    aRequest.mVersion                   = ptcByte & VERSION_MASK;
+    aRequest.mSenderDriveSupported      = ((ptcByte & kMode_SenderDrive) != 0);
+    aRequest.mReceiverDriveSupported    = ((ptcByte & kMode_ReceiverDrive) != 0);
     aRequest.mAsynchronousModeSupported = ((ptcByte & kMode_Asynchronous) != 0);
 
     // now the range ctl field and do the same
     err = i.readByte(&rangeCtl);
     SuccessOrExit(err);
 
-    aRequest.mDefiniteLength = (rangeCtl & kRangeCtl_DefiniteLength) != 0;
+    aRequest.mDefiniteLength     = (rangeCtl & kRangeCtl_DefiniteLength) != 0;
     aRequest.mStartOffsetPresent = (rangeCtl & kRangeCtl_StartOffsetPresent) != 0;
-    aRequest.mWideRange = (rangeCtl & kRangeCtl_WideRange) != 0;
+    aRequest.mWideRange          = (rangeCtl & kRangeCtl_WideRange) != 0;
 
     err = i.read16(&aRequest.mMaxBlockSize);
     SuccessOrExit(err);
@@ -417,7 +413,7 @@ WEAVE_ERROR SendInit::parse(PacketBuffer *aBuffer, SendInit &aRequest)
         }
         else
         {
-            err = i.read32(&tmpUint32Value);
+            err                   = i.read32(&tmpUint32Value);
             aRequest.mStartOffset = tmpUint32Value;
         }
 
@@ -432,7 +428,7 @@ WEAVE_ERROR SendInit::parse(PacketBuffer *aBuffer, SendInit &aRequest)
         }
         else
         {
-            err = i.read32(&tmpUint32Value);
+            err              = i.read32(&tmpUint32Value);
             aRequest.mLength = tmpUint32Value;
         }
 
@@ -455,19 +451,14 @@ exit:
  *
  * @return true iff they have all the same fields.
  */
-bool SendInit::operator == (const SendInit &another) const
+bool SendInit::operator ==(const SendInit & another) const
 {
-    return (mVersion == another.mVersion &&
-            mSenderDriveSupported == another.mSenderDriveSupported &&
+    return (mVersion == another.mVersion && mSenderDriveSupported == another.mSenderDriveSupported &&
             mReceiverDriveSupported == another.mReceiverDriveSupported &&
-            mAsynchronousModeSupported == another.mAsynchronousModeSupported &&
-            mDefiniteLength == another.mDefiniteLength &&
+            mAsynchronousModeSupported == another.mAsynchronousModeSupported && mDefiniteLength == another.mDefiniteLength &&
             mStartOffsetPresent == another.mStartOffsetPresent &&
-            mAsynchronousModeSupported == another.mAsynchronousModeSupported &&
-            mMaxBlockSize == another.mMaxBlockSize &&
-            mStartOffset == another.mStartOffset &&
-            mFileDesignator == another.mFileDesignator &&
-            mMetaData == another.mMetaData);
+            mAsynchronousModeSupported == another.mAsynchronousModeSupported && mMaxBlockSize == another.mMaxBlockSize &&
+            mStartOffset == another.mStartOffset && mFileDesignator == another.mFileDesignator && mMetaData == another.mMetaData);
 }
 
 // -- definitions for SendAccept and its supporting classes --
@@ -475,13 +466,7 @@ bool SendInit::operator == (const SendInit &another) const
 /**
  * The no-arg constructor with defaults for the send accept message.
  */
-SendAccept::SendAccept()
-    : mVersion(0)
-    , mTransferMode(kMode_SenderDrive)
-    , mMaxBlockSize(0)
-{
-}
-
+SendAccept::SendAccept() : mVersion(0), mTransferMode(kMode_SenderDrive), mMaxBlockSize(0) { }
 
 /**
  * @brief
@@ -496,14 +481,13 @@ SendAccept::SendAccept()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR SendAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, ReferencedTLVData *aMetaData = NULL)
+WEAVE_ERROR SendAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, ReferencedTLVData * aMetaData = NULL)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    VerifyOrExit((aTransferMode & kMode_SenderDrive ||
-                  aTransferMode & kMode_ReceiverDrive),
+    VerifyOrExit((aTransferMode & kMode_SenderDrive || aTransferMode & kMode_ReceiverDrive),
                  err = WEAVE_ERROR_INVALID_TRANSFER_MODE);
 
-    mVersion = aVersion;
+    mVersion      = aVersion;
     mTransferMode = aTransferMode;
     mMaxBlockSize = aMaxBlockSize;
 
@@ -525,7 +509,7 @@ exit:
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR SendAccept::pack(PacketBuffer *aBuffer)
+WEAVE_ERROR SendAccept::pack(PacketBuffer * aBuffer)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -565,7 +549,7 @@ uint16_t SendAccept::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR SendAccept::parse(PacketBuffer *aBuffer, SendAccept &aResponse)
+WEAVE_ERROR SendAccept::parse(PacketBuffer * aBuffer, SendAccept & aResponse)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -575,7 +559,7 @@ WEAVE_ERROR SendAccept::parse(PacketBuffer *aBuffer, SendAccept &aResponse)
     err = i.readByte(&tcByte);
     SuccessOrExit(err);
 
-    aResponse.mVersion = tcByte & VERSION_MASK ;
+    aResponse.mVersion      = tcByte & VERSION_MASK;
     aResponse.mTransferMode = tcByte & ~VERSION_MASK;
 
     err = i.read16(&aResponse.mMaxBlockSize);
@@ -595,11 +579,9 @@ exit:
  *
  * @return true iff they have all the same fields.
  */
-bool SendAccept::operator == (const SendAccept &another) const
+bool SendAccept::operator ==(const SendAccept & another) const
 {
-    return (mVersion == another.mVersion &&
-            mTransferMode == another.mTransferMode &&
-            mMaxBlockSize == another.mMaxBlockSize &&
+    return (mVersion == another.mVersion && mTransferMode == another.mTransferMode && mMaxBlockSize == another.mMaxBlockSize &&
             mMetaData == another.mMetaData);
 }
 
@@ -612,16 +594,16 @@ bool SendAccept::operator == (const SendAccept &another) const
  */
 ReceiveInit::ReceiveInit()
 {
-    mVersion = 0;
-    mSenderDriveSupported = false;
-    mReceiverDriveSupported = true;
+    mVersion                   = 0;
+    mSenderDriveSupported      = false;
+    mReceiverDriveSupported    = true;
     mAsynchronousModeSupported = false;
-    mDefiniteLength = true;
-    mStartOffsetPresent = false;
-    mWideRange = false;
-    mMaxBlockSize = 32;
-    mStartOffset = 0;
-    mLength = 0;
+    mDefiniteLength            = true;
+    mStartOffsetPresent        = false;
+    mWideRange                 = false;
+    mMaxBlockSize              = 32;
+    mStartOffset               = 0;
+    mLength                    = 0;
 }
 
 // -- definitions for ReceiveAccept and its supporting classes --
@@ -629,13 +611,10 @@ ReceiveInit::ReceiveInit()
 /**
  * The no-arg constructor with defaults for the send accept message.
  */
-ReceiveAccept::ReceiveAccept()
-    : mDefiniteLength(true)
-    , mWideRange(false)
-    , mLength(0)
+ReceiveAccept::ReceiveAccept() : mDefiniteLength(true), mWideRange(false), mLength(0)
 {
     mTransferMode = kMode_ReceiverDrive;
-    mVersion = 0;
+    mVersion      = 0;
     mMaxBlockSize = 0;
 }
 
@@ -651,19 +630,19 @@ ReceiveAccept::ReceiveAccept()
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR ReceiveAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, uint64_t aLength, ReferencedTLVData *aMetaData = NULL)
+WEAVE_ERROR ReceiveAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, uint64_t aLength,
+                                ReferencedTLVData * aMetaData = NULL)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    VerifyOrExit((aTransferMode & kMode_SenderDrive ||
-                  aTransferMode & kMode_ReceiverDrive),
+    VerifyOrExit((aTransferMode & kMode_SenderDrive || aTransferMode & kMode_ReceiverDrive),
                  err = WEAVE_ERROR_INVALID_TRANSFER_MODE);
 
     mDefiniteLength = (aLength != 0);
-    mWideRange = true;
-    mVersion = aVersion;
-    mTransferMode = aTransferMode;
-    mMaxBlockSize = aMaxBlockSize;
-    mLength = aLength;
+    mWideRange      = true;
+    mVersion        = aVersion;
+    mTransferMode   = aTransferMode;
+    mMaxBlockSize   = aMaxBlockSize;
+    mLength         = aLength;
 
     if (aMetaData != NULL)
     {
@@ -686,12 +665,12 @@ exit:
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR ReceiveAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, uint32_t aLength, ReferencedTLVData *aMetaData = NULL)
+WEAVE_ERROR ReceiveAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, uint32_t aLength,
+                                ReferencedTLVData * aMetaData = NULL)
 {
     mWideRange = false;
 
-    return init(aVersion, aTransferMode, aMaxBlockSize,
-                (uint64_t)aLength, aMetaData);
+    return init(aVersion, aTransferMode, aMaxBlockSize, (uint64_t) aLength, aMetaData);
 }
 
 /**
@@ -703,10 +682,10 @@ WEAVE_ERROR ReceiveAccept::init(uint8_t aVersion, uint8_t aTransferMode, uint16_
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR ReceiveAccept::pack(PacketBuffer *aBuffer)
+WEAVE_ERROR ReceiveAccept::pack(PacketBuffer * aBuffer)
 {
     MessageIterator i(aBuffer);
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
     uint8_t rangeCtl = 0;
 
     i.append();
@@ -714,8 +693,10 @@ WEAVE_ERROR ReceiveAccept::pack(PacketBuffer *aBuffer)
     SuccessOrExit(err);
 
     // format and pack the range control field
-    if (mDefiniteLength) rangeCtl |= kRangeCtl_DefiniteLength;
-    if (mWideRange) rangeCtl |= kRangeCtl_WideRange;
+    if (mDefiniteLength)
+        rangeCtl |= kRangeCtl_DefiniteLength;
+    if (mWideRange)
+        rangeCtl |= kRangeCtl_WideRange;
 
     err = i.writeByte(rangeCtl);
     SuccessOrExit(err);
@@ -732,7 +713,7 @@ WEAVE_ERROR ReceiveAccept::pack(PacketBuffer *aBuffer)
         }
         else
         {
-            err = i.write32((uint32_t)mLength);
+            err = i.write32((uint32_t) mLength);
         }
 
         SuccessOrExit(err);
@@ -766,7 +747,7 @@ uint16_t ReceiveAccept::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR ReceiveAccept::parse(PacketBuffer *aBuffer, ReceiveAccept &aResponse)
+WEAVE_ERROR ReceiveAccept::parse(PacketBuffer * aBuffer, ReceiveAccept & aResponse)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -778,7 +759,7 @@ WEAVE_ERROR ReceiveAccept::parse(PacketBuffer *aBuffer, ReceiveAccept &aResponse
     err = i.readByte(&tcByte);
     SuccessOrExit(err);
 
-    aResponse.mVersion = tcByte & VERSION_MASK ;
+    aResponse.mVersion      = tcByte & VERSION_MASK;
     aResponse.mTransferMode = tcByte & ~VERSION_MASK;
 
     // unpack the range control byte
@@ -786,7 +767,7 @@ WEAVE_ERROR ReceiveAccept::parse(PacketBuffer *aBuffer, ReceiveAccept &aResponse
     SuccessOrExit(err);
 
     aResponse.mDefiniteLength = ((rangeCtl & kRangeCtl_DefiniteLength) != 0);
-    aResponse.mWideRange = ((rangeCtl & kRangeCtl_WideRange) != 0);
+    aResponse.mWideRange      = ((rangeCtl & kRangeCtl_WideRange) != 0);
 
     err = i.read16(&aResponse.mMaxBlockSize);
     SuccessOrExit(err);
@@ -799,7 +780,7 @@ WEAVE_ERROR ReceiveAccept::parse(PacketBuffer *aBuffer, ReceiveAccept &aResponse
         }
         else
         {
-            err = i.read32(&tmpUint32Value);
+            err               = i.read32(&tmpUint32Value);
             aResponse.mLength = tmpUint32Value;
         }
 
@@ -820,13 +801,10 @@ exit:
  *
  * @return true iff they have all the same fields.
  */
-bool ReceiveAccept::operator == (const ReceiveAccept &another) const
+bool ReceiveAccept::operator ==(const ReceiveAccept & another) const
 {
-    return (mTransferMode == another.mTransferMode &&
-            mDefiniteLength == another.mDefiniteLength &&
-            mWideRange == another.mWideRange &&
-            mMaxBlockSize == another.mMaxBlockSize &&
-            mLength == another.mLength &&
+    return (mTransferMode == another.mTransferMode && mDefiniteLength == another.mDefiniteLength &&
+            mWideRange == another.mWideRange && mMaxBlockSize == another.mMaxBlockSize && mLength == another.mLength &&
             mMetaData == another.mMetaData);
 }
 
@@ -835,10 +813,7 @@ bool ReceiveAccept::operator == (const ReceiveAccept &another) const
 /**
  * The no-arg constructor with defaults for the block query message.
  */
-BlockQuery::BlockQuery()
-    : mBlockCounter(0)
-{
-}
+BlockQuery::BlockQuery() : mBlockCounter(0) { }
 
 /**
  * @brief
@@ -863,7 +838,7 @@ WEAVE_ERROR BlockQuery::init(uint8_t aCounter)
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR BlockQuery::pack(PacketBuffer *aBuffer)
+WEAVE_ERROR BlockQuery::pack(PacketBuffer * aBuffer)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -894,7 +869,7 @@ uint16_t BlockQuery::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR BlockQuery::parse(PacketBuffer *aBuffer, BlockQuery &aQuery)
+WEAVE_ERROR BlockQuery::parse(PacketBuffer * aBuffer, BlockQuery & aQuery)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -911,7 +886,7 @@ WEAVE_ERROR BlockQuery::parse(PacketBuffer *aBuffer, BlockQuery &aQuery)
  *
  * @return true iff they have all the same fields.
  */
-bool BlockQuery::operator == (const BlockQuery &another) const
+bool BlockQuery::operator ==(const BlockQuery & another) const
 {
     return mBlockCounter == another.mBlockCounter;
 }
@@ -921,12 +896,7 @@ bool BlockQuery::operator == (const BlockQuery &another) const
 /**
  * The no-arg constructor with defaults for the block send message.
  */
-BlockSend::BlockSend()
-    : mBlockCounter(0)
-    , mLength(0)
-    , mData(NULL)
-{
-}
+BlockSend::BlockSend() : mBlockCounter(0), mLength(0), mData(NULL) { }
 
 /**
  * @brief
@@ -938,11 +908,11 @@ BlockSend::BlockSend()
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR BlockSend::init(uint8_t aCounter, uint64_t aLength, uint8_t *aData)
+WEAVE_ERROR BlockSend::init(uint8_t aCounter, uint64_t aLength, uint8_t * aData)
 {
     mBlockCounter = aCounter;
-    mLength = aLength;
-    mData = aData;
+    mLength       = aLength;
+    mData         = aData;
     return WEAVE_NO_ERROR;
 }
 
@@ -968,7 +938,7 @@ uint16_t BlockSend::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR BlockSend::parse(PacketBuffer *aBuffer, BlockSend &aResponse)
+WEAVE_ERROR BlockSend::parse(PacketBuffer * aBuffer, BlockSend & aResponse)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -978,7 +948,7 @@ WEAVE_ERROR BlockSend::parse(PacketBuffer *aBuffer, BlockSend &aResponse)
     err = i.readByte(&aResponse.mBlockCounter);
     SuccessOrExit(err);
 
-    aResponse.mLength = (uint64_t)aBuffer->DataLength() - sizeof(aResponse.mBlockCounter);
+    aResponse.mLength = (uint64_t) aBuffer->DataLength() - sizeof(aResponse.mBlockCounter);
     if (aResponse.mLength == 0)
     {
         aResponse.mData = NULL;
@@ -1010,24 +980,19 @@ exit:
  *
  * @return true iff they have all the same fields.
  */
-bool BlockSend::operator == (const BlockSend &another) const
+bool BlockSend::operator ==(const BlockSend & another) const
 {
-    return (mBlockCounter == another.mBlockCounter &&
-            mLength == another.mLength &&
+    return (mBlockCounter == another.mBlockCounter && mLength == another.mLength &&
             // Use mLength as length since mLength == another.mLength at this point
             memcmp(mData, another.mData, mLength) == 0);
 }
-
 
 // -- definitions for BlockQueryV1 and its supporting classes --
 
 /**
  * The no-arg constructor with defaults for the block query message.
  */
-BlockQueryV1::BlockQueryV1()
-    : mBlockCounter(0)
-{
-}
+BlockQueryV1::BlockQueryV1() : mBlockCounter(0) { }
 
 /**
  * @brief
@@ -1053,7 +1018,7 @@ WEAVE_ERROR BlockQueryV1::init(uint32_t aCounter)
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR BlockQueryV1::pack(PacketBuffer *aBuffer)
+WEAVE_ERROR BlockQueryV1::pack(PacketBuffer * aBuffer)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -1086,7 +1051,7 @@ uint16_t BlockQueryV1::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR BlockQueryV1::parse(PacketBuffer *aBuffer, BlockQueryV1 &aQuery)
+WEAVE_ERROR BlockQueryV1::parse(PacketBuffer * aBuffer, BlockQueryV1 & aQuery)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -1104,7 +1069,7 @@ WEAVE_ERROR BlockQueryV1::parse(PacketBuffer *aBuffer, BlockQueryV1 &aQuery)
  *
  * @return true iff they have all the same fields.
  */
-bool BlockQueryV1::operator == (const BlockQueryV1 &another) const
+bool BlockQueryV1::operator ==(const BlockQueryV1 & another) const
 {
     return mBlockCounter == another.mBlockCounter;
 }
@@ -1114,12 +1079,7 @@ bool BlockQueryV1::operator == (const BlockQueryV1 &another) const
 /**
  * The no-arg constructor with defaults for the block send message.
  */
-BlockSendV1::BlockSendV1()
-    : mBlockCounter(0)
-    , mLength(0)
-    , mData(NULL)
-{
-}
+BlockSendV1::BlockSendV1() : mBlockCounter(0), mLength(0), mData(NULL) { }
 
 /**
  * @brief
@@ -1131,11 +1091,11 @@ BlockSendV1::BlockSendV1()
  *
  * @return #WEAVE_NO_ERROR if successful
  */
-WEAVE_ERROR BlockSendV1::init(uint32_t aCounter, uint64_t aLength, uint8_t *aData)
+WEAVE_ERROR BlockSendV1::init(uint32_t aCounter, uint64_t aLength, uint8_t * aData)
 {
     mBlockCounter = aCounter;
-    mLength = aLength;
-    mData = aData;
+    mLength       = aLength;
+    mData         = aData;
 
     return WEAVE_NO_ERROR;
 }
@@ -1162,7 +1122,7 @@ uint16_t BlockSendV1::packedLength()
  * @retval  #WEAVE_NO_ERROR                 If successful
  * @retval  #WEAVE_ERROR_BUFFER_TOO_SMALL   If buffer is too small
  */
-WEAVE_ERROR BlockSendV1::parse(PacketBuffer *aBuffer, BlockSendV1 &aResponse)
+WEAVE_ERROR BlockSendV1::parse(PacketBuffer * aBuffer, BlockSendV1 & aResponse)
 {
     MessageIterator i(aBuffer);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -1172,7 +1132,7 @@ WEAVE_ERROR BlockSendV1::parse(PacketBuffer *aBuffer, BlockSendV1 &aResponse)
     err = i.read32(&aResponse.mBlockCounter);
     SuccessOrExit(err);
 
-    aResponse.mLength = (uint64_t)aBuffer->DataLength() - sizeof(aResponse.mBlockCounter);
+    aResponse.mLength = (uint64_t) aBuffer->DataLength() - sizeof(aResponse.mBlockCounter);
     if (aResponse.mLength == 0)
     {
         aResponse.mData = NULL;
@@ -1204,15 +1164,14 @@ exit:
  *
  * @return true iff they have all the same fields.
  */
-bool BlockSendV1::operator == (const BlockSendV1 &another) const
+bool BlockSendV1::operator ==(const BlockSendV1 & another) const
 {
-    return (mBlockCounter == another.mBlockCounter &&
-            mLength == another.mLength &&
+    return (mBlockCounter == another.mBlockCounter && mLength == another.mLength &&
             // Use mLength as length since mLength == another.mLength at this point
             memcmp(mData, another.mData, mLength) == 0);
 }
 
-} // namespace BulkDataTransfer
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

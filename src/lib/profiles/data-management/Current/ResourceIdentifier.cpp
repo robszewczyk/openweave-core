@@ -57,8 +57,8 @@ WEAVE_ERROR ResourceIdentifier::ToTLV(nl::Weave::TLV::TLVWriter & aWriter, const
     }
     else if (ResourceType == Schema::Weave::Common::RESOURCE_TYPE_DEVICE)
     {
-            err = aWriter.Put(aTag, ResourceId);
-            SuccessOrExit(err);
+        err = aWriter.Put(aTag, ResourceId);
+        SuccessOrExit(err);
     }
     else
     {
@@ -141,41 +141,18 @@ const char * ResourceIdentifier::ResourceTypeAsString(uint16_t aResourceType)
     const char * retval;
     switch (aResourceType)
     {
-    case RESOURCE_TYPE_RESERVED:
-        retval = "RESERVED";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_DEVICE:
-        retval = "DEVICE";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_USER:
-        retval = "USER";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_ACCOUNT:
-        retval = "ACCOUNT";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_AREA:
-        retval = "AREA";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_FIXTURE:
-        retval = "FIXTURE";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_GROUP:
-        retval = "GROUP";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_ANNOTATION:
-        retval = "ANNOTATION";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_STRUCTURE:
-        retval = "STRUCTURE";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_GUEST:
-        retval = "GUEST";
-        break;
-    case Schema::Weave::Common::RESOURCE_TYPE_SERVICE:
-        retval = "SERVICE";
-        break;
-    default:
-        retval = NULL;
+    case RESOURCE_TYPE_RESERVED: retval = "RESERVED"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_DEVICE: retval = "DEVICE"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_USER: retval = "USER"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_ACCOUNT: retval = "ACCOUNT"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_AREA: retval = "AREA"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_FIXTURE: retval = "FIXTURE"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_GROUP: retval = "GROUP"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_ANNOTATION: retval = "ANNOTATION"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_STRUCTURE: retval = "STRUCTURE"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_GUEST: retval = "GUEST"; break;
+    case Schema::Weave::Common::RESOURCE_TYPE_SERVICE: retval = "SERVICE"; break;
+    default: retval = NULL;
     }
     return retval;
 }
@@ -247,12 +224,12 @@ WEAVE_ERROR ResourceIdentifier::FromString(const char * inBuffer, size_t bufferL
 
     memcpy(uintbuffer, inBuffer, 8);
     uintbuffer[8] = '\0';
-    r_upper     = strtoul(uintbuffer, &endPtr, 16);
+    r_upper       = strtoul(uintbuffer, &endPtr, 16);
     VerifyOrExit(strlen(endPtr) == 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     memcpy(uintbuffer, inBuffer + 8, 8);
     uintbuffer[8] = '\0';
-    r_lower     = strtoul(inBuffer + 8, &endPtr, 16);
+    r_lower       = strtoul(inBuffer + 8, &endPtr, 16);
     VerifyOrExit(strlen(endPtr) == 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     ResourceId   = ((uint64_t) r_upper) << 32 | ((uint64_t) r_lower);

@@ -66,11 +66,9 @@ GroupKeyStoreImpl gGroupKeyStore;
 
 } // unnamed namespace
 
-
 /** Singleton instance of the ConfigurationManager implementation object for the ESP32.
  */
 ConfigurationManagerImpl ConfigurationManagerImpl::sInstance;
-
 
 WEAVE_ERROR ConfigurationManagerImpl::_Init()
 {
@@ -97,8 +95,8 @@ WEAVE_ERROR ConfigurationManagerImpl::_Init()
 
     {
         FactoryProvisioning factoryProv;
-        uint8_t * const kInternalSRAM12Start = (uint8_t *)0x3FFAE000;
-        uint8_t * const kInternalSRAM12End = kInternalSRAM12Start + (328 * 1024) - 1;
+        uint8_t * const kInternalSRAM12Start = (uint8_t *) 0x3FFAE000;
+        uint8_t * const kInternalSRAM12End   = kInternalSRAM12Start + (328 * 1024) - 1;
 
         // Scan ESP32 Internal SRAM regions 1 and 2 for injected provisioning data and save
         // to persistent storage if found.
@@ -125,7 +123,8 @@ WEAVE_ERROR ConfigurationManagerImpl::_GetPrimaryWiFiMACAddress(uint8_t * buf)
     return esp_wifi_get_mac(ESP_IF_WIFI_STA, buf);
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor & deviceDesc)
+WEAVE_ERROR
+ConfigurationManagerImpl::_GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor & deviceDesc)
 {
     WEAVE_ERROR err;
 
@@ -189,7 +188,7 @@ WEAVE_ERROR ConfigurationManagerImpl::GetWiFiStationSecurityType(Profiles::Netwo
     err = ReadConfigValue(kConfigKey_WiFiStationSecType, secTypeInt);
     if (err == WEAVE_NO_ERROR)
     {
-        secType = (Profiles::NetworkProvisioning::WiFiSecurityType)secTypeInt;
+        secType = (Profiles::NetworkProvisioning::WiFiSecurityType) secTypeInt;
     }
     return err;
 }
@@ -205,7 +204,7 @@ WEAVE_ERROR ConfigurationManagerImpl::UpdateWiFiStationSecurityType(Profiles::Ne
         if (err == WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND || (err == WEAVE_NO_ERROR && secType != curSecType))
         {
             uint32_t secTypeInt = secType;
-            err = WriteConfigValue(kConfigKey_WiFiStationSecType, secTypeInt);
+            err                 = WriteConfigValue(kConfigKey_WiFiStationSecType, secTypeInt);
         }
         SuccessOrExit(err);
     }

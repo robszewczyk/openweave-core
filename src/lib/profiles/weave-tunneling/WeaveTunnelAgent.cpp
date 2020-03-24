@@ -61,22 +61,22 @@ using nl::Weave::System::PacketBuffer;
 
 WeaveTunnelAgent::WeaveTunnelAgent()
 {
-    mInet                     = NULL;
-    mExchangeMgr              = NULL;
+    mInet        = NULL;
+    mExchangeMgr = NULL;
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    mServiceMgr               = NULL;
+    mServiceMgr = NULL;
 #endif
 
-    mPeerNodeId               = 0;
-    qFront                    = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
-    qRear                     = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
-    mTunAgentState            = kState_NotInitialized;
-    mPeerNodeId               = kNodeIdNotSpecified;
-    mServiceAddress           = IPAddress::Any;
-    mServicePort              = WEAVE_PORT;
-    mAuthMode                 = kWeaveAuthMode_Unauthenticated;
-    mAppContext               = NULL;
+    mPeerNodeId     = 0;
+    qFront          = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
+    qRear           = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
+    mTunAgentState  = kState_NotInitialized;
+    mPeerNodeId     = kNodeIdNotSpecified;
+    mServiceAddress = IPAddress::Any;
+    mServicePort    = WEAVE_PORT;
+    mAuthMode       = kWeaveAuthMode_Unauthenticated;
+    mAppContext     = NULL;
 }
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
@@ -103,18 +103,14 @@ WeaveTunnelAgent::WeaveTunnelAgent()
  *
  * @return WEAVE_NO_ERROR on success, else a corresponding WEAVE_ERROR type.
  */
-WEAVE_ERROR WeaveTunnelAgent::Init (InetLayer *inet, WeaveExchangeManager *exchMgr,
-                                    uint64_t dstNodeId, WeaveAuthMode authMode,
-                                    WeaveServiceManager *svcMgr,
-                                    const char *intfName, uint8_t role, void *appContext)
+WEAVE_ERROR WeaveTunnelAgent::Init(InetLayer * inet, WeaveExchangeManager * exchMgr, uint64_t dstNodeId, WeaveAuthMode authMode,
+                                   WeaveServiceManager * svcMgr, const char * intfName, uint8_t role, void * appContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit(svcMgr != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    err = ConfigureAndInit(inet, exchMgr, dstNodeId, IPAddress::Any, authMode,
-                           svcMgr,
-                           intfName, role, appContext);
+    err = ConfigureAndInit(inet, exchMgr, dstNodeId, IPAddress::Any, authMode, svcMgr, intfName, role, appContext);
 
 exit:
     return err;
@@ -143,9 +139,8 @@ exit:
  *
  * @return WEAVE_NO_ERROR on success, else a corresponding WEAVE_ERROR type.
  */
-WEAVE_ERROR WeaveTunnelAgent::Init (InetLayer *inet, WeaveExchangeManager *exchMgr,
-                                    uint64_t dstNodeId, IPAddress dstIPAddr, WeaveAuthMode authMode,
-                                    const char *intfName, uint8_t role, void *appContext)
+WEAVE_ERROR WeaveTunnelAgent::Init(InetLayer * inet, WeaveExchangeManager * exchMgr, uint64_t dstNodeId, IPAddress dstIPAddr,
+                                   WeaveAuthMode authMode, const char * intfName, uint8_t role, void * appContext)
 {
     return ConfigureAndInit(inet, exchMgr, dstNodeId, dstIPAddr, authMode,
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
@@ -154,28 +149,28 @@ WEAVE_ERROR WeaveTunnelAgent::Init (InetLayer *inet, WeaveExchangeManager *exchM
                             intfName, role, appContext);
 }
 
-WEAVE_ERROR WeaveTunnelAgent::ConfigureAndInit (InetLayer *inet, WeaveExchangeManager *exchMgr,
-                                                uint64_t dstNodeId, IPAddress dstIPAddr, WeaveAuthMode authMode,
+WEAVE_ERROR WeaveTunnelAgent::ConfigureAndInit(InetLayer * inet, WeaveExchangeManager * exchMgr, uint64_t dstNodeId,
+                                               IPAddress dstIPAddr, WeaveAuthMode authMode,
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-                                                WeaveServiceManager *svcMgr,
+                                               WeaveServiceManager * svcMgr,
 #endif
-                                                const char *intfName, uint8_t role, void *appContext)
+                                               const char * intfName, uint8_t role, void * appContext)
 {
-    WEAVE_ERROR err          = WEAVE_NO_ERROR;
-    mInet                    = inet;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    mInet           = inet;
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    mServiceMgr              = svcMgr;
+    mServiceMgr = svcMgr;
 #endif
-    mExchangeMgr             = exchMgr;
-    mPeerNodeId              = dstNodeId;
-    mServiceAddress          = dstIPAddr;
-    mServicePort             = WEAVE_PORT;
-    mRole                    = role;
-    mAuthMode                = authMode;
-    mAppContext              = appContext;
+    mExchangeMgr    = exchMgr;
+    mPeerNodeId     = dstNodeId;
+    mServiceAddress = dstIPAddr;
+    mServicePort    = WEAVE_PORT;
+    mRole           = role;
+    mAuthMode       = authMode;
+    mAppContext     = appContext;
     memset(queuedMsgs, 0, sizeof(queuedMsgs));
-    qFront                   = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
-    qRear                    = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
+    qFront = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
+    qRear  = TUNNEL_PACKET_QUEUE_INVALID_INDEX;
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
     memset(&mWeaveTunnelStats, 0, sizeof(mWeaveTunnelStats));
 #endif
@@ -187,7 +182,7 @@ WEAVE_ERROR WeaveTunnelAgent::ConfigureAndInit (InetLayer *inet, WeaveExchangeMa
 
     // Set the TunnelAgent object pointer in WeaveMessageLayer for local UDP tunneling.
 
-    mExchangeMgr->MessageLayer->AppState = this;
+    mExchangeMgr->MessageLayer->AppState                     = this;
     mExchangeMgr->MessageLayer->OnUDPTunneledMessageReceived = RecvdFromShortcutUDPTunnel;
 
 #if !WEAVE_SYSTEM_CONFIG_USE_LWIP
@@ -244,17 +239,17 @@ WEAVE_ERROR WeaveTunnelAgent::ConfigureAndInit (InetLayer *inet, WeaveExchangeMa
 #endif
 
     // Set callbacks to NULL.
-    OnServiceTunStatusNotify    = NULL;
+    OnServiceTunStatusNotify = NULL;
 
     OnServiceTunReconnectNotify = NULL;
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
-    OnTunneledPacketTransit     = NULL;
+    OnTunneledPacketTransit = NULL;
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
 
     // Set the TunnelAgent state.
 
-    mTunAgentState  = kState_Initialized_NoTunnel;
+    mTunAgentState = kState_Initialized_NoTunnel;
 
 exit:
     return err;
@@ -272,7 +267,7 @@ exit:
  */
 void WeaveTunnelAgent::SetAuthMode(const WeaveAuthMode authMode)
 {
-    mAuthMode         = authMode;
+    mAuthMode = authMode;
 }
 
 /**
@@ -290,9 +285,9 @@ void WeaveTunnelAgent::SetAuthMode(const WeaveAuthMode authMode)
  */
 void WeaveTunnelAgent::SetDestination(const uint64_t nodeId, const IPAddress ipAddr, const uint16_t servicePort)
 {
-    mPeerNodeId       = nodeId;
-    mServiceAddress   = ipAddr;
-    mServicePort      = servicePort;
+    mPeerNodeId     = nodeId;
+    mServiceAddress = ipAddr;
+    mServicePort    = servicePort;
 }
 
 /**
@@ -306,7 +301,7 @@ void WeaveTunnelAgent::SetDestination(const uint64_t nodeId, const IPAddress ipA
  */
 void WeaveTunnelAgent::SetTunnelingDeviceRole(const Role role)
 {
-    mRole             = role;
+    mRole = role;
 }
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
@@ -316,7 +311,7 @@ void WeaveTunnelAgent::SetTunnelingDeviceRole(const Role role)
  * @param[in] primaryIntfName          Primary interface name for Service tunnel connection.
  *
  */
-void WeaveTunnelAgent::SetPrimaryTunnelInterface(const char *primaryIntfName)
+void WeaveTunnelAgent::SetPrimaryTunnelInterface(const char * primaryIntfName)
 {
     mPrimaryTunConnMgr.SetInterfaceName(primaryIntfName);
 }
@@ -326,7 +321,7 @@ void WeaveTunnelAgent::SetPrimaryTunnelInterface(const char *primaryIntfName)
  *
  * @param[in] primaryIntfType          The network technology type of the primary interface for Service tunnel connection.
  */
-void WeaveTunnelAgent::SetPrimaryTunnelInterfaceType (const SrcInterfaceType primaryIntfType)
+void WeaveTunnelAgent::SetPrimaryTunnelInterfaceType(const SrcInterfaceType primaryIntfType)
 {
     mPrimaryTunConnMgr.SetInterfaceType(primaryIntfType);
 }
@@ -337,7 +332,7 @@ void WeaveTunnelAgent::SetPrimaryTunnelInterfaceType (const SrcInterfaceType pri
  * @param[in] backupIntfName           Backup interface name for Service tunnel connection.
  *
  */
-void WeaveTunnelAgent::SetBackupTunnelInterface(const char *backupIntfName)
+void WeaveTunnelAgent::SetBackupTunnelInterface(const char * backupIntfName)
 {
     mBackupTunConnMgr.SetInterfaceName(backupIntfName);
 }
@@ -347,7 +342,7 @@ void WeaveTunnelAgent::SetBackupTunnelInterface(const char *backupIntfName)
  *
  * @param[in] backupIntfType           The network technology type of the backup interface for Service tunnel connection.
  */
-void WeaveTunnelAgent::SetBackupTunnelInterfaceType (const SrcInterfaceType backupIntfType)
+void WeaveTunnelAgent::SetBackupTunnelInterfaceType(const SrcInterfaceType backupIntfType)
 {
     mPrimaryTunConnMgr.SetInterfaceType(backupIntfType);
 }
@@ -377,8 +372,7 @@ WEAVE_ERROR WeaveTunnelAgent::Shutdown(void)
 
     // Verify that Tunnel Agent was at least initialized
 
-    VerifyOrExit(mTunAgentState != kState_NotInitialized,
-                 err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(mTunAgentState != kState_NotInitialized, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // Stop the tunnel to the Service
 
@@ -484,11 +478,9 @@ WEAVE_ERROR WeaveTunnelAgent::ConfigurePrimaryTunnelTimeout(uint16_t maxTimeoutS
  *                                               enable keepalive operation.
  *
  */
-WEAVE_ERROR WeaveTunnelAgent::ConfigureAndEnablePrimaryTunnelTCPKeepAlive(uint16_t keepAliveIntervalSecs,
-                                                                          uint16_t maxNumProbes)
+WEAVE_ERROR WeaveTunnelAgent::ConfigureAndEnablePrimaryTunnelTCPKeepAlive(uint16_t keepAliveIntervalSecs, uint16_t maxNumProbes)
 {
-    return mPrimaryTunConnMgr.ConfigureAndEnableTCPKeepAlive(keepAliveIntervalSecs,
-                                                             maxNumProbes);
+    return mPrimaryTunConnMgr.ConfigureAndEnableTCPKeepAlive(keepAliveIntervalSecs, maxNumProbes);
 }
 #endif // WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
 
@@ -544,9 +536,8 @@ void WeaveTunnelAgent::DisablePrimaryTunnel(void)
  */
 bool WeaveTunnelAgent::IsPrimaryTunnelRoutingRestricted(void)
 {
-    return (mTunAgentState == kState_PrimaryTunModeEstablished ||
-            mTunAgentState == kState_PrimaryAndBkupTunModeEstablished) &&
-           GetFlag(mTunnelFlags, kTunnelFlag_PrimaryRestricted);
+    return (mTunAgentState == kState_PrimaryTunModeEstablished || mTunAgentState == kState_PrimaryAndBkupTunModeEstablished) &&
+        GetFlag(mTunnelFlags, kTunnelFlag_PrimaryRestricted);
 }
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
@@ -652,9 +643,8 @@ void WeaveTunnelAgent::StopBackupTunnel(void)
  */
 bool WeaveTunnelAgent::IsBackupTunnelRoutingRestricted(void)
 {
-    return (mTunAgentState == kState_BkupOnlyTunModeEstablished ||
-            mTunAgentState == kState_PrimaryAndBkupTunModeEstablished) &&
-           GetFlag(mTunnelFlags, kTunnelFlag_BackupRestricted);
+    return (mTunAgentState == kState_BkupOnlyTunModeEstablished || mTunAgentState == kState_PrimaryAndBkupTunModeEstablished) &&
+        GetFlag(mTunnelFlags, kTunnelFlag_BackupRestricted);
 }
 
 #if WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
@@ -696,11 +686,9 @@ WEAVE_ERROR WeaveTunnelAgent::ConfigureBackupTunnelTimeout(uint16_t maxTimeoutSe
  *                                               enable keepalive operation.
  *
  */
-WEAVE_ERROR WeaveTunnelAgent::ConfigureAndEnableBackupTunnelTCPKeepAlive(uint16_t keepAliveIntervalSecs,
-                                                                         uint16_t maxNumProbes)
+WEAVE_ERROR WeaveTunnelAgent::ConfigureAndEnableBackupTunnelTCPKeepAlive(uint16_t keepAliveIntervalSecs, uint16_t maxNumProbes)
 {
-    return mBackupTunConnMgr.ConfigureAndEnableTCPKeepAlive(keepAliveIntervalSecs,
-                                                            maxTimeoutSecs);
+    return mBackupTunConnMgr.ConfigureAndEnableTCPKeepAlive(keepAliveIntervalSecs, maxTimeoutSecs);
 }
 #endif // WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
 
@@ -721,7 +709,7 @@ void WeaveTunnelAgent::ConfigureBackupTunnelLivenessInterval(uint16_t livenessIn
  *
  * @return WEAVE_NO_ERROR on success, else a corresponding WEAVE_ERROR type.
  */
-WEAVE_ERROR WeaveTunnelAgent::StartServiceTunnel (void)
+WEAVE_ERROR WeaveTunnelAgent::StartServiceTunnel(void)
 {
     return StartServiceTunnel(mPeerNodeId, mServiceAddress, mAuthMode);
 }
@@ -738,21 +726,18 @@ WEAVE_ERROR WeaveTunnelAgent::StartServiceTunnel (void)
  *
  * @return WEAVE_NO_ERROR
  */
-WEAVE_ERROR WeaveTunnelAgent::StartServiceTunnel(uint64_t dstNodeId,
-                                                 IPAddress dstIPAddr,
-                                                 WeaveAuthMode authMode)
+WEAVE_ERROR WeaveTunnelAgent::StartServiceTunnel(uint64_t dstNodeId, IPAddress dstIPAddr, WeaveAuthMode authMode)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Set the parameters
 
-    mPeerNodeId              = dstNodeId;
-    mServiceAddress          = dstIPAddr;
-    mAuthMode                = authMode;
+    mPeerNodeId     = dstNodeId;
+    mServiceAddress = dstIPAddr;
+    mAuthMode       = authMode;
 
     // Make sure that the Weave Tunnel Agent has been initialized.
-    VerifyOrExit(mTunAgentState != kState_NotInitialized,
-                 err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(mTunAgentState != kState_NotInitialized, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // Abort any outstanding connections, if any, and reap resources.
     if (mTunAgentState > kState_Initialized_NoTunnel)
@@ -815,7 +800,6 @@ void WeaveTunnelAgent::StopServiceTunnel(WEAVE_ERROR err)
         mBackupTunConnMgr.ServiceTunnelClose(err);
     }
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-
 }
 
 /**
@@ -828,9 +812,9 @@ bool WeaveTunnelAgent::IsTunnelRoutingRestricted(void)
 {
     return IsPrimaryTunnelRoutingRestricted()
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-           || IsBackupTunnelRoutingRestricted()
+        || IsBackupTunnelRoutingRestricted()
 #endif
-           ;
+        ;
 }
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
@@ -842,7 +826,7 @@ bool WeaveTunnelAgent::IsTunnelRoutingRestricted(void)
  * @return WEAVE_ERROR  Weave error encountered when getting tunnel statistics.
  *
  */
-WEAVE_ERROR WeaveTunnelAgent::GetWeaveTunnelStatistics(WeaveTunnelStatistics &tunnelStats)
+WEAVE_ERROR WeaveTunnelAgent::GetWeaveTunnelStatistics(WeaveTunnelStatistics & tunnelStats)
 {
     memcpy(&tunnelStats, &mWeaveTunnelStats, sizeof(WeaveTunnelStatistics));
 
@@ -853,8 +837,7 @@ WEAVE_ERROR WeaveTunnelAgent::GetWeaveTunnelStatistics(WeaveTunnelStatistics &tu
 void WeaveTunnelAgent::SetState(AgentState toState)
 {
 
-    WeaveLogDetail(WeaveTunnel, "FromState:%s ToState:%s\n", GetAgentStateName(mTunAgentState),
-                                 GetAgentStateName(toState));
+    WeaveLogDetail(WeaveTunnel, "FromState:%s ToState:%s\n", GetAgentStateName(mTunAgentState), GetAgentStateName(toState));
     mTunAgentState = toState;
 }
 
@@ -865,24 +848,24 @@ void WeaveTunnelAgent::SetState(AgentState toState)
  * @param[out] outDest      A reference to the IPaddress object holding the destination address.
  *
  */
-void WeaveTunnelAgent::ParseDestinationIPAddress(const PacketBuffer &inMsg, IPAddress &outDest)
+void WeaveTunnelAgent::ParseDestinationIPAddress(const PacketBuffer & inMsg, IPAddress & outDest)
 {
-    const uint8_t     *p   = NULL;
-    struct ip6_hdr *ip6hdr = NULL;
+    const uint8_t * p       = NULL;
+    struct ip6_hdr * ip6hdr = NULL;
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     ip6_addr_t ipv6Addr;
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
     // Extract the IPv6 header to look at the destination address
 
-    p = inMsg.Start();
-    ip6hdr = (struct ip6_hdr *)p;
+    p      = inMsg.Start();
+    ip6hdr = (struct ip6_hdr *) p;
 
     // Check destination address
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     ip6_addr_copy(ipv6Addr, ip6hdr->dest);
     outDest = IPAddress::FromIPv6(ipv6Addr);
-#else // !WEAVE_SYSTEM_CONFIG_USE_LWIP
+#else  // !WEAVE_SYSTEM_CONFIG_USE_LWIP
     outDest = IPAddress::FromIPv6(ip6hdr->ip6_dst);
 #endif // !WEAVE_SYSTEM_CONFIG_USE_LWIP
 }
@@ -898,12 +881,12 @@ void WeaveTunnelAgent::ParseDestinationIPAddress(const PacketBuffer &inMsg, IPAd
  * @param[in] message                      A pointer to the PacketBuffer object holding the raw IPv6 packet.
  *
  */
-void WeaveTunnelAgent::RecvdFromTunnelEndPoint(TunEndPoint *tunEP, PacketBuffer *msg)
+void WeaveTunnelAgent::RecvdFromTunnelEndPoint(TunEndPoint * tunEP, PacketBuffer * msg)
 {
-    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint64_t nodeId;
     IPAddress destIP6Addr;
-    WeaveTunnelAgent *tAgent    = static_cast<WeaveTunnelAgent *>(tunEP->AppState);
+    WeaveTunnelAgent * tAgent = static_cast<WeaveTunnelAgent *>(tunEP->AppState);
 
     tAgent->ParseDestinationIPAddress(*msg, destIP6Addr);
 
@@ -931,8 +914,7 @@ void WeaveTunnelAgent::RecvdFromTunnelEndPoint(TunEndPoint *tunEP, PacketBuffer 
             SuccessOrExit(err);
         }
     }
-    else if ((destIP6Addr.Subnet() == kWeaveSubnetId_PrimaryWiFi) ||
-             (destIP6Addr.Subnet() == kWeaveSubnetId_ThreadMesh))
+    else if ((destIP6Addr.Subnet() == kWeaveSubnetId_PrimaryWiFi) || (destIP6Addr.Subnet() == kWeaveSubnetId_ThreadMesh))
     {
         // Generated locally on Mobile phone; Needs to go via local tunnel or Service
 
@@ -972,9 +954,9 @@ exit:
  * @param[in] message                      A pointer to the PacketBuffer object holding the tunneled IPv6 packet.
  *
  */
-void WeaveTunnelAgent::RecvdFromShortcutUDPTunnel(WeaveMessageLayer *msgLayer, PacketBuffer *msg)
+void WeaveTunnelAgent::RecvdFromShortcutUDPTunnel(WeaveMessageLayer * msgLayer, PacketBuffer * msg)
 {
-    WeaveTunnelAgent *tAgent = static_cast<WeaveTunnelAgent *>(msgLayer->AppState);
+    WeaveTunnelAgent * tAgent = static_cast<WeaveTunnelAgent *>(msgLayer->AppState);
 
     tAgent->HandleTunneledReceive(msg, kType_TunnelShortcut);
 
@@ -984,16 +966,16 @@ void WeaveTunnelAgent::RecvdFromShortcutUDPTunnel(WeaveMessageLayer *msgLayer, P
 /**
  * Get the WeaveTunnelAgentState name.
  */
-const char *WeaveTunnelAgent::GetAgentStateName(const AgentState state)
+const char * WeaveTunnelAgent::GetAgentStateName(const AgentState state)
 {
 
     switch (state)
     {
-      case kState_NotInitialized                       : return "NotInitialized";
-      case kState_Initialized_NoTunnel                 : return "Initialized_NoTunnel";
-      case kState_PrimaryTunModeEstablished            : return "PrimaryTunnelEstablished";
-      case kState_BkupOnlyTunModeEstablished           : return "BackupTunnelEstablished";
-      case kState_PrimaryAndBkupTunModeEstablished     : return "PrimaryAndBackupTunnelEstablished";
+    case kState_NotInitialized: return "NotInitialized";
+    case kState_Initialized_NoTunnel: return "Initialized_NoTunnel";
+    case kState_PrimaryTunModeEstablished: return "PrimaryTunnelEstablished";
+    case kState_BkupOnlyTunModeEstablished: return "BackupTunnelEstablished";
+    case kState_PrimaryAndBkupTunModeEstablished: return "PrimaryAndBackupTunnelEstablished";
     }
 
     return NULL;
@@ -1013,19 +995,13 @@ void WeaveTunnelAgent::NetworkOnlineCheckResult(TunnelType tunType, bool isOnlin
 {
     switch (tunType)
     {
-      case kType_TunnelPrimary:
-        mPrimaryTunConnMgr.HandleOnlineCheckResult(isOnline);
-        break;
+    case kType_TunnelPrimary: mPrimaryTunConnMgr.HandleOnlineCheckResult(isOnline); break;
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-      case kType_TunnelBackup:
-        mBackupTunConnMgr.HandleOnlineCheckResult(isOnline);
-        break;
+    case kType_TunnelBackup: mBackupTunConnMgr.HandleOnlineCheckResult(isOnline); break;
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-      default:
-        break;
+    default: break;
     }
-
 }
 
 /**
@@ -1055,7 +1031,7 @@ WEAVE_ERROR WeaveTunnelAgent::SetupTunEndPoint(void)
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     err = mTunEP->Open();
 #else
-    err = mTunEP->Open(mIntfName);
+    err     = mTunEP->Open(mIntfName);
 #endif
     SuccessOrExit(err);
 
@@ -1114,8 +1090,7 @@ WEAVE_ERROR WeaveTunnelAgent::TeardownTunEndPoint(void)
 /**
  * Utility function for populating a message header.
  */
-void WeaveTunnelAgent::PopulateTunnelMsgHeader(WeaveMessageInfo *msgInfo,
-                                               const WeaveTunnelConnectionMgr *connMgr)
+void WeaveTunnelAgent::PopulateTunnelMsgHeader(WeaveMessageInfo * msgInfo, const WeaveTunnelConnectionMgr * connMgr)
 {
     msgInfo->Clear();
 
@@ -1123,12 +1098,12 @@ void WeaveTunnelAgent::PopulateTunnelMsgHeader(WeaveMessageInfo *msgInfo,
 
     if (!connMgr)
     {
-        msgInfo->KeyId            = WeaveKeyId::kNone;
-        msgInfo->EncryptionType   = kWeaveEncryptionType_None;
+        msgInfo->KeyId          = WeaveKeyId::kNone;
+        msgInfo->EncryptionType = kWeaveEncryptionType_None;
     }
     else
     {
-        msgInfo->KeyId = connMgr->mServiceCon->DefaultKeyId;
+        msgInfo->KeyId          = connMgr->mServiceCon->DefaultKeyId;
         msgInfo->EncryptionType = connMgr->mServiceCon->DefaultEncryptionType;
     }
 
@@ -1140,7 +1115,7 @@ void WeaveTunnelAgent::PopulateTunnelMsgHeader(WeaveMessageInfo *msgInfo,
 /**
  * Prepare message for tunneling by encapsulating in the tunnel header.
  */
-WEAVE_ERROR WeaveTunnelAgent::AddTunnelHdrToMsg(PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelAgent::AddTunnelHdrToMsg(PacketBuffer * msg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveTunnelHeader tunHeader;
@@ -1160,12 +1135,9 @@ WEAVE_ERROR WeaveTunnelAgent::AddTunnelHdrToMsg(PacketBuffer *msg)
     return err;
 }
 
-WEAVE_ERROR WeaveTunnelAgent::SendMessageUponPktTransitAnalysis(const WeaveTunnelConnectionMgr *connMgr,
-                                                                TunnelPktDirection pktDir,
-                                                                TunnelType tunType,
-                                                                WeaveMessageInfo *msgInfo,
-                                                                PacketBuffer *msg,
-                                                                bool &dropPacket)
+WEAVE_ERROR WeaveTunnelAgent::SendMessageUponPktTransitAnalysis(const WeaveTunnelConnectionMgr * connMgr, TunnelPktDirection pktDir,
+                                                                TunnelType tunType, WeaveMessageInfo * msgInfo, PacketBuffer * msg,
+                                                                bool & dropPacket)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t msgLen = 0;
@@ -1181,7 +1153,7 @@ WEAVE_ERROR WeaveTunnelAgent::SendMessageUponPktTransitAnalysis(const WeaveTunne
     if (!dropPacket)
     {
         msgLen = msg->DataLength();
-        err = connMgr->mServiceCon->SendTunneledMessage(msgInfo, msg);
+        err    = connMgr->mServiceCon->SendTunneledMessage(msgInfo, msg);
         SuccessOrExit(err);
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
@@ -1194,7 +1166,6 @@ WEAVE_ERROR WeaveTunnelAgent::SendMessageUponPktTransitAnalysis(const WeaveTunne
 
         RestartTunnelLivenessTimer(tunType);
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-
     }
 
 exit:
@@ -1215,7 +1186,7 @@ exit:
 /**
  * Prepare message and send to Service via Remote tunnel.
  */
-WEAVE_ERROR WeaveTunnelAgent::HandleSendingToService(PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelAgent::HandleSendingToService(PacketBuffer * msg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     bool dropPacket = false;
@@ -1224,7 +1195,7 @@ WEAVE_ERROR WeaveTunnelAgent::HandleSendingToService(PacketBuffer *msg)
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
         && mBackupTunConnMgr.mConnectionState != WeaveTunnelConnectionMgr::kState_TunnelOpen
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-       )
+    )
     {
         // Enqueue message until Service tunnel established
 
@@ -1247,8 +1218,7 @@ WEAVE_ERROR WeaveTunnelAgent::HandleSendingToService(PacketBuffer *msg)
 
         PopulateTunnelMsgHeader(&msgInfo, &mPrimaryTunConnMgr);
 
-        err = SendMessageUponPktTransitAnalysis(&mPrimaryTunConnMgr, kDir_Outbound, kType_TunnelPrimary,
-                                                &msgInfo, msg, dropPacket);
+        err = SendMessageUponPktTransitAnalysis(&mPrimaryTunConnMgr, kDir_Outbound, kType_TunnelPrimary, &msgInfo, msg, dropPacket);
     }
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
     else if (mBackupTunConnMgr.mConnectionState == WeaveTunnelConnectionMgr::kState_TunnelOpen)
@@ -1257,8 +1227,7 @@ WEAVE_ERROR WeaveTunnelAgent::HandleSendingToService(PacketBuffer *msg)
 
         PopulateTunnelMsgHeader(&msgInfo, &mBackupTunConnMgr);
 
-        err = SendMessageUponPktTransitAnalysis(&mBackupTunConnMgr, kDir_Outbound, kType_TunnelBackup,
-                                                &msgInfo, msg, dropPacket);
+        err = SendMessageUponPktTransitAnalysis(&mBackupTunConnMgr, kDir_Outbound, kType_TunnelBackup, &msgInfo, msg, dropPacket);
     }
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
 
@@ -1284,9 +1253,9 @@ exit:
 /**
  * Prepare message and send to Service via Remote tunnel.
  */
-WEAVE_ERROR WeaveTunnelAgent::DecideAndSendShortcutOrRemoteTunnel(uint64_t peerId, PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelAgent::DecideAndSendShortcutOrRemoteTunnel(uint64_t peerId, PacketBuffer * msg)
 {
-    WEAVE_ERROR err =  WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
     bool dropPacket = false;
 
 #if WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
@@ -1341,15 +1310,15 @@ WEAVE_ERROR WeaveTunnelAgent::DecideAndSendShortcutOrRemoteTunnel(uint64_t peerI
  * Handle a message received over tunnel and decode tunnel header and send
  * via appropriate interface.
  */
-WEAVE_ERROR WeaveTunnelAgent::HandleTunneledReceive(PacketBuffer *msg, TunnelType tunType)
+WEAVE_ERROR WeaveTunnelAgent::HandleTunneledReceive(PacketBuffer * msg, TunnelType tunType)
 {
-    WEAVE_ERROR err =  WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
     IPAddress destIP6Addr;
     WeaveTunnelHeader tunHeader;
     bool dropPacket = false;
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-    WeaveTunnelCommonStatistics *tunStats = NULL;
+    WeaveTunnelCommonStatistics * tunStats = NULL;
 
     // Update tunnel statistics
     tunStats = GetCommonTunnelStatistics(tunType);
@@ -1386,8 +1355,7 @@ WEAVE_ERROR WeaveTunnelAgent::HandleTunneledReceive(PacketBuffer *msg, TunnelTyp
     // the Border gateway, or to percolate up the LwIP stack to the application
     // for the Mobile device.
 
-    if (destIP6Addr.Subnet() == kWeaveSubnetId_MobileDevice ||
-        destIP6Addr.Subnet() == kWeaveSubnetId_PrimaryWiFi ||
+    if (destIP6Addr.Subnet() == kWeaveSubnetId_MobileDevice || destIP6Addr.Subnet() == kWeaveSubnetId_PrimaryWiFi ||
         destIP6Addr.Subnet() == kWeaveSubnetId_ThreadMesh)
     {
         mTunEP->Send(msg);
@@ -1410,23 +1378,18 @@ exit:
 }
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-WeaveTunnelCommonStatistics *WeaveTunnelAgent::GetCommonTunnelStatistics(const TunnelType tunType)
+WeaveTunnelCommonStatistics * WeaveTunnelAgent::GetCommonTunnelStatistics(const TunnelType tunType)
 {
-    WeaveTunnelCommonStatistics *tunStats = NULL;
+    WeaveTunnelCommonStatistics * tunStats = NULL;
 
     switch (tunType)
     {
-      case kType_TunnelPrimary:
-        tunStats = &mWeaveTunnelStats.mPrimaryStats;
-        break;
+    case kType_TunnelPrimary: tunStats = &mWeaveTunnelStats.mPrimaryStats; break;
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-      case kType_TunnelBackup:
-        tunStats = &mWeaveTunnelStats.mBackupStats;
-        break;
+    case kType_TunnelBackup: tunStats = &mWeaveTunnelStats.mBackupStats; break;
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-      default:
-        break;
+    default: break;
     }
 
     return tunStats;
@@ -1434,7 +1397,7 @@ WeaveTunnelCommonStatistics *WeaveTunnelAgent::GetCommonTunnelStatistics(const T
 
 void WeaveTunnelAgent::UpdateOutboundMessageStatistics(const TunnelType tunType, const uint64_t msgLen)
 {
-    WeaveTunnelCommonStatistics *tunStats = NULL;
+    WeaveTunnelCommonStatistics * tunStats = NULL;
 
     // Update tunnel statistics
     tunStats = GetCommonTunnelStatistics(tunType);
@@ -1448,14 +1411,14 @@ void WeaveTunnelAgent::UpdateOutboundMessageStatistics(const TunnelType tunType,
 
 void WeaveTunnelAgent::UpdateTunnelDownStatistics(const TunnelType tunType, const WEAVE_ERROR conErr)
 {
-    WeaveTunnelCommonStatistics *tunStats = NULL;
+    WeaveTunnelCommonStatistics * tunStats = NULL;
     // Update tunnel statistics
     tunStats = GetCommonTunnelStatistics(tunType);
 
     if (tunStats != NULL)
     {
         tunStats->mTunnelDownCount++;
-        tunStats->mLastTunnelDownError = conErr;
+        tunStats->mLastTunnelDownError    = conErr;
         tunStats->mLastTimeTunnelWentDown = GetTimeMsec();
     }
 }
@@ -1464,13 +1427,11 @@ void WeaveTunnelAgent::UpdateTunnelDownStatistics(const TunnelType tunType, cons
 /**
  * Queue packet for Remote tunnel connection to get established.
  */
-WEAVE_ERROR WeaveTunnelAgent::EnQueuePacket(PacketBuffer *pkt)
+WEAVE_ERROR WeaveTunnelAgent::EnQueuePacket(PacketBuffer * pkt)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_TunnelQueueFull,
-                       ExitNow(err = WEAVE_ERROR_TUNNEL_SERVICE_QUEUE_FULL);
-                      );
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_TunnelQueueFull, ExitNow(err = WEAVE_ERROR_TUNNEL_SERVICE_QUEUE_FULL); );
 
     if ((qFront == qRear + 1) || (qFront == 0 && qRear == WEAVE_CONFIG_TUNNELING_MAX_NUM_PACKETS_QUEUED - 1))
     {
@@ -1485,7 +1446,7 @@ WEAVE_ERROR WeaveTunnelAgent::EnQueuePacket(PacketBuffer *pkt)
         {
             qFront = 0;
         }
-        qRear = (qRear + 1) % WEAVE_CONFIG_TUNNELING_MAX_NUM_PACKETS_QUEUED;
+        qRear             = (qRear + 1) % WEAVE_CONFIG_TUNNELING_MAX_NUM_PACKETS_QUEUED;
         queuedMsgs[qRear] = pkt;
     }
 
@@ -1496,7 +1457,7 @@ exit:
 
 void WeaveTunnelAgent::DumpQueuedMessages(void)
 {
-    PacketBuffer *queuedPkt = NULL;
+    PacketBuffer * queuedPkt = NULL;
 
     while (qFront != TUNNEL_PACKET_QUEUE_INVALID_INDEX)
     {
@@ -1518,9 +1479,9 @@ void WeaveTunnelAgent::DumpQueuedMessages(void)
 /**
  * Dequeue a packet for sending via Service tunnel.
  */
-PacketBuffer *WeaveTunnelAgent::DeQueuePacket(void)
+PacketBuffer * WeaveTunnelAgent::DeQueuePacket(void)
 {
-    PacketBuffer *retPkt = NULL;
+    PacketBuffer * retPkt = NULL;
     if (qFront != TUNNEL_PACKET_QUEUE_INVALID_INDEX)
     {
         retPkt = queuedMsgs[qFront];
@@ -1542,10 +1503,10 @@ PacketBuffer *WeaveTunnelAgent::DeQueuePacket(void)
  * Flush queued messages that were pending because Service tunnel
  * was not setup.
  */
-void WeaveTunnelAgent::SendQueuedMessages(const WeaveTunnelConnectionMgr *connMgr)
+void WeaveTunnelAgent::SendQueuedMessages(const WeaveTunnelConnectionMgr * connMgr)
 {
-    WeaveMessageInfo  msgInfo;
-    PacketBuffer*     queuedPkt   = NULL;
+    WeaveMessageInfo msgInfo;
+    PacketBuffer * queuedPkt = NULL;
     bool dropPacket;
 
     while ((queuedPkt = DeQueuePacket()) != NULL)
@@ -1556,8 +1517,7 @@ void WeaveTunnelAgent::SendQueuedMessages(const WeaveTunnelConnectionMgr *connMg
         // Send over TCP Connection
 
         msgInfo.DestNodeId = connMgr->mServiceCon->PeerNodeId;
-        SendMessageUponPktTransitAnalysis(connMgr, kDir_Outbound, connMgr->mTunType,
-                                          &msgInfo, queuedPkt, dropPacket);
+        SendMessageUponPktTransitAnalysis(connMgr, kDir_Outbound, connMgr->mTunType, &msgInfo, queuedPkt, dropPacket);
 
         if (dropPacket)
         {
@@ -1588,116 +1548,98 @@ void WeaveTunnelAgent::SendQueuedMessages(const WeaveTunnelConnectionMgr *connMg
 /**
  * Post processing function after Tunnel has been opened.
  */
-void WeaveTunnelAgent::WeaveTunnelConnectionUp(const WeaveMessageInfo *msgInfo,
-                                               const WeaveTunnelConnectionMgr *connMgr,
+void WeaveTunnelAgent::WeaveTunnelConnectionUp(const WeaveMessageInfo * msgInfo, const WeaveTunnelConnectionMgr * connMgr,
                                                const bool isRoutingRestricted)
 {
-   // Update the Weave Tunnel Agent mode on tunnel establishment.
+    // Update the Weave Tunnel Agent mode on tunnel establishment.
 
     switch (mTunAgentState)
     {
-      case kState_Initialized_NoTunnel:
-          // When Primary tunnel is established
+    case kState_Initialized_NoTunnel:
+        // When Primary tunnel is established
 
-          if (connMgr->mTunType == kType_TunnelPrimary)
-          {
-              WeaveTunnelUpNotifyAndSetState(kState_PrimaryTunModeEstablished,
-                                             Platform::kMode_Primary,
-                                             WeaveTunnelConnectionMgr::kStatus_TunPrimaryUp,
-                                             &mPrimaryTunConnMgr,
-                                             isRoutingRestricted);
+        if (connMgr->mTunType == kType_TunnelPrimary)
+        {
+            WeaveTunnelUpNotifyAndSetState(kState_PrimaryTunModeEstablished, Platform::kMode_Primary,
+                                           WeaveTunnelConnectionMgr::kStatus_TunPrimaryUp, &mPrimaryTunConnMgr,
+                                           isRoutingRestricted);
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              // Update tunnel statistics
-              mWeaveTunnelStats.mPrimaryStats.mLastTimeTunnelEstablished = GetTimeMsec();
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelPrimary;
+            // Update tunnel statistics
+            mWeaveTunnelStats.mPrimaryStats.mLastTimeTunnelEstablished = GetTimeMsec();
+            mWeaveTunnelStats.mCurrentActiveTunnel                     = kType_TunnelPrimary;
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
+        }
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          else if (connMgr->mTunType == kType_TunnelBackup)
-          {
-              WeaveTunnelUpNotifyAndSetState(kState_BkupOnlyTunModeEstablished,
-                                             Platform::kMode_BackupOnly,
-                                             WeaveTunnelConnectionMgr::kStatus_TunBackupUp,
-                                             &mBackupTunConnMgr,
-                                             isRoutingRestricted);
+        else if (connMgr->mTunType == kType_TunnelBackup)
+        {
+            WeaveTunnelUpNotifyAndSetState(kState_BkupOnlyTunModeEstablished, Platform::kMode_BackupOnly,
+                                           WeaveTunnelConnectionMgr::kStatus_TunBackupUp, &mBackupTunConnMgr, isRoutingRestricted);
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              // Update tunnel statistics
-              mWeaveTunnelStats.mBackupStats.mLastTimeTunnelEstablished = GetTimeMsec();
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelBackup;
+            // Update tunnel statistics
+            mWeaveTunnelStats.mBackupStats.mLastTimeTunnelEstablished = GetTimeMsec();
+            mWeaveTunnelStats.mCurrentActiveTunnel                    = kType_TunnelBackup;
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
+        }
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
 
-          break;
-
-      case kState_PrimaryTunModeEstablished:
-          if (connMgr->mTunType == kType_TunnelPrimary)
-          {
-              WeaveTunnelUpNotifyAndSetState(kState_PrimaryTunModeEstablished,
-                                             Platform::kMode_Primary,
-                                             WeaveTunnelConnectionMgr::kStatus_TunPrimaryUp,
-                                             &mPrimaryTunConnMgr,
-                                             isRoutingRestricted);
-          }
-#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          // When BackUp tunnel is established after Primary
-          if (connMgr->mTunType == kType_TunnelBackup)
-          {
-              WeaveTunnelUpNotifyAndSetState(kState_PrimaryAndBkupTunModeEstablished,
-                                             Platform::kMode_PrimaryAndBackup,
-                                             WeaveTunnelConnectionMgr::kStatus_TunPrimaryAndBackupUp,
-                                             &mBackupTunConnMgr,
-                                             isRoutingRestricted);
-#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              // Update tunnel statistics
-              mWeaveTunnelStats.mBackupStats.mLastTimeTunnelEstablished = GetTimeMsec();
-#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
-#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-
-          break;
-
-      case kState_BkupOnlyTunModeEstablished:
-#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          // When Primary tunnel is established after Backup
-
-          if (connMgr->mTunType == kType_TunnelPrimary)
-          {
-              WeaveTunnelUpNotifyAndSetState(kState_PrimaryAndBkupTunModeEstablished,
-                                             Platform::kMode_PrimaryAndBackup,
-                                             WeaveTunnelConnectionMgr::kStatus_TunPrimaryAndBackupUp,
-                                             &mPrimaryTunConnMgr,
-                                             isRoutingRestricted);
-#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              // Update tunnel statistics
-              mWeaveTunnelStats.mBackupStats.mLastTimeTunnelEstablished = GetTimeMsec();
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelPrimary;
-#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
-          else if (connMgr->mTunType == kType_TunnelBackup)
-          {
-              WeaveTunnelUpNotifyAndSetState(kState_BkupOnlyTunModeEstablished,
-                                             Platform::kMode_BackupOnly,
-                                             WeaveTunnelConnectionMgr::kStatus_TunBackupUp,
-                                             &mBackupTunConnMgr,
-                                             isRoutingRestricted);
-          }
-#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          break;
-
-      case kState_PrimaryAndBkupTunModeEstablished:
-
-          break;
-
-      default:
         break;
+
+    case kState_PrimaryTunModeEstablished:
+        if (connMgr->mTunType == kType_TunnelPrimary)
+        {
+            WeaveTunnelUpNotifyAndSetState(kState_PrimaryTunModeEstablished, Platform::kMode_Primary,
+                                           WeaveTunnelConnectionMgr::kStatus_TunPrimaryUp, &mPrimaryTunConnMgr,
+                                           isRoutingRestricted);
+        }
+#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        // When BackUp tunnel is established after Primary
+        if (connMgr->mTunType == kType_TunnelBackup)
+        {
+            WeaveTunnelUpNotifyAndSetState(kState_PrimaryAndBkupTunModeEstablished, Platform::kMode_PrimaryAndBackup,
+                                           WeaveTunnelConnectionMgr::kStatus_TunPrimaryAndBackupUp, &mBackupTunConnMgr,
+                                           isRoutingRestricted);
+#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+            // Update tunnel statistics
+            mWeaveTunnelStats.mBackupStats.mLastTimeTunnelEstablished = GetTimeMsec();
+#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+        }
+#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+
+        break;
+
+    case kState_BkupOnlyTunModeEstablished:
+#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        // When Primary tunnel is established after Backup
+
+        if (connMgr->mTunType == kType_TunnelPrimary)
+        {
+            WeaveTunnelUpNotifyAndSetState(kState_PrimaryAndBkupTunModeEstablished, Platform::kMode_PrimaryAndBackup,
+                                           WeaveTunnelConnectionMgr::kStatus_TunPrimaryAndBackupUp, &mPrimaryTunConnMgr,
+                                           isRoutingRestricted);
+#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+            // Update tunnel statistics
+            mWeaveTunnelStats.mBackupStats.mLastTimeTunnelEstablished = GetTimeMsec();
+            mWeaveTunnelStats.mCurrentActiveTunnel                    = kType_TunnelPrimary;
+#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+        }
+        else if (connMgr->mTunType == kType_TunnelBackup)
+        {
+            WeaveTunnelUpNotifyAndSetState(kState_BkupOnlyTunModeEstablished, Platform::kMode_BackupOnly,
+                                           WeaveTunnelConnectionMgr::kStatus_TunBackupUp, &mBackupTunConnMgr, isRoutingRestricted);
+        }
+#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        break;
+
+    case kState_PrimaryAndBkupTunModeEstablished: break;
+
+    default: break;
     }
 }
 
 /**
  * Tunnel connection error notifier.
  */
-void WeaveTunnelAgent::WeaveTunnelConnectionErrorNotify(const WeaveTunnelConnectionMgr *connMgr, WEAVE_ERROR conErr)
+void WeaveTunnelAgent::WeaveTunnelConnectionErrorNotify(const WeaveTunnelConnectionMgr * connMgr, WEAVE_ERROR conErr)
 {
     if (OnServiceTunStatusNotify)
     {
@@ -1727,8 +1669,7 @@ void WeaveTunnelAgent::WeaveTunnelNotifyTCPSendIdleStateChange(const TunnelType 
 }
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_TCP_IDLE_CALLBACK
 
-void WeaveTunnelAgent::WeaveTunnelServiceReconnectRequested(const WeaveTunnelConnectionMgr *connMgr,
-                                                            const char *reconnectHost,
+void WeaveTunnelAgent::WeaveTunnelServiceReconnectRequested(const WeaveTunnelConnectionMgr * connMgr, const char * reconnectHost,
                                                             const uint16_t reconnectPort)
 {
     if (OnServiceTunReconnectNotify)
@@ -1742,90 +1683,80 @@ void WeaveTunnelAgent::WeaveTunnelServiceReconnectRequested(const WeaveTunnelCon
 /**
  * Post processing function after Tunnel has been closed.
  */
-void WeaveTunnelAgent::WeaveTunnelConnectionDown(const WeaveTunnelConnectionMgr *connMgr, WEAVE_ERROR conErr)
+void WeaveTunnelAgent::WeaveTunnelConnectionDown(const WeaveTunnelConnectionMgr * connMgr, WEAVE_ERROR conErr)
 {
     // Update the Weave Tunnel mode and the Agent state upon tunnel closure.
 
     switch (mTunAgentState)
     {
-      case kState_Initialized_NoTunnel:
+    case kState_Initialized_NoTunnel: WeaveTunnelDownNotifyAndSetState(conErr); break;
 
-          WeaveTunnelDownNotifyAndSetState(conErr);
+    case kState_PrimaryTunModeEstablished:
+        // When Primary tunnel fails
 
-          break;
-
-      case kState_PrimaryTunModeEstablished:
-          // When Primary tunnel fails
-
-          if (connMgr->mTunType == kType_TunnelPrimary)
-          {
-              WeaveTunnelDownNotifyAndSetState(conErr);
+        if (connMgr->mTunType == kType_TunnelPrimary)
+        {
+            WeaveTunnelDownNotifyAndSetState(conErr);
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              UpdateTunnelDownStatistics(kType_TunnelPrimary, conErr);
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelUnknown;
+            UpdateTunnelDownStatistics(kType_TunnelPrimary, conErr);
+            mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelUnknown;
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-              mWeaveTunnelStats.mLastTimeWhenPrimaryAndBackupWentDown = GetTimeMsec();
+            mWeaveTunnelStats.mLastTimeWhenPrimaryAndBackupWentDown = GetTimeMsec();
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
 
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
-          break;
-
-      case kState_BkupOnlyTunModeEstablished:
-#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          // When Backup tunnel fails
-
-          if (connMgr->mTunType == kType_TunnelBackup)
-          {
-              WeaveTunnelDownNotifyAndSetState(conErr);
-#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              UpdateTunnelDownStatistics(kType_TunnelBackup, conErr);
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelUnknown;
-#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-              mWeaveTunnelStats.mLastTimeWhenPrimaryAndBackupWentDown = GetTimeMsec();
-#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-
-#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
-#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          break;
-
-      case kState_PrimaryAndBkupTunModeEstablished:
-#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          // When Primary tunnel fails
-
-          if (connMgr->mTunType == kType_TunnelPrimary)
-          {
-              WeaveTunnelModeChangeNotifyAndSetState(kState_BkupOnlyTunModeEstablished,
-                                                     Platform::kMode_BackupOnly,
-                                                     WeaveTunnelConnectionMgr::kStatus_TunFailoverToBackup,
-                                                     conErr);
-#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              // Update tunnel statistics
-              UpdateTunnelDownStatistics(kType_TunnelPrimary, conErr);
-              mWeaveTunnelStats.mTunnelFailoverCount++;
-              mWeaveTunnelStats.mLastTimeForTunnelFailover = GetTimeMsec();
-              mWeaveTunnelStats.mLastTunnelFailoverError = conErr;
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelBackup;
-#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-
-          }
-          else if (connMgr->mTunType == kType_TunnelBackup)
-          {
-              WeaveTunnelModeChangeNotifyAndSetState(kState_PrimaryTunModeEstablished,
-                                                     Platform::kMode_Primary,
-                                                     WeaveTunnelConnectionMgr::kStatus_TunBackupOnlyDown,
-                                                     conErr);
-#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-              UpdateTunnelDownStatistics(kType_TunnelBackup, conErr);
-              mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelPrimary;
-#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-          }
-#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          break;
-
-      default:
+        }
         break;
+
+    case kState_BkupOnlyTunModeEstablished:
+#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        // When Backup tunnel fails
+
+        if (connMgr->mTunType == kType_TunnelBackup)
+        {
+            WeaveTunnelDownNotifyAndSetState(conErr);
+#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+            UpdateTunnelDownStatistics(kType_TunnelBackup, conErr);
+            mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelUnknown;
+#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+            mWeaveTunnelStats.mLastTimeWhenPrimaryAndBackupWentDown = GetTimeMsec();
+#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+
+#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+        }
+#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        break;
+
+    case kState_PrimaryAndBkupTunModeEstablished:
+#if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        // When Primary tunnel fails
+
+        if (connMgr->mTunType == kType_TunnelPrimary)
+        {
+            WeaveTunnelModeChangeNotifyAndSetState(kState_BkupOnlyTunModeEstablished, Platform::kMode_BackupOnly,
+                                                   WeaveTunnelConnectionMgr::kStatus_TunFailoverToBackup, conErr);
+#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+            // Update tunnel statistics
+            UpdateTunnelDownStatistics(kType_TunnelPrimary, conErr);
+            mWeaveTunnelStats.mTunnelFailoverCount++;
+            mWeaveTunnelStats.mLastTimeForTunnelFailover = GetTimeMsec();
+            mWeaveTunnelStats.mLastTunnelFailoverError   = conErr;
+            mWeaveTunnelStats.mCurrentActiveTunnel       = kType_TunnelBackup;
+#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+        }
+        else if (connMgr->mTunType == kType_TunnelBackup)
+        {
+            WeaveTunnelModeChangeNotifyAndSetState(kState_PrimaryTunModeEstablished, Platform::kMode_Primary,
+                                                   WeaveTunnelConnectionMgr::kStatus_TunBackupOnlyDown, conErr);
+#if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+            UpdateTunnelDownStatistics(kType_TunnelBackup, conErr);
+            mWeaveTunnelStats.mCurrentActiveTunnel = kType_TunnelPrimary;
+#endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
+        }
+#endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
+        break;
+
+    default: break;
     }
 }
 
@@ -1856,15 +1787,13 @@ void WeaveTunnelAgent::WeaveTunnelDownNotifyAndSetState(WEAVE_ERROR conErr)
 
     if (OnServiceTunStatusNotify)
     {
-       OnServiceTunStatusNotify(WeaveTunnelConnectionMgr::kStatus_TunDown, conErr, mAppContext);
+        OnServiceTunStatusNotify(WeaveTunnelConnectionMgr::kStatus_TunDown, conErr, mAppContext);
     }
 }
 
-void WeaveTunnelAgent::WeaveTunnelUpNotifyAndSetState(AgentState state,
-                                                      Platform::TunnelAvailabilityMode tunMode,
+void WeaveTunnelAgent::WeaveTunnelUpNotifyAndSetState(AgentState state, Platform::TunnelAvailabilityMode tunMode,
                                                       WeaveTunnelConnectionMgr::TunnelConnNotifyReasons notifyReason,
-                                                      WeaveTunnelConnectionMgr *connMgr,
-                                                      const bool isRoutingRestricted)
+                                                      WeaveTunnelConnectionMgr * connMgr, const bool isRoutingRestricted)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1912,16 +1841,13 @@ void WeaveTunnelAgent::WeaveTunnelUpNotifyAndSetState(AgentState state,
         // enable a chain of events at the Thread level to setup the device as a
         // fully functional border router.
 
-        Platform::ServiceTunnelEstablished(mTunEP->GetTunnelInterfaceId(),
-                                           tunMode);
+        Platform::ServiceTunnelEstablished(mTunEP->GetTunnelInterfaceId(), tunMode);
     }
-    else if (mTunAgentState == kState_PrimaryTunModeEstablished  ||
-             mTunAgentState == kState_BkupOnlyTunModeEstablished)
+    else if (mTunAgentState == kState_PrimaryTunModeEstablished || mTunAgentState == kState_BkupOnlyTunModeEstablished)
     {
         // If the Tunnel was already up, explicitly indicate a mode change in WARM.
 
-        Platform::ServiceTunnelModeChange(mTunEP->GetTunnelInterfaceId(),
-                                          tunMode);
+        Platform::ServiceTunnelModeChange(mTunEP->GetTunnelInterfaceId(), tunMode);
     }
 
     // Change TunnelAgent state
@@ -1945,14 +1871,12 @@ void WeaveTunnelAgent::WeaveTunnelUpNotifyAndSetState(AgentState state,
 
     if (OnServiceTunStatusNotify)
     {
-         OnServiceTunStatusNotify(notifyReason, err,
-                                  mAppContext);
+        OnServiceTunStatusNotify(notifyReason, err, mAppContext);
     }
 }
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-void WeaveTunnelAgent::WeaveTunnelModeChangeNotifyAndSetState(AgentState state,
-                                                              Platform::TunnelAvailabilityMode tunMode,
+void WeaveTunnelAgent::WeaveTunnelModeChangeNotifyAndSetState(AgentState state, Platform::TunnelAvailabilityMode tunMode,
                                                               WeaveTunnelConnectionMgr::TunnelConnNotifyReasons notifyReason,
                                                               WEAVE_ERROR conErr)
 {
@@ -1962,14 +1886,13 @@ void WeaveTunnelAgent::WeaveTunnelModeChangeNotifyAndSetState(AgentState state,
 
     // Notify platform about tunnel disconnection
 
-    Platform::ServiceTunnelModeChange(mTunEP->GetTunnelInterfaceId(),
-                                      tunMode);
+    Platform::ServiceTunnelModeChange(mTunEP->GetTunnelInterfaceId(), tunMode);
 
     // Call application handler to report connection closing.
 
     if (OnServiceTunStatusNotify)
     {
-       OnServiceTunStatusNotify(notifyReason, conErr, mAppContext);
+        OnServiceTunStatusNotify(notifyReason, conErr, mAppContext);
     }
 }
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
@@ -1979,17 +1902,12 @@ void WeaveTunnelAgent::RestartTunnelLivenessTimer(TunnelType tunType)
 {
     switch (tunType)
     {
-      case kType_TunnelPrimary:
-        mPrimaryTunConnMgr.RestartLivenessTimer();
-        break;
+    case kType_TunnelPrimary: mPrimaryTunConnMgr.RestartLivenessTimer(); break;
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-      case kType_TunnelBackup:
-        mBackupTunConnMgr.RestartLivenessTimer();
-        break;
+    case kType_TunnelBackup: mBackupTunConnMgr.RestartLivenessTimer(); break;
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-      default:
-        break;
+    default: break;
     }
 }
 
@@ -1999,17 +1917,16 @@ void WeaveTunnelAgent::NotifyTunnelLiveness(TunnelType tunType, WEAVE_ERROR err)
     {
         switch (tunType)
         {
-          case kType_TunnelPrimary:
+        case kType_TunnelPrimary:
             OnServiceTunStatusNotify(WeaveTunnelConnectionMgr::kStatus_TunPrimaryLiveness, err, mAppContext);
             break;
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          case kType_TunnelBackup:
+        case kType_TunnelBackup:
             OnServiceTunStatusNotify(WeaveTunnelConnectionMgr::kStatus_TunBackupLiveness, err, mAppContext);
             break;
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-          default:
-            break;
+        default: break;
         }
     }
 }

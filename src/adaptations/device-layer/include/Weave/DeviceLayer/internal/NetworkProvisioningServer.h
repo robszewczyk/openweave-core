@@ -35,10 +35,9 @@ class NetworkProvisioningServerImpl;
 class NetworkProvisioningServer
 {
     using NetworkProvisioningDelegate = ::nl::Weave::Profiles::NetworkProvisioning::NetworkProvisioningDelegate;
-    using ImplClass = NetworkProvisioningServerImpl;
+    using ImplClass                   = NetworkProvisioningServerImpl;
 
 public:
-
     // Members for internal use by components within the Weave Device Layer.
 
     WEAVE_ERROR Init(void);
@@ -48,15 +47,14 @@ public:
     void OnPlatformEvent(const WeaveDeviceEvent * event);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    NetworkProvisioningServer() = default;
+    NetworkProvisioningServer()  = default;
     ~NetworkProvisioningServer() = default;
 
     // No copy, move or assignment.
-    NetworkProvisioningServer(const NetworkProvisioningServer &) = delete;
+    NetworkProvisioningServer(const NetworkProvisioningServer &)  = delete;
     NetworkProvisioningServer(const NetworkProvisioningServer &&) = delete;
-    NetworkProvisioningServer & operator=(const NetworkProvisioningServer &) = delete;
+    NetworkProvisioningServer & operator =(const NetworkProvisioningServer &) = delete;
 };
 
 /**
@@ -66,7 +64,6 @@ protected:
  * that are common to all platforms.
  */
 extern NetworkProvisioningServer & NetworkProvisioningSvr();
-
 
 } // namespace Internal
 } // namespace DeviceLayer
@@ -90,33 +87,32 @@ namespace Internal {
 
 inline WEAVE_ERROR NetworkProvisioningServer::Init(void)
 {
-    return static_cast<ImplClass*>(this)->_Init();
+    return static_cast<ImplClass *>(this)->_Init();
 }
 
 inline ::nl::Weave::Profiles::NetworkProvisioning::NetworkProvisioningDelegate * NetworkProvisioningServer::GetDelegate(void)
 {
-    return static_cast<ImplClass*>(this)->_GetDelegate();
+    return static_cast<ImplClass *>(this)->_GetDelegate();
 }
 
 inline void NetworkProvisioningServer::StartPendingScan(void)
 {
-    static_cast<ImplClass*>(this)->_StartPendingScan();
+    static_cast<ImplClass *>(this)->_StartPendingScan();
 }
 
 inline bool NetworkProvisioningServer::ScanInProgress(void)
 {
-    return static_cast<ImplClass*>(this)->_ScanInProgress();
+    return static_cast<ImplClass *>(this)->_ScanInProgress();
 }
 
 inline void NetworkProvisioningServer::OnPlatformEvent(const WeaveDeviceEvent * event)
 {
-    static_cast<ImplClass*>(this)->_OnPlatformEvent(event);
+    static_cast<ImplClass *>(this)->_OnPlatformEvent(event);
 }
 
 } // namespace Internal
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-
 
 #endif // NETWORK_PROVISIONING_SERVER_H

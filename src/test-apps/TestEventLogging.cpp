@@ -229,33 +229,35 @@ static OptionDef gToolOptionDefs[] = { { "start-event-id", kArgumentRequired, 's
                                        { "udp", kNoArgument, 'u' },
                                        { } };
 
-static const char * const gToolOptionHelp = "  -p <num>, --parent-node-id <num> \n"
-                                            "       Parent node id; the ID of the node that will receive the event\n"
-                                            "       logs\n"
-                                            "\n"
-                                            "  -D <ip-addr>, --dest-addr <ip-addr>\n"
-                                            "       The IP address or hostname of the parent (the node that will\n"
-                                            "       receive thise event log)\n"
-                                            "  -t, --tcp \n"
-                                            "       Use TCP for BDX session\n"
-                                            "\n"
-                                            "  -u, --udp \n"
-                                            "       Use UDP for BDX session\n"
-                                            "\n"
-                                            "  -s <num>, --start-event-id <num>\n"
-                                            "       Begin the offload of each event sequence at <num> event\n"
-                                            "\n"
-                                            "  -b <num>, --block-size <num>\n"
-                                            "       Block size to use for BDX upload.\n"
-                                            "\n"
-                                            "  -d, --debug \n"
-                                            "       Enable debug messages.\n"
-                                            "\n";
+static const char * const gToolOptionHelp =
+    "  -p <num>, --parent-node-id <num> \n"
+    "       Parent node id; the ID of the node that will receive the event\n"
+    "       logs\n"
+    "\n"
+    "  -D <ip-addr>, --dest-addr <ip-addr>\n"
+    "       The IP address or hostname of the parent (the node that will\n"
+    "       receive thise event log)\n"
+    "  -t, --tcp \n"
+    "       Use TCP for BDX session\n"
+    "\n"
+    "  -u, --udp \n"
+    "       Use UDP for BDX session\n"
+    "\n"
+    "  -s <num>, --start-event-id <num>\n"
+    "       Begin the offload of each event sequence at <num> event\n"
+    "\n"
+    "  -b <num>, --block-size <num>\n"
+    "       Block size to use for BDX upload.\n"
+    "\n"
+    "  -d, --debug \n"
+    "       Enable debug messages.\n"
+    "\n";
 
 static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
 static HelpOptions gHelpOptions(TOOL_NAME,
-                                "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n"
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n"
                                 "       " TOOL_NAME " [<options...>] --listen\n",
                                 WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
                                 "Test event logging.  Without any options, the program invokes a\n"
@@ -302,7 +304,7 @@ LogBDXUpload gLogBDXUpload;
 // Example profiles for logging:
 #define OpenCloseProfileID 0x235A00AA
 #define kOpenCloseStateTag 0x01
-#define kBypassStateTag 0x02
+#define kBypassStateTag    0x02
 
 enum OpenCloseStateEnum
 {
@@ -412,7 +414,7 @@ WEAVE_ERROR LogBufferConsole(void * inAppState, PacketBuffer * inBuffer)
 // Larger event payload.  Structured s.t. it fits in the buffer, but
 // it is larger than the WEAVE_CONFIG_SIZE_RESERVE
 #define EVENT_PAYLOAD_SIZE_2 256
-#define EVENT_SIZE_1 EVENT_PAYLOAD_SIZE_1 + EVENT_ENVELOPE_SIZE
+#define EVENT_SIZE_1         EVENT_PAYLOAD_SIZE_1 + EVENT_ENVELOPE_SIZE
 // Larger event payload.  Doesn't fit in debug buffer.
 #define EVENT_PAYLOAD_SIZE_3 (WEAVE_CONFIG_EVENT_SIZE_RESERVE + EVENT_SIZE_1)
 
@@ -823,10 +825,10 @@ static void CheckLogPreformed(nlTestSuite * inSuite, void * inContext)
     }
 }
 
-#define kSampleEventTag_State 1
+#define kSampleEventTag_State     1
 #define kSampleEventTag_Timestamp 2
 #define kSampleEventTag_Structure 3
-#define kSampleEventTag_Samples 4
+#define kSampleEventTag_Samples   4
 
 #define kEventStructTag_a 1
 #define kEventStructTag_b 2
@@ -3853,12 +3855,8 @@ bool HandleOption(const char * progName, OptionSet * optSet, int id, const char 
 {
     switch (id)
     {
-    case 't':
-        gBDXContext.mUseTCP = true;
-        break;
-    case 'u':
-        gBDXContext.mUseTCP = false;
-        break;
+    case 't': gBDXContext.mUseTCP = true; break;
+    case 'u': gBDXContext.mUseTCP = false; break;
     case 'D':
         gBDXContext.DestIPAddrStr = arg;
         gTestLoggingContext.bdx   = true;
@@ -3871,9 +3869,7 @@ bool HandleOption(const char * progName, OptionSet * optSet, int id, const char 
         }
         gTestLoggingContext.bdx = true;
         break;
-    case 'd':
-        gTestLoggingContext.mVerbose = true;
-        break;
+    case 'd': gTestLoggingContext.mVerbose = true; break;
     case 's':
         if (!ParseInt(arg, gBDXContext.mStartingBlock))
         {
@@ -3881,9 +3877,7 @@ bool HandleOption(const char * progName, OptionSet * optSet, int id, const char 
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -3941,15 +3935,9 @@ static void HandleBindingEvent(void * const appState, const Binding::EventType e
 
     switch (event)
     {
-    case Binding::kEvent_BindingReady:
-        gLogBDXUpload.StartUpload(context->mBinding);
-        break;
-    case Binding::kEvent_PrepareFailed:
-        printf("Binding Prepare failed\n");
-        break;
-    default:
-        Binding::DefaultEventHandler(appState, event, inParam, outParam);
-        break;
+    case Binding::kEvent_BindingReady: gLogBDXUpload.StartUpload(context->mBinding); break;
+    case Binding::kEvent_PrepareFailed: printf("Binding Prepare failed\n"); break;
+    default: Binding::DefaultEventHandler(appState, event, inParam, outParam); break;
     }
 }
 

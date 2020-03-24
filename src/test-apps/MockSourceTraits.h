@@ -44,9 +44,9 @@
 
 class LocaleSettingsTraitDataSource :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-        public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
+    public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
 #else
-        public nl::Weave::Profiles::DataManagement::TraitDataSource
+    public nl::Weave::Profiles::DataManagement::TraitDataSource
 #endif
 {
 public:
@@ -55,18 +55,20 @@ public:
 
 private:
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader) __OVERRIDE;
+    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle,
+                            nl::Weave::TLV::TLVReader & aReader) __OVERRIDE;
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
 
     char mLocale[24];
 };
 
 class LocaleCapabilitiesTraitDataSource :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-        public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
+    public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
 #else
-        public nl::Weave::Profiles::DataManagement::TraitDataSource
+    public nl::Weave::Profiles::DataManagement::TraitDataSource
 #endif
 {
 public:
@@ -75,13 +77,16 @@ public:
 
 private:
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader) __OVERRIDE;
+    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle,
+                            nl::Weave::TLV::TLVReader & aReader) __OVERRIDE;
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
 
-    enum {
+    enum
+    {
         kMaxNumOfCharsPerLocale = 24,
-        kMaxNumOfLocals = 10,
+        kMaxNumOfLocals         = 10,
     };
 
     uint8_t mNumLocales;
@@ -95,7 +100,8 @@ public:
     void Mutate();
 
 private:
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
 
     bool mAutoRelockOn;
     uint32_t mAutoRelockDuration;
@@ -103,9 +109,9 @@ private:
 
 class TestATraitDataSource :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-        public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
+    public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
 #else
-        public nl::Weave::Profiles::DataManagement::TraitDataSource
+    public nl::Weave::Profiles::DataManagement::TraitDataSource
 #endif
 {
 public:
@@ -116,34 +122,35 @@ public:
 
 private:
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader) __OVERRIDE;
+    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle,
+                            nl::Weave::TLV::TLVReader & aReader) __OVERRIDE;
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
     void SetNullifiedPath(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, bool isNull);
 
-    WEAVE_ERROR GetData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter, bool &aIsNull, bool &aIsPresent) __OVERRIDE;
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
-    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, nl::Weave::Profiles::DataManagement::PropertyDictionaryKey &aKey) __OVERRIDE;
+    WEAVE_ERROR GetData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, uint64_t aTagToWrite,
+                        nl::Weave::TLV::TLVWriter & aWriter, bool & aIsNull, bool & aIsPresent) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
+    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle,
+                                         uintptr_t & aContext,
+                                         nl::Weave::Profiles::DataManagement::PropertyDictionaryKey & aKey) __OVERRIDE;
 
     virtual void OnCustomCommand(nl::Weave::Profiles::DataManagement::Command * aCommand,
-                const nl::Weave::WeaveMessageInfo * aMsgInfo,
-                nl::Weave::PacketBuffer * aPayload,
-                const uint64_t & aCommandType,
-                const bool aIsExpiryTimeValid,
-                const int64_t & aExpiryTimeMicroSecond,
-                const bool aIsMustBeVersionValid,
-                const uint64_t & aMustBeVersion,
-                nl::Weave::TLV::TLVReader & aArgumentReader) __OVERRIDE;
+                                 const nl::Weave::WeaveMessageInfo * aMsgInfo, nl::Weave::PacketBuffer * aPayload,
+                                 const uint64_t & aCommandType, const bool aIsExpiryTimeValid,
+                                 const int64_t & aExpiryTimeMicroSecond, const bool aIsMustBeVersionValid,
+                                 const uint64_t & aMustBeVersion, nl::Weave::TLV::TLVReader & aArgumentReader) __OVERRIDE;
 
-    static void HandleCommandOperationTimeout(nl::Weave::System::Layer* aSystemLayer, void *aAppState,
-            nl::Weave::System::Error aErr);
+    static void HandleCommandOperationTimeout(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                              nl::Weave::System::Error aErr);
 
     enum
     {
-        kCmdType_1      = 1,
+        kCmdType_1 = 1,
 
-        kCmdParam_1     = 1,
-        kCmdParam_2     = 2,
+        kCmdParam_1 = 1,
+        kCmdParam_2 = 2,
     };
     uint32_t mCommandParam_1;
     bool mCommandParam_2;
@@ -156,7 +163,7 @@ private:
     uint32_t tae[10];
 
     // weave.common.StringRef is implemented as a union
-    char *tag_string = "stringreftest";
+    char * tag_string = "stringreftest";
     uint16_t tag_ref;
     bool tag_use_ref;
     uint32_t tai_stageditem;
@@ -178,15 +185,15 @@ private:
 
     uint32_t tao;
 
-    int64_t tap; // milliseconds
-    int64_t taq; // milliseconds
+    int64_t tap;  // milliseconds
+    int64_t taq;  // milliseconds
     uint32_t tar; // seconds
     uint32_t tas; // milliseconds
 
     uint32_t tat;
     int32_t tau;
     bool tav;
-    char *taw = "boxedstring";
+    char * taw = "boxedstring";
     // boxed float
     int16_t tax;
 
@@ -202,8 +209,11 @@ public:
     void Mutate();
 
 private:
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
-    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, nl::Weave::Profiles::DataManagement::PropertyDictionaryKey &aKey) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
+    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle,
+                                         uintptr_t & aContext,
+                                         nl::Weave::Profiles::DataManagement::PropertyDictionaryKey & aKey) __OVERRIDE;
 
     Schema::Nest::Test::Trait::TestATrait::EnumA taa;
     Schema::Nest::Test::Trait::TestCommon::CommonEnumA tab;
@@ -227,8 +237,11 @@ public:
     void Mutate();
 
 private:
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
-    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, nl::Weave::Profiles::DataManagement::PropertyDictionaryKey &aKey) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
+    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle,
+                                         uintptr_t & aContext,
+                                         nl::Weave::Profiles::DataManagement::PropertyDictionaryKey & aKey) __OVERRIDE;
 
     Schema::Nest::Test::Trait::TestATrait::EnumA taa;
     Schema::Nest::Test::Trait::TestCommon::CommonEnumA tab;
@@ -255,18 +268,21 @@ public:
 private:
     enum
     {
-        kInitialTraitVersionNumber                      = 100,
+        kInitialTraitVersionNumber = 100,
     };
 
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
-    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, nl::Weave::Profiles::DataManagement::PropertyDictionaryKey &aKey) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
+    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle,
+                                         uintptr_t & aContext,
+                                         nl::Weave::Profiles::DataManagement::PropertyDictionaryKey & aKey) __OVERRIDE;
 
     void ClearEpochKeys(void);
     void ClearGroupMasterKeys(void);
     WEAVE_ERROR MutateEpochKeys(void);
     WEAVE_ERROR MutateGroupMasterKeys(void);
-    WEAVE_ERROR AddEpochKey(uint8_t epochKeyNumber, uint32_t startTime, const uint8_t *key, uint8_t keyLen);
-    WEAVE_ERROR AddGroupMasterKey(uint8_t appGroupLocalNumber, uint32_t globalId, const uint8_t *key, uint8_t keyLen);
+    WEAVE_ERROR AddEpochKey(uint8_t epochKeyNumber, uint32_t startTime, const uint8_t * key, uint8_t keyLen);
+    WEAVE_ERROR AddGroupMasterKey(uint8_t appGroupLocalNumber, uint32_t globalId, const uint8_t * key, uint8_t keyLen);
 
     nl::Weave::Profiles::Security::AppKeys::WeaveGroupKey EpochKeys[WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS];
     nl::Weave::Profiles::Security::AppKeys::WeaveGroupKey GroupMasterKeys[WEAVE_CONFIG_MAX_APPLICATION_GROUPS];
@@ -274,21 +290,24 @@ private:
 
 class TestCTraitDataSource :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-        public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
+    public nl::Weave::Profiles::DataManagement::TraitUpdatableDataSource
 #else
-        public nl::Weave::Profiles::DataManagement::TraitDataSource
+    public nl::Weave::Profiles::DataManagement::TraitDataSource
 #endif
 {
 public:
     TestCTraitDataSource();
     void Mutate();
-    static void TLVPrettyPrinter(const char *aFormat, ...);
+    static void TLVPrettyPrinter(const char * aFormat, ...);
+
 private:
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader) __OVERRIDE;
+    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle,
+                            nl::Weave::TLV::TLVReader & aReader) __OVERRIDE;
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
     bool taa;
     int32_t tab;
     Schema::Nest::Test::Trait::TestCTrait::StructC tac;

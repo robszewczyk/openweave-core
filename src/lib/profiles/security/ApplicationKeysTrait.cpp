@@ -32,48 +32,46 @@ namespace Trait {
 namespace Auth {
 namespace ApplicationKeysTrait {
 
-    using namespace ::nl::Weave::Profiles::DataManagement;
+using namespace ::nl::Weave::Profiles::DataManagement;
 
-    //
-    // Property Table
-    //
+//
+// Property Table
+//
 
-    const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-        { kPropertyHandle_Root, 1 }, // epoch_keys
-        { kPropertyHandle_Root, 2 }, // master_keys
-    };
+const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
+    { kPropertyHandle_Root, 1 }, // epoch_keys
+    { kPropertyHandle_Root, 2 }, // master_keys
+};
 
-    //
-    // Schema
-    //
+//
+// Schema
+//
 
-    const TraitSchemaEngine TraitSchema = {
-        {
-            kWeaveProfileId,
-            PropertyMap,
-            sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-            1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-            2,
+    2,
 #endif
 #if (TDM_DICTIONARY_SUPPORT)
-            NULL,
+    NULL,
 #endif
-            NULL,
-            NULL,
-            NULL,
-            NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-            NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-            NULL,
+    NULL,
 #endif
-        }
-    };
+} };
 
 } // namespace ApplicationKeysTrait
-}
-}
-}
-}
+} // namespace Auth
+} // namespace Trait
+} // namespace Weave
+} // namespace Schema

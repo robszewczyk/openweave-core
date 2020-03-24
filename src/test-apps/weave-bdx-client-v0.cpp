@@ -36,64 +36,61 @@
 
 #define TOOL_NAME "weave-bdx-client-v0"
 
-#define BDX_CLIENT_DEFAULT_START_OFFSET    0
-#define BDX_CLIENT_DEFAULT_FILE_LENGTH     0
-#define BDX_CLIENT_DEFAULT_MAX_BLOCK_SIZE  100
+#define BDX_CLIENT_DEFAULT_START_OFFSET   0
+#define BDX_CLIENT_DEFAULT_FILE_LENGTH    0
+#define BDX_CLIENT_DEFAULT_MAX_BLOCK_SIZE 100
 
 using namespace ::nl::Weave::Profiles::BulkDataTransfer;
 
 using ::nl::Weave::System::PacketBuffer;
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 static void OpenDestFile();
-static void InitiateConnection(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-static void HandleTransferTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+static void InitiateConnection(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+static void HandleTransferTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 static void PreTest();
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
 // handlers for the BDX client
-static void handleReceiveAccept(ReceiveAccept *aReceiveAcceptMsg);
-static void handleSendAccept(void *aAppState, SendAccept *aSendAcceptMsg);
-static void handleReject(void *aAppState, StatusReport *aReport);
-static void handleXferError(void *aAppState, StatusReport *aXferError);
-static void handleDone(void *aAppState);
-static void handleError(void *aAppState, WEAVE_ERROR anErrorCode);
-static void handlePutBlock(uint64_t length, uint8_t *dataBlock, bool isLastBlock);
-static void handleGetBlock(void *aAppState, uint64_t *pLength, uint8_t **aDataBlock, bool *isLastBlock);
+static void handleReceiveAccept(ReceiveAccept * aReceiveAcceptMsg);
+static void handleSendAccept(void * aAppState, SendAccept * aSendAcceptMsg);
+static void handleReject(void * aAppState, StatusReport * aReport);
+static void handleXferError(void * aAppState, StatusReport * aXferError);
+static void handleDone(void * aAppState);
+static void handleError(void * aAppState, WEAVE_ERROR anErrorCode);
+static void handlePutBlock(uint64_t length, uint8_t * dataBlock, bool isLastBlock);
+static void handleGetBlock(void * aAppState, uint64_t * pLength, uint8_t ** aDataBlock, bool * isLastBlock);
 
 uint64_t DestNodeId;
-IPAddress DestAddr = IPAddress::Any;
-bool Upload = false; // download by default
-const char *RequestedFileName = NULL;
-const char *ReceivedFileLocation = NULL;
-FILE *DestFile = NULL;
-uint32_t ConnectInterval = 200;  //ms
-uint32_t TransferTimeout = 3000;  //ms
-uint32_t ConnectTry = 0;
-uint32_t ConnectMaxTry = 3;
-FILE *SrcFile = NULL;
-uint64_t StartOffset = BDX_CLIENT_DEFAULT_START_OFFSET;
-uint64_t FileLength = BDX_CLIENT_DEFAULT_FILE_LENGTH;
-uint64_t MaxBlockSize = BDX_CLIENT_DEFAULT_MAX_BLOCK_SIZE;
-PacketBuffer *blockBuf = NULL;
-bool Pretest = false;
+IPAddress DestAddr                = IPAddress::Any;
+bool Upload                       = false; // download by default
+const char * RequestedFileName    = NULL;
+const char * ReceivedFileLocation = NULL;
+FILE * DestFile                   = NULL;
+uint32_t ConnectInterval          = 200;  // ms
+uint32_t TransferTimeout          = 3000; // ms
+uint32_t ConnectTry               = 0;
+uint32_t ConnectMaxTry            = 3;
+FILE * SrcFile                    = NULL;
+uint64_t StartOffset              = BDX_CLIENT_DEFAULT_START_OFFSET;
+uint64_t FileLength               = BDX_CLIENT_DEFAULT_FILE_LENGTH;
+uint64_t MaxBlockSize             = BDX_CLIENT_DEFAULT_MAX_BLOCK_SIZE;
+PacketBuffer * blockBuf           = NULL;
+bool Pretest                      = false;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "dest-addr",      kArgumentRequired, 'D' },
-    { "start-offset",   kArgumentRequired, 's' },
-    { "length",         kArgumentRequired, 'l' },
-    { "requested-file", kArgumentRequired, 'r' },
-    { "received-loc",   kArgumentRequired, 'R' },
-    { "block-size",     kArgumentRequired, 'b' },
-    { "upload",         kNoArgument,       'p' },
-    { "pretest",        kNoArgument,       'T' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "dest-addr", kArgumentRequired, 'D' },
+                                       { "start-offset", kArgumentRequired, 's' },
+                                       { "length", kArgumentRequired, 'l' },
+                                       { "requested-file", kArgumentRequired, 'r' },
+                                       { "received-loc", kArgumentRequired, 'R' },
+                                       { "block-size", kArgumentRequired, 'b' },
+                                       { "upload", kNoArgument, 'p' },
+                                       { "pretest", kNoArgument, 'T' },
+                                       { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -D, --dest-addr <dest-ip-addr>\n"
     "       Connect to the specific IPv4/IPv6 address rather than one derived from the\n"
     "       destination node id.\n"
@@ -122,29 +119,13 @@ static const char *gToolOptionHelp =
     "       Perform initial unit tests.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-ip-addr>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-ip-addr>]\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
 static void ResetTestContext(void)
 {
@@ -167,12 +148,12 @@ static int32_t GetNumAsyncEventsAvailable(void)
 
 static void ExpireTimer(int32_t argument)
 {
-    (void)argument;
+    (void) argument;
 
     SystemLayer.StartTimer(0, HandleTransferTimeout, NULL);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
     nl::Weave::System::Stats::Snapshot before;
@@ -213,20 +194,20 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnAcceptError  = HandleAcceptConnectionError;
 
     // set up the BDX client
     WeaveBdxClient bdxClient;
     ReferencedString designator;
 
-    const char *filename = strrchr(RequestedFileName, '/');
+    const char * filename = strrchr(RequestedFileName, '/');
     if ((filename != NULL) && Upload) // only filename in sendinit
     {
-        filename++; //skip over '/'
-        designator.init((uint16_t)strlen(filename), (char *)filename);
+        filename++; // skip over '/'
+        designator.init((uint16_t) strlen(filename), (char *) filename);
     }
     else
-        designator.init((uint16_t)strlen(RequestedFileName), (char *)RequestedFileName);
+        designator.init((uint16_t) strlen(RequestedFileName), (char *) RequestedFileName);
 
     if (DestAddr == IPAddress::Any)
         DestAddr = FabricState.SelectNodeAddress(DestNodeId);
@@ -249,7 +230,7 @@ int main(int argc, char *argv[])
         while (!Done)
         {
             struct timeval sleepTime;
-            sleepTime.tv_sec = 0;
+            sleepTime.tv_sec  = 0;
             sleepTime.tv_usec = 100000;
 
             ServiceNetwork(sleepTime);
@@ -281,62 +262,62 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-static void InitiateConnection(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+static void InitiateConnection(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveBdxClient* client = reinterpret_cast<WeaveBdxClient*>(aAppState);
+    WeaveBdxClient * client = reinterpret_cast<WeaveBdxClient *>(aAppState);
 
     client->theConnection = MessageLayer.NewConnection();
     if (client->theConnection == NULL)
     {
-       printf("MessageLayer.NewConnection failed\n");
-       exit(EXIT_FAILURE);
+        printf("MessageLayer.NewConnection failed\n");
+        exit(EXIT_FAILURE);
     }
-    client->theConnection->AppState = client;
+    client->theConnection->AppState             = client;
     client->theConnection->OnConnectionComplete = HandleConnectionComplete;
-    client->theConnection->OnConnectionClosed = HandleConnectionClosed;
-    WEAVE_ERROR error = client->theConnection->Connect(DestNodeId, DestAddr);
+    client->theConnection->OnConnectionClosed   = HandleConnectionClosed;
+    WEAVE_ERROR error                           = client->theConnection->Connect(DestNodeId, DestAddr);
     ConnectTry++;
     if (aError != WEAVE_SYSTEM_NO_ERROR)
         HandleConnectionComplete(client->theConnection, error);
 }
 
-static void HandleTransferTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+static void HandleTransferTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     printf("transfer timeout\n");
     sTransferTimerIsRunning = false;
-    Done = true;
+    Done                    = true;
 }
 
-static void handleReject(void *aAppState, StatusReport *aReport)
+static void handleReject(void * aAppState, StatusReport * aReport)
 {
     printf("received reject message\n");
     Done = true;
 }
 
-static void handleXferError(void *aAppState, StatusReport *aXferError)
+static void handleXferError(void * aAppState, StatusReport * aXferError)
 {
     printf("handled transfer error\n");
     Done = true;
 }
 
-static void handleDone(void *aAppState)
+static void handleDone(void * aAppState)
 {
     printf("WEAVE:BDX: Transfer complete!\n");
     Done = true;
 }
 
-static void handleError(void *aAppState, WEAVE_ERROR anErrorCode)
+static void handleError(void * aAppState, WEAVE_ERROR anErrorCode)
 {
     printf("handled internal BDX error - %d\n", anErrorCode);
     Done = true;
 }
 
-static void handleReceiveAccept(ReceiveAccept *aReceiveAcceptMsg)
+static void handleReceiveAccept(ReceiveAccept * aReceiveAcceptMsg)
 {
     printf("received receive accept message: %d\n", aReceiveAcceptMsg->theMaxBlockSize);
 }
 
-static void handlePutBlock(uint64_t length, uint8_t *dataBlock, bool isLastBlock)
+static void handlePutBlock(uint64_t length, uint8_t * dataBlock, bool isLastBlock)
 {
     uint64_t len = fwrite(dataBlock + 1, 1, length - 1, DestFile); // skip the one byte block counter
     if (len != length - 1)
@@ -348,9 +329,9 @@ static void handlePutBlock(uint64_t length, uint8_t *dataBlock, bool isLastBlock
         fclose(DestFile);
 }
 
-static void handleGetBlock(void *aAppState, uint64_t *pLength, uint8_t **aDataBlock, bool *isLastBlock)
+static void handleGetBlock(void * aAppState, uint64_t * pLength, uint8_t ** aDataBlock, bool * isLastBlock)
 {
-    if (SrcFile  == NULL)
+    if (SrcFile == NULL)
     {
         SrcFile = fopen(RequestedFileName, "r");
         if (SrcFile == NULL)
@@ -372,15 +353,15 @@ static void handleGetBlock(void *aAppState, uint64_t *pLength, uint8_t **aDataBl
         }
     }
 
-    (*pLength) = fread(blockBuf->Start(), 1, MaxBlockSize, SrcFile);
-    (*aDataBlock) = blockBuf->Start();
-    (*isLastBlock) = (*pLength < MaxBlockSize)?true:false;
-    printf("handle get block, length=%llu\n", (unsigned long long)*pLength);
+    (*pLength)     = fread(blockBuf->Start(), 1, MaxBlockSize, SrcFile);
+    (*aDataBlock)  = blockBuf->Start();
+    (*isLastBlock) = (*pLength < MaxBlockSize) ? true : false;
+    printf("handle get block, length=%llu\n", (unsigned long long) *pLength);
 }
 
-static void handleSendAccept(void *aAppState, SendAccept *aSendAcceptMsg)
+static void handleSendAccept(void * aAppState, SendAccept * aSendAcceptMsg)
 {
-  printf("received send accept message\n");
+    printf("received send accept message\n");
 }
 
 static void OpenDestFile()
@@ -392,7 +373,7 @@ static void OpenDestFile()
     }
     else
     {
-        filename++; //skip over '/'
+        filename++; // skip over '/'
     }
 
     char fileDesignator[strlen(filename) + strlen(ReceivedFileLocation) + 2];
@@ -412,7 +393,7 @@ static void OpenDestFile()
     DestFile = fopen(fileDesignator, "w");
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -437,12 +418,8 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'r':
-        RequestedFileName = arg;
-        break;
-    case 'R':
-        ReceivedFileLocation = arg;
-        break;
+    case 'r': RequestedFileName = arg; break;
+    case 'R': ReceivedFileLocation = arg; break;
     case 'b':
         if (!ParseInt(arg, MaxBlockSize))
         {
@@ -450,21 +427,15 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'p':
-        Upload = true;
-        break;
-    case 'T':
-        Pretest = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'p': Upload = true; break;
+    case 'T': Pretest = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc < 1)
     {
@@ -478,14 +449,14 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    const char *nodeId = argv[0];
-    char *p = (char *)strchr(nodeId, '@');
+    const char * nodeId = argv[0];
+    char * p            = (char *) strchr(nodeId, '@');
     if (p != NULL)
     {
         *p = 0;
-        if (!ParseIPAddress(p+1, DestAddr))
+        if (!ParseIPAddress(p + 1, DestAddr))
         {
-            PrintArgError("%s: Invalid value specified for destination IP address: %s\n", progName, p+1);
+            PrintArgError("%s: Invalid value specified for destination IP address: %s\n", progName, p + 1);
             return false;
         }
     }
@@ -499,10 +470,10 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
-    WeaveBdxClient *client = static_cast<WeaveBdxClient *>(con->AppState);
+    WeaveBdxClient * client = static_cast<WeaveBdxClient *>(con->AppState);
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
     WEAVE_ERROR err;
 
@@ -510,17 +481,16 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     {
         printf("Connection established to node %" PRIX64 " (%s)\n", con->PeerNodeId, ipAddrStr);
 
-        if (Upload) {
-            client->initBdxSend(true, false, false,
-                                &handleSendAccept, &handleReject,
-                                &handleGetBlock, &handleXferError,
+        if (Upload)
+        {
+            client->initBdxSend(true, false, false, &handleSendAccept, &handleReject, &handleGetBlock, &handleXferError,
                                 &handleDone, &handleError);
         }
-        else {
+        else
+        {
             OpenDestFile();
-            client->initBdxReceive(true, &handleReceiveAccept, &handleReject,
-                               &handlePutBlock, &handleXferError,
-                               &handleDone, &handleError);
+            client->initBdxReceive(true, &handleReceiveAccept, &handleReject, &handlePutBlock, &handleXferError, &handleDone,
+                                   &handleError);
         }
         err = SystemLayer.StartTimer(TransferTimeout, HandleTransferTimeout, client);
         if (err != WEAVE_NO_ERROR)
@@ -552,7 +522,7 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     }
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -574,32 +544,37 @@ void PreTest()
     BlockQuery blockQuery;
     BlockSend blockSend;
 
-    if (!(sendInit == sendInit)) {
-        printf("SendAccept::operator== failed\n");
+    if (!(sendInit == sendInit))
+    {
+        printf("SendAccept::operator == failed\n");
         exit(EXIT_FAILURE);
     }
     printf("the default length of SendInit is %d\n", sendInit.packedLength());
 
-    if (!(sendAccept == sendAccept)) {
-        printf("SendAccept::operator== failed\n");
+    if (!(sendAccept == sendAccept))
+    {
+        printf("SendAccept::operator == failed\n");
         exit(EXIT_FAILURE);
     }
     printf("the default length of SendAccept is %d\n", sendAccept.packedLength());
 
-    if (!(receiveAccept == receiveAccept)) {
-        printf("ReceiveAccept::operator== failed\n");
+    if (!(receiveAccept == receiveAccept))
+    {
+        printf("ReceiveAccept::operator == failed\n");
         exit(EXIT_FAILURE);
     }
     printf("the default length of ReceiveAccept is %d\n", receiveAccept.packedLength());
 
-    if (!(blockQuery == blockQuery)) {
-        printf("BlockQuery::operator== failed\n");
+    if (!(blockQuery == blockQuery))
+    {
+        printf("BlockQuery::operator == failed\n");
         exit(EXIT_FAILURE);
     }
     printf("the default length of BlockQuery is %d\n", blockQuery.packedLength());
 
-    if (!(blockSend == blockSend)) {
-        printf("BlockSend::operator== failed\n");
+    if (!(blockSend == blockSend))
+    {
+        printf("BlockSend::operator == failed\n");
         exit(EXIT_FAILURE);
     }
     printf("the default length of BlockSend is %d\n", blockSend.packedLength());

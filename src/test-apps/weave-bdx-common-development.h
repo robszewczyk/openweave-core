@@ -44,9 +44,9 @@ namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesigna
 // This object is attached to a BDXTransfer via its mAppState member.
 struct BdxAppState
 {
-    FILE *mFile;
+    FILE * mFile;
     bool mDone;
-    uint8_t *mBuffer; // buffer to store read blocks
+    uint8_t * mBuffer; // buffer to store read blocks
 };
 
 // Returns a reference to a static BdxAppState so that handlers can grab one
@@ -55,35 +55,32 @@ struct BdxAppState
 BdxAppState * NewAppState();
 void ResetAppStates();
 
-void SetReceivedFileLocation(const char *path);
-void SetTempLocation(const char *path);
+void SetReceivedFileLocation(const char * path);
+void SetTempLocation(const char * path);
 
 // Helper functions
-size_t WriteData(void *aPtr, size_t aSize, size_t aNmemb, FILE *aStream);
-size_t ReadData(char *aPtr, size_t aSize, size_t aNemb, FILE *aStream);
+size_t WriteData(void * aPtr, size_t aSize, size_t aNmemb, FILE * aStream);
+size_t ReadData(char * aPtr, size_t aSize, size_t aNemb, FILE * aStream);
 /** This function curls the given file (so it must be a URI, use file:// for local files),
  * saves it in TempFileLocation, modifies aFileDesignator to point to the newly saved
  * copy, and returns a status code indicating whether the curl was successful. */
-int DownloadFile(char *aFileDesignator, size_t aFileDesignatorBufferSize);
+int DownloadFile(char * aFileDesignator, size_t aFileDesignatorBufferSize);
 
 // Application-defined callbacks passed to the BDX server for use in the protocol
-uint16_t BdxSendInitHandler(BDXTransfer *aXfer, SendInit *aSendInitMsg);
-uint16_t BdxReceiveInitHandler(BDXTransfer *aXfer, ReceiveInit *aReceiveInit);
-WEAVE_ERROR BdxSendAcceptHandler(BDXTransfer *aXfer, SendAccept *aSendAcceptMsg);
-WEAVE_ERROR BdxReceiveAcceptHandler(BDXTransfer *aXfer, ReceiveAccept *aReceiveAcceptMsg);
-void BdxRejectHandler(BDXTransfer *aXfer, StatusReport *aReport);
-void BdxGetBlockHandler(BDXTransfer *aXfer,
-                        uint64_t *aLength,
-                        uint8_t **aDataBlock,
-                        bool *aIsLastBlock);
-void BdxPutBlockHandler(BDXTransfer *aXfer, uint64_t aLength, uint8_t *aDataBlock, bool aIsLastBlock);
-void BdxXferErrorHandler(BDXTransfer *aXfer, StatusReport *aXferError);
-void BdxXferDoneHandler(BDXTransfer *aXfer);
-void BdxErrorHandler(BDXTransfer *aXfer, WEAVE_ERROR aErrorCode);
+uint16_t BdxSendInitHandler(BDXTransfer * aXfer, SendInit * aSendInitMsg);
+uint16_t BdxReceiveInitHandler(BDXTransfer * aXfer, ReceiveInit * aReceiveInit);
+WEAVE_ERROR BdxSendAcceptHandler(BDXTransfer * aXfer, SendAccept * aSendAcceptMsg);
+WEAVE_ERROR BdxReceiveAcceptHandler(BDXTransfer * aXfer, ReceiveAccept * aReceiveAcceptMsg);
+void BdxRejectHandler(BDXTransfer * aXfer, StatusReport * aReport);
+void BdxGetBlockHandler(BDXTransfer * aXfer, uint64_t * aLength, uint8_t ** aDataBlock, bool * aIsLastBlock);
+void BdxPutBlockHandler(BDXTransfer * aXfer, uint64_t aLength, uint8_t * aDataBlock, bool aIsLastBlock);
+void BdxXferErrorHandler(BDXTransfer * aXfer, StatusReport * aXferError);
+void BdxXferDoneHandler(BDXTransfer * aXfer);
+void BdxErrorHandler(BDXTransfer * aXfer, WEAVE_ERROR aErrorCode);
 
-//namespaces
-}
-}
-}
-}
+// namespaces
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 #endif //_WEAVE_BDX_COMMON_H_

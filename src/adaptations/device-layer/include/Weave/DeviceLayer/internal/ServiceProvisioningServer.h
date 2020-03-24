@@ -33,9 +33,9 @@ namespace Profiles {
 namespace StatusReporting {
 class StatusReport;
 }
-}
-}
-}
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 namespace nl {
 namespace Weave {
@@ -45,14 +45,12 @@ namespace Internal {
 /**
  * Implements the Weave Service Provisioning profile for a Weave device.
  */
-class ServiceProvisioningServer final
-    : public ::nl::Weave::Profiles::ServiceProvisioning::ServiceProvisioningServer,
-      public ::nl::Weave::Profiles::ServiceProvisioning::ServiceProvisioningDelegate
+class ServiceProvisioningServer final : public ::nl::Weave::Profiles::ServiceProvisioning::ServiceProvisioningServer,
+                                        public ::nl::Weave::Profiles::ServiceProvisioning::ServiceProvisioningDelegate
 {
     using ServerBaseClass = ::nl::Weave::Profiles::ServiceProvisioning::ServiceProvisioningServer;
 
 public:
-
     // ===== Members for internal use by other Device Layer components.
 
     WEAVE_ERROR Init(void);
@@ -60,8 +58,9 @@ public:
 
     // ===== Members that override virtual methods on ServiceProvisioningDelegate
 
-    WEAVE_ERROR HandleRegisterServicePairAccount(::nl::Weave::Profiles::ServiceProvisioning::RegisterServicePairAccountMessage& msg) override;
-    WEAVE_ERROR HandleUpdateService(::nl::Weave::Profiles::ServiceProvisioning::UpdateServiceMessage& msg) override;
+    WEAVE_ERROR
+    HandleRegisterServicePairAccount(::nl::Weave::Profiles::ServiceProvisioning::RegisterServicePairAccountMessage & msg) override;
+    WEAVE_ERROR HandleUpdateService(::nl::Weave::Profiles::ServiceProvisioning::UpdateServiceMessage & msg) override;
     WEAVE_ERROR HandleUnregisterService(uint64_t serviceId) override;
     void HandlePairDeviceToAccountResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId, uint16_t serverStatusCode) override;
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
@@ -73,7 +72,6 @@ public:
     bool IsPairedToAccount(void) const override;
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend ServiceProvisioningServer & ServiceProvisioningSvr(void);
@@ -89,20 +87,21 @@ private:
     void SendPairDeviceToAccountRequest(void);
 
     static void AsyncStartPairDeviceToAccount(intptr_t arg);
-    static void HandleServiceConnectivityTimeout(::nl::Weave::System::Layer * layer, void * appState, ::nl::Weave::System::Error err);
+    static void HandleServiceConnectivityTimeout(::nl::Weave::System::Layer * layer, void * appState,
+                                                 ::nl::Weave::System::Error err);
     static void HandleProvServiceBindingEvent(void * appState, nl::Weave::Binding::EventType eventType,
-            const nl::Weave::Binding::InEventParam & inParam, nl::Weave::Binding::OutEventParam & outParam);
+                                              const nl::Weave::Binding::InEventParam & inParam,
+                                              nl::Weave::Binding::OutEventParam & outParam);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    ServiceProvisioningServer() = default;
+    ServiceProvisioningServer()  = default;
     ~ServiceProvisioningServer() = default;
 
     // No copy, move or assignment.
-    ServiceProvisioningServer(const ServiceProvisioningServer &) = delete;
+    ServiceProvisioningServer(const ServiceProvisioningServer &)  = delete;
     ServiceProvisioningServer(const ServiceProvisioningServer &&) = delete;
-    ServiceProvisioningServer & operator=(const ServiceProvisioningServer &) = delete;
+    ServiceProvisioningServer & operator =(const ServiceProvisioningServer &) = delete;
 };
 
 inline ServiceProvisioningServer & ServiceProvisioningSvr()

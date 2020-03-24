@@ -47,20 +47,20 @@ enum OperatingMode
 struct MockTimeSync
 {
 
-// Set the role this mock device shall be playing
-// this function is called at the cmd line argument parsing stage of mock-device
-static WEAVE_ERROR SetRole(const MockTimeSyncRole role);
+    // Set the role this mock device shall be playing
+    // this function is called at the cmd line argument parsing stage of mock-device
+    static WEAVE_ERROR SetRole(const MockTimeSyncRole role);
 
-// Set the Time sync mode
-// this function is called at the cmd line argument parsing stage of mock-device
-static WEAVE_ERROR SetMode(const OperatingMode mode);
+    // Set the Time sync mode
+    // this function is called at the cmd line argument parsing stage of mock-device
+    static WEAVE_ERROR SetMode(const OperatingMode mode);
 
-// Initialize this mock device for Time Services, according to the role that was set earlier
-static WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * const exchangeMgr, uint64_t serviceNodeId, const char * serviceNodeAddr);
+    // Initialize this mock device for Time Services, according to the role that was set earlier
+    static WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * const exchangeMgr, uint64_t serviceNodeId,
+                            const char * serviceNodeAddr);
 
-// Shutdown this mock device for Time Services, according to the role that was set earlier
-static WEAVE_ERROR Shutdown();
-
+    // Shutdown this mock device for Time Services, according to the role that was set earlier
+    static WEAVE_ERROR Shutdown();
 };
 
 #endif /* MOCKTIMESYNCUTIL_H_ */

@@ -32,7 +32,6 @@
 
 #include <nest/test/trait/TestCommon.h>
 
-
 namespace Schema {
 namespace Nest {
 namespace Test {
@@ -41,8 +40,9 @@ namespace TestETrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0xfe06U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0xfe06U
 };
 
 //
@@ -56,12 +56,12 @@ struct StructE
     int32_t seC;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct StructE_array {
+struct StructE_array
+{
     uint32_t num;
-    StructE *buf;
+    StructE * buf;
 };
 
 struct NullableE
@@ -78,15 +78,15 @@ struct NullableE
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsNeBPresent(void);
 #endif
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct NullableE_array {
+struct NullableE_array
+{
     uint32_t num;
-    NullableE *buf;
+    NullableE * buf;
 };
 
 inline void NullableE::SetNeANull(void)
@@ -133,7 +133,7 @@ struct TestEEvent
     Schema::Nest::Test::Trait::TestETrait::StructE teE;
     int32_t teF;
     Schema::Nest::Test::Trait::TestCommon::CommonStructE teG;
-    nl::SerializedFieldTypeUInt32_array  teH;
+    nl::SerializedFieldTypeUInt32_array teH;
     Schema::Nest::Test::Trait::TestCommon::CommonStructE_array teI;
     int16_t teJ;
     void SetTeJNull(void);
@@ -171,22 +171,24 @@ struct TestEEvent
     bool IsTeSPresent(void);
 #endif
     uint32_t teT;
-    uint8_t __nullified_fields__[5/8 + 1];
+    uint8_t __nullified_fields__[5 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0xfe06U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0xfe06U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TestEEvent_array {
+struct TestEEvent_array
+{
     uint32_t num;
-    TestEEvent *buf;
+    TestEEvent * buf;
 };
 
 inline void TestEEvent::SetTeJNull(void)
@@ -332,22 +334,24 @@ struct TestENullableEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsNeJPresent(void);
 #endif
-    uint8_t __nullified_fields__[10/8 + 1];
+    uint8_t __nullified_fields__[10 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0xfe06U,
-        kEventTypeId = 0x2U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0xfe06U,
+        kEventTypeId    = 0x2U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TestENullableEvent_array {
+struct TestENullableEvent_array
+{
     uint32_t num;
-    TestENullableEvent *buf;
+    TestENullableEvent * buf;
 };
 
 inline void TestENullableEvent::SetNeANull(void)
@@ -517,25 +521,27 @@ struct TestEEmptyEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0xfe06U,
-        kEventTypeId = 0x3U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0xfe06U,
+        kEventTypeId    = 0x3U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TestEEmptyEvent_array {
+struct TestEEmptyEvent_array
+{
     uint32_t num;
-    TestEEmptyEvent *buf;
+    TestEEmptyEvent * buf;
 };
-
 
 //
 // Enums
 //
 
-enum EnumE {
+enum EnumE
+{
     ENUM_E_VALUE_1 = 1,
     ENUM_E_VALUE_2 = 2,
     ENUM_E_VALUE_3 = 3,

@@ -30,14 +30,15 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
-enum DayOfWeek {
-    DAY_OF_WEEK_SUNDAY = 1,
-    DAY_OF_WEEK_MONDAY = 2,
-    DAY_OF_WEEK_TUESDAY = 4,
+enum DayOfWeek
+{
+    DAY_OF_WEEK_SUNDAY    = 1,
+    DAY_OF_WEEK_MONDAY    = 2,
+    DAY_OF_WEEK_TUESDAY   = 4,
     DAY_OF_WEEK_WEDNESDAY = 8,
-    DAY_OF_WEEK_THURSDAY = 16,
-    DAY_OF_WEEK_FRIDAY = 32,
-    DAY_OF_WEEK_SATURDAY = 64,
+    DAY_OF_WEEK_THURSDAY  = 16,
+    DAY_OF_WEEK_FRIDAY    = 32,
+    DAY_OF_WEEK_SATURDAY  = 64,
 };
 
 } // namespace Common

@@ -39,48 +39,45 @@ using namespace nl::Weave::Profiles::Vendor::Nestlabs::Thermostat;
 
 // Test input data.
 
-static InFieldJoiningStatus sContext[] = {
-    kStatus_InFieldJoining_Unknown,
-    kStatus_InFieldJoining_Succeeded,
-    kStatus_InFieldJoining_CannotLocateAssistingDevice,
-    kStatus_InFieldJoining_CannotConnectAssistingDevice,
-    kStatus_InFieldJoining_CannotAuthAssistingDevice,
-    kStatus_InFieldJoining_ConfigExtractionError,
-    kStatus_InFieldJoining_PANFormError,
-    kStatus_InFieldJoining_PANJoinError,
-    kStatus_InFieldJoining_HVACCycleInProgress,
-    kStatus_InFieldJoining_HeatLinkJoinInProgress,
-    kStatus_InFieldJoining_HeatLinkUpdateInProgress,
-    kStatus_InFieldJoining_HeatLinkManualHeatActive,
-    kStatus_InFieldJoining_IncorrectHeatLinkSoftwareVersion,
-    kStatus_InFieldJoining_FailureToFetchAccessToken,
-    kStatus_InFieldJoining_DeviceNotWeaveProvisioned,
-    kStatus_InFieldJoining_HeatLinkResetFailed,
-    kStatus_InFieldJoining_DestroyFabricFailed,
-    kStatus_InFieldJoining_CannotJoinExistingFabric,
-    kStatus_InFieldJoining_CannotCreateFabric,
-    kStatus_InFieldJoining_NetworkReset,
-    kStatus_InFieldJoining_JoiningInProgress,
-    kStatus_InFieldJoining_FailureToMakePanJoinable,
-    kStatus_InFieldJoining_WeaveConnectionTimeoutStillActive,
-    kStatus_InFieldJoining_HeatLinkNotJoined,
-    kStatus_InFieldJoining_HeatLinkNotInContact,
-    kStatus_InFieldJoining_WiFiTechNotEnabled,
-    kStatus_InFieldJoining_15_4_TechNotEnabled,
-    kStatus_InFieldJoining_StandaloneFabricCreationInProgress,
-    kStatus_InFieldJoining_NotConnectedToPower,
-    kStatus_InFieldJoining_OperationNotPermitted,
-    kStatus_InFieldJoining_ServiceTimedOut,
-    kStatus_InFieldJoining_DeviceTimedOut,
-    kStatus_InFieldJoining_InternalError
-};
+static InFieldJoiningStatus sContext[] = { kStatus_InFieldJoining_Unknown,
+                                           kStatus_InFieldJoining_Succeeded,
+                                           kStatus_InFieldJoining_CannotLocateAssistingDevice,
+                                           kStatus_InFieldJoining_CannotConnectAssistingDevice,
+                                           kStatus_InFieldJoining_CannotAuthAssistingDevice,
+                                           kStatus_InFieldJoining_ConfigExtractionError,
+                                           kStatus_InFieldJoining_PANFormError,
+                                           kStatus_InFieldJoining_PANJoinError,
+                                           kStatus_InFieldJoining_HVACCycleInProgress,
+                                           kStatus_InFieldJoining_HeatLinkJoinInProgress,
+                                           kStatus_InFieldJoining_HeatLinkUpdateInProgress,
+                                           kStatus_InFieldJoining_HeatLinkManualHeatActive,
+                                           kStatus_InFieldJoining_IncorrectHeatLinkSoftwareVersion,
+                                           kStatus_InFieldJoining_FailureToFetchAccessToken,
+                                           kStatus_InFieldJoining_DeviceNotWeaveProvisioned,
+                                           kStatus_InFieldJoining_HeatLinkResetFailed,
+                                           kStatus_InFieldJoining_DestroyFabricFailed,
+                                           kStatus_InFieldJoining_CannotJoinExistingFabric,
+                                           kStatus_InFieldJoining_CannotCreateFabric,
+                                           kStatus_InFieldJoining_NetworkReset,
+                                           kStatus_InFieldJoining_JoiningInProgress,
+                                           kStatus_InFieldJoining_FailureToMakePanJoinable,
+                                           kStatus_InFieldJoining_WeaveConnectionTimeoutStillActive,
+                                           kStatus_InFieldJoining_HeatLinkNotJoined,
+                                           kStatus_InFieldJoining_HeatLinkNotInContact,
+                                           kStatus_InFieldJoining_WiFiTechNotEnabled,
+                                           kStatus_InFieldJoining_15_4_TechNotEnabled,
+                                           kStatus_InFieldJoining_StandaloneFabricCreationInProgress,
+                                           kStatus_InFieldJoining_NotConnectedToPower,
+                                           kStatus_InFieldJoining_OperationNotPermitted,
+                                           kStatus_InFieldJoining_ServiceTimedOut,
+                                           kStatus_InFieldJoining_DeviceTimedOut,
+                                           kStatus_InFieldJoining_InternalError };
 
 static const size_t kTestElements = sizeof(sContext) / sizeof(sContext[0]);
 
-
 // Test Suite
 
-static void CheckStatus(nlTestSuite *inSuite, void *inContext)
+static void CheckStatus(nlTestSuite * inSuite, void * inContext)
 {
     char statusStr[50];
 
@@ -96,17 +93,14 @@ static void CheckStatus(nlTestSuite *inSuite, void *inContext)
 /**
  *   Test Suite. It lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("Thermostat::Status",             CheckStatus),
-    NL_TEST_SENTINEL()
-};
+static const nlTest sTests[] = { NL_TEST_DEF("Thermostat::Status", CheckStatus), NL_TEST_SENTINEL() };
 
 /**
  *  Set up the test suite.
  *  This is a work-around to initiate InetBuffer protected class instance's
  *  data and set it to a known state, before an instance is created.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     return (SUCCESS);
 }
@@ -115,19 +109,14 @@ static int TestSetup(void *inContext)
  *  Tear down the test suite.
  *  Free memory reserved at TestSetup.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     return (SUCCESS);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-    nlTestSuite theSuite = {
-        "thermostat-status",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "thermostat-status", &sTests[0], TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);

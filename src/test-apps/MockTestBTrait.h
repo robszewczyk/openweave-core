@@ -39,9 +39,13 @@ public:
     void SetPresentPath(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, bool isPresent);
 
 private:
-    WEAVE_ERROR GetData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter, bool &aIsNull, bool &aIsPresent) __OVERRIDE;
-    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, nl::Weave::Profiles::DataManagement::PropertyDictionaryKey &aKey) __OVERRIDE;
-    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, nl::Weave::TLV::TLVWriter &aWriter) __OVERRIDE;
+    WEAVE_ERROR GetData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, uint64_t aTagToWrite,
+                        nl::Weave::TLV::TLVWriter & aWriter, bool & aIsNull, bool & aIsPresent) __OVERRIDE;
+    WEAVE_ERROR GetNextDictionaryItemKey(nl::Weave::Profiles::DataManagement::PropertyPathHandle aDictionaryHandle,
+                                         uintptr_t & aContext,
+                                         nl::Weave::Profiles::DataManagement::PropertyDictionaryKey & aKey) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
+                            nl::Weave::TLV::TLVWriter & aWriter) __OVERRIDE;
 
     Schema::Nest::Test::Trait::TestATrait::EnumA taa;
     Schema::Nest::Test::Trait::TestCommon::CommonEnumA tab;
@@ -52,7 +56,7 @@ private:
     uint32_t tae[10];
 
     // weave.common.StringRef is implemented as a union
-    const char *tag_string = "stringreftest";
+    const char * tag_string = "stringreftest";
     uint16_t tag_ref;
     bool tag_use_ref;
 
@@ -64,15 +68,15 @@ private:
 
     uint32_t tao;
 
-    int64_t tap; // milliseconds
-    int64_t taq; // milliseconds
+    int64_t tap;  // milliseconds
+    int64_t taq;  // milliseconds
     uint32_t tar; // seconds
     uint32_t tas; // milliseconds
 
     uint32_t tat;
     int32_t tau;
     bool tav;
-    const char *taw = "boxedstring";
+    const char * taw = "boxedstring";
     // boxed float
     int16_t tax;
 
@@ -80,11 +84,11 @@ private:
     Schema::Nest::Test::Trait::TestBTrait::StructB tbb;
     Schema::Nest::Test::Trait::TestBTrait::StructEA tbc;
 
-    const char *tbb_sba = "testing";
+    const char * tbb_sba = "testing";
     uint32_t tbb_sbb;
     uint32_t tbc_saa;
     bool tbc_sab;
-    const char *tbc_seac = "hallo";
+    const char * tbc_seac = "hallo";
 
     bool nullified_path[Schema::Nest::Test::Trait::TestBTrait::kPropertyHandle_TaJ_Value_SaB];
     bool ephemeral_path[Schema::Nest::Test::Trait::TestBTrait::kPropertyHandle_TaJ_Value_SaB];
@@ -99,8 +103,10 @@ public:
     void Reset(void);
 
 private:
-    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader) __OVERRIDE;
-    WEAVE_ERROR SetData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, nl::Weave::TLV::TLVReader &aReader, bool aIsNull) __OVERRIDE;
+    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle,
+                            nl::Weave::TLV::TLVReader & aReader) __OVERRIDE;
+    WEAVE_ERROR SetData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, nl::Weave::TLV::TLVReader & aReader,
+                        bool aIsNull) __OVERRIDE;
     void SetDataCalled(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle);
     void SetPathHandleNull(nl::Weave::Profiles::DataManagement::PropertyPathHandle aHandle, bool aIsNull);
 

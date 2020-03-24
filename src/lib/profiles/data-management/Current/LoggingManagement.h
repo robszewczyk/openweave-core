@@ -159,8 +159,8 @@ class LogBDXUpload;
 
 struct LogStorageResources
 {
-    void * mBuffer;     ///< Buffer to be used as a storage at the particular importance level and shared with more important events.
-                        ///< Must not be NULL.  Must be large enough to accommodate the largest event emitted by the system.
+    void * mBuffer; ///< Buffer to be used as a storage at the particular importance level and shared with more important events.
+                    ///< Must not be NULL.  Must be large enough to accommodate the largest event emitted by the system.
     size_t mBufferSize; ///< The size, in bytes, of the `mBuffer`.
     nl::Weave::Platform::PersistedStorage::Key *
         mCounterKey;        ///< Name of the key naming persistent counter for events of this importance.  When NULL, the persistent
@@ -183,12 +183,14 @@ class LoggingManagement
     friend class LogBDXUpload;
 
 public:
-    LoggingManagement(nl::Weave::WeaveExchangeManager * inMgr, size_t inNumBuffers, const LogStorageResources * const inLogStorageResources);
+    LoggingManagement(nl::Weave::WeaveExchangeManager * inMgr, size_t inNumBuffers,
+                      const LogStorageResources * const inLogStorageResources);
     LoggingManagement(void);
 
     static LoggingManagement & GetInstance(void);
 
-    static void CreateLoggingManagement(nl::Weave::WeaveExchangeManager * inMgr, size_t inNumBuffers, const LogStorageResources * const inLogStorageResources);
+    static void CreateLoggingManagement(nl::Weave::WeaveExchangeManager * inMgr, size_t inNumBuffers,
+                                        const LogStorageResources * const inLogStorageResources);
 
     static void DestroyLoggingManagement(void);
 

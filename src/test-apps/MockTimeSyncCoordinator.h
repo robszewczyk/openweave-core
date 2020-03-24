@@ -29,9 +29,9 @@ class MockTimeSyncCoordinator
 public:
     MockTimeSyncCoordinator();
 
-    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *exchangeMgr, const uint8_t encryptionType =
-        nl::Weave::kWeaveEncryptionType_None,
-        const uint16_t keyId = nl::Weave::WeaveKeyId::kNone);
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * exchangeMgr,
+                     const uint8_t encryptionType = nl::Weave::kWeaveEncryptionType_None,
+                     const uint16_t keyId         = nl::Weave::WeaveKeyId::kNone);
 
     WEAVE_ERROR Shutdown(void);
 

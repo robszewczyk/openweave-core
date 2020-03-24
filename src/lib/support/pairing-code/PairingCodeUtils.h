@@ -40,17 +40,17 @@ enum
     kBitsPerCharacter = 5,
 };
 
-extern WEAVE_ERROR VerifyPairingCode(const char *pairingCode, size_t pairingCodeLen);
-extern void NormalizePairingCode(char *pairingCode, size_t& pairingCodeLen);
+extern WEAVE_ERROR VerifyPairingCode(const char * pairingCode, size_t pairingCodeLen);
+extern void NormalizePairingCode(char * pairingCode, size_t & pairingCodeLen);
 
-extern WEAVE_ERROR IntToPairingCode(uint64_t val, uint8_t pairingCodeLen, char *outBuf);
-extern WEAVE_ERROR PairingCodeToInt(const char *pairingCode, size_t pairingCodeLen, uint64_t& val);
+extern WEAVE_ERROR IntToPairingCode(uint64_t val, uint8_t pairingCodeLen, char * outBuf);
+extern WEAVE_ERROR PairingCodeToInt(const char * pairingCode, size_t pairingCodeLen, uint64_t & val);
 
-extern WEAVE_ERROR NevisPairingCodeToDeviceId(const char *pairingCode, uint64_t& deviceId);
-extern WEAVE_ERROR NevisDeviceIdToPairingCode(uint64_t deviceId, char *pairingCodeBuf, size_t pairingCodeBufSize);
+extern WEAVE_ERROR NevisPairingCodeToDeviceId(const char * pairingCode, uint64_t & deviceId);
+extern WEAVE_ERROR NevisDeviceIdToPairingCode(uint64_t deviceId, char * pairingCodeBuf, size_t pairingCodeBufSize);
 
-extern WEAVE_ERROR KryptonitePairingCodeToDeviceId(const char *pairingCode, uint64_t& deviceId);
-extern WEAVE_ERROR KryptoniteDeviceIdToPairingCode(uint64_t deviceId, char *pairingCodeBuf, size_t pairingCodeBufSize);
+extern WEAVE_ERROR KryptonitePairingCodeToDeviceId(const char * pairingCode, uint64_t & deviceId);
+extern WEAVE_ERROR KryptoniteDeviceIdToPairingCode(uint64_t deviceId, char * pairingCodeBuf, size_t pairingCodeBufSize);
 
 extern bool IsValidPairingCodeChar(char ch);
 extern int PairingCodeCharToInt(char ch);

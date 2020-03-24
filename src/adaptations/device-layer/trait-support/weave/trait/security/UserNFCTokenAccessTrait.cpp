@@ -39,68 +39,56 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 // Property Table
 //
 
-const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-};
+const TraitSchemaEngine::PropertyInfo PropertyMap[] = { };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor UserNFCTokenAccessEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(UserNFCTokenAccessEvent, result), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1
-    },
+const nl::FieldDescriptor UserNFCTokenAccessEventFieldDescriptors[] = {
+    { NULL, offsetof(UserNFCTokenAccessEvent, result), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1 },
 
-    {
-        NULL, offsetof(UserNFCTokenAccessEvent, tokenId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 2
-    },
+    { NULL, offsetof(UserNFCTokenAccessEvent, tokenId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 2 },
 
-    {
-        NULL, offsetof(UserNFCTokenAccessEvent, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 1), 3
-    },
+    { NULL, offsetof(UserNFCTokenAccessEvent, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 1), 3 },
 
 };
 
-const nl::SchemaFieldDescriptor UserNFCTokenAccessEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(UserNFCTokenAccessEventFieldDescriptors)/sizeof(UserNFCTokenAccessEventFieldDescriptors[0]),
-    .mFields = UserNFCTokenAccessEventFieldDescriptors,
-    .mSize = sizeof(UserNFCTokenAccessEvent)
-};
-const nl::Weave::Profiles::DataManagement::EventSchema UserNFCTokenAccessEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
-    .mDataSchemaVersion = 1,
+const nl::SchemaFieldDescriptor UserNFCTokenAccessEvent::FieldSchema                   = { .mNumFieldDescriptorElements =
+                                                                             sizeof(UserNFCTokenAccessEventFieldDescriptors) /
+                                                                             sizeof(UserNFCTokenAccessEventFieldDescriptors[0]),
+                                                                         .mFields = UserNFCTokenAccessEventFieldDescriptors,
+                                                                         .mSize   = sizeof(UserNFCTokenAccessEvent) };
+const nl::Weave::Profiles::DataManagement::EventSchema UserNFCTokenAccessEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::Production,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

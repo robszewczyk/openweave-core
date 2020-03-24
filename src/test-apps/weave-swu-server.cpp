@@ -39,14 +39,16 @@ using namespace nl::Inet;
 
 #define TOOL_NAME "weave-swu-server"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool ParseStringToUint8_List(char const *aString, char const *aDelim, uint8_t *aList, uint8_t *aListSize);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
-static void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
-static void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
-static void GenerateReferenceImageQuery(ImageQuery *aImageQuery);
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool ParseStringToUint8_List(char const * aString, char const * aDelim, uint8_t * aList, uint8_t * aListSize);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
+static void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                           uint64_t peerNodeId, uint8_t encType);
+static void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                     uint64_t peerNodeId, StatusReport * statusReport);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
+static void GenerateReferenceImageQuery(ImageQuery * aImageQuery);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
 static void StartServerConnection();
 
 MockSoftwareUpdateServer MockSWUServer;
@@ -54,17 +56,17 @@ MockSoftwareUpdateServer MockSWUServer;
 uint16_t ProductId              = 1;
 uint16_t ProductRev             = 1;
 uint16_t VendorId               = kWeaveVendor_NestLabs;
-const char *gSoftwareVersion            = "1";
-const char *gUpdateSchemeList   = "3";
-const char *gIntegrityTypeList  = "0";
-const char *gFileDesignator     = NULL;
+const char * gSoftwareVersion   = "1";
+const char * gUpdateSchemeList  = "3";
+const char * gIntegrityTypeList = "0";
+const char * gFileDesignator    = NULL;
 bool gListening                 = false;
-const char *gDestAddrStr        = NULL;
-const char *gDestNodeIdStr      = NULL;
+const char * gDestAddrStr       = NULL;
+const char * gDestNodeIdStr     = NULL;
 IPAddress gDestIPAddr;
-WeaveConnection *Con            = NULL;
-static uint64_t gDestNodeId     = 1;
-bool gUseTCP                     = true;
+WeaveConnection * Con       = NULL;
+static uint64_t gDestNodeId = 1;
+bool gUseTCP                = true;
 
 enum
 {
@@ -82,24 +84,21 @@ enum
     kToolOpt_UseUDP
 };
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "sw-version",      kArgumentRequired, kToolOpt_SoftwareVersion  },
-    { "product-id",      kArgumentRequired, kToolOpt_ProductId        },
-    { "product-rev",     kArgumentRequired, kToolOpt_ProductRev       },
-    { "vendor-id",       kArgumentRequired, kToolOpt_VendorId         },
-    { "integrity-type",  kArgumentRequired, kToolOpt_IntegrityType    },
-    { "update-scheme",   kArgumentRequired, kToolOpt_UpdateScheme     },
-    { "file-designator", kArgumentRequired, kToolOpt_FileDesignator   },
-    { "listen",          kNoArgument,       kToolOpt_Listen           },
-    { "dest-addr",       kArgumentRequired, kToolOpt_DestAddr         },
-    { "dest-node-id",    kArgumentRequired, kToolOpt_DestNodeId       },
-    { "tcp",             kNoArgument,       kToolOpt_UseTCP           },
-    { "udp",             kNoArgument,       kToolOpt_UseUDP           },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "sw-version", kArgumentRequired, kToolOpt_SoftwareVersion },
+                                       { "product-id", kArgumentRequired, kToolOpt_ProductId },
+                                       { "product-rev", kArgumentRequired, kToolOpt_ProductRev },
+                                       { "vendor-id", kArgumentRequired, kToolOpt_VendorId },
+                                       { "integrity-type", kArgumentRequired, kToolOpt_IntegrityType },
+                                       { "update-scheme", kArgumentRequired, kToolOpt_UpdateScheme },
+                                       { "file-designator", kArgumentRequired, kToolOpt_FileDesignator },
+                                       { "listen", kNoArgument, kToolOpt_Listen },
+                                       { "dest-addr", kArgumentRequired, kToolOpt_DestAddr },
+                                       { "dest-node-id", kArgumentRequired, kToolOpt_DestNodeId },
+                                       { "tcp", kNoArgument, kToolOpt_UseTCP },
+                                       { "udp", kNoArgument, kToolOpt_UseUDP },
+                                       { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     " The following arguments are required : \n"
     "\n"
     " --vendor-id <num>\n"
@@ -132,7 +131,7 @@ static const char *gToolOptionHelp =
     "       1 -> HTTPS\n"
     "       2 -> SFTP\n"
     "       3 -> BDX Nest Weave download protocol\n"
-     "\n"
+    "\n"
     " --file-designator <string>\n"
     "       Path to the image file that is returned to the query\n"
     "       when an update is available. The path must be valid.\n"
@@ -157,37 +156,18 @@ static const char *gToolOptionHelp =
     "       Send an Image Announce notification to a specific node id."
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " <options...>\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " <options...>\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case kToolOpt_SoftwareVersion:
-        gSoftwareVersion = arg;
-        break;
+    case kToolOpt_SoftwareVersion: gSoftwareVersion = arg; break;
     case kToolOpt_ProductId:
         if (!ParseInt(arg, ProductId))
         {
@@ -209,27 +189,13 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case kToolOpt_IntegrityType:
-        gIntegrityTypeList = arg;
-        break;
-    case kToolOpt_UpdateScheme:
-        gUpdateSchemeList = arg;
-        break;
-    case kToolOpt_FileDesignator:
-        gFileDesignator = arg;
-        break;
-    case kToolOpt_UseTCP:
-        gUseTCP = true;
-        break;
-    case kToolOpt_UseUDP:
-        gUseTCP = false;
-        break;
-    case kToolOpt_Listen:
-        gListening = true;
-        break;
-    case kToolOpt_DestAddr:
-        gDestAddrStr = arg;
-        break;
+    case kToolOpt_IntegrityType: gIntegrityTypeList = arg; break;
+    case kToolOpt_UpdateScheme: gUpdateSchemeList = arg; break;
+    case kToolOpt_FileDesignator: gFileDesignator = arg; break;
+    case kToolOpt_UseTCP: gUseTCP = true; break;
+    case kToolOpt_UseUDP: gUseTCP = false; break;
+    case kToolOpt_Listen: gListening = true; break;
+    case kToolOpt_DestAddr: gDestAddrStr = arg; break;
     case kToolOpt_DestNodeId:
         gDestNodeIdStr = arg;
         if (!ParseNodeId(gDestNodeIdStr, gDestNodeId))
@@ -238,33 +204,29 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-void GenerateReferenceImageQuery(ImageQuery *aImageQuery)
+void GenerateReferenceImageQuery(ImageQuery * aImageQuery)
 {
-    ProductSpec productSpec(VendorId,
-                            ProductId,
-                            ProductRev);
+    ProductSpec productSpec(VendorId, ProductId, ProductRev);
 
     ReferencedString versionString;
-    versionString.init((uint8_t)strlen(gSoftwareVersion), (char *)gSoftwareVersion);
+    versionString.init((uint8_t) strlen(gSoftwareVersion), (char *) gSoftwareVersion);
 
     IntegrityTypeList aTypeList;
-    if (!ParseStringToUint8_List((char const *)gIntegrityTypeList, ",", aTypeList.theList, &aTypeList.theLength))
+    if (!ParseStringToUint8_List((char const *) gIntegrityTypeList, ",", aTypeList.theList, &aTypeList.theLength))
         exit(EXIT_FAILURE);
 
     UpdateSchemeList aSchemeList;
-    if (!ParseStringToUint8_List((char const *)gUpdateSchemeList, ",", aSchemeList.theList, &aSchemeList.theLength))
+    if (!ParseStringToUint8_List((char const *) gUpdateSchemeList, ",", aSchemeList.theList, &aSchemeList.theLength))
         exit(EXIT_FAILURE);
 
-    aImageQuery->init(productSpec, versionString, aTypeList, aSchemeList,
-                    NULL /*package*/, NULL /*locale*/, 0 /*target node id*/, NULL /*metadata*/);
+    aImageQuery->init(productSpec, versionString, aTypeList, aSchemeList, NULL /*package*/, NULL /*locale*/, 0 /*target node id*/,
+                      NULL /*metadata*/);
 }
 
 void StartServerConnection()
@@ -290,10 +252,10 @@ void StartServerConnection()
             return;
         }
         Con->OnConnectionComplete = HandleConnectionComplete;
-        Con->OnConnectionClosed = HandleConnectionClosed;
+        Con->OnConnectionClosed   = HandleConnectionClosed;
         printf("  4 Con: %p\n", Con);
 
-        printf("  5 (DestNodeId: %ld, DestIPAddrStr: %s)\n", (long)gDestNodeId, gDestAddrStr);
+        printf("  5 (DestNodeId: %ld, DestIPAddrStr: %s)\n", (long) gDestNodeId, gDestAddrStr);
         IPAddress::FromString(gDestAddrStr, gDestIPAddr);
         WEAVE_ERROR err = Con->Connect(gDestNodeId, kWeaveAuthMode_Unauthenticated, gDestIPAddr);
         if (err != WEAVE_NO_ERROR)
@@ -313,7 +275,7 @@ void StartServerConnection()
     printf("8 StartClientConnection exiting\n");
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -350,11 +312,11 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
-    SecurityMgr.OnSessionError = HandleSecureSessionError;
+    SecurityMgr.OnSessionError       = HandleSecureSessionError;
 
     printf("\nUsing the following configuration:\n");
     printf("  Vendor Id: %d\n", VendorId);
@@ -410,7 +372,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -424,7 +386,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     WEAVE_ERROR err;
     printf("0 HandleConnectionComplete entering\n");
@@ -467,7 +429,7 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     printf("7 HandleConnectionComplete exiting\n");
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -477,7 +439,8 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     con->OnConnectionClosed = HandleConnectionClosed;
 }
 
-void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
+void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                    uint64_t peerNodeId, uint8_t encType)
 {
     char ipAddrStr[64];
 
@@ -489,7 +452,8 @@ void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *c
     printf("Secure session established with node %" PRIX64 " (%s)\n", peerNodeId, ipAddrStr);
 }
 
-void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport)
+void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                              uint64_t peerNodeId, StatusReport * statusReport)
 {
     char ipAddrStr[64];
 
@@ -502,12 +466,13 @@ void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, vo
         gDestIPAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
-        printf("FAILED to establish secure session with node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr, nl::StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        printf("FAILED to establish secure session with node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr,
+               nl::StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     else
         printf("FAILED to establish secure session with node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr, ErrorStr(localErr));
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -520,21 +485,22 @@ void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
     con->Close();
 }
 
-bool ParseStringToUint8_List(char const *aString, char const *aDelim, uint8_t *aList, uint8_t *aListSize)
+bool ParseStringToUint8_List(char const * aString, char const * aDelim, uint8_t * aList, uint8_t * aListSize)
 {
-    char *token = NULL;
-    int index = 0;
+    char * token = NULL;
+    int index    = 0;
 
     if (aDelim == NULL || aString == NULL || aListSize == 0 || aList == NULL)
         return false;
 
-    char *aDelimitedList = (char *) malloc (strlen(aString) + 1);
+    char * aDelimitedList = (char *) malloc(strlen(aString) + 1);
     strcpy(aDelimitedList, aString);
 
     token = strtok(aDelimitedList, aDelim);
-    while (token != NULL) {
+    while (token != NULL)
+    {
         aList[index] = strtoul(token, NULL, 10);
-        token = strtok(NULL, aDelim);
+        token        = strtok(NULL, aDelim);
         index++;
     }
 

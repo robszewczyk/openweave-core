@@ -27,8 +27,7 @@ namespace Weave {
 namespace DeviceLayer {
 namespace Internal {
 
-template<class ConfigClass>
-void RunConfigUnitTest(void)
+template <class ConfigClass> void RunConfigUnitTest(void)
 {
     WEAVE_ERROR err;
 
@@ -202,7 +201,7 @@ void RunConfigUnitTest(void)
     }
 }
 
-} // namespace internal
+} // namespace Internal
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl

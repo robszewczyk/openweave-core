@@ -34,7 +34,7 @@
 #include <Weave/Core/WeaveWRMPConfig.h>
 #include <SystemLayer/SystemTimer.h>
 
- #define EXCHANGE_CONTEXT_ID(x)     ((x)+1)
+#define EXCHANGE_CONTEXT_ID(x) ((x) + 1)
 
 namespace nl {
 namespace Weave {
@@ -105,9 +105,9 @@ typedef enum WeaveExchangeVersion
  */
 typedef enum WeaveExchangeFlags
 {
-    kWeaveExchangeFlag_Initiator     = 0x1,  /**< Set when current message is sent by the initiator of an exchange */
-    kWeaveExchangeFlag_AckId         = 0x2,  /**< Set when current message is an acknowledgment for a previously received message */
-    kWeaveExchangeFlag_NeedsAck      = 0x4   /**< Set when current message is requesting an acknowledgment from the recipient. */
+    kWeaveExchangeFlag_Initiator = 0x1, /**< Set when current message is sent by the initiator of an exchange */
+    kWeaveExchangeFlag_AckId     = 0x2, /**< Set when current message is an acknowledgment for a previously received message */
+    kWeaveExchangeFlag_NeedsAck  = 0x4  /**< Set when current message is requesting an acknowledgment from the recipient. */
 } WeaveExchangeFlags;
 
 /**
@@ -125,7 +125,6 @@ class NL_DLL_EXPORT ExchangeContext
     friend class WeaveMessageLayer;
 
 public:
-
     // clang-format off
     typedef uint32_t Timeout;                   /**< Type used to express the timeout in this ExchangeContext, in milliseconds */
 
@@ -199,13 +198,16 @@ public:
     void SetUseEphemeralUDPPort(bool val);
 #endif
 
-    WEAVE_ERROR SendMessage(uint32_t profileId, uint8_t msgType, PacketBuffer *msgPayload, uint16_t sendFlags = 0, void *msgCtxt = 0);
-    WEAVE_ERROR SendMessage(uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf, uint16_t sendFlags, WeaveMessageInfo * msgInfo, void *msgCtxt = 0);
+    WEAVE_ERROR SendMessage(uint32_t profileId, uint8_t msgType, PacketBuffer * msgPayload, uint16_t sendFlags = 0,
+                            void * msgCtxt = 0);
+    WEAVE_ERROR SendMessage(uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf, uint16_t sendFlags,
+                            WeaveMessageInfo * msgInfo, void * msgCtxt = 0);
     WEAVE_ERROR SendCommonNullMessage(void);
-    WEAVE_ERROR EncodeExchHeader(WeaveExchangeHeader *exchangeHeader, uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf, uint16_t sendFlags);
+    WEAVE_ERROR EncodeExchHeader(WeaveExchangeHeader * exchangeHeader, uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf,
+                                 uint16_t sendFlags);
     void TeardownTrickleRetransmit(void);
-    WEAVE_ERROR SetupTrickleRetransmit(uint32_t retransInterval=WEAVE_TRICKLE_DEFAULT_PERIOD, uint8_t threshold=WEAVE_TRICKLE_DEFAULT_THRESHOLD, uint32_t timeout=0);
-
+    WEAVE_ERROR SetupTrickleRetransmit(uint32_t retransInterval = WEAVE_TRICKLE_DEFAULT_PERIOD,
+                                       uint8_t threshold = WEAVE_TRICKLE_DEFAULT_THRESHOLD, uint32_t timeout = 0);
 
     /**
      * This function is the application callback for handling a received Weave message.
@@ -222,8 +224,8 @@ public:
      *
      *  @param[in]    payload       A pointer to the PacketBuffer object holding the message payload.
      */
-    typedef void (*MessageReceiveFunct)(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-            uint8_t msgType, PacketBuffer *payload);
+    typedef void (*MessageReceiveFunct)(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
     MessageReceiveFunct OnMessageReceived;
 
     /**
@@ -233,7 +235,7 @@ public:
      *  @param[in]    ec            A pointer to the ExchangeContext object.
      *
      */
-    typedef void (*ResponseTimeoutFunct)(ExchangeContext *ec);
+    typedef void (*ResponseTimeoutFunct)(ExchangeContext * ec);
     ResponseTimeoutFunct OnResponseTimeout;
 
     /**
@@ -243,7 +245,7 @@ public:
      *  @param[in]    ec            A pointer to the ExchangeContext object.
      *
      */
-    typedef void (*RetransmissionTimeoutFunct)(ExchangeContext *ec);
+    typedef void (*RetransmissionTimeoutFunct)(ExchangeContext * ec);
     RetransmissionTimeoutFunct OnRetransmissionTimeout;
 
     /**
@@ -258,7 +260,7 @@ public:
      *                              was closed.
      *
      */
-    typedef void (*ConnectionClosedFunct)(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
+    typedef void (*ConnectionClosedFunct)(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
     ConnectionClosedFunct OnConnectionClosed;
 
     /**
@@ -269,7 +271,7 @@ public:
      *  @param[in]    keyErr        The WEAVE_ERROR type that was reported in the key error message.
      *
      */
-    typedef void (*KeyErrorFunct)(ExchangeContext *ec, WEAVE_ERROR keyErr);
+    typedef void (*KeyErrorFunct)(ExchangeContext * ec, WEAVE_ERROR keyErr);
 
     /**
      * This function is the application callback to invoke when key error message has been received
@@ -278,7 +280,7 @@ public:
     KeyErrorFunct OnKeyError;
 
     void CancelRetrans(void);
-    void HandleTrickleMessage(const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo);
+    void HandleTrickleMessage(const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     WEAVE_ERROR WRMPSendThrottleFlow(uint32_t PauseTimeMillis);
@@ -294,7 +296,7 @@ public:
      *                              the original message being acknowledged.
      *
      */
-    typedef void (*WRMPAckRcvdFunct)(ExchangeContext *ec, void *msgCtxt);
+    typedef void (*WRMPAckRcvdFunct)(ExchangeContext * ec, void * msgCtxt);
 
     /**
      * This function is the application callback to invoke when a Throttle message or Delayed
@@ -307,7 +309,7 @@ public:
      *  @param[in]    pauseTime     Time to pause transmission (in milliseconds).
      *
      */
-    typedef void (*WRMPPauseRcvdFunct)(ExchangeContext *ec, uint32_t pauseTime);
+    typedef void (*WRMPPauseRcvdFunct)(ExchangeContext * ec, uint32_t pauseTime);
 
     /**
      * This function is the application callback to invoke when an error is encountered while
@@ -322,13 +324,13 @@ public:
      *                              the original message being reported on.
      *
      */
-    typedef void (*WRMPSendErrorFunct)(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt);
+    typedef void (*WRMPSendErrorFunct)(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt);
 
-    WRMPPauseRcvdFunct OnThrottleRcvd;            /**< Application callback for received Throttle message. */
-    WRMPPauseRcvdFunct OnDDRcvd;                  /**< Application callback for received Delayed Delivery message. */
-    WRMPSendErrorFunct OnSendError;               /**< Application callback for error while sending. */
-    WRMPAckRcvdFunct   OnAckRcvd;                 /**< Application callback for received acknowledgment. */
-#endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
+    WRMPPauseRcvdFunct OnThrottleRcvd; /**< Application callback for received Throttle message. */
+    WRMPPauseRcvdFunct OnDDRcvd;       /**< Application callback for received Delayed Delivery message. */
+    WRMPSendErrorFunct OnSendError;    /**< Application callback for error while sending. */
+    WRMPAckRcvdFunct OnAckRcvd;        /**< Application callback for received acknowledgment. */
+#endif                                 // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
     /*
      * in order to use reference counting (see refCount below)
@@ -345,47 +347,47 @@ public:
     enum
     {
         kGetPeerDescription_MaxLength = nl::Weave::kWeavePeerDescription_MaxLength,
-                                                             /**< Maximum length of string (including NUL character)
-                                                                  returned by GetPeerDescription(). */
+        /**< Maximum length of string (including NUL character)
+             returned by GetPeerDescription(). */
     };
 
     void GetPeerDescription(char * buf, uint32_t bufSize) const;
 
 private:
-    PacketBuffer *msg;                            // If we are re-transmitting, then this is the pointer to the message being retransmitted
+    PacketBuffer * msg; // If we are re-transmitting, then this is the pointer to the message being retransmitted
     // Trickle-controlled retransmissions:
-    uint32_t backoff;                           // backoff for sampling the numner of messages
+    uint32_t backoff; // backoff for sampling the numner of messages
     uint32_t currentBcastMsgID;
-    uint8_t msgsReceived;                       // number of messages heard during the backoff period
-    uint8_t rebroadcastThreshold;               // re-broadcast threshold
+    uint8_t msgsReceived;         // number of messages heard during the backoff period
+    uint8_t rebroadcastThreshold; // re-broadcast threshold
 
-    uint16_t mFlags;                            // Internal state flags
+    uint16_t mFlags; // Internal state flags
 
     WEAVE_ERROR ResendMessage(void);
-    bool MatchExchange(WeaveConnection *msgCon, const WeaveMessageInfo *msgInfo, const WeaveExchangeHeader *exchangeHeader);
-    static void TimerTau(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-    static void CancelRetransmissionTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-    static void TimerT(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    bool MatchExchange(WeaveConnection * msgCon, const WeaveMessageInfo * msgInfo, const WeaveExchangeHeader * exchangeHeader);
+    static void TimerTau(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+    static void CancelRetransmissionTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+    static void TimerT(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 
     WEAVE_ERROR StartResponseTimer(void);
     void CancelResponseTimer(void);
-    static void HandleResponseTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void HandleResponseTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 
     uint32_t mPendingPeerAckId;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    uint16_t mWRMPNextAckTime;                  //Next time for triggering Solo Ack
-    uint16_t mWRMPThrottleTimeout;              //Timeout until when Throttle is On when WRMPThrottleEnabled is set
+    uint16_t mWRMPNextAckTime;     // Next time for triggering Solo Ack
+    uint16_t mWRMPThrottleTimeout; // Timeout until when Throttle is On when WRMPThrottleEnabled is set
 #endif
     void DoClose(bool clearRetransTable);
-    WEAVE_ERROR HandleMessage(WeaveMessageInfo *msgInfo, const WeaveExchangeHeader *exchHeader, PacketBuffer *msgBuf);
-    WEAVE_ERROR HandleMessage(WeaveMessageInfo *msgInfo, const WeaveExchangeHeader *exchHeader, PacketBuffer *msgBuf,
+    WEAVE_ERROR HandleMessage(WeaveMessageInfo * msgInfo, const WeaveExchangeHeader * exchHeader, PacketBuffer * msgBuf);
+    WEAVE_ERROR HandleMessage(WeaveMessageInfo * msgInfo, const WeaveExchangeHeader * exchHeader, PacketBuffer * msgBuf,
                               ExchangeContext::MessageReceiveFunct umhandler);
     void HandleConnectionClosed(WEAVE_ERROR conErr);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    bool WRMPCheckAndRemRetransTable(uint32_t msgId, void **rCtxt);
-    WEAVE_ERROR WRMPHandleRcvdAck(const WeaveExchangeHeader *exchHeader, const WeaveMessageInfo *msgInfo);
-    WEAVE_ERROR WRMPHandleNeedsAck(const WeaveMessageInfo *msgInfo);
+    bool WRMPCheckAndRemRetransTable(uint32_t msgId, void ** rCtxt);
+    WEAVE_ERROR WRMPHandleRcvdAck(const WeaveExchangeHeader * exchHeader, const WeaveMessageInfo * msgInfo);
+    WEAVE_ERROR WRMPHandleNeedsAck(const WeaveMessageInfo * msgInfo);
     WEAVE_ERROR HandleThrottleFlow(uint32_t PauseTimeMillis);
 #endif
 
@@ -427,39 +429,40 @@ public:
     uint8_t State;                              /**< [READ ONLY] The state of the WeaveExchangeManager object. */
     // clang-format on
 
-    WEAVE_ERROR Init(WeaveMessageLayer *msgLayer);
+    WEAVE_ERROR Init(WeaveMessageLayer * msgLayer);
     WEAVE_ERROR Shutdown(void);
 
 #if WEAVE_CONFIG_TEST
     size_t ExpireExchangeTimers(void);
 #endif
 
-    ExchangeContext *NewContext(const uint64_t &peerNodeId, void *appState = NULL);
-    ExchangeContext *NewContext(const uint64_t &peerNodeId, const IPAddress &peerAddr, void *appState = NULL);
-    ExchangeContext *NewContext(const uint64_t &peerNodeId, const IPAddress &peerAddr, uint16_t peerPort, InterfaceId sendIntfId, void *appState = NULL);
-    ExchangeContext *NewContext(WeaveConnection *con, void *appState = NULL);
+    ExchangeContext * NewContext(const uint64_t & peerNodeId, void * appState = NULL);
+    ExchangeContext * NewContext(const uint64_t & peerNodeId, const IPAddress & peerAddr, void * appState = NULL);
+    ExchangeContext * NewContext(const uint64_t & peerNodeId, const IPAddress & peerAddr, uint16_t peerPort, InterfaceId sendIntfId,
+                                 void * appState = NULL);
+    ExchangeContext * NewContext(WeaveConnection * con, void * appState = NULL);
 
-    ExchangeContext *FindContext(uint64_t peerNodeId, WeaveConnection *con, void *appState, bool isInitiator);
+    ExchangeContext * FindContext(uint64_t peerNodeId, WeaveConnection * con, void * appState, bool isInitiator);
 
-    Binding * NewBinding(Binding::EventCallback eventCallback = Binding::DefaultEventHandler, void *appState = NULL);
+    Binding * NewBinding(Binding::EventCallback eventCallback = Binding::DefaultEventHandler, void * appState = NULL);
 
     WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, ExchangeContext::MessageReceiveFunct handler,
-            void *appState);
-    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, ExchangeContext::MessageReceiveFunct handler,
-            bool allowDups, void *appState);
-    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType,
-            ExchangeContext::MessageReceiveFunct handler, void *appState);
-    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType,
-            ExchangeContext::MessageReceiveFunct handler, bool allowDups, void *appState);
-    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, WeaveConnection *con,
-            ExchangeContext::MessageReceiveFunct handler, void *appState);
-    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, WeaveConnection *con,
-            ExchangeContext::MessageReceiveFunct handler, bool allowDups, void *appState);
+                                                  void * appState);
+    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, ExchangeContext::MessageReceiveFunct handler, bool allowDups,
+                                                  void * appState);
+    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, ExchangeContext::MessageReceiveFunct handler,
+                                                  void * appState);
+    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, ExchangeContext::MessageReceiveFunct handler,
+                                                  bool allowDups, void * appState);
+    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, WeaveConnection * con,
+                                                  ExchangeContext::MessageReceiveFunct handler, void * appState);
+    WEAVE_ERROR RegisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, WeaveConnection * con,
+                                                  ExchangeContext::MessageReceiveFunct handler, bool allowDups, void * appState);
     WEAVE_ERROR UnregisterUnsolicitedMessageHandler(uint32_t profileId);
     WEAVE_ERROR UnregisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType);
-    WEAVE_ERROR UnregisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, WeaveConnection *con);
+    WEAVE_ERROR UnregisterUnsolicitedMessageHandler(uint32_t profileId, uint8_t msgType, WeaveConnection * con);
 
-    void AllowUnsolicitedMessages(WeaveConnection *con);
+    void AllowUnsolicitedMessages(WeaveConnection * con);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     void ClearMsgCounterSyncReq(uint64_t peerNodeId);
@@ -468,9 +471,9 @@ public:
 private:
     uint16_t NextExchangeId;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    uint64_t mWRMPTimeStampBase;    //WRMP timer base value to add offsets to evaluate timeouts
-    System::Timer::Epoch mWRMPCurrentTimerExpiry; //Tracks when the WRM timer will next expire
-    uint16_t mWRMPTimerInterval;    //WRMP Timer tick period
+    uint64_t mWRMPTimeStampBase;                  // WRMP timer base value to add offsets to evaluate timeouts
+    System::Timer::Epoch mWRMPCurrentTimerExpiry; // Tracks when the WRM timer will next expire
+    uint16_t mWRMPTimerInterval;                  // WRMP Timer tick period
     /**
      *  @class RetransTableEntry
      *
@@ -483,7 +486,7 @@ private:
      */
     class RetransTableEntry
     {
-      public:
+    public:
         // clang-format off
         uint32_t             msgId;              /**< The message identifier of the Weave message awaiting acknowledgment. */
         ExchangeContext      *exchContext;       /**< The ExchangeContext for the stored Weave message. */
@@ -493,26 +496,26 @@ private:
         uint8_t              sendCount;          /**< A counter representing the number of times the message has been sent. */
         // clang-format on
     };
-    void     WRMPExecuteActions(void);
-    void     WRMPExpireTicks(void);
-    void     WRMPStartTimer(void);
-    void     WRMPStopTimer(void);
-    void     WRMPProcessDDMessage(uint32_t PauseTimeMillis, uint64_t DelayedNodeId);
-    uint32_t GetTickCounterFromTimeDelta (uint64_t newTime,
-                                          uint64_t oldTime);
-    static void WRMPTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    void WRMPExecuteActions(void);
+    void WRMPExpireTicks(void);
+    void WRMPStartTimer(void);
+    void WRMPStopTimer(void);
+    void WRMPProcessDDMessage(uint32_t PauseTimeMillis, uint64_t DelayedNodeId);
+    uint32_t GetTickCounterFromTimeDelta(uint64_t newTime, uint64_t oldTime);
+    static void WRMPTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
     static bool isLaterInWRMP(uint64_t t2, uint64_t t1);
     bool IsSendErrorCritical(WEAVE_ERROR err) const;
-    WEAVE_ERROR AddToRetransTable(ExchangeContext *ec, PacketBuffer *inetBuff, uint32_t msgId, void *msgCtxt, RetransTableEntry **rEntry);
-    WEAVE_ERROR SendFromRetransTable(RetransTableEntry *entry);
-    void ClearRetransmitTable(ExchangeContext *ec);
-    void ClearRetransmitTable(RetransTableEntry &rEntry);
-    void FailRetransmitTableEntries(ExchangeContext *ec, WEAVE_ERROR err);
+    WEAVE_ERROR AddToRetransTable(ExchangeContext * ec, PacketBuffer * inetBuff, uint32_t msgId, void * msgCtxt,
+                                  RetransTableEntry ** rEntry);
+    WEAVE_ERROR SendFromRetransTable(RetransTableEntry * entry);
+    void ClearRetransmitTable(ExchangeContext * ec);
+    void ClearRetransmitTable(RetransTableEntry & rEntry);
+    void FailRetransmitTableEntries(ExchangeContext * ec, WEAVE_ERROR err);
     void RetransPendingAppGroupMsgs(uint64_t peerNodeId);
 
-    void TicklessDebugDumpRetransTable(const char *log);
+    void TicklessDebugDumpRetransTable(const char * log);
 
-    //WRMP Global tables for timer context
+    // WRMP Global tables for timer context
     RetransTableEntry RetransTable[WEAVE_CONFIG_WRMP_RETRANS_TABLE_SIZE];
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
@@ -520,13 +523,12 @@ private:
     {
     public:
         ExchangeContext::MessageReceiveFunct Handler;
-        void *AppState;
+        void * AppState;
         uint32_t ProfileId;
-        WeaveConnection *Con; // NULL means any connection, or no connection (i.e. UDP)
-        int16_t MessageType; // -1 represents any message type
+        WeaveConnection * Con; // NULL means any connection, or no connection (i.e. UDP)
+        int16_t MessageType;   // -1 represents any message type
         bool AllowDuplicateMsgs;
     };
-
 
     ExchangeContext ContextPool[WEAVE_CONFIG_MAX_EXCHANGE_CONTEXTS];
     size_t mContextsInUse;
@@ -537,30 +539,30 @@ private:
     UnsolicitedMessageHandler UMHandlerPool[WEAVE_CONFIG_MAX_UNSOLICITED_MESSAGE_HANDLERS];
     void (*OnExchangeContextChanged)(size_t numContextsInUse);
 
-    ExchangeContext *AllocContext(void);
+    ExchangeContext * AllocContext(void);
 
-    void HandleConnectionReceived(WeaveConnection *con);
-    void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
-    void DispatchMessage(WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-    WEAVE_ERROR RegisterUMH(uint32_t profileId, int16_t msgType, WeaveConnection *con, bool allowDups,
-            ExchangeContext::MessageReceiveFunct handler, void *appState);
-    WEAVE_ERROR UnregisterUMH(uint32_t profileId, int16_t msgType, WeaveConnection *con);
+    void HandleConnectionReceived(WeaveConnection * con);
+    void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
+    void DispatchMessage(WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf);
+    WEAVE_ERROR RegisterUMH(uint32_t profileId, int16_t msgType, WeaveConnection * con, bool allowDups,
+                            ExchangeContext::MessageReceiveFunct handler, void * appState);
+    WEAVE_ERROR UnregisterUMH(uint32_t profileId, int16_t msgType, WeaveConnection * con);
 
-    static void HandleAcceptError(WeaveMessageLayer *msgLayer, WEAVE_ERROR err);
-    static void HandleMessageReceived(WeaveMessageLayer *msgLayer, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-    static void HandleMessageReceived(WeaveConnection *con, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
-    static WEAVE_ERROR PrependHeader(WeaveExchangeHeader *exchangeHeader, PacketBuffer *buf);
-    static WEAVE_ERROR DecodeHeader(WeaveExchangeHeader *exchangeHeader, WeaveMessageInfo *msgInfo, PacketBuffer *buf);
+    static void HandleAcceptError(WeaveMessageLayer * msgLayer, WEAVE_ERROR err);
+    static void HandleMessageReceived(WeaveMessageLayer * msgLayer, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf);
+    static void HandleMessageReceived(WeaveConnection * con, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf);
+    static WEAVE_ERROR PrependHeader(WeaveExchangeHeader * exchangeHeader, PacketBuffer * buf);
+    static WEAVE_ERROR DecodeHeader(WeaveExchangeHeader * exchangeHeader, WeaveMessageInfo * msgInfo, PacketBuffer * buf);
 
     void InitBindingPool(void);
     Binding * AllocBinding(void);
-    void FreeBinding(Binding *binding);
+    void FreeBinding(Binding * binding);
     uint16_t GetBindingLogId(const Binding * const binding) const;
 
     void NotifySecurityManagerAvailable();
     void NotifyKeyFailed(uint64_t peerNodeId, uint16_t keyId, WEAVE_ERROR keyErr);
 
-    WeaveExchangeManager(const WeaveExchangeManager&); // not defined
+    WeaveExchangeManager(const WeaveExchangeManager &); // not defined
 };
 
 #if !WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
@@ -571,7 +573,6 @@ inline bool ExchangeContext::UseEphemeralUDPPort(void) const
 }
 
 #endif // !WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
-
 
 } // namespace Weave
 } // namespace nl

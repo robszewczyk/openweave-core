@@ -418,8 +418,7 @@ void LoggingManagement::SkipEvent(EventLoadOutContext * aContext)
  *
  * @note This function must be called prior to the logging being used.
  */
-void LoggingManagement::CreateLoggingManagement(nl::Weave::WeaveExchangeManager * inMgr,
-                                                size_t inNumBuffers,
+void LoggingManagement::CreateLoggingManagement(nl::Weave::WeaveExchangeManager * inMgr, size_t inNumBuffers,
                                                 const LogStorageResources * const inLogStorageResources)
 {
     new (&sInstance) LoggingManagement(inMgr, inNumBuffers, inLogStorageResources);
@@ -467,8 +466,7 @@ WEAVE_ERROR LoggingManagement::SetExchangeManager(nl::Weave::WeaveExchangeManage
  *
  */
 
-LoggingManagement::LoggingManagement(nl::Weave::WeaveExchangeManager * inMgr,
-                                     size_t inNumBuffers,
+LoggingManagement::LoggingManagement(nl::Weave::WeaveExchangeManager * inMgr, size_t inNumBuffers,
                                      const LogStorageResources * const inLogStorageResources)
 {
     CircularEventBuffer * current = NULL;
@@ -1713,7 +1711,8 @@ void LoggingManagement::FlushHandler(System::Layer * inSystemLayer, INET_ERROR i
     switch (mState)
     {
 
-    case kLoggingManagementState_Idle: {
+    case kLoggingManagementState_Idle:
+    {
 #if WEAVE_CONFIG_EVENT_LOGGING_BDX_OFFLOAD
         // Nothing prevents a flush.  If the configuration supports
         // it, transition into "in progress" state, and kick off the
@@ -1747,7 +1746,8 @@ void LoggingManagement::FlushHandler(System::Layer * inSystemLayer, INET_ERROR i
         break;
     }
 
-    case kLoggingManagementState_Holdoff: {
+    case kLoggingManagementState_Holdoff:
+    {
 #if WEAVE_CONFIG_EVENT_LOGGING_BDX_OFFLOAD
         mState           = kLoggingManagementState_Idle;
         mUploadRequested = false;
@@ -1764,7 +1764,8 @@ void LoggingManagement::FlushHandler(System::Layer * inSystemLayer, INET_ERROR i
     }
 
     case kLoggingManagementState_InProgress:
-    case kLoggingManagementState_Shutdown: {
+    case kLoggingManagementState_Shutdown:
+    {
         // should never end in these states in this function
         break;
     }

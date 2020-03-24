@@ -31,23 +31,20 @@
 
 using namespace nl::Weave::Profiles::Security;
 
-static void MakeWeaveProvisioningHash_Test1(nlTestSuite *inSuite, void *inContext)
+static void MakeWeaveProvisioningHash_Test1(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     char hashBuf[kWeaveProvisioningHashLength + 1];
 
-    static uint64_t nodeId = 0x0123456789ABCDEFULL;
-    static const char *weaveCert = "22222222222222222222222222222222222222222222";
-    static const char *weavePrivKey = "44444444444444444444444444444444444444444444";
-    static const char *pairingCode = "333333";
+    static uint64_t nodeId           = 0x0123456789ABCDEFULL;
+    static const char * weaveCert    = "22222222222222222222222222222222222222222222";
+    static const char * weavePrivKey = "44444444444444444444444444444444444444444444";
+    static const char * pairingCode  = "333333";
 
-    static const char *expectedHash = "VWYmrGXhtCjLfveNxU9HN1RFDDBFkeKBDCUCbzoDJEs=";
+    static const char * expectedHash = "VWYmrGXhtCjLfveNxU9HN1RFDDBFkeKBDCUCbzoDJEs=";
 
-    err = MakeWeaveProvisioningHash(nodeId,
-                                    weaveCert, strlen(weaveCert),
-                                    weavePrivKey, strlen(weavePrivKey),
-                                    pairingCode, strlen(pairingCode),
-                                    hashBuf, sizeof(hashBuf));
+    err = MakeWeaveProvisioningHash(nodeId, weaveCert, strlen(weaveCert), weavePrivKey, strlen(weavePrivKey), pairingCode,
+                                    strlen(pairingCode), hashBuf, sizeof(hashBuf));
 
     // Verify MakeWeaveProvisioningHash() call succeeded.
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -59,21 +56,19 @@ static void MakeWeaveProvisioningHash_Test1(nlTestSuite *inSuite, void *inContex
     NL_TEST_ASSERT(inSuite, strcmp(hashBuf, expectedHash) == 0);
 }
 
-void MakeDeviceCredentialHash_Test1(nlTestSuite *inSuite, void *inContext)
+void MakeDeviceCredentialHash_Test1(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     char hashBuf[kDeviceCredentialHashLength + 1];
 
-    static const char *sn = "02AA01AB2412001P";
-    static const char *deviceId = "d.02AA01AB2412001P.TEST2";
-    static const char *deviceSecret = "d.0TSIvbpCilGvgaTuNwunp_gJaWUGRPvKpPgSrripDhw";
+    static const char * sn           = "02AA01AB2412001P";
+    static const char * deviceId     = "d.02AA01AB2412001P.TEST2";
+    static const char * deviceSecret = "d.0TSIvbpCilGvgaTuNwunp_gJaWUGRPvKpPgSrripDhw";
 
-    static const char *expectedHash = "RsMj0zDKIDjAqrQvlhCe4mp6KsMkSywliNtoAQzOOMA=";
+    static const char * expectedHash = "RsMj0zDKIDjAqrQvlhCe4mp6KsMkSywliNtoAQzOOMA=";
 
-    err = MakeDeviceCredentialHash(sn, strlen(sn),
-                                   deviceId, strlen(deviceId),
-                                   deviceSecret, strlen(deviceSecret),
-                                   hashBuf, sizeof(hashBuf));
+    err = MakeDeviceCredentialHash(sn, strlen(sn), deviceId, strlen(deviceId), deviceSecret, strlen(deviceSecret), hashBuf,
+                                   sizeof(hashBuf));
 
     // Verify MakeDeviceCredentialHash() call succeeded.
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -85,18 +80,12 @@ void MakeDeviceCredentialHash_Test1(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, strcmp(hashBuf, expectedHash) == 0);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-    static const nlTest tests[] = {
-        NL_TEST_DEF("MakeWeaveProvisioningHash",           MakeWeaveProvisioningHash_Test1),
-        NL_TEST_DEF("MakeDeviceCredentialHash",            MakeDeviceCredentialHash_Test1),
-        NL_TEST_SENTINEL()
-    };
+    static const nlTest tests[] = { NL_TEST_DEF("MakeWeaveProvisioningHash", MakeWeaveProvisioningHash_Test1),
+                                    NL_TEST_DEF("MakeDeviceCredentialHash", MakeDeviceCredentialHash_Test1), NL_TEST_SENTINEL() };
 
-    static nlTestSuite testSuite = {
-        "provisioning-hash",
-        &tests[0]
-    };
+    static nlTestSuite testSuite = { "provisioning-hash", &tests[0] };
 
     nl_test_set_output_style(OUTPUT_CSV);
 

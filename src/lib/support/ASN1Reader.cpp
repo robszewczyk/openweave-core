@@ -34,13 +34,13 @@ namespace nl {
 namespace Weave {
 namespace ASN1 {
 
-void ASN1Reader::Init(const uint8_t *buf, uint32_t len)
+void ASN1Reader::Init(const uint8_t * buf, uint32_t len)
 {
     ResetElementState();
-    mBuf = buf;
-    mBufEnd = buf + len;
-    mElemStart = buf;
-    mContainerEnd = mBufEnd;
+    mBuf              = buf;
+    mBufEnd           = buf + len;
+    mElemStart        = buf;
+    mContainerEnd     = mBufEnd;
     mNumSavedContexts = 0;
 }
 
@@ -99,11 +99,11 @@ ASN1_ERROR ASN1Reader::EnterContainer(uint32_t offset)
     if (mNumSavedContexts == kMaxContextDepth)
         return ASN1_ERROR_MAX_DEPTH_EXCEEDED;
 
-    mSavedContexts[mNumSavedContexts].ElemStart = mElemStart;
-    mSavedContexts[mNumSavedContexts].HeadLen = mHeadLen;
-    mSavedContexts[mNumSavedContexts].ValueLen = ValueLen;
+    mSavedContexts[mNumSavedContexts].ElemStart       = mElemStart;
+    mSavedContexts[mNumSavedContexts].HeadLen         = mHeadLen;
+    mSavedContexts[mNumSavedContexts].ValueLen        = ValueLen;
     mSavedContexts[mNumSavedContexts].IsIndefiniteLen = IsIndefiniteLen;
-    mSavedContexts[mNumSavedContexts].ContainerEnd = mContainerEnd;
+    mSavedContexts[mNumSavedContexts].ContainerEnd    = mContainerEnd;
     mNumSavedContexts++;
 
     mElemStart = Value + offset;
@@ -120,7 +120,7 @@ ASN1_ERROR ASN1Reader::ExitContainer()
     if (mNumSavedContexts == 0)
         return ASN1_ERROR_INVALID_STATE;
 
-    ASN1ParseContext& prevContext = mSavedContexts[--mNumSavedContexts];
+    ASN1ParseContext & prevContext = mSavedContexts[--mNumSavedContexts];
 
     if (prevContext.IsIndefiniteLen)
     {
@@ -142,7 +142,7 @@ bool ASN1Reader::IsContained() const
     return mNumSavedContexts > 0;
 }
 
-ASN1_ERROR ASN1Reader::GetInteger(int64_t& val)
+ASN1_ERROR ASN1Reader::GetInteger(int64_t & val)
 {
     if (Value == NULL)
         return ASN1_ERROR_INVALID_STATE;
@@ -152,14 +152,14 @@ ASN1_ERROR ASN1Reader::GetInteger(int64_t& val)
         return ASN1_ERROR_VALUE_OVERFLOW;
     if (mElemStart + mHeadLen + ValueLen > mContainerEnd)
         return ASN1_ERROR_UNDERRUN;
-    const uint8_t *p = Value;
-    val = ((*p & 0x80) == 0) ? 0 : -1;
+    const uint8_t * p = Value;
+    val               = ((*p & 0x80) == 0) ? 0 : -1;
     for (uint32_t i = ValueLen; i > 0; i--, p++)
         val = (val << 8) | *p;
     return ASN1_NO_ERROR;
 }
 
-ASN1_ERROR ASN1Reader::GetBoolean(bool& val)
+ASN1_ERROR ASN1Reader::GetBoolean(bool & val)
 {
     if (Value == NULL)
         return ASN1_ERROR_INVALID_STATE;
@@ -176,7 +176,7 @@ ASN1_ERROR ASN1Reader::GetBoolean(bool& val)
     return ASN1_NO_ERROR;
 }
 
-ASN1_ERROR ASN1Reader::GetUTCTime(ASN1UniversalTime& outTime)
+ASN1_ERROR ASN1Reader::GetUTCTime(ASN1UniversalTime & outTime)
 {
     // Supported Encoding: YYMMDDHHMMSSZ
 
@@ -194,18 +194,12 @@ ASN1_ERROR ASN1Reader::GetUTCTime(ASN1UniversalTime& outTime)
         if (!isdigit(Value[i]))
             return ASN1_ERROR_INVALID_ENCODING;
 
-    outTime.Year        = (Value[0]  - '0') * 10 +
-                          (Value[1]  - '0');
-    outTime.Month       = (Value[2]  - '0') * 10 +
-                          (Value[3]  - '0');
-    outTime.Day         = (Value[4]  - '0') * 10 +
-                          (Value[5]  - '0');
-    outTime.Hour        = (Value[6]  - '0') * 10 +
-                          (Value[7]  - '0');
-    outTime.Minute      = (Value[8]  - '0') * 10 +
-                          (Value[9]  - '0');
-    outTime.Second      = (Value[10] - '0') * 10 +
-                          (Value[11] - '0');
+    outTime.Year   = (Value[0] - '0') * 10 + (Value[1] - '0');
+    outTime.Month  = (Value[2] - '0') * 10 + (Value[3] - '0');
+    outTime.Day    = (Value[4] - '0') * 10 + (Value[5] - '0');
+    outTime.Hour   = (Value[6] - '0') * 10 + (Value[7] - '0');
+    outTime.Minute = (Value[8] - '0') * 10 + (Value[9] - '0');
+    outTime.Second = (Value[10] - '0') * 10 + (Value[11] - '0');
 
     if (outTime.Year >= 50)
         outTime.Year += 1900;
@@ -215,7 +209,7 @@ ASN1_ERROR ASN1Reader::GetUTCTime(ASN1UniversalTime& outTime)
     return ASN1_NO_ERROR;
 }
 
-ASN1_ERROR ASN1Reader::GetGeneralizedTime(ASN1UniversalTime& outTime)
+ASN1_ERROR ASN1Reader::GetGeneralizedTime(ASN1UniversalTime & outTime)
 {
     // Supported Encoding: YYYYMMDDHHMMSSZ
 
@@ -233,20 +227,12 @@ ASN1_ERROR ASN1Reader::GetGeneralizedTime(ASN1UniversalTime& outTime)
         if (!isdigit(Value[i]))
             return ASN1_ERROR_INVALID_ENCODING;
 
-    outTime.Year        = (Value[0]  - '0') * 1000 +
-                          (Value[1]  - '0') * 100 +
-                          (Value[2]  - '0') * 10 +
-                          (Value[3]  - '0');
-    outTime.Month       = (Value[4]  - '0') * 10 +
-                          (Value[5]  - '0');
-    outTime.Day         = (Value[6]  - '0') * 10 +
-                          (Value[7]  - '0');
-    outTime.Hour        = (Value[8]  - '0') * 10 +
-                          (Value[9]  - '0');
-    outTime.Minute      = (Value[10] - '0') * 10 +
-                          (Value[11] - '0');
-    outTime.Second      = (Value[12] - '0') * 10 +
-                          (Value[13] - '0');
+    outTime.Year   = (Value[0] - '0') * 1000 + (Value[1] - '0') * 100 + (Value[2] - '0') * 10 + (Value[3] - '0');
+    outTime.Month  = (Value[4] - '0') * 10 + (Value[5] - '0');
+    outTime.Day    = (Value[6] - '0') * 10 + (Value[7] - '0');
+    outTime.Hour   = (Value[8] - '0') * 10 + (Value[9] - '0');
+    outTime.Minute = (Value[10] - '0') * 10 + (Value[11] - '0');
+    outTime.Second = (Value[12] - '0') * 10 + (Value[13] - '0');
 
     return ASN1_NO_ERROR;
 }
@@ -262,7 +248,7 @@ static uint8_t ReverseBits(uint8_t v)
     return v;
 }
 
-ASN1_ERROR ASN1Reader::GetBitString(uint32_t& outVal)
+ASN1_ERROR ASN1Reader::GetBitString(uint32_t & outVal)
 {
     // NOTE: only supports DER encoding.
 
@@ -279,7 +265,7 @@ ASN1_ERROR ASN1Reader::GetBitString(uint32_t& outVal)
         outVal = 0;
     else
     {
-        outVal = ReverseBits(Value[1]);
+        outVal    = ReverseBits(Value[1]);
         int shift = 8;
         for (uint32_t i = 2; i < ValueLen; i++, shift += 8)
             outVal |= (ReverseBits(Value[i]) << shift);
@@ -290,12 +276,12 @@ ASN1_ERROR ASN1Reader::GetBitString(uint32_t& outVal)
 
 ASN1_ERROR ASN1Reader::DecodeHead()
 {
-    const uint8_t *p = mElemStart;
+    const uint8_t * p = mElemStart;
 
     if (p >= mBufEnd)
         return ASN1_ERROR_UNDERRUN;
 
-    Class = *p & 0xC0;
+    Class         = *p & 0xC0;
     IsConstructed = (*p & 0x20) != 0;
 
     Tag = *p & 0x1F;
@@ -319,19 +305,19 @@ ASN1_ERROR ASN1Reader::DecodeHead()
 
     if ((*p & 0x80) == 0)
     {
-        ValueLen = *p & 0x7F;
+        ValueLen        = *p & 0x7F;
         IsIndefiniteLen = false;
         p++;
     }
     else if (*p == 0x80)
     {
-        ValueLen = 0;
+        ValueLen        = 0;
         IsIndefiniteLen = true;
         p++;
     }
     else
     {
-        ValueLen = 0;
+        ValueLen       = 0;
         uint8_t lenLen = *p & 0x7F;
         p++;
         for (; lenLen > 0; lenLen--, p++)
@@ -356,17 +342,17 @@ ASN1_ERROR ASN1Reader::DecodeHead()
 
 void ASN1Reader::ResetElementState()
 {
-    Class = 0;
-    Tag = 0;
-    Value = NULL;
-    ValueLen = 0;
-    IsConstructed = false;
+    Class           = 0;
+    Tag             = 0;
+    Value           = NULL;
+    ValueLen        = 0;
+    IsConstructed   = false;
     IsIndefiniteLen = false;
     IsEndOfContents = false;
-    mHeadLen = 0;
+    mHeadLen        = 0;
 }
 
-ASN1_ERROR DumpASN1(ASN1Reader& asn1Parser, const char *prefix, const char *indent)
+ASN1_ERROR DumpASN1(ASN1Reader & asn1Parser, const char * prefix, const char * indent)
 {
     ASN1_ERROR err = ASN1_NO_ERROR;
 
@@ -386,7 +372,7 @@ ASN1_ERROR DumpASN1(ASN1Reader& asn1Parser, const char *prefix, const char *inde
                     err = asn1Parser.ExitConstructedType();
                     if (err != ASN1_NO_ERROR)
                     {
-                        printf("ASN1Reader::ExitConstructedType() failed: %ld\n", (long)err);
+                        printf("ASN1Reader::ExitConstructedType() failed: %ld\n", (long) err);
                         return err;
                     }
                     nestLevel--;
@@ -395,7 +381,7 @@ ASN1_ERROR DumpASN1(ASN1Reader& asn1Parser, const char *prefix, const char *inde
                 else
                     break;
             }
-            printf("ASN1Reader::Next() failed: %ld\n", (long)err);
+            printf("ASN1Reader::Next() failed: %ld\n", (long) err);
             return err;
         }
         if (prefix != NULL)
@@ -431,14 +417,14 @@ ASN1_ERROR DumpASN1(ASN1Reader& asn1Parser, const char *prefix, const char *inde
             case 23:
             case 24:     printf("TIME "); break;
             default:     printf("[UNIVERSAL %lu] ", (unsigned long)asn1Parser.Tag); break;
-            // clang-format on
+                // clang-format on
             }
         else if (asn1Parser.Class == 0x40)
-            printf("[APPLICATION %lu] ", (unsigned long)asn1Parser.Tag);
+            printf("[APPLICATION %lu] ", (unsigned long) asn1Parser.Tag);
         else if (asn1Parser.Class == 0x80)
-            printf("[%lu] ", (unsigned long)asn1Parser.Tag);
+            printf("[%lu] ", (unsigned long) asn1Parser.Tag);
         else if (asn1Parser.Class == 0xC0)
-            printf("[PRIVATE %lu] ", (unsigned long)asn1Parser.Tag);
+            printf("[PRIVATE %lu] ", (unsigned long) asn1Parser.Tag);
 
         if (asn1Parser.IsConstructed)
             printf("(constructed) ");
@@ -446,14 +432,14 @@ ASN1_ERROR DumpASN1(ASN1Reader& asn1Parser, const char *prefix, const char *inde
         if (asn1Parser.IsIndefiniteLen)
             printf("Length = indefinite\n");
         else
-            printf("Length = %ld\n", (long)asn1Parser.ValueLen);
+            printf("Length = %ld\n", (long) asn1Parser.ValueLen);
 
         if (asn1Parser.IsConstructed)
         {
             err = asn1Parser.EnterConstructedType();
             if (err != ASN1_NO_ERROR)
             {
-                printf("ASN1Reader::EnterConstructedType() failed: %ld\n", (long)err);
+                printf("ASN1Reader::EnterConstructedType() failed: %ld\n", (long) err);
                 return err;
             }
             nestLevel++;

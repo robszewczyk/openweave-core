@@ -33,154 +33,138 @@ using namespace Schema::Nest::Test::Trait;
 using namespace ::nl::Weave::TLV;
 using namespace ::nl::Weave::Profiles::DataManagement;
 
-TestMismatchedCTraitDataSource::TestMismatchedCTraitDataSource(void)
-    : TraitDataSource(&TestMismatchedCTrait::TraitSchema)
-{
+TestMismatchedCTraitDataSource::TestMismatchedCTraitDataSource(void) : TraitDataSource(&TestMismatchedCTrait::TraitSchema) { }
 
-}
-
-void
-TestMismatchedCTraitDataSource::SetValue(PropertyPathHandle aLeafHandle, uint32_t aValue)
+void TestMismatchedCTraitDataSource::SetValue(PropertyPathHandle aLeafHandle, uint32_t aValue)
 {
     switch (aLeafHandle)
     {
-        case TestMismatchedCTrait::kPropertyHandle_TcA:
-            tc_a = static_cast<bool>(aValue);
-            SetDirty(TestMismatchedCTrait::kPropertyHandle_TcA);
-            WeaveLogDetail(DataManagement, "<<  tc_a = %s", tc_a ? "true" : "false");
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcA:
+        tc_a = static_cast<bool>(aValue);
+        SetDirty(TestMismatchedCTrait::kPropertyHandle_TcA);
+        WeaveLogDetail(DataManagement, "<<  tc_a = %s", tc_a ? "true" : "false");
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcB:
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcB: break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcC_ScA:
-            tc_c.scA = aValue;
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_c.scA = %u", tc_c.scA);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcC_ScA:
+        tc_c.scA = aValue;
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_c.scA = %u", tc_c.scA);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcC_ScB:
-            tc_c.scB = static_cast<bool>(aValue);
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_c.scB = %s", tc_c.scB ? "true" : "false");
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcC_ScB:
+        tc_c.scB = static_cast<bool>(aValue);
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_c.scB = %s", tc_c.scB ? "true" : "false");
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcC_ScC:
-            tc_c.scC = aValue;
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_c.scC = %u", tc_c.scC);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcC_ScC:
+        tc_c.scC = aValue;
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_c.scC = %u", tc_c.scC);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcD:
-            tc_d = aValue;
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_d = %u", tc_d);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcD:
+        tc_d = aValue;
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_d = %u", tc_d);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcE_ScA:
-            tc_e.scA = aValue;
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_e.scA = %u", tc_e.scA);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcE_ScA:
+        tc_e.scA = aValue;
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_e.scA = %u", tc_e.scA);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcE_ScB:
-            tc_e.scB = static_cast<bool>(aValue);
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_e.scB = %s", tc_e.scB ? "true" : "false");
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcE_ScB:
+        tc_e.scB = static_cast<bool>(aValue);
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_e.scB = %s", tc_e.scB ? "true" : "false");
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcE_ScC:
-            tc_e.scC = aValue;
-            SetDirty(aLeafHandle);
-            WeaveLogDetail(DataManagement, "<<  tc_e.scC = %u", tc_e.scC);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcE_ScC:
+        tc_e.scC = aValue;
+        SetDirty(aLeafHandle);
+        WeaveLogDetail(DataManagement, "<<  tc_e.scC = %u", tc_e.scC);
+        break;
 
-        default:
-            break;
+    default: break;
     }
 }
 
-WEAVE_ERROR TestMismatchedCTraitDataSource::GetLeafData(
-        PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+WEAVE_ERROR TestMismatchedCTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     switch (aLeafHandle)
     {
-        case TestMismatchedCTrait::kPropertyHandle_TcA:
-            err = aWriter.Put(aTagToWrite, tc_a);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_a = %s", tc_a ? "true" : "false");
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcA:
+        err = aWriter.Put(aTagToWrite, tc_a);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_a = %s", tc_a ? "true" : "false");
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcB:
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcB: break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcC_ScA:
-            err = aWriter.Put(aTagToWrite, tc_c.scA);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_c.scA = %u", tc_c.scA);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcC_ScA:
+        err = aWriter.Put(aTagToWrite, tc_c.scA);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_c.scA = %u", tc_c.scA);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcC_ScB:
-            err = aWriter.Put(aTagToWrite, tc_c.scB);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_c.scB = %s", tc_c.scB ? "true" : "false");
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcC_ScB:
+        err = aWriter.Put(aTagToWrite, tc_c.scB);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_c.scB = %s", tc_c.scB ? "true" : "false");
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcC_ScC:
-            err = aWriter.Put(aTagToWrite, tc_c.scC);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_c.scC = %u", tc_c.scC);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcC_ScC:
+        err = aWriter.Put(aTagToWrite, tc_c.scC);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_c.scC = %u", tc_c.scC);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcD:
-            err = aWriter.Put(aTagToWrite, tc_d);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_d = %u", tc_d);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcD:
+        err = aWriter.Put(aTagToWrite, tc_d);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_d = %u", tc_d);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcE_ScA:
-            err = aWriter.Put(aTagToWrite, tc_e.scA);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_e.scA = %u", tc_e.scA);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcE_ScA:
+        err = aWriter.Put(aTagToWrite, tc_e.scA);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_e.scA = %u", tc_e.scA);
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcE_ScB:
-            err = aWriter.Put(aTagToWrite, tc_e.scB);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_e.scB = %s", tc_e.scB ? "true" : "false");
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcE_ScB:
+        err = aWriter.Put(aTagToWrite, tc_e.scB);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_e.scB = %s", tc_e.scB ? "true" : "false");
+        break;
 
-        case TestMismatchedCTrait::kPropertyHandle_TcE_ScC:
-            err = aWriter.Put(aTagToWrite, tc_e.scC);
-            SuccessOrExit(err);
-            WeaveLogDetail(DataManagement, ">>  tc_e.scC = %u", tc_e.scC);
-            break;
+    case TestMismatchedCTrait::kPropertyHandle_TcE_ScC:
+        err = aWriter.Put(aTagToWrite, tc_e.scC);
+        SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tc_e.scC = %u", tc_e.scC);
+        break;
 
-        default:
-            break;
+    default: break;
     }
 
 exit:
     return err;
 }
 
-TestCTraitDataSink::TestCTraitDataSink(void)
-    : TraitDataSink(&TestCTrait::TraitSchema)
-{
+TestCTraitDataSink::TestCTraitDataSink(void) : TraitDataSink(&TestCTrait::TraitSchema) { }
 
-}
-
-void
-TestCTraitDataSink::Reset(void)
+void TestCTraitDataSink::Reset(void)
 {
     ClearVersion();
     memset(mPathHandleSet, 0, sizeof(mPathHandleSet));
 }
 
-bool
-TestCTraitDataSink::WasPathHandleSet(PropertyPathHandle aLeafHandle)
+bool TestCTraitDataSink::WasPathHandleSet(PropertyPathHandle aLeafHandle)
 {
     bool retval = false;
 
@@ -192,8 +176,7 @@ TestCTraitDataSink::WasPathHandleSet(PropertyPathHandle aLeafHandle)
     return retval;
 }
 
-bool
-TestCTraitDataSink::WasAnyPathHandleSet(void)
+bool TestCTraitDataSink::WasAnyPathHandleSet(void)
 {
     bool retval = false;
 
@@ -205,49 +188,38 @@ TestCTraitDataSink::WasAnyPathHandleSet(void)
 }
 
 WEAVE_ERROR
-TestCTraitDataSink::SetLeafData(
-        PropertyPathHandle aLeafHandle, TLVReader &aReader)
+TestCTraitDataSink::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveLogDetail(DataManagement, "leaf handle: %u", aLeafHandle);
     switch (aLeafHandle)
     {
-        case TestCTrait::kPropertyHandle_TcA:
-        case TestCTrait::kPropertyHandle_TcB:
-        case TestCTrait::kPropertyHandle_TcC_ScA:
-        case TestCTrait::kPropertyHandle_TcC_ScB:
-            mPathHandleSet[aLeafHandle - 1] = true;
-            break;
+    case TestCTrait::kPropertyHandle_TcA:
+    case TestCTrait::kPropertyHandle_TcB:
+    case TestCTrait::kPropertyHandle_TcC_ScA:
+    case TestCTrait::kPropertyHandle_TcC_ScB: mPathHandleSet[aLeafHandle - 1] = true; break;
 
-        default:
-            err = WEAVE_ERROR_TLV_TAG_NOT_FOUND;
-            break;
+    default: err = WEAVE_ERROR_TLV_TAG_NOT_FOUND; break;
     }
 
     return err;
 }
 
 WEAVE_ERROR
-TestCTraitDataSink::OnEvent(uint16_t aType, void *aInParam)
+TestCTraitDataSink::OnEvent(uint16_t aType, void * aInParam)
 {
     return WEAVE_NO_ERROR;
 }
 
-TestMismatchedCTraitDataSink::TestMismatchedCTraitDataSink(void)
-    : TraitDataSink(&TestMismatchedCTrait::TraitSchema)
-{
+TestMismatchedCTraitDataSink::TestMismatchedCTraitDataSink(void) : TraitDataSink(&TestMismatchedCTrait::TraitSchema) { }
 
-}
-
-void
-TestMismatchedCTraitDataSink::Reset(void)
+void TestMismatchedCTraitDataSink::Reset(void)
 {
     ClearVersion();
     memset(mPathHandleSet, 0, sizeof(mPathHandleSet));
 }
 
-bool
-TestMismatchedCTraitDataSink::WasPathHandleSet(PropertyPathHandle aLeafHandle)
+bool TestMismatchedCTraitDataSink::WasPathHandleSet(PropertyPathHandle aLeafHandle)
 {
     bool retval = false;
 
@@ -259,8 +231,7 @@ TestMismatchedCTraitDataSink::WasPathHandleSet(PropertyPathHandle aLeafHandle)
     return retval;
 }
 
-bool
-TestMismatchedCTraitDataSink::WasAnyPathHandleSet(void)
+bool TestMismatchedCTraitDataSink::WasAnyPathHandleSet(void)
 {
     bool retval = false;
 
@@ -275,30 +246,27 @@ TestMismatchedCTraitDataSink::WasAnyPathHandleSet(void)
 // updated even though the backing schema is updated. as such, the leaf
 // handles that are known match that of TestCTraitDataSink.
 WEAVE_ERROR
-TestMismatchedCTraitDataSink::SetLeafData(
-        PropertyPathHandle aLeafHandle, TLVReader &aReader)
+TestMismatchedCTraitDataSink::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     switch (aLeafHandle)
     {
-        case TestCTrait::kPropertyHandle_TcA:
-        case TestCTrait::kPropertyHandle_TcB:
-        case TestCTrait::kPropertyHandle_TcC_ScA:
-        case TestCTrait::kPropertyHandle_TcC_ScB:
-            mPathHandleSet[aLeafHandle - 1] = true;
-            break;
+    case TestCTrait::kPropertyHandle_TcA:
+    case TestCTrait::kPropertyHandle_TcB:
+    case TestCTrait::kPropertyHandle_TcC_ScA:
+    case TestCTrait::kPropertyHandle_TcC_ScB: mPathHandleSet[aLeafHandle - 1] = true; break;
 
-        default:
-            mPathHandleSet[aLeafHandle - 1] = true;
-            err = HandleUnknownLeafHandle();
-            break;
+    default:
+        mPathHandleSet[aLeafHandle - 1] = true;
+        err                             = HandleUnknownLeafHandle();
+        break;
     }
 
     return err;
 }
 
 WEAVE_ERROR
-TestMismatchedCTraitDataSink::OnEvent(uint16_t aType, void *aInParam)
+TestMismatchedCTraitDataSink::OnEvent(uint16_t aType, void * aInParam)
 {
     return WEAVE_NO_ERROR;
 }

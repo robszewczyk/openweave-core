@@ -50,8 +50,8 @@ NetworkProvisioningServer::NetworkProvisioningServer()
 {
     FabricState = NULL;
     ExchangeMgr = NULL;
-    mCurOp = NULL;
-    mDelegate = NULL;
+    mCurOp      = NULL;
+    mDelegate   = NULL;
 }
 
 /**
@@ -64,19 +64,18 @@ NetworkProvisioningServer::NetworkProvisioningServer()
  *                                                              already been registered.
  * @retval #WEAVE_NO_ERROR                                      On success.
  */
-WEAVE_ERROR NetworkProvisioningServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR NetworkProvisioningServer::Init(WeaveExchangeManager * exchangeMgr)
 {
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
-    mCurOp = NULL;
-    mDelegate = NULL;
+    ExchangeMgr                   = exchangeMgr;
+    FabricState                   = exchangeMgr->FabricState;
+    mCurOp                        = NULL;
+    mDelegate                     = NULL;
     mLastOpResult.StatusProfileId = kWeaveProfile_Common;
-    mLastOpResult.StatusCode = Common::kStatus_Success;
-    mLastOpResult.SysError = WEAVE_NO_ERROR;
+    mLastOpResult.StatusCode      = Common::kStatus_Success;
+    mLastOpResult.SysError        = WEAVE_NO_ERROR;
 
     // Register to receive unsolicited Network Provisioning messages from the exchange manager.
-    WEAVE_ERROR err =
-        ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_NetworkProvisioning, HandleRequest, this);
+    WEAVE_ERROR err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_NetworkProvisioning, HandleRequest, this);
 
     return err;
 }
@@ -90,8 +89,8 @@ WEAVE_ERROR NetworkProvisioningServer::Shutdown()
 {
     ExchangeMgr = NULL;
     FabricState = NULL;
-    mCurOp = NULL;
-    mDelegate = NULL;
+    mCurOp      = NULL;
+    mDelegate   = NULL;
 
     return WEAVE_NO_ERROR;
 }
@@ -101,9 +100,9 @@ WEAVE_ERROR NetworkProvisioningServer::Shutdown()
  *
  * @param[in] delegate  A pointer to the Network Provisioning Delegate.
  */
-void NetworkProvisioningServer::SetDelegate(NetworkProvisioningDelegate *delegate)
+void NetworkProvisioningServer::SetDelegate(NetworkProvisioningDelegate * delegate)
 {
-    mDelegate = delegate;
+    mDelegate         = delegate;
     mDelegate->Server = this;
 }
 
@@ -119,7 +118,7 @@ void NetworkProvisioningServer::SetDelegate(NetworkProvisioningDelegate *delegat
  * @retval other                            Other Weave or platform-specific error codes indicating that an error
  *                                          occurred preventing the device from sending the Scan Complete response.
  */
-WEAVE_ERROR NetworkProvisioningServer::SendNetworkScanComplete(uint8_t resultCount, PacketBuffer *scanResultsTLV)
+WEAVE_ERROR NetworkProvisioningServer::SendNetworkScanComplete(uint8_t resultCount, PacketBuffer * scanResultsTLV)
 {
     return SendCompleteWithNetworkList(kMsgType_NetworkScanComplete, resultCount, scanResultsTLV);
 }
@@ -136,15 +135,15 @@ WEAVE_ERROR NetworkProvisioningServer::SendNetworkScanComplete(uint8_t resultCou
  * @retval other                            Other Weave or platform-specific error codes indicating that an error
  *                                          occurred preventing the device from sending the Get Networks Complete message.
  */
-WEAVE_ERROR NetworkProvisioningServer::SendGetNetworksComplete(uint8_t resultCount, PacketBuffer *scanResultsTLV)
+WEAVE_ERROR NetworkProvisioningServer::SendGetNetworksComplete(uint8_t resultCount, PacketBuffer * scanResultsTLV)
 {
     return SendCompleteWithNetworkList(kMsgType_GetNetworksComplete, resultCount, scanResultsTLV);
 }
 
-WEAVE_ERROR NetworkProvisioningServer::SendCompleteWithNetworkList(uint8_t msgType, int8_t resultCount, PacketBuffer *resultTLV)
+WEAVE_ERROR NetworkProvisioningServer::SendCompleteWithNetworkList(uint8_t msgType, int8_t resultCount, PacketBuffer * resultTLV)
 {
     WEAVE_ERROR err;
-    uint8_t *p;
+    uint8_t * p;
 
     VerifyOrExit(mDelegate != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(mCurOp != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -157,12 +156,12 @@ WEAVE_ERROR NetworkProvisioningServer::SendCompleteWithNetworkList(uint8_t msgTy
 
     *p = resultCount;
 
-    err = mCurOp->SendMessage(kWeaveProfile_NetworkProvisioning, msgType, resultTLV, 0);
+    err       = mCurOp->SendMessage(kWeaveProfile_NetworkProvisioning, msgType, resultTLV, 0);
     resultTLV = NULL;
 
     mLastOpResult.StatusProfileId = kWeaveProfile_Common;
-    mLastOpResult.StatusCode = Common::kStatus_Success;
-    mLastOpResult.SysError = WEAVE_NO_ERROR;
+    mLastOpResult.StatusCode      = Common::kStatus_Success;
+    mLastOpResult.SysError        = WEAVE_NO_ERROR;
 
 exit:
     if (mCurOp != NULL)
@@ -188,10 +187,10 @@ exit:
  */
 WEAVE_ERROR NetworkProvisioningServer::SendAddNetworkComplete(uint32_t networkId)
 {
-    WEAVE_ERROR     err;
-    PacketBuffer*   respBuf = NULL;
-    uint8_t*        p;
-    uint8_t         respLen = 4;
+    WEAVE_ERROR err;
+    PacketBuffer * respBuf = NULL;
+    uint8_t * p;
+    uint8_t respLen = 4;
 
     VerifyOrExit(mDelegate != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(mCurOp != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -203,12 +202,12 @@ WEAVE_ERROR NetworkProvisioningServer::SendAddNetworkComplete(uint32_t networkId
     LittleEndian::Write32(p, networkId);
     respBuf->SetDataLength(respLen);
 
-    err = mCurOp->SendMessage(kWeaveProfile_NetworkProvisioning, kMsgType_AddNetworkComplete, respBuf, 0);
+    err     = mCurOp->SendMessage(kWeaveProfile_NetworkProvisioning, kMsgType_AddNetworkComplete, respBuf, 0);
     respBuf = NULL;
 
     mLastOpResult.StatusProfileId = kWeaveProfile_Common;
-    mLastOpResult.StatusCode = Common::kStatus_Success;
-    mLastOpResult.SysError = WEAVE_NO_ERROR;
+    mLastOpResult.StatusCode      = Common::kStatus_Success;
+    mLastOpResult.SysError        = WEAVE_NO_ERROR;
 
 exit:
     if (mCurOp != NULL)
@@ -233,7 +232,7 @@ exit:
  * @retval other                            Other Weave or platform-specific error codes indicating that an error
  *                                          occurred preventing the device from sending the Add Network Complete message.
  */
-WEAVE_ERROR NetworkProvisioningServer::SendGetWirelessRegulatoryConfigComplete(PacketBuffer *resultsTLV)
+WEAVE_ERROR NetworkProvisioningServer::SendGetWirelessRegulatoryConfigComplete(PacketBuffer * resultsTLV)
 {
     WEAVE_ERROR err;
 
@@ -244,8 +243,8 @@ WEAVE_ERROR NetworkProvisioningServer::SendGetWirelessRegulatoryConfigComplete(P
     resultsTLV = NULL;
 
     mLastOpResult.StatusProfileId = kWeaveProfile_Common;
-    mLastOpResult.StatusCode = Common::kStatus_Success;
-    mLastOpResult.SysError = WEAVE_NO_ERROR;
+    mLastOpResult.StatusCode      = Common::kStatus_Success;
+    mLastOpResult.SysError        = WEAVE_NO_ERROR;
 
 exit:
     if (mCurOp != NULL)
@@ -292,8 +291,8 @@ WEAVE_ERROR NetworkProvisioningServer::SendStatusReport(uint32_t statusProfileId
     err = WeaveServerBase::SendStatusReport(mCurOp, statusProfileId, statusCode, sysError);
 
     mLastOpResult.StatusProfileId = statusProfileId;
-    mLastOpResult.StatusCode = statusCode;
-    mLastOpResult.SysError = sysError;
+    mLastOpResult.StatusCode      = statusCode;
+    mLastOpResult.SysError        = sysError;
 
 exit:
 
@@ -306,18 +305,18 @@ exit:
     return err;
 }
 
-void NetworkProvisioningServer::HandleRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-        uint8_t msgType, PacketBuffer *payload)
+void NetworkProvisioningServer::HandleRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                              uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    NetworkProvisioningServer *server = (NetworkProvisioningServer *) ec->AppState;
-    NetworkProvisioningDelegate *delegate = server->mDelegate;
+    WEAVE_ERROR err                        = WEAVE_NO_ERROR;
+    NetworkProvisioningServer * server     = (NetworkProvisioningServer *) ec->AppState;
+    NetworkProvisioningDelegate * delegate = server->mDelegate;
     uint32_t networkId;
     uint16_t rendezvousMode;
     uint8_t networkType;
     uint8_t flags;
     uint16_t dataLen;
-    const uint8_t *p;
+    const uint8_t * p;
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_NetworkProvisioning)
@@ -345,11 +344,11 @@ void NetworkProvisioningServer::HandleRequest(ExchangeContext *ec, const IPPacke
     }
 
     // Record that we have a request in process.
-    server->mCurOp = ec;
+    server->mCurOp     = ec;
     server->mCurOpType = msgType;
 
     dataLen = payload->DataLength();
-    p = payload->Start();
+    p       = payload->Start();
 
     // Decode and dispatch the message.
     switch (msgType)
@@ -359,7 +358,7 @@ void NetworkProvisioningServer::HandleRequest(ExchangeContext *ec, const IPPacke
         networkType = Get8(p);
         PacketBuffer::Free(payload);
         payload = NULL;
-        err = delegate->HandleScanNetworks(networkType);
+        err     = delegate->HandleScanNetworks(networkType);
         break;
 
 #if WEAVE_CONFIG_SUPPORT_LEGACY_ADD_NETWORK_MESSAGE
@@ -367,13 +366,13 @@ void NetworkProvisioningServer::HandleRequest(ExchangeContext *ec, const IPPacke
 #endif
     case kMsgType_AddNetworkV2:
         VerifyOrExit(dataLen >= 1, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
-        err = delegate->HandleAddNetwork(payload);
+        err     = delegate->HandleAddNetwork(payload);
         payload = NULL;
         break;
 
     case kMsgType_UpdateNetwork:
         VerifyOrExit(dataLen >= 1, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
-        err = delegate->HandleUpdateNetwork(payload);
+        err     = delegate->HandleUpdateNetwork(payload);
         payload = NULL;
         break;
 
@@ -407,8 +406,8 @@ void NetworkProvisioningServer::HandleRequest(ExchangeContext *ec, const IPPacke
         // When servicing a GetNetworks message from a peer that has authenticated using PASE/PairingCode,
         // a device in an unpaired state must reject the message with an access denied error if the peer has
         // set the IncludeCredentials flag.
-        if (msgInfo->PeerAuthMode == kWeaveAuthMode_PASE_PairingCode && !delegate->IsPairedToAccount()
-                && (flags & kGetNetwork_IncludeCredentials) != 0)
+        if (msgInfo->PeerAuthMode == kWeaveAuthMode_PASE_PairingCode && !delegate->IsPairedToAccount() &&
+            (flags & kGetNetwork_IncludeCredentials) != 0)
         {
             server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_AccessDenied);
             break;
@@ -442,22 +441,19 @@ void NetworkProvisioningServer::HandleRequest(ExchangeContext *ec, const IPPacke
         break;
 
     case kMsgType_GetLastResult:
-        err = server->SendStatusReport(server->mLastOpResult.StatusProfileId, server->mLastOpResult.StatusCode, server->mLastOpResult.SysError);
+        err = server->SendStatusReport(server->mLastOpResult.StatusProfileId, server->mLastOpResult.StatusCode,
+                                       server->mLastOpResult.SysError);
         break;
 
-    case kMsgType_GetWirelessRegulatoryConfig:
-        err = delegate->HandleGetWirelessRegulatoryConfig();
-        break;
+    case kMsgType_GetWirelessRegulatoryConfig: err = delegate->HandleGetWirelessRegulatoryConfig(); break;
 
     case kMsgType_SetWirelessRegulatoryConfig:
         VerifyOrExit(dataLen >= 1, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
-        err = delegate->HandleSetWirelessRegulatoryConfig(payload);
+        err     = delegate->HandleSetWirelessRegulatoryConfig(payload);
         payload = NULL;
         break;
 
-    default:
-        server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_UnsupportedMessage);
-        break;
+    default: server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_UnsupportedMessage); break;
     }
 
 exit:
@@ -465,7 +461,7 @@ exit:
     if (err != WEAVE_NO_ERROR && server->mCurOp != NULL)
     {
         uint16_t statusCode =
-                (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH) ? Common::kStatus_BadRequest : Common::kStatus_InternalError;
+            (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH) ? Common::kStatus_BadRequest : Common::kStatus_InternalError;
         server->SendStatusReport(kWeaveProfile_Common, statusCode, err);
     }
 
@@ -486,8 +482,8 @@ WEAVE_ERROR NetworkProvisioningDelegate::HandleSetWirelessRegulatoryConfig(Packe
     return WEAVE_NO_ERROR;
 }
 
-void NetworkProvisioningDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void NetworkProvisioningDelegate::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                       const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     // If the result has not already been determined by a subclass...
     if (result == kAccessControlResult_NotDetermined)
@@ -543,7 +539,7 @@ bool NetworkProvisioningDelegate::IsPairedToAccount() const
     return false;
 }
 
-} // NetworkProvisioning
+} // namespace NetworkProvisioning
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

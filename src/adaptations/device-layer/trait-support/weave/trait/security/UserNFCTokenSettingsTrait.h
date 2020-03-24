@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace UserNFCTokenSettingsTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe0fU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe0fU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -97,12 +97,12 @@ struct UserNFCToken
     nl::SerializedByteString publicKey;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct UserNFCToken_array {
+struct UserNFCToken_array
+{
     uint32_t num;
-    UserNFCToken *buf;
+    UserNFCToken * buf;
 };
 
 } // namespace UserNFCTokenSettingsTrait

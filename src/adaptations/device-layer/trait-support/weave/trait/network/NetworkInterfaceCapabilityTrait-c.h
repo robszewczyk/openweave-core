@@ -27,23 +27,17 @@
 #ifndef _WEAVE_TRAIT_NETWORK__NETWORK_INTERFACE_CAPABILITY_TRAIT_C_H_
 #define _WEAVE_TRAIT_NETWORK__NETWORK_INTERFACE_CAPABILITY_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // NetworkInterfaceType
-    typedef enum
-    {
+// NetworkInterfaceType
+typedef enum
+{
     NETWORK_INTERFACE_TYPE_WEAVE_TUNNEL = 1,
-    NETWORK_INTERFACE_TYPE_WIFI = 2,
-    NETWORK_INTERFACE_TYPE_THREAD = 3,
-    NETWORK_INTERFACE_TYPE_CELLULAR = 4,
-    } schema_weave_network_network_interface_capability_trait_network_interface_type_t;
-
-
-
+    NETWORK_INTERFACE_TYPE_WIFI         = 2,
+    NETWORK_INTERFACE_TYPE_THREAD       = 3,
+    NETWORK_INTERFACE_TYPE_CELLULAR     = 4,
+} schema_weave_network_network_interface_capability_trait_network_interface_type_t;
 
 #endif // _WEAVE_TRAIT_NETWORK__NETWORK_INTERFACE_CAPABILITY_TRAIT_C_H_

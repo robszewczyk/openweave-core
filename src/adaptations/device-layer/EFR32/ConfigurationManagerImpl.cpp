@@ -53,7 +53,7 @@ ConfigurationManagerImpl ConfigurationManagerImpl::sInstance;
 WEAVE_ERROR ConfigurationManagerImpl::_Init()
 {
     WEAVE_ERROR err;
-    bool        failSafeArmed;
+    bool failSafeArmed;
 
     // Initialize the generic implementation base class.
     err = Internal::GenericConfigurationManagerImpl<ConfigurationManagerImpl>::_Init();
@@ -75,8 +75,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_GetDeviceDescriptor(
-    ::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor &deviceDesc)
+WEAVE_ERROR
+ConfigurationManagerImpl::_GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor & deviceDesc)
 {
     WEAVE_ERROR err;
 
@@ -88,7 +88,7 @@ exit:
     return err;
 }
 
-::nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase *ConfigurationManagerImpl::_GetGroupKeyStore()
+::nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase * ConfigurationManagerImpl::_GetGroupKeyStore()
 {
     return &gGroupKeyStore;
 }
@@ -104,9 +104,8 @@ void ConfigurationManagerImpl::_InitiateFactoryReset()
     PlatformMgr().ScheduleWork(DoFactoryReset);
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_ReadPersistedStorageValue(
-    ::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey,
-    uint32_t &                                   value)
+WEAVE_ERROR ConfigurationManagerImpl::_ReadPersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey,
+                                                                 uint32_t & value)
 {
     // This method reads Weave Persisted Counter type nvm3 objects.
     // (where persistedStorageKey represents an index to the counter).
@@ -123,9 +122,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_WritePersistedStorageValue(
-    ::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey,
-    uint32_t                                     value)
+WEAVE_ERROR ConfigurationManagerImpl::_WritePersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey,
+                                                                  uint32_t value)
 {
     // This method reads Weave Persisted Counter type nvm3 objects.
     // (where persistedStorageKey represents an index to the counter).

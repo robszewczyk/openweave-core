@@ -40,12 +40,9 @@ using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::FabricProvisioning;
 
+MockFabricProvisioningServer::MockFabricProvisioningServer() { }
 
-MockFabricProvisioningServer::MockFabricProvisioningServer()
-{
-}
-
-WEAVE_ERROR MockFabricProvisioningServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockFabricProvisioningServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -77,13 +74,13 @@ WEAVE_ERROR MockFabricProvisioningServer::Shutdown()
 
 WEAVE_ERROR MockFabricProvisioningServer::HandleCreateFabric()
 {
-    printf("Weave fabric created (fabric id %llX)\n", (unsigned long long)FabricState->FabricId);
+    printf("Weave fabric created (fabric id %llX)\n", (unsigned long long) FabricState->FabricId);
     return SendSuccessResponse();
 }
 
 WEAVE_ERROR MockFabricProvisioningServer::HandleJoinExistingFabric()
 {
-    printf("Joined existing Weave fabric (fabric id %llX)\n", (unsigned long long)FabricState->FabricId);
+    printf("Joined existing Weave fabric (fabric id %llX)\n", (unsigned long long) FabricState->FabricId);
     return SendSuccessResponse();
 }
 
@@ -99,8 +96,8 @@ WEAVE_ERROR MockFabricProvisioningServer::HandleGetFabricConfig()
     return WEAVE_NO_ERROR;
 }
 
-void MockFabricProvisioningServer::EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void MockFabricProvisioningServer::EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                        const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     if (sSuppressAccessControls)
     {

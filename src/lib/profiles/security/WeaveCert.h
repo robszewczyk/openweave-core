@@ -40,12 +40,12 @@ namespace Weave {
 namespace Profiles {
 namespace Security {
 
+using nl::Weave::ASN1::OID;
+using nl::Weave::Crypto::EncodedECDSASignature;
+using nl::Weave::Crypto::EncodedECPrivateKey;
+using nl::Weave::Crypto::EncodedECPublicKey;
 using nl::Weave::TLV::TLVReader;
 using nl::Weave::TLV::TLVWriter;
-using nl::Weave::ASN1::OID;
-using nl::Weave::Crypto::EncodedECPublicKey;
-using nl::Weave::Crypto::EncodedECPrivateKey;
-using nl::Weave::Crypto::EncodedECDSASignature;
 
 /** X.509 Certificate Key Purpose Flags
  */
@@ -137,30 +137,28 @@ public:
         uint64_t WeaveId;
         struct
         {
-            const uint8_t *Value;
+            const uint8_t * Value;
             uint32_t Len;
         } String;
     } AttrValue;
     OID AttrOID;
 
-    bool IsEqual(const WeaveDN& other) const;
+    bool IsEqual(const WeaveDN & other) const;
     bool IsEmpty(void) const { return AttrOID == nl::Weave::ASN1::kOID_NotSpecified; }
     void Clear(void) { AttrOID = nl::Weave::ASN1::kOID_NotSpecified; }
 };
-
 
 // CertificateKeyId -- Represents a certificate key identifier.
 class CertificateKeyId
 {
 public:
-    const uint8_t *Id;
+    const uint8_t * Id;
     uint8_t Len;
 
-    bool IsEqual(const CertificateKeyId& other) const;
+    bool IsEqual(const CertificateKeyId & other) const;
     bool IsEmpty(void) const { return Id == NULL; }
     void Clear(void) { Id = NULL; }
 };
-
 
 // WeaveCertificateData -- In-memory representation of data extracted
 //   from a Weave certificate.
@@ -185,7 +183,7 @@ public:
         EncodedECDSASignature EC;
     } Signature;
     uint32_t PubKeyCurveId;
-    const uint8_t *EncodedCert;
+    const uint8_t * EncodedCert;
     uint16_t EncodedCertLen;
     uint16_t CertFlags;
     uint16_t KeyUsageFlags;
@@ -199,18 +197,17 @@ public:
     uint8_t TBSHash[kMaxTBSHashLen];
 };
 
-
 // ValidationContext -- Context information used during certification validation.
 class ValidationContext
 {
 public:
     uint32_t EffectiveTime;
-    WeaveCertificateData *TrustAnchor;
-    WeaveCertificateData *SigningCert;
+    WeaveCertificateData * TrustAnchor;
+    WeaveCertificateData * SigningCert;
     uint16_t RequiredKeyUsages;
     uint16_t ValidateFlags;
 #if WEAVE_CONFIG_DEBUG_CERT_VALIDATION
-    WEAVE_ERROR *CertValidationResults;
+    WEAVE_ERROR * CertValidationResults;
     uint8_t CertValidationResultsLen;
 #endif
     uint8_t RequiredKeyPurposes;
@@ -219,98 +216,96 @@ public:
     void Reset();
 };
 
-
 // WeaveCertificateSet -- Collection of Weave certificate data providing methods for
 //   certificate validation and signature verification.
 class NL_DLL_EXPORT WeaveCertificateSet
 {
 public:
-    typedef void *(*AllocFunct)(size_t size);
-    typedef void (*FreeFunct)(void *p);
+    typedef void * (*AllocFunct)(size_t size);
+    typedef void (*FreeFunct)(void * p);
 
     WeaveCertificateSet(void);
 
-    WeaveCertificateData *Certs;                // [READ-ONLY] Pointer to array of certificate data
-    uint8_t CertCount;                          // [READ-ONLY] Number of certificates in Certs array
-    uint8_t MaxCerts;                           // [READ-ONLY] Length of Certs array
+    WeaveCertificateData * Certs; // [READ-ONLY] Pointer to array of certificate data
+    uint8_t CertCount;            // [READ-ONLY] Number of certificates in Certs array
+    uint8_t MaxCerts;             // [READ-ONLY] Length of Certs array
 
     WEAVE_ERROR Init(uint8_t maxCerts, uint16_t decodeBufSize);
     WEAVE_ERROR Init(uint8_t maxCerts, uint16_t decodeBufSize, AllocFunct allocFunct, FreeFunct freeFunct);
-    WEAVE_ERROR Init(WeaveCertificateData *certBuf, uint8_t certBufSize, uint8_t *decodeBuf, uint16_t decodeBufSize);
+    WEAVE_ERROR Init(WeaveCertificateData * certBuf, uint8_t certBufSize, uint8_t * decodeBuf, uint16_t decodeBufSize);
     void Release(void);
     void Clear(void);
 
-    WEAVE_ERROR LoadCert(const uint8_t *weaveCert, uint32_t weaveCertLen, uint16_t decodeFlags, WeaveCertificateData *& cert);
-    WEAVE_ERROR LoadCert(TLVReader& reader, uint16_t decodeFlags, WeaveCertificateData *& cert);
-    WEAVE_ERROR LoadCerts(const uint8_t *encodedCerts, uint32_t encodedCertsLen, uint16_t decodeFlags);
-    WEAVE_ERROR LoadCerts(TLVReader& reader, uint16_t decodeFlags);
-    WEAVE_ERROR AddTrustedKey(uint64_t caId, uint32_t curveId, const EncodedECPublicKey& pubKey,
-                              const uint8_t *pubKeyId, uint16_t pubKeyIdLen);
-    WEAVE_ERROR SaveCerts(TLVWriter& writer, WeaveCertificateData *firstCert, bool includeTrusted);
-    WeaveCertificateData *FindCert(const CertificateKeyId& subjectKeyId) const;
-    WeaveCertificateData *LastCert(void) const { return (CertCount > 0) ? &Certs[CertCount-1] : NULL; }
+    WEAVE_ERROR LoadCert(const uint8_t * weaveCert, uint32_t weaveCertLen, uint16_t decodeFlags, WeaveCertificateData *& cert);
+    WEAVE_ERROR LoadCert(TLVReader & reader, uint16_t decodeFlags, WeaveCertificateData *& cert);
+    WEAVE_ERROR LoadCerts(const uint8_t * encodedCerts, uint32_t encodedCertsLen, uint16_t decodeFlags);
+    WEAVE_ERROR LoadCerts(TLVReader & reader, uint16_t decodeFlags);
+    WEAVE_ERROR AddTrustedKey(uint64_t caId, uint32_t curveId, const EncodedECPublicKey & pubKey, const uint8_t * pubKeyId,
+                              uint16_t pubKeyIdLen);
+    WEAVE_ERROR SaveCerts(TLVWriter & writer, WeaveCertificateData * firstCert, bool includeTrusted);
+    WeaveCertificateData * FindCert(const CertificateKeyId & subjectKeyId) const;
+    WeaveCertificateData * LastCert(void) const { return (CertCount > 0) ? &Certs[CertCount - 1] : NULL; }
 
-    WEAVE_ERROR ValidateCert(WeaveCertificateData& cert, ValidationContext& context);
-    WEAVE_ERROR FindValidCert(const WeaveDN& subjectDN, const CertificateKeyId& subjectKeyId,
-            ValidationContext& context, WeaveCertificateData *& cert);
+    WEAVE_ERROR ValidateCert(WeaveCertificateData & cert, ValidationContext & context);
+    WEAVE_ERROR FindValidCert(const WeaveDN & subjectDN, const CertificateKeyId & subjectKeyId, ValidationContext & context,
+                              WeaveCertificateData *& cert);
 
-    WEAVE_ERROR GenerateECDSASignature(const uint8_t *msgHash, uint8_t msgHashLen,
-                                       WeaveCertificateData& cert,
-                                       const EncodedECPrivateKey& privKey,
-                                       EncodedECDSASignature& encodedSig);
-    WEAVE_ERROR VerifyECDSASignature(const uint8_t *msgHash, uint8_t msgHashLen,
-                                     const EncodedECDSASignature& encodedSig,
-                                     WeaveCertificateData& cert);
+    WEAVE_ERROR GenerateECDSASignature(const uint8_t * msgHash, uint8_t msgHashLen, WeaveCertificateData & cert,
+                                       const EncodedECPrivateKey & privKey, EncodedECDSASignature & encodedSig);
+    WEAVE_ERROR VerifyECDSASignature(const uint8_t * msgHash, uint8_t msgHashLen, const EncodedECDSASignature & encodedSig,
+                                     WeaveCertificateData & cert);
 
 protected:
     AllocFunct mAllocFunct;
     FreeFunct mFreeFunct;
-    uint8_t *mDecodeBuf;
+    uint8_t * mDecodeBuf;
     uint16_t mDecodeBufSize;
 
-    WEAVE_ERROR FindValidCert(const WeaveDN& subjectDN, const CertificateKeyId& subjectKeyId,
-            ValidationContext& context, uint16_t validateFlags, uint8_t depth, WeaveCertificateData *& cert);
-    WEAVE_ERROR ValidateCert(WeaveCertificateData& cert, ValidationContext& context, uint16_t validateFlags, uint8_t depth);
+    WEAVE_ERROR FindValidCert(const WeaveDN & subjectDN, const CertificateKeyId & subjectKeyId, ValidationContext & context,
+                              uint16_t validateFlags, uint8_t depth, WeaveCertificateData *& cert);
+    WEAVE_ERROR ValidateCert(WeaveCertificateData & cert, ValidationContext & context, uint16_t validateFlags, uint8_t depth);
 };
 
-extern WEAVE_ERROR DecodeWeaveCert(const uint8_t *weaveCert, uint32_t weaveCertLen, WeaveCertificateData& certData);
-extern WEAVE_ERROR DecodeWeaveCert(TLVReader& reader, WeaveCertificateData& certData);
+extern WEAVE_ERROR DecodeWeaveCert(const uint8_t * weaveCert, uint32_t weaveCertLen, WeaveCertificateData & certData);
+extern WEAVE_ERROR DecodeWeaveCert(TLVReader & reader, WeaveCertificateData & certData);
 
 /**
-  * Generate an ECDSA signature using local Weave node's private key.
-  *
-  * When invoked, implementations must compute a signature on the given hash value using the node's
-  * private key.
-  *
-  * @param[in] hash              A buffer containing the hash of the certificate to be signed.
-  * @param[in] hashLen           The length in bytes of the hash.
-  * @param[in] ecdsaSig          A reference to the ecdsa signature object, where result of
-  *                              this function to be stored.
-  *
-  * @retval #WEAVE_NO_ERROR      If the operation succeeded.
-  */
-typedef WEAVE_ERROR (*GenerateECDSASignatureFunct)(const uint8_t *hash, uint8_t hashLen, EncodedECDSASignature& ecdsaSig);
+ * Generate an ECDSA signature using local Weave node's private key.
+ *
+ * When invoked, implementations must compute a signature on the given hash value using the node's
+ * private key.
+ *
+ * @param[in] hash              A buffer containing the hash of the certificate to be signed.
+ * @param[in] hashLen           The length in bytes of the hash.
+ * @param[in] ecdsaSig          A reference to the ecdsa signature object, where result of
+ *                              this function to be stored.
+ *
+ * @retval #WEAVE_NO_ERROR      If the operation succeeded.
+ */
+typedef WEAVE_ERROR (*GenerateECDSASignatureFunct)(const uint8_t * hash, uint8_t hashLen, EncodedECDSASignature & ecdsaSig);
 
-extern WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, EncodedECPublicKey& devicePubKey,
-                                                 uint8_t *cert, uint16_t certBufSize, uint16_t& certLen,
+extern WEAVE_ERROR GenerateOperationalDeviceCert(uint64_t deviceId, EncodedECPublicKey & devicePubKey, uint8_t * cert,
+                                                 uint16_t certBufSize, uint16_t & certLen,
                                                  GenerateECDSASignatureFunct genCertSignature);
 
-extern WEAVE_ERROR DecodeWeaveDN(TLVReader& reader, WeaveDN& dn);
+extern WEAVE_ERROR DecodeWeaveDN(TLVReader & reader, WeaveDN & dn);
 
-extern WEAVE_ERROR ConvertX509CertToWeaveCert(const uint8_t *x509Cert, uint32_t x509CertLen, uint8_t *weaveCertBuf, uint32_t weaveCertBufSize, uint32_t& weaveCertLen);
-extern WEAVE_ERROR ConvertWeaveCertToX509Cert(const uint8_t *weaveCert, uint32_t weaveCertLen, uint8_t *x509CertBuf, uint32_t x509CertBufSize, uint32_t& x509CertLen);
+extern WEAVE_ERROR ConvertX509CertToWeaveCert(const uint8_t * x509Cert, uint32_t x509CertLen, uint8_t * weaveCertBuf,
+                                              uint32_t weaveCertBufSize, uint32_t & weaveCertLen);
+extern WEAVE_ERROR ConvertWeaveCertToX509Cert(const uint8_t * weaveCert, uint32_t weaveCertLen, uint8_t * x509CertBuf,
+                                              uint32_t x509CertBufSize, uint32_t & x509CertLen);
 
-extern WEAVE_ERROR DetermineCertType(WeaveCertificateData& cert);
+extern WEAVE_ERROR DetermineCertType(WeaveCertificateData & cert);
 
-extern WEAVE_ERROR PackCertTime(const nl::Weave::ASN1::ASN1UniversalTime& time, uint32_t& packedTime);
-extern WEAVE_ERROR UnpackCertTime(uint32_t packedTime, nl::Weave::ASN1::ASN1UniversalTime& time);
+extern WEAVE_ERROR PackCertTime(const nl::Weave::ASN1::ASN1UniversalTime & time, uint32_t & packedTime);
+extern WEAVE_ERROR UnpackCertTime(uint32_t packedTime, nl::Weave::ASN1::ASN1UniversalTime & time);
 extern uint16_t PackedCertTimeToDate(uint32_t packedTime);
 extern uint32_t PackedCertDateToTime(uint16_t packedDate);
 extern uint32_t SecondsSinceEpochToPackedCertTime(uint32_t secondsSinceEpoch);
 
 inline void ValidationContext::Reset()
 {
-    memset((void *)this, 0, sizeof(*this));
+    memset((void *) this, 0, sizeof(*this));
 }
 
 // True if the OID represents a Weave-defined X.509 distinguished named attribute.

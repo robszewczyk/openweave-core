@@ -46,26 +46,25 @@ using namespace nl::Weave::Encoding;
 enum
 {
     kLengthFieldReserveSize = 5,
-    kMaxElementLength = INT32_MAX,
-    kUnkownLength = -1,
-    kUnknownLengthMarker = 0xFF
+    kMaxElementLength       = INT32_MAX,
+    kUnkownLength           = -1,
+    kUnknownLengthMarker    = 0xFF
 };
 
-
-void ASN1Writer::Init(uint8_t *buf, uint32_t maxLen)
+void ASN1Writer::Init(uint8_t * buf, uint32_t maxLen)
 {
-    mBuf = buf;
-    mWritePoint = buf;
-    mBufEnd = buf + maxLen;
-    mBufEnd = (uint8_t *)((uintptr_t )mBufEnd & ~3); // align on 32bit boundary
-    mDeferredLengthList = (uint8_t **)mBufEnd;
+    mBuf                = buf;
+    mWritePoint         = buf;
+    mBufEnd             = buf + maxLen;
+    mBufEnd             = (uint8_t *) ((uintptr_t) mBufEnd & ~3); // align on 32bit boundary
+    mDeferredLengthList = (uint8_t **) mBufEnd;
 }
 
 void ASN1Writer::InitNullWriter(void)
 {
-    mBuf = NULL;
-    mWritePoint = NULL;
-    mBufEnd = NULL;
+    mBuf                = NULL;
+    mWritePoint         = NULL;
+    mBufEnd             = NULL;
     mDeferredLengthList = NULL;
 }
 
@@ -73,12 +72,12 @@ ASN1_ERROR ASN1Writer::Finalize()
 {
     if (mBuf != NULL)
     {
-        uint8_t *compactPoint = mBuf;
-        uint8_t *spanStart = mBuf;
+        uint8_t * compactPoint = mBuf;
+        uint8_t * spanStart    = mBuf;
 
-        for (uint8_t **listEntry = (uint8_t **)mBufEnd; listEntry > mDeferredLengthList; )
+        for (uint8_t ** listEntry = (uint8_t **) mBufEnd; listEntry > mDeferredLengthList; )
         {
-            uint8_t *lenField = *--listEntry;
+            uint8_t * lenField        = *--listEntry;
             uint8_t lenFieldFirstByte = *lenField;
 
             if (lenFieldFirstByte == kUnknownLengthMarker)
@@ -86,7 +85,7 @@ ASN1_ERROR ASN1Writer::Finalize()
 
             uint8_t lenOfLen = (lenFieldFirstByte < 128) ? 1 : (lenFieldFirstByte & 0x7f) + 1;
 
-            uint8_t *spanEnd = lenField + lenOfLen;
+            uint8_t * spanEnd = lenField + lenOfLen;
 
             if (spanStart == compactPoint)
                 compactPoint = spanEnd;
@@ -123,13 +122,13 @@ ASN1_ERROR ASN1Writer::PutInteger(int64_t val)
     uint8_t encodedVal[8];
     uint8_t valStart, valLen;
 
-    BigEndian::Put64(encodedVal, (uint64_t)val);
+    BigEndian::Put64(encodedVal, (uint64_t) val);
 
     for (valStart = 0; valStart < 7; valStart++)
     {
-        if (encodedVal[valStart] == 0x00 && (encodedVal[valStart+1] & 0x80) == 0)
+        if (encodedVal[valStart] == 0x00 && (encodedVal[valStart + 1] & 0x80) == 0)
             continue;
-        if (encodedVal[valStart] == 0xFF && (encodedVal[valStart+1] & 0x80) == 0x80)
+        if (encodedVal[valStart] == 0xFF && (encodedVal[valStart + 1] & 0x80) == 0x80)
             continue;
         break;
     }
@@ -154,27 +153,27 @@ exit:
     return err;
 }
 
-ASN1_ERROR ASN1Writer::PutObjectId(const uint8_t *val, uint16_t valLen)
+ASN1_ERROR ASN1Writer::PutObjectId(const uint8_t * val, uint16_t valLen)
 {
     return PutValue(kASN1TagClass_Universal, kASN1UniversalTag_ObjectId, false, val, valLen);
 }
 
-ASN1_ERROR ASN1Writer::PutString(uint32_t tag, const char *val, uint16_t valLen)
+ASN1_ERROR ASN1Writer::PutString(uint32_t tag, const char * val, uint16_t valLen)
 {
-    return PutValue(kASN1TagClass_Universal, tag, false, (const uint8_t *)val, valLen);
+    return PutValue(kASN1TagClass_Universal, tag, false, (const uint8_t *) val, valLen);
 }
 
-ASN1_ERROR ASN1Writer::PutOctetString(const uint8_t *val, uint16_t valLen)
+ASN1_ERROR ASN1Writer::PutOctetString(const uint8_t * val, uint16_t valLen)
 {
     return PutValue(kASN1TagClass_Universal, kASN1UniversalTag_OctetString, false, val, valLen);
 }
 
-ASN1_ERROR ASN1Writer::PutOctetString(uint8_t cls, uint32_t tag, const uint8_t *val, uint16_t valLen)
+ASN1_ERROR ASN1Writer::PutOctetString(uint8_t cls, uint32_t tag, const uint8_t * val, uint16_t valLen)
 {
     return PutValue(cls, tag, false, val, valLen);
 }
 
-ASN1_ERROR ASN1Writer::PutOctetString(uint8_t cls, uint32_t tag, nl::Weave::TLV::TLVReader& val)
+ASN1_ERROR ASN1Writer::PutOctetString(uint8_t cls, uint32_t tag, nl::Weave::TLV::TLVReader & val)
 {
     return PutValue(cls, tag, false, val);
 }
@@ -245,19 +244,19 @@ ASN1_ERROR ASN1Writer::PutBitString(uint32_t val)
         mWritePoint[0] = 0;
     else
     {
-        mWritePoint[1] = ReverseBits((uint8_t)val);
+        mWritePoint[1] = ReverseBits((uint8_t) val);
         if (len >= 3)
         {
             val >>= 8;
-            mWritePoint[2] = ReverseBits((uint8_t)val);
+            mWritePoint[2] = ReverseBits((uint8_t) val);
             if (len >= 4)
             {
                 val >>= 8;
-                mWritePoint[3] = ReverseBits((uint8_t)val);
+                mWritePoint[3] = ReverseBits((uint8_t) val);
                 if (len == 5)
                 {
                     val >>= 8;
-                    mWritePoint[4] = ReverseBits((uint8_t)val);
+                    mWritePoint[4] = ReverseBits((uint8_t) val);
                 }
             }
         }
@@ -270,7 +269,7 @@ exit:
     return err;
 }
 
-ASN1_ERROR ASN1Writer::PutBitString(uint8_t unusedBitCount, const uint8_t *encodedBits, uint16_t encodedBitsLen)
+ASN1_ERROR ASN1Writer::PutBitString(uint8_t unusedBitCount, const uint8_t * encodedBits, uint16_t encodedBitsLen)
 {
     ASN1_ERROR err;
 
@@ -289,7 +288,7 @@ exit:
     return err;
 }
 
-ASN1_ERROR ASN1Writer::PutBitString(uint8_t unusedBitCount, nl::Weave::TLV::TLVReader& encodedBits)
+ASN1_ERROR ASN1Writer::PutBitString(uint8_t unusedBitCount, nl::Weave::TLV::TLVReader & encodedBits)
 {
     ASN1_ERROR err;
     uint32_t encodedBitsLen;
@@ -311,14 +310,14 @@ exit:
     return err;
 }
 
-static void itoa2(uint32_t val, uint8_t *buf)
+static void itoa2(uint32_t val, uint8_t * buf)
 {
     buf[1] = '0' + (val % 10);
     val /= 10;
     buf[0] = '0' + (val % 10);
 }
 
-ASN1_ERROR ASN1Writer::PutTime(const ASN1UniversalTime& val)
+ASN1_ERROR ASN1Writer::PutTime(const ASN1UniversalTime & val)
 {
     uint8_t buf[15];
 
@@ -372,7 +371,7 @@ ASN1_ERROR ASN1Writer::StartEncapsulatedType(uint8_t cls, uint32_t tag, bool bit
     // the unused bit count is always 0.
     if (bitStringEncoding)
     {
-        if (mWritePoint == (uint8_t *)mDeferredLengthList)
+        if (mWritePoint == (uint8_t *) mDeferredLengthList)
             return ASN1_ERROR_OVERFLOW;
         *mWritePoint++ = 0;
     }
@@ -386,7 +385,7 @@ ASN1_ERROR ASN1Writer::EndEncapsulatedType()
     return WriteDeferredLength();
 }
 
-ASN1_ERROR ASN1Writer::PutValue(uint8_t cls, uint32_t tag, bool isConstructed, const uint8_t *val, uint16_t valLen)
+ASN1_ERROR ASN1Writer::PutValue(uint8_t cls, uint32_t tag, bool isConstructed, const uint8_t * val, uint16_t valLen)
 {
     ASN1_ERROR err;
 
@@ -403,7 +402,7 @@ exit:
     return err;
 }
 
-ASN1_ERROR ASN1Writer::PutValue(uint8_t cls, uint32_t tag, bool isConstructed, nl::Weave::TLV::TLVReader& val)
+ASN1_ERROR ASN1Writer::PutValue(uint8_t cls, uint32_t tag, bool isConstructed, nl::Weave::TLV::TLVReader & val)
 {
     ASN1_ERROR err;
     uint32_t valLen;
@@ -456,7 +455,7 @@ ASN1_ERROR ASN1Writer::EncodeHead(uint8_t cls, uint32_t tag, bool isConstructed,
     // Make sure there's enough space to encode the entire value without bumping into the deferred length
     // list at the end of the buffer.
     totalLen = 1 + lenOfLen + (len != kUnkownLength ? len : 0);
-    VerifyOrExit((mWritePoint + totalLen) <= (uint8_t *)mDeferredLengthList, err = ASN1_ERROR_OVERFLOW);
+    VerifyOrExit((mWritePoint + totalLen) <= (uint8_t *) mDeferredLengthList, err = ASN1_ERROR_OVERFLOW);
 
     // Write the tag byte.
     *mWritePoint++ = cls | (isConstructed ? 0x20 : 0) | tag;
@@ -469,7 +468,7 @@ ASN1_ERROR ASN1Writer::EncodeHead(uint8_t cls, uint32_t tag, bool isConstructed,
     // and save a pointer to the length field in the deferred-length list.
     else
     {
-        *mWritePoint = kUnknownLengthMarker;
+        *mWritePoint         = kUnknownLengthMarker;
         *mDeferredLengthList = mWritePoint;
     }
 
@@ -482,7 +481,7 @@ exit:
 ASN1_ERROR ASN1Writer::WriteDeferredLength()
 {
     ASN1_ERROR err = ASN1_NO_ERROR;
-    uint8_t **listEntry;
+    uint8_t ** listEntry;
     uint32_t lenAdj;
 
     // Do nothing for a null writer.
@@ -493,10 +492,10 @@ ASN1_ERROR ASN1Writer::WriteDeferredLength()
     // Scan the deferred-length list in reverse order looking for the most recent entry where
     // the length is still unknown. This entry represents the "container" element whose encoding
     // is now complete.
-    for (listEntry = mDeferredLengthList; listEntry < (uint8_t **)mBufEnd; listEntry++)
+    for (listEntry = mDeferredLengthList; listEntry < (uint8_t **) mBufEnd; listEntry++)
     {
         // Get a pointer to the deferred-length field.
-        uint8_t *lenField = *listEntry;
+        uint8_t * lenField = *listEntry;
 
         // Get the first byte of the length field.
         uint8_t lenFieldFirstByte = *lenField;
@@ -515,7 +514,7 @@ ASN1_ERROR ASN1Writer::WriteDeferredLength()
             // in the process.  Note that the number of bytes consumed by the final length field
             // may be smaller than the space that was reserved for the field.  This will be fixed
             // up when the Finalize() method is called.
-            uint8_t lenOfLen = GetLengthOfLength((int32_t)elemLen);
+            uint8_t lenOfLen = GetLengthOfLength((int32_t) elemLen);
             EncodeLength(lenField, lenOfLen, elemLen);
 
             ExitNow(err = ASN1_NO_ERROR);
@@ -543,29 +542,26 @@ uint8_t ASN1Writer::GetLengthOfLength(int32_t len)
         return 2;
     if (len < 65536)
         return 3;
-    if (len < (1<<24))
+    if (len < (1 << 24))
         return 4;
     return 5;
 }
 
-void ASN1Writer::EncodeLength(uint8_t *buf, uint8_t lenOfLen, int32_t lenToEncode)
+void ASN1Writer::EncodeLength(uint8_t * buf, uint8_t lenOfLen, int32_t lenToEncode)
 {
     if (lenOfLen == 1)
-        buf[0] = (uint8_t)lenToEncode;
+        buf[0] = (uint8_t) lenToEncode;
     else
     {
         --lenOfLen;
         buf[0] = 0x80 | lenOfLen;
         do
         {
-            buf[lenOfLen] = (uint8_t)lenToEncode;
+            buf[lenOfLen] = (uint8_t) lenToEncode;
             lenToEncode >>= 8;
         } while (--lenOfLen);
     }
 }
-
-
-
 
 } // namespace ASN1
 } // namespace Weave

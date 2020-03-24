@@ -33,31 +33,24 @@ namespace Test {
 namespace Trait {
 namespace TestCommon {
 
-    using namespace ::nl::Weave::Profiles::DataManagement;
+using namespace ::nl::Weave::Profiles::DataManagement;
 
-  //
-  // Event Structs
-  //
+//
+// Event Structs
+//
 
-const nl::FieldDescriptor CommonStructEFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(CommonStructE, seA), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
+const nl::FieldDescriptor CommonStructEFieldDescriptors[] = {
+    { NULL, offsetof(CommonStructE, seA), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 
-    {
-        NULL, offsetof(CommonStructE, seB), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 2
-    },
+    { NULL, offsetof(CommonStructE, seB), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor CommonStructE::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(CommonStructEFieldDescriptors)/sizeof(CommonStructEFieldDescriptors[0]),
-    .mFields = CommonStructEFieldDescriptors,
-    .mSize = sizeof(CommonStructE)
+const nl::SchemaFieldDescriptor CommonStructE::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(CommonStructEFieldDescriptors) / sizeof(CommonStructEFieldDescriptors[0]),
+    .mFields                     = CommonStructEFieldDescriptors,
+    .mSize                       = sizeof(CommonStructE)
 };
-
 
 } // namespace TestCommon
 

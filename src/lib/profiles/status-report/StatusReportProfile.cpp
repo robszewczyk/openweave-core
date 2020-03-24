@@ -39,23 +39,23 @@ namespace StatusReporting {
 
 StatusReport::StatusReport(void)
 {
-    mProfileId = 0;
+    mProfileId  = 0;
     mStatusCode = 0;
-    mError = WEAVE_NO_ERROR;
+    mError      = WEAVE_NO_ERROR;
 }
 
 StatusReport::~StatusReport(void)
 {
-    mProfileId = 0;
+    mProfileId  = 0;
     mStatusCode = 0;
-    mError = WEAVE_NO_ERROR;
+    mError      = WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR StatusReport::init(uint32_t aProfileId, uint16_t aCode, ReferencedTLVData *aInfo)
+WEAVE_ERROR StatusReport::init(uint32_t aProfileId, uint16_t aCode, ReferencedTLVData * aInfo)
 {
-    mProfileId = aProfileId;
+    mProfileId  = aProfileId;
     mStatusCode = aCode;
-    mError = WEAVE_NO_ERROR;
+    mError      = WEAVE_NO_ERROR;
 
     if (aInfo)
         mAdditionalInfo = *aInfo;
@@ -67,21 +67,21 @@ WEAVE_ERROR StatusReport::init(WEAVE_ERROR aError)
 {
     if (aError == WEAVE_NO_ERROR)
     {
-        mProfileId = kWeaveProfile_Common;
+        mProfileId  = kWeaveProfile_Common;
         mStatusCode = kStatus_Success;
     }
 
     else
     {
-        mProfileId = kWeaveProfile_Common;
+        mProfileId  = kWeaveProfile_Common;
         mStatusCode = kStatus_InternalError;
-        mError = aError;
+        mError      = aError;
     }
 
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR StatusReport::pack(PacketBuffer *aBuffer, uint32_t maxLen)
+WEAVE_ERROR StatusReport::pack(PacketBuffer * aBuffer, uint32_t maxLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     MessageIterator i(aBuffer);
@@ -138,10 +138,10 @@ exit:
 
 inline uint16_t StatusReport::packedLength(void)
 {
-    return sizeof(mProfileId)+sizeof(mStatusCode)+mAdditionalInfo.theLength;
+    return sizeof(mProfileId) + sizeof(mStatusCode) + mAdditionalInfo.theLength;
 }
 
-WEAVE_ERROR StatusReport::parse(PacketBuffer *aBuffer, StatusReport &aDestination)
+WEAVE_ERROR StatusReport::parse(PacketBuffer * aBuffer, StatusReport & aDestination)
 {
     WEAVE_ERROR err;
     MessageIterator i(aBuffer);
@@ -158,7 +158,7 @@ exit:
     return err;
 }
 
-bool StatusReport::operator == (const StatusReport &another) const
+bool StatusReport::operator ==(const StatusReport & another) const
 {
     return ((mProfileId == another.mProfileId) && (mStatusCode == another.mStatusCode));
 }
@@ -170,17 +170,17 @@ bool StatusReport::operator == (const StatusReport &another) const
 
 bool StatusReport::success(void)
 {
-    return(mProfileId == kWeaveProfile_Common && mStatusCode == kStatus_Success);
+    return (mProfileId == kWeaveProfile_Common && mStatusCode == kStatus_Success);
 }
 
-WEAVE_ERROR StatusReport::StartMetaData(nl::Weave::TLV::TLVWriter &aWriter)
+WEAVE_ERROR StatusReport::StartMetaData(nl::Weave::TLV::TLVWriter & aWriter)
 {
     TLVType metaDataContainer;
 
     return aWriter.StartContainer(AnonymousTag, kTLVType_Structure, metaDataContainer);
 }
 
-WEAVE_ERROR StatusReport::EndMetaData(nl::Weave::TLV::TLVWriter &aWriter)
+WEAVE_ERROR StatusReport::EndMetaData(nl::Weave::TLV::TLVWriter & aWriter)
 {
     WEAVE_ERROR err;
     TLVType metaDataContainer = kTLVType_Structure;
@@ -194,11 +194,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR StatusReport::AddErrorCode(nl::Weave::TLV::TLVWriter &aWriter, WEAVE_ERROR aError)
+WEAVE_ERROR StatusReport::AddErrorCode(nl::Weave::TLV::TLVWriter & aWriter, WEAVE_ERROR aError)
 {
     return aWriter.Put(CommonTag(kTag_SystemErrorCode), aError);
 }
 } // namespace StatusReporting
 } // namespace Profiles
 } // namespace Weave
-} // nl
+} // namespace nl

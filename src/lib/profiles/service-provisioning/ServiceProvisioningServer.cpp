@@ -41,28 +41,27 @@ using namespace nl::Weave::TLV;
 
 ServiceProvisioningServer::ServiceProvisioningServer()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    mDelegate = NULL;
-    mCurClientOp = NULL;
+    FabricState     = NULL;
+    ExchangeMgr     = NULL;
+    mDelegate       = NULL;
+    mCurClientOp    = NULL;
     mCurClientOpBuf = NULL;
-    mCurServerOp = NULL;
-    mServerOpState = kServerOpState_Idle;
+    mCurServerOp    = NULL;
+    mServerOpState  = kServerOpState_Idle;
 }
 
-WEAVE_ERROR ServiceProvisioningServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR ServiceProvisioningServer::Init(WeaveExchangeManager * exchangeMgr)
 {
-    FabricState = exchangeMgr->FabricState;
-    ExchangeMgr = exchangeMgr;
-    mDelegate = NULL;
-    mCurClientOp = NULL;
+    FabricState     = exchangeMgr->FabricState;
+    ExchangeMgr     = exchangeMgr;
+    mDelegate       = NULL;
+    mCurClientOp    = NULL;
     mCurClientOpBuf = NULL;
-    mCurServerOp = NULL;
-    mServerOpState = kServerOpState_Idle;
+    mCurServerOp    = NULL;
+    mServerOpState  = kServerOpState_Idle;
 
     // Register to receive unsolicited Service Provisioning messages from the exchange manager.
-    WEAVE_ERROR err =
-        ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_ServiceProvisioning, HandleClientRequest, this);
+    WEAVE_ERROR err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_ServiceProvisioning, HandleClientRequest, this);
 
     return err;
 }
@@ -75,23 +74,23 @@ WEAVE_ERROR ServiceProvisioningServer::Shutdown()
     if (mCurClientOpBuf != NULL)
         PacketBuffer::Free(mCurClientOpBuf);
 
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    mDelegate = NULL;
-    mCurClientOp = NULL;
+    FabricState     = NULL;
+    ExchangeMgr     = NULL;
+    mDelegate       = NULL;
+    mCurClientOp    = NULL;
     mCurClientOpBuf = NULL;
-    mCurServerOp = NULL;
-    mServerOpState = kServerOpState_Idle;
+    mCurServerOp    = NULL;
+    mServerOpState  = kServerOpState_Idle;
 
     return WEAVE_NO_ERROR;
 }
 
-void ServiceProvisioningServer::SetDelegate(ServiceProvisioningDelegate *delegate)
+void ServiceProvisioningServer::SetDelegate(ServiceProvisioningDelegate * delegate)
 {
     mDelegate = delegate;
 }
 
-ServiceProvisioningDelegate* ServiceProvisioningServer::GetDelegate(void) const
+ServiceProvisioningDelegate * ServiceProvisioningServer::GetDelegate(void) const
 {
     return mDelegate;
 }
@@ -127,31 +126,32 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(WeaveConnection *serverCon, uint64_t serviceId, uint64_t fabricId,
-                                                                      const char *accountId, uint16_t accountIdLen,
-                                                                      const uint8_t *pairingToken, uint16_t pairingTokenLen,
-                                                                      const uint8_t *pairingInitData, uint16_t pairingInitDataLen,
-                                                                      const uint8_t *deviceInitData, uint16_t deviceInitDataLen)
+WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(WeaveConnection * serverCon, uint64_t serviceId,
+                                                                      uint64_t fabricId, const char * accountId,
+                                                                      uint16_t accountIdLen, const uint8_t * pairingToken,
+                                                                      uint16_t pairingTokenLen, const uint8_t * pairingInitData,
+                                                                      uint16_t pairingInitDataLen, const uint8_t * deviceInitData,
+                                                                      uint16_t deviceInitDataLen)
 {
-    WEAVE_ERROR                 err     = WEAVE_NO_ERROR;
-    PairDeviceToAccountMessage  msg;
-    PacketBuffer*               msgBuf  = NULL;
-    uint16_t                    msgLen  = sizeof(accountIdLen) + sizeof(pairingTokenLen) + sizeof(pairingInitDataLen) + sizeof(deviceInitDataLen) +
-                                          sizeof(serviceId) + sizeof(fabricId) + accountIdLen + pairingTokenLen + pairingInitDataLen + deviceInitDataLen;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    PairDeviceToAccountMessage msg;
+    PacketBuffer * msgBuf = NULL;
+    uint16_t msgLen = sizeof(accountIdLen) + sizeof(pairingTokenLen) + sizeof(pairingInitDataLen) + sizeof(deviceInitDataLen) +
+        sizeof(serviceId) + sizeof(fabricId) + accountIdLen + pairingTokenLen + pairingInitDataLen + deviceInitDataLen;
 
     if (mServerOpState != kServerOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    msg.ServiceId = serviceId;
-    msg.FabricId = fabricId;
-    msg.AccountId = accountId;
-    msg.AccountIdLen = accountIdLen;
-    msg.PairingToken = pairingToken;
-    msg.PairingTokenLen = pairingTokenLen;
-    msg.PairingInitData = pairingInitData;
+    msg.ServiceId          = serviceId;
+    msg.FabricId           = fabricId;
+    msg.AccountId          = accountId;
+    msg.AccountIdLen       = accountIdLen;
+    msg.PairingToken       = pairingToken;
+    msg.PairingTokenLen    = pairingTokenLen;
+    msg.PairingInitData    = pairingInitData;
     msg.PairingInitDataLen = pairingInitDataLen;
-    msg.DeviceInitData = deviceInitData;
-    msg.DeviceInitDataLen = deviceInitDataLen;
+    msg.DeviceInitData     = deviceInitData;
+    msg.DeviceInitDataLen  = deviceInitDataLen;
 
     // Allocate a buffer for the message.
     msgBuf = PacketBuffer::NewWithAvailableSize(msgLen);
@@ -171,15 +171,15 @@ WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(WeaveConne
     {
         mCurServerOp->ResponseTimeout = WEAVE_CONFIG_SERVICE_PROV_RESPONSE_TIMEOUT;
     }
-    mCurServerOp->OnResponseTimeout = HandleServerResponseTimeout;
+    mCurServerOp->OnResponseTimeout  = HandleServerResponseTimeout;
     mCurServerOp->OnConnectionClosed = HandleServerConnectionClosed;
-    mCurServerOp->OnKeyError = HandleServerKeyError;
+    mCurServerOp->OnKeyError         = HandleServerKeyError;
 
     // Record that a PairDeviceToAccount request is outstanding.
     mServerOpState = kServerOpState_PairDeviceToAccount;
 
     // Send the PairDeviceToAccount message to the service.
-    err = mCurServerOp->SendMessage(kWeaveProfile_ServiceProvisioning, kMsgType_PairDeviceToAccount, msgBuf, 0);
+    err    = mCurServerOp->SendMessage(kWeaveProfile_ServiceProvisioning, kMsgType_PairDeviceToAccount, msgBuf, 0);
     msgBuf = NULL;
 
 exit:
@@ -197,32 +197,32 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(Binding *binding, uint64_t serviceId, uint64_t fabricId,
-                                                                      const char *accountId, uint16_t accountIdLen,
-                                                                      const uint8_t *pairingToken, uint16_t pairingTokenLen,
-                                                                      const uint8_t *pairingInitData, uint16_t pairingInitDataLen,
-                                                                      const uint8_t *deviceInitData, uint16_t deviceInitDataLen)
+WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(Binding * binding, uint64_t serviceId, uint64_t fabricId,
+                                                                      const char * accountId, uint16_t accountIdLen,
+                                                                      const uint8_t * pairingToken, uint16_t pairingTokenLen,
+                                                                      const uint8_t * pairingInitData, uint16_t pairingInitDataLen,
+                                                                      const uint8_t * deviceInitData, uint16_t deviceInitDataLen)
 {
-    WEAVE_ERROR                 err     = WEAVE_NO_ERROR;
-    PairDeviceToAccountMessage  msg;
-    PacketBuffer*               msgBuf  = NULL;
-    uint16_t                    flags   = 0;
-    uint16_t                    msgLen  = sizeof(accountIdLen) + sizeof(pairingTokenLen) + sizeof(pairingInitDataLen) + sizeof(deviceInitDataLen) +
-                                          sizeof(serviceId) + sizeof(fabricId) + accountIdLen + pairingTokenLen + pairingInitDataLen + deviceInitDataLen;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    PairDeviceToAccountMessage msg;
+    PacketBuffer * msgBuf = NULL;
+    uint16_t flags        = 0;
+    uint16_t msgLen = sizeof(accountIdLen) + sizeof(pairingTokenLen) + sizeof(pairingInitDataLen) + sizeof(deviceInitDataLen) +
+        sizeof(serviceId) + sizeof(fabricId) + accountIdLen + pairingTokenLen + pairingInitDataLen + deviceInitDataLen;
 
     if (mServerOpState != kServerOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    msg.ServiceId = serviceId;
-    msg.FabricId = fabricId;
-    msg.AccountId = accountId;
-    msg.AccountIdLen = accountIdLen;
-    msg.PairingToken = pairingToken;
-    msg.PairingTokenLen = pairingTokenLen;
-    msg.PairingInitData = pairingInitData;
+    msg.ServiceId          = serviceId;
+    msg.FabricId           = fabricId;
+    msg.AccountId          = accountId;
+    msg.AccountIdLen       = accountIdLen;
+    msg.PairingToken       = pairingToken;
+    msg.PairingTokenLen    = pairingTokenLen;
+    msg.PairingInitData    = pairingInitData;
     msg.PairingInitDataLen = pairingInitDataLen;
-    msg.DeviceInitData = deviceInitData;
-    msg.DeviceInitDataLen = deviceInitDataLen;
+    msg.DeviceInitData     = deviceInitData;
+    msg.DeviceInitDataLen  = deviceInitDataLen;
 
     // Allocate a buffer for the message.
     msgBuf = PacketBuffer::NewWithAvailableSize(msgLen);
@@ -236,16 +236,16 @@ WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(Binding *b
     err = binding->NewExchangeContext(mCurServerOp);
     SuccessOrExit(err);
 
-    mCurServerOp->AppState = this;
+    mCurServerOp->AppState          = this;
     mCurServerOp->OnMessageReceived = HandleServerResponse;
 
     if (mCurServerOp->ResponseTimeout == 0)
     {
         mCurServerOp->ResponseTimeout = WEAVE_CONFIG_SERVICE_PROV_RESPONSE_TIMEOUT;
     }
-    mCurServerOp->OnResponseTimeout = HandleServerResponseTimeout;
+    mCurServerOp->OnResponseTimeout  = HandleServerResponseTimeout;
     mCurServerOp->OnConnectionClosed = HandleServerConnectionClosed;
-    mCurServerOp->OnKeyError = HandleServerKeyError;
+    mCurServerOp->OnKeyError         = HandleServerKeyError;
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     mCurServerOp->OnSendError = HandleServerSendError;
@@ -258,7 +258,7 @@ WEAVE_ERROR ServiceProvisioningServer::SendPairDeviceToAccountRequest(Binding *b
     flags = (mCurServerOp->Con == NULL) ? ExchangeContext::kSendFlag_RequestAck : 0;
 
     // Send the PairDeviceToAccount message to the service.
-    err = mCurServerOp->SendMessage(kWeaveProfile_ServiceProvisioning, kMsgType_PairDeviceToAccount, msgBuf, flags);
+    err    = mCurServerOp->SendMessage(kWeaveProfile_ServiceProvisioning, kMsgType_PairDeviceToAccount, msgBuf, flags);
     msgBuf = NULL;
 
 exit:
@@ -277,20 +277,20 @@ exit:
 }
 
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
-WEAVE_ERROR ServiceProvisioningServer::SendIFJServiceFabricJoinRequest(Binding *binding, uint64_t serviceId, uint64_t fabricId,
-                                                                       const uint8_t *deviceInitData, uint16_t deviceInitDataLen)
+WEAVE_ERROR ServiceProvisioningServer::SendIFJServiceFabricJoinRequest(Binding * binding, uint64_t serviceId, uint64_t fabricId,
+                                                                       const uint8_t * deviceInitData, uint16_t deviceInitDataLen)
 {
-    WEAVE_ERROR                 err     = WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
     IFJServiceFabricJoinMessage msg;
-    PacketBuffer*               msgBuf  = NULL;
-    uint16_t                    msgLen  = sizeof(deviceInitDataLen) + sizeof(serviceId) + sizeof(fabricId) + deviceInitDataLen;
+    PacketBuffer * msgBuf = NULL;
+    uint16_t msgLen       = sizeof(deviceInitDataLen) + sizeof(serviceId) + sizeof(fabricId) + deviceInitDataLen;
 
     if (mServerOpState != kServerOpState_Idle)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    msg.ServiceId = serviceId;
-    msg.FabricId = fabricId;
-    msg.DeviceInitData = deviceInitData;
+    msg.ServiceId         = serviceId;
+    msg.FabricId          = fabricId;
+    msg.DeviceInitData    = deviceInitData;
     msg.DeviceInitDataLen = deviceInitDataLen;
 
     // Allocate a buffer for the message.
@@ -305,7 +305,7 @@ WEAVE_ERROR ServiceProvisioningServer::SendIFJServiceFabricJoinRequest(Binding *
     err = binding->NewExchangeContext(mCurServerOp);
     SuccessOrExit(err);
 
-    mCurServerOp->AppState = this;
+    mCurServerOp->AppState          = this;
     mCurServerOp->OnMessageReceived = HandleServerResponse;
 
     if (mCurServerOp->ResponseTimeout == 0)
@@ -313,7 +313,7 @@ WEAVE_ERROR ServiceProvisioningServer::SendIFJServiceFabricJoinRequest(Binding *
         mCurServerOp->ResponseTimeout = WEAVE_CONFIG_SERVICE_PROV_RESPONSE_TIMEOUT;
     }
     mCurServerOp->OnResponseTimeout = HandleServerResponseTimeout;
-    mCurServerOp->OnKeyError = HandleServerKeyError;
+    mCurServerOp->OnKeyError        = HandleServerKeyError;
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     mCurServerOp->OnSendError = HandleServerSendError;
@@ -323,7 +323,7 @@ WEAVE_ERROR ServiceProvisioningServer::SendIFJServiceFabricJoinRequest(Binding *
     mServerOpState = kServerOpState_IFJServiceFabricJoin;
 
     // Send the IFJServiceFabricJoin message to the service.
-    err = mCurServerOp->SendMessage(kWeaveProfile_ServiceProvisioning, kMsgType_IFJServiceFabricJoin, msgBuf,
+    err    = mCurServerOp->SendMessage(kWeaveProfile_ServiceProvisioning, kMsgType_IFJServiceFabricJoin, msgBuf,
                                     nl::Weave::ExchangeContext::kSendFlag_ExpectResponse);
     msgBuf = NULL;
 
@@ -344,14 +344,15 @@ exit:
 }
 #endif // WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
-void ServiceProvisioningServer::HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                                    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void ServiceProvisioningServer::HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                    const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                    PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ServiceProvisioningServer *server = (ServiceProvisioningServer *) ec->AppState;
-    ServiceProvisioningDelegate *delegate = server->mDelegate;
-    uint16_t dataLen = payload->DataLength();
-    uint8_t *p = payload->Start();
+    WEAVE_ERROR err                        = WEAVE_NO_ERROR;
+    ServiceProvisioningServer * server     = (ServiceProvisioningServer *) ec->AppState;
+    ServiceProvisioningDelegate * delegate = server->mDelegate;
+    uint16_t dataLen                       = payload->DataLength();
+    uint8_t * p                            = payload->Start();
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_ServiceProvisioning)
@@ -390,7 +391,7 @@ void ServiceProvisioningServer::HandleClientRequest(ExchangeContext *ec, const I
         SuccessOrExit(err);
 
         server->mCurClientOpBuf = payload;
-        payload = NULL;
+        payload                 = NULL;
 
         err = delegate->HandleRegisterServicePairAccount(server->mCurClientOpMsg.RegisterServicePairAccount);
         SuccessOrExit(err);
@@ -402,7 +403,7 @@ void ServiceProvisioningServer::HandleClientRequest(ExchangeContext *ec, const I
         SuccessOrExit(err);
 
         server->mCurClientOpBuf = payload;
-        payload = NULL;
+        payload                 = NULL;
 
         err = delegate->HandleUpdateService(server->mCurClientOpMsg.UpdateService);
         SuccessOrExit(err);
@@ -422,9 +423,7 @@ void ServiceProvisioningServer::HandleClientRequest(ExchangeContext *ec, const I
         break;
     }
 
-    default:
-        server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest);
-        break;
+    default: server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest); break;
     }
 
 exit:
@@ -434,20 +433,20 @@ exit:
 
     if (err != WEAVE_NO_ERROR && server->mCurClientOp != NULL && ec == server->mCurClientOp)
     {
-        uint16_t statusCode = (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH)
-                ? Common::kStatus_BadRequest
-                : Common::kStatus_InternalError;
+        uint16_t statusCode =
+            (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH) ? Common::kStatus_BadRequest : Common::kStatus_InternalError;
         server->SendStatusReport(kWeaveProfile_Common, statusCode, err);
     }
 }
 
-void ServiceProvisioningServer::HandleServerResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                                     uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void ServiceProvisioningServer::HandleServerResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                     const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                     PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
     WEAVE_ERROR delegateErr = WEAVE_NO_ERROR;
     StatusReport statusReport;
-    ServiceProvisioningServer *server = (ServiceProvisioningServer *) ec->AppState;
+    ServiceProvisioningServer * server = (ServiceProvisioningServer *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding server operation. If not, it'll get closed at exit. If it does match, we'll null ec
@@ -457,7 +456,7 @@ void ServiceProvisioningServer::HandleServerResponse(ExchangeContext *ec, const 
 
     // Verify the message is expected.
     VerifyOrExit((profileId == kWeaveProfile_Common && msgType == nl::Weave::Profiles::Common::kMsgType_StatusReport) ||
-                 (profileId == kWeaveProfile_StatusReport_Deprecated),
+                     (profileId == kWeaveProfile_StatusReport_Deprecated),
                  err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
     err = StatusReport::parse(payload, statusReport);
@@ -483,9 +482,9 @@ exit:
         ec->Close();
 }
 
-void ServiceProvisioningServer::HandleServerResponseTimeout(ExchangeContext *ec)
+void ServiceProvisioningServer::HandleServerResponseTimeout(ExchangeContext * ec)
 {
-    ServiceProvisioningServer *server = (ServiceProvisioningServer *) ec->AppState;
+    ServiceProvisioningServer * server = (ServiceProvisioningServer *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding server operation. If not, it'll get closed at exit. If it does match, we'll null ec
@@ -500,9 +499,9 @@ exit:
         ec->Close();
 }
 
-void ServiceProvisioningServer::HandleServerConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void ServiceProvisioningServer::HandleServerConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
-    ServiceProvisioningServer *server = (ServiceProvisioningServer *) ec->AppState;
+    ServiceProvisioningServer * server = (ServiceProvisioningServer *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding server operation. If not, it'll get closed at exit. If it does match, we'll null ec
@@ -522,9 +521,9 @@ exit:
         ec->Close();
 }
 
-void ServiceProvisioningServer::HandleServerKeyError(ExchangeContext *ec, WEAVE_ERROR keyErr)
+void ServiceProvisioningServer::HandleServerKeyError(ExchangeContext * ec, WEAVE_ERROR keyErr)
 {
-    ServiceProvisioningServer *server = (ServiceProvisioningServer *) ec->AppState;
+    ServiceProvisioningServer * server = (ServiceProvisioningServer *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding server operation. If not, it'll get closed at exit. If it does match, we'll null ec
@@ -540,9 +539,9 @@ exit:
 }
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-void ServiceProvisioningServer::HandleServerSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt)
+void ServiceProvisioningServer::HandleServerSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt)
 {
-    ServiceProvisioningServer *server = (ServiceProvisioningServer *) ec->AppState;
+    ServiceProvisioningServer * server = (ServiceProvisioningServer *) ec->AppState;
 
     // Sanity check that the passed-in exchange context is in fact the one that represents the current
     // outstanding server operation. If not, it'll get closed at exit. If it does match, we'll null ec
@@ -558,7 +557,8 @@ exit:
 }
 #endif // #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-void ServiceProvisioningServer::HandleServiceProvisioningOpResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId, uint16_t serverStatusCode)
+void ServiceProvisioningServer::HandleServiceProvisioningOpResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId,
+                                                                  uint16_t serverStatusCode)
 {
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
     uint8_t prevOpState = mServerOpState;
@@ -582,7 +582,7 @@ void ServiceProvisioningServer::HandleServiceProvisioningOpResult(WEAVE_ERROR lo
     }
 }
 
-bool ServiceProvisioningServer::IsValidServiceConfig(const uint8_t *serviceConfig, uint16_t serviceConfigLen)
+bool ServiceProvisioningServer::IsValidServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen)
 {
     WEAVE_ERROR err;
     nl::Weave::TLV::TLVReader reader;
@@ -592,7 +592,8 @@ bool ServiceProvisioningServer::IsValidServiceConfig(const uint8_t *serviceConfi
     err = reader.Next();
     SuccessOrExit(err);
 
-    VerifyOrExit(reader.GetTag() == ProfileTag(kWeaveProfile_ServiceProvisioning, kTag_ServiceConfig), err = WEAVE_ERROR_INVALID_TLV_TAG);
+    VerifyOrExit(reader.GetTag() == ProfileTag(kWeaveProfile_ServiceProvisioning, kTag_ServiceConfig),
+                 err = WEAVE_ERROR_INVALID_TLV_TAG);
 
     {
         TLVType topLevelContainer;
@@ -637,10 +638,13 @@ exit:
     return err == WEAVE_NO_ERROR;
 }
 
-void ServiceProvisioningDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void ServiceProvisioningDelegate::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                       const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
-    enum { kServiceProvisioningEndpointId = 0x18B4300200000010ull };
+    enum
+    {
+        kServiceProvisioningEndpointId = 0x18B4300200000010ull
+    };
 
     // If the result has not already been determined by a subclass...
     if (result == kAccessControlResult_NotDetermined)
@@ -665,7 +669,8 @@ void ServiceProvisioningDelegate::EnforceAccessControl(ExchangeContext *ec, uint
 
         case kMsgType_UnregisterService:
             if (msgInfo->PeerAuthMode == kWeaveAuthMode_CASE_AccessToken ||
-                (msgInfo->PeerAuthMode == kWeaveAuthMode_CASE_ServiceEndPoint && msgInfo->SourceNodeId == kServiceProvisioningEndpointId))
+                (msgInfo->PeerAuthMode == kWeaveAuthMode_CASE_ServiceEndPoint &&
+                 msgInfo->SourceNodeId == kServiceProvisioningEndpointId))
             {
                 result = kAccessControlResult_Accepted;
             }
@@ -675,9 +680,7 @@ void ServiceProvisioningDelegate::EnforceAccessControl(ExchangeContext *ec, uint
 
         case kMsgType_RegisterServicePairAccount:
         case kMsgType_UpdateService:
-        case kMsgType_UnregisterService:
-            result = kAccessControlResult_Accepted;
-            break;
+        case kMsgType_UnregisterService: result = kAccessControlResult_Accepted; break;
 
 #endif // WEAVE_CONFIG_REQUIRE_AUTH_SERVICE_PROV
 
@@ -698,7 +701,7 @@ bool ServiceProvisioningDelegate::IsPairedToAccount() const
     return false;
 }
 
-} // ServiceProvisioning
+} // namespace ServiceProvisioning
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

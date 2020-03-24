@@ -98,8 +98,8 @@ uint64_t gInfoEventBuffer[64];
 uint64_t gProdEventBuffer[256];
 uint64_t gCritEventBuffer[256];
 
-bool gMockEventStop                     = false;
-bool gEventIsStopped                    = false;
+bool gMockEventStop  = false;
+bool gEventIsStopped = false;
 
 EventGenerator * GetTestDebugGenerator(void)
 {

@@ -46,13 +46,8 @@ using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::NetworkProvisioning;
 
-static WirelessRegDomain sSupportedRegDomains[] =
-{
-    { 'U', 'S' },
-    { 'C', 'A' },
-    { 'G', 'B' },
-    { 'F', 'R' },
-    { 'D', 'E' },
+static WirelessRegDomain sSupportedRegDomains[] = {
+    { 'U', 'S' }, { 'C', 'A' }, { 'G', 'B' }, { 'F', 'R' }, { 'D', 'E' },
 };
 
 MockNetworkProvisioningServer::MockNetworkProvisioningServer()
@@ -62,35 +57,35 @@ MockNetworkProvisioningServer::MockNetworkProvisioningServer()
     // NOTE: If you change this code, be sure to adjust MockNetworkProvisioningServer::Preconfig()
     // accordingly.
 
-    ScanResults[0].NetworkType = kNetworkType_WiFi;
-    ScanResults[0].WiFiSSID = strdup("Wireless-1");
-    ScanResults[0].WiFiMode = kWiFiMode_Managed;
-    ScanResults[0].WiFiRole = kWiFiRole_Station;
-    ScanResults[0].WiFiSecurityType = kWiFiSecurityType_None;
+    ScanResults[0].NetworkType            = kNetworkType_WiFi;
+    ScanResults[0].WiFiSSID               = strdup("Wireless-1");
+    ScanResults[0].WiFiMode               = kWiFiMode_Managed;
+    ScanResults[0].WiFiRole               = kWiFiRole_Station;
+    ScanResults[0].WiFiSecurityType       = kWiFiSecurityType_None;
     ScanResults[0].WirelessSignalStrength = 30;
 
-    ScanResults[1].NetworkType = kNetworkType_WiFi;
-    ScanResults[1].WiFiSSID = strdup("Wireless-2");
-    ScanResults[1].WiFiMode = kWiFiMode_Managed;
-    ScanResults[1].WiFiRole = kWiFiRole_Station;
-    ScanResults[1].WiFiSecurityType = kWiFiSecurityType_WEP;
+    ScanResults[1].NetworkType            = kNetworkType_WiFi;
+    ScanResults[1].WiFiSSID               = strdup("Wireless-2");
+    ScanResults[1].WiFiMode               = kWiFiMode_Managed;
+    ScanResults[1].WiFiRole               = kWiFiRole_Station;
+    ScanResults[1].WiFiSecurityType       = kWiFiSecurityType_WEP;
     ScanResults[1].WirelessSignalStrength = 10;
 
-    ScanResults[2].NetworkType = kNetworkType_WiFi;
-    ScanResults[2].WiFiSSID = strdup("Wireless-3");
-    ScanResults[2].WiFiMode = kWiFiMode_Managed;
-    ScanResults[2].WiFiRole = kWiFiRole_Station;
-    ScanResults[2].WiFiSecurityType = kWiFiSecurityType_WPAPersonal;
+    ScanResults[2].NetworkType            = kNetworkType_WiFi;
+    ScanResults[2].WiFiSSID               = strdup("Wireless-3");
+    ScanResults[2].WiFiMode               = kWiFiMode_Managed;
+    ScanResults[2].WiFiRole               = kWiFiRole_Station;
+    ScanResults[2].WiFiSecurityType       = kWiFiSecurityType_WPAPersonal;
     ScanResults[2].WirelessSignalStrength = -11;
 
-    ScanResults[3].NetworkType = kNetworkType_Thread;
-    ScanResults[3].ThreadNetworkName = strdup("Thread-1");
-    ScanResults[3].ThreadExtendedPANId = (uint8_t *)malloc(8);
+    ScanResults[3].NetworkType         = kNetworkType_Thread;
+    ScanResults[3].ThreadNetworkName   = strdup("Thread-1");
+    ScanResults[3].ThreadExtendedPANId = (uint8_t *) malloc(8);
     for (int i = 0; i < 8; i++)
         ScanResults[3].ThreadExtendedPANId[i] = i + 1;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockNetworkProvisioningServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -99,9 +94,9 @@ WEAVE_ERROR MockNetworkProvisioningServer::Init(WeaveExchangeManager *exchangeMg
 
     SetDelegate(this);
 
-    RegConfig.RegDomain = sSupportedRegDomains[0];
-    RegConfig.OpLocation = kWirelessOperatingLocation_Unknown;
-    RegConfig.SupportedRegDomains = sSupportedRegDomains;
+    RegConfig.RegDomain              = sSupportedRegDomains[0];
+    RegConfig.OpLocation             = kWirelessOperatingLocation_Unknown;
+    RegConfig.SupportedRegDomains    = sSupportedRegDomains;
     RegConfig.NumSupportedRegDomains = ArraySize(sSupportedRegDomains);
 
 exit:
@@ -119,8 +114,8 @@ void MockNetworkProvisioningServer::Reset()
         ProvisionedNetworks[i].Clear();
     for (int i = 0; i < kMaxScanResults; i++)
         ScanResults[i].NetworkId = -1;
-    NextNetworkId = 1;
-    RegConfig.RegDomain = sSupportedRegDomains[0];
+    NextNetworkId        = 1;
+    RegConfig.RegDomain  = sSupportedRegDomains[0];
     RegConfig.OpLocation = kWirelessOperatingLocation_Unknown;
 }
 
@@ -128,22 +123,22 @@ void MockNetworkProvisioningServer::Preconfig()
 {
     Reset();
 
-    ProvisionedNetworks[0].NetworkId = NextNetworkId++;
-    ProvisionedNetworks[0].NetworkType = kNetworkType_WiFi;
-    ProvisionedNetworks[0].WiFiSSID = strdup("Wireless-3");
-    ProvisionedNetworks[0].WiFiMode = kWiFiMode_Managed;
-    ProvisionedNetworks[0].WiFiRole = kWiFiRole_Station;
+    ProvisionedNetworks[0].NetworkId        = NextNetworkId++;
+    ProvisionedNetworks[0].NetworkType      = kNetworkType_WiFi;
+    ProvisionedNetworks[0].WiFiSSID         = strdup("Wireless-3");
+    ProvisionedNetworks[0].WiFiMode         = kWiFiMode_Managed;
+    ProvisionedNetworks[0].WiFiRole         = kWiFiRole_Station;
     ProvisionedNetworks[0].WiFiSecurityType = kWiFiSecurityType_WPAPersonal;
-    ProvisionedNetworks[0].WiFiKey = (uint8_t *)strdup("apassword");
-    ProvisionedNetworks[0].WiFiKeyLen = strlen((const char *)ProvisionedNetworks[0].WiFiKey);
+    ProvisionedNetworks[0].WiFiKey          = (uint8_t *) strdup("apassword");
+    ProvisionedNetworks[0].WiFiKeyLen       = strlen((const char *) ProvisionedNetworks[0].WiFiKey);
 
-    ProvisionedNetworks[1].NetworkId = NextNetworkId++;
-    ProvisionedNetworks[1].NetworkType = kNetworkType_Thread;
-    ProvisionedNetworks[1].ThreadNetworkName = strdup("Thread-1");
-    ProvisionedNetworks[1].ThreadExtendedPANId = (uint8_t *)malloc(8);
+    ProvisionedNetworks[1].NetworkId           = NextNetworkId++;
+    ProvisionedNetworks[1].NetworkType         = kNetworkType_Thread;
+    ProvisionedNetworks[1].ThreadNetworkName   = strdup("Thread-1");
+    ProvisionedNetworks[1].ThreadExtendedPANId = (uint8_t *) malloc(8);
     for (int i = 0; i < 8; i++)
         ProvisionedNetworks[1].ThreadExtendedPANId[i] = i + 1;
-    ProvisionedNetworks[1].ThreadNetworkKey = (uint8_t *)strdup("thisisathreadkey"); // must be 16 bytes
+    ProvisionedNetworks[1].ThreadNetworkKey = (uint8_t *) strdup("thisisathreadkey"); // must be 16 bytes
 }
 
 WEAVE_ERROR MockNetworkProvisioningServer::HandleScanNetworks(uint8_t networkType)
@@ -162,7 +157,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::HandleScanNetworks(uint8_t networkTyp
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::ValidateNetworkConfig(NetworkInfo& netConfig)
+WEAVE_ERROR MockNetworkProvisioningServer::ValidateNetworkConfig(NetworkInfo & netConfig)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -224,10 +219,10 @@ WEAVE_ERROR MockNetworkProvisioningServer::ValidateNetworkConfig(NetworkInfo& ne
             ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
         }
 
-        if (netConfig.WiFiSecurityType != kWiFiSecurityType_None && netConfig.WiFiSecurityType != kWiFiSecurityType_WEP
-                && netConfig.WiFiSecurityType != kWiFiSecurityType_WPAPersonal
-                && netConfig.WiFiSecurityType != kWiFiSecurityType_WPA2Personal
-                && netConfig.WiFiSecurityType != kWiFiSecurityType_WPA2MixedPersonal)
+        if (netConfig.WiFiSecurityType != kWiFiSecurityType_None && netConfig.WiFiSecurityType != kWiFiSecurityType_WEP &&
+            netConfig.WiFiSecurityType != kWiFiSecurityType_WPAPersonal &&
+            netConfig.WiFiSecurityType != kWiFiSecurityType_WPA2Personal &&
+            netConfig.WiFiSecurityType != kWiFiSecurityType_WPA2MixedPersonal)
         {
             printf("Unsupported WiFi Security Type: %d\n", netConfig.WiFiSecurityType);
             err = SendStatusReport(kWeaveProfile_NetworkProvisioning, kStatusCode_UnsupportedWiFiSecurityType);
@@ -283,7 +278,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::HandleAddNetwork(PacketBuffer* networkInfoTLV)
+WEAVE_ERROR MockNetworkProvisioningServer::HandleAddNetwork(PacketBuffer * networkInfoTLV)
 {
     {
         char ipAddrStr[64];
@@ -298,7 +293,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::HandleAddNetwork(PacketBuffer* networ
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::HandleUpdateNetwork(PacketBuffer* networkInfoTLV)
+WEAVE_ERROR MockNetworkProvisioningServer::HandleUpdateNetwork(PacketBuffer * networkInfoTLV)
 {
     {
         char ipAddrStr[64];
@@ -422,7 +417,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::HandleGetWirelessRegulatoryConfig(voi
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::HandleSetWirelessRegulatoryConfig(PacketBuffer* regConfigTLV)
+WEAVE_ERROR MockNetworkProvisioningServer::HandleSetWirelessRegulatoryConfig(PacketBuffer * regConfigTLV)
 {
     {
         char ipAddrStr[64];
@@ -437,8 +432,8 @@ WEAVE_ERROR MockNetworkProvisioningServer::HandleSetWirelessRegulatoryConfig(Pac
     return WEAVE_NO_ERROR;
 }
 
-void MockNetworkProvisioningServer::EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void MockNetworkProvisioningServer::EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                         const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     if (sSuppressAccessControls)
     {
@@ -453,18 +448,18 @@ bool MockNetworkProvisioningServer::IsPairedToAccount() const
     return (gCASEOptions.ServiceConfig != NULL);
 }
 
-void MockNetworkProvisioningServer::HandleOpDelayComplete(System::Layer* lSystemLayer, void* aAppState, System::Error aError)
+void MockNetworkProvisioningServer::HandleOpDelayComplete(System::Layer * lSystemLayer, void * aAppState, System::Error aError)
 {
-    MockNetworkProvisioningServer* lServer = reinterpret_cast<MockNetworkProvisioningServer*>(aAppState);
+    MockNetworkProvisioningServer * lServer = reinterpret_cast<MockNetworkProvisioningServer *>(aAppState);
     lServer->CompleteCurrentOp();
 }
 
-void MockNetworkProvisioningServer::CompleteOrDelayCurrentOp(const char *opName)
+void MockNetworkProvisioningServer::CompleteOrDelayCurrentOp(const char * opName)
 {
     uint32_t delay = OpActions.GetDelay(opName);
     if (delay > 0)
     {
-        printf("Delaying operation by %lums\n", (unsigned long)delay);
+        printf("Delaying operation by %lums\n", (unsigned long) delay);
         ::SystemLayer.StartTimer(delay, HandleOpDelayComplete, this);
     }
     else
@@ -480,42 +475,20 @@ void MockNetworkProvisioningServer::CompleteCurrentOp()
 #if WEAVE_CONFIG_SUPPORT_LEGACY_ADD_NETWORK_MESSAGE
     case NetworkProvisioning::kMsgType_AddNetwork:
 #endif
-    case NetworkProvisioning::kMsgType_AddNetworkV2:
-        err = CompleteAddNetwork(mOpArgs.networkInfoTLV);
-        break;
-    case NetworkProvisioning::kMsgType_DisableNetwork:
-        err = CompleteDisableNetwork(mOpArgs.networkId);
-        break;
-    case NetworkProvisioning::kMsgType_EnableNetwork:
-        err = CompleteEnableNetwork(mOpArgs.networkId);
-        break;
-    case NetworkProvisioning::kMsgType_GetNetworks:
-        err = CompleteGetNetworks(mOpArgs.flags);
-        break;
-    case NetworkProvisioning::kMsgType_RemoveNetwork:
-        err = CompleteRemoveNetwork(mOpArgs.networkId);
-        break;
-    case NetworkProvisioning::kMsgType_ScanNetworks:
-        err = CompleteScanNetworks(mOpArgs.networkType);
-        break;
-    case NetworkProvisioning::kMsgType_SetRendezvousMode:
-        err = CompleteSetRendezvousMode(mOpArgs.rendezvousMode);
-        break;
-    case NetworkProvisioning::kMsgType_TestConnectivity:
-        err = CompleteTestConnectivity(mOpArgs.networkId);
-        break;
-    case NetworkProvisioning::kMsgType_UpdateNetwork:
-        err = CompleteUpdateNetwork(mOpArgs.networkInfoTLV);
-        break;
-    case NetworkProvisioning::kMsgType_GetWirelessRegulatoryConfig:
-        err = CompleteGetWirelessRegulatoryConfig();
-        break;
+    case NetworkProvisioning::kMsgType_AddNetworkV2: err = CompleteAddNetwork(mOpArgs.networkInfoTLV); break;
+    case NetworkProvisioning::kMsgType_DisableNetwork: err = CompleteDisableNetwork(mOpArgs.networkId); break;
+    case NetworkProvisioning::kMsgType_EnableNetwork: err = CompleteEnableNetwork(mOpArgs.networkId); break;
+    case NetworkProvisioning::kMsgType_GetNetworks: err = CompleteGetNetworks(mOpArgs.flags); break;
+    case NetworkProvisioning::kMsgType_RemoveNetwork: err = CompleteRemoveNetwork(mOpArgs.networkId); break;
+    case NetworkProvisioning::kMsgType_ScanNetworks: err = CompleteScanNetworks(mOpArgs.networkType); break;
+    case NetworkProvisioning::kMsgType_SetRendezvousMode: err = CompleteSetRendezvousMode(mOpArgs.rendezvousMode); break;
+    case NetworkProvisioning::kMsgType_TestConnectivity: err = CompleteTestConnectivity(mOpArgs.networkId); break;
+    case NetworkProvisioning::kMsgType_UpdateNetwork: err = CompleteUpdateNetwork(mOpArgs.networkInfoTLV); break;
+    case NetworkProvisioning::kMsgType_GetWirelessRegulatoryConfig: err = CompleteGetWirelessRegulatoryConfig(); break;
     case NetworkProvisioning::kMsgType_SetWirelessRegulatoryConfig:
         err = CompleteSetWirelessRegulatoryConfig(mOpArgs.regConfigTLV);
         break;
-    default:
-        err = WEAVE_ERROR_INVALID_MESSAGE_TYPE;
-        break;
+    default: err = WEAVE_ERROR_INVALID_MESSAGE_TYPE; break;
     }
 
     if (err != WEAVE_NO_ERROR)
@@ -524,8 +497,8 @@ void MockNetworkProvisioningServer::CompleteCurrentOp()
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteScanNetworks(uint8_t networkType)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *respBuf = NULL;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    PacketBuffer * respBuf = NULL;
     TLVWriter writer;
     uint16_t resultCount = 0;
     char ipAddrStr[64];
@@ -543,20 +516,19 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteScanNetworks(uint8_t networkT
         {
             ScanResults[i].NetworkId = -1;
             for (int j = 0; j < kMaxProvisionedNetworks; j++)
-                if (ScanResults[i].NetworkType == kNetworkType_WiFi
-                        && ProvisionedNetworks[j].NetworkType == kNetworkType_WiFi
-                        && strcmp(ScanResults[i].WiFiSSID, ProvisionedNetworks[j].WiFiSSID) == 0
-                        && ScanResults[i].WiFiMode == ProvisionedNetworks[j].WiFiMode
-                        && ScanResults[i].WiFiRole == ProvisionedNetworks[j].WiFiRole
-                        && ScanResults[i].WiFiSecurityType == ProvisionedNetworks[j].WiFiSecurityType)
+                if (ScanResults[i].NetworkType == kNetworkType_WiFi && ProvisionedNetworks[j].NetworkType == kNetworkType_WiFi &&
+                    strcmp(ScanResults[i].WiFiSSID, ProvisionedNetworks[j].WiFiSSID) == 0 &&
+                    ScanResults[i].WiFiMode == ProvisionedNetworks[j].WiFiMode &&
+                    ScanResults[i].WiFiRole == ProvisionedNetworks[j].WiFiRole &&
+                    ScanResults[i].WiFiSecurityType == ProvisionedNetworks[j].WiFiSecurityType)
                 {
                     ScanResults[i].NetworkId = ProvisionedNetworks[j].NetworkId;
                     break;
                 }
-                else if (ScanResults[i].NetworkType == kNetworkType_Thread
-                            && ProvisionedNetworks[j].NetworkType == kNetworkType_Thread
-                            && strcmp(ScanResults[i].ThreadNetworkName, ProvisionedNetworks[j].ThreadNetworkName) == 0
-                            && ScanResults[i].ThreadExtendedPANId == ProvisionedNetworks[j].ThreadExtendedPANId)
+                else if (ScanResults[i].NetworkType == kNetworkType_Thread &&
+                         ProvisionedNetworks[j].NetworkType == kNetworkType_Thread &&
+                         strcmp(ScanResults[i].ThreadNetworkName, ProvisionedNetworks[j].ThreadNetworkName) == 0 &&
+                         ScanResults[i].ThreadExtendedPANId == ProvisionedNetworks[j].ThreadExtendedPANId)
                 {
                     ScanResults[i].NetworkId = ProvisionedNetworks[j].NetworkId;
                     break;
@@ -568,7 +540,8 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteScanNetworks(uint8_t networkT
 
     writer.Init(respBuf);
 
-    err = NetworkInfo::EncodeList(writer, kMaxScanResults, ScanResults, (NetworkType)networkType, NetworkInfo::kEncodeFlag_All, resultCount);
+    err = NetworkInfo::EncodeList(writer, kMaxScanResults, ScanResults, (NetworkType) networkType, NetworkInfo::kEncodeFlag_All,
+                                  resultCount);
     SuccessOrExit(err);
 
     err = writer.Finalize();
@@ -577,7 +550,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteScanNetworks(uint8_t networkT
     printf("Sending NetworkScanComplete response\n");
     printf("  Network Count: %d\n", resultCount);
 
-    err = SendNetworkScanComplete(resultCount, respBuf);
+    err     = SendNetworkScanComplete(resultCount, respBuf);
     respBuf = NULL;
     SuccessOrExit(err);
 
@@ -589,11 +562,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::CompleteAddNetwork(PacketBuffer* networkInfoTLV)
+WEAVE_ERROR MockNetworkProvisioningServer::CompleteAddNetwork(PacketBuffer * networkInfoTLV)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     NetworkInfo newNetworkConfig;
-    NetworkInfo *targetNetworkConfig = NULL;
+    NetworkInfo * targetNetworkConfig = NULL;
     TLVReader reader;
 
     reader.Init(networkInfoTLV);
@@ -616,7 +589,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteAddNetwork(PacketBuffer* netw
 
     for (int i = 0; i < kMaxProvisionedNetworks; i++)
     {
-        NetworkInfo& curElem = ProvisionedNetworks[i];
+        NetworkInfo & curElem = ProvisionedNetworks[i];
         if (curElem.NetworkType == kNetworkType_NotSpecified)
         {
             if (targetNetworkConfig == NULL)
@@ -624,18 +597,17 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteAddNetwork(PacketBuffer* netw
             continue;
         }
 
-        if (newNetworkConfig.NetworkType == kNetworkType_WiFi && curElem.NetworkType == kNetworkType_WiFi
-                && strcmp(curElem.WiFiSSID, newNetworkConfig.WiFiSSID) == 0
-                && curElem.WiFiMode == newNetworkConfig.WiFiMode && curElem.WiFiRole == newNetworkConfig.WiFiRole
-                && curElem.WiFiSecurityType == newNetworkConfig.WiFiSecurityType)
+        if (newNetworkConfig.NetworkType == kNetworkType_WiFi && curElem.NetworkType == kNetworkType_WiFi &&
+            strcmp(curElem.WiFiSSID, newNetworkConfig.WiFiSSID) == 0 && curElem.WiFiMode == newNetworkConfig.WiFiMode &&
+            curElem.WiFiRole == newNetworkConfig.WiFiRole && curElem.WiFiSecurityType == newNetworkConfig.WiFiSecurityType)
         {
             targetNetworkConfig = &curElem;
             break;
         }
 
-        if (newNetworkConfig.NetworkType == kNetworkType_Thread && curElem.NetworkType == kNetworkType_Thread
-                && strcmp(curElem.ThreadNetworkName, newNetworkConfig.ThreadNetworkName) == 0
-                && memcmp(curElem.ThreadExtendedPANId, newNetworkConfig.ThreadExtendedPANId, 8) == 0)
+        if (newNetworkConfig.NetworkType == kNetworkType_Thread && curElem.NetworkType == kNetworkType_Thread &&
+            strcmp(curElem.ThreadNetworkName, newNetworkConfig.ThreadNetworkName) == 0 &&
+            memcmp(curElem.ThreadExtendedPANId, newNetworkConfig.ThreadExtendedPANId, 8) == 0)
         {
             targetNetworkConfig = &curElem;
             break;
@@ -656,7 +628,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteAddNetwork(PacketBuffer* netw
     newNetworkConfig.CopyTo(*targetNetworkConfig);
 
     printf("Sending AddNetworkComplete response\n");
-    printf("  Network Id: %lu\n", (unsigned long)targetNetworkConfig->NetworkId);
+    printf("  Network Id: %lu\n", (unsigned long) targetNetworkConfig->NetworkId);
 
     err = SendAddNetworkComplete(targetNetworkConfig->NetworkId);
     SuccessOrExit(err);
@@ -666,11 +638,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::CompleteUpdateNetwork(PacketBuffer* networkInfoTLV)
+WEAVE_ERROR MockNetworkProvisioningServer::CompleteUpdateNetwork(PacketBuffer * networkInfoTLV)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     NetworkInfo networkConfigUpdate, updatedNetworkConfig;
-    NetworkInfo *existingNetworkConfig = NULL;
+    NetworkInfo * existingNetworkConfig = NULL;
     TLVReader reader;
 
     reader.Init(networkInfoTLV);
@@ -691,8 +663,8 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteUpdateNetwork(PacketBuffer* n
     }
 
     for (int i = 0; i < kMaxProvisionedNetworks; i++)
-        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified
-                && ProvisionedNetworks[i].NetworkId == networkConfigUpdate.NetworkId)
+        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified &&
+            ProvisionedNetworks[i].NetworkId == networkConfigUpdate.NetworkId)
         {
             existingNetworkConfig = &ProvisionedNetworks[i];
             break;
@@ -729,12 +701,11 @@ exit:
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteRemoveNetwork(uint32_t networkId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    NetworkInfo *existingNetworkConfig = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    NetworkInfo * existingNetworkConfig = NULL;
 
     for (int i = 0; i < kMaxProvisionedNetworks; i++)
-        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified
-                && ProvisionedNetworks[i].NetworkId == networkId)
+        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified && ProvisionedNetworks[i].NetworkId == networkId)
         {
             existingNetworkConfig = &ProvisionedNetworks[i];
             break;
@@ -758,8 +729,8 @@ exit:
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteGetNetworks(uint8_t flags)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *respBuf = NULL;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    PacketBuffer * respBuf = NULL;
     TLVWriter writer;
     uint16_t resultCount = 0;
     char ipAddrStr[64];
@@ -770,7 +741,8 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteGetNetworks(uint8_t flags)
 
     writer.Init(respBuf);
 
-    err = NetworkInfo::EncodeList(writer, kMaxProvisionedNetworks, ProvisionedNetworks, kNetworkType_NotSpecified, flags, resultCount);
+    err = NetworkInfo::EncodeList(writer, kMaxProvisionedNetworks, ProvisionedNetworks, kNetworkType_NotSpecified, flags,
+                                  resultCount);
     SuccessOrExit(err);
 
     err = writer.Finalize();
@@ -779,7 +751,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteGetNetworks(uint8_t flags)
     printf("Sending GetNetworksComplete response\n");
     printf("  Network Count: %d\n", resultCount);
 
-    err = SendGetNetworksComplete(resultCount, respBuf);
+    err     = SendGetNetworksComplete(resultCount, respBuf);
     respBuf = NULL;
     SuccessOrExit(err);
 
@@ -793,12 +765,11 @@ exit:
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteEnableNetwork(uint32_t networkId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    NetworkInfo *existingNetworkConfig = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    NetworkInfo * existingNetworkConfig = NULL;
 
     for (int i = 0; i < kMaxProvisionedNetworks; i++)
-        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified
-                && ProvisionedNetworks[i].NetworkId == networkId)
+        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified && ProvisionedNetworks[i].NetworkId == networkId)
         {
             existingNetworkConfig = &ProvisionedNetworks[i];
             break;
@@ -820,12 +791,11 @@ exit:
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteDisableNetwork(uint32_t networkId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    NetworkInfo *existingNetworkConfig = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    NetworkInfo * existingNetworkConfig = NULL;
 
     for (int i = 0; i < kMaxProvisionedNetworks; i++)
-        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified
-                && ProvisionedNetworks[i].NetworkId == networkId)
+        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified && ProvisionedNetworks[i].NetworkId == networkId)
         {
             printf("Specified network id not found\n");
             existingNetworkConfig = &ProvisionedNetworks[i];
@@ -847,12 +817,11 @@ exit:
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteTestConnectivity(uint32_t networkId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    NetworkInfo *existingNetworkConfig = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    NetworkInfo * existingNetworkConfig = NULL;
 
     for (int i = 0; i < kMaxProvisionedNetworks; i++)
-        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified
-                && ProvisionedNetworks[i].NetworkId == networkId)
+        if (ProvisionedNetworks[i].NetworkType != kNetworkType_NotSpecified && ProvisionedNetworks[i].NetworkId == networkId)
         {
             existingNetworkConfig = &ProvisionedNetworks[i];
             break;
@@ -885,8 +854,8 @@ exit:
 
 WEAVE_ERROR MockNetworkProvisioningServer::CompleteGetWirelessRegulatoryConfig(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *respBuf = NULL;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    PacketBuffer * respBuf = NULL;
     TLVWriter writer;
 
     respBuf = PacketBuffer::New();
@@ -902,7 +871,7 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteGetWirelessRegulatoryConfig(v
 
     printf("Sending GetWirelessRegulatoryConfigComplete response\n");
 
-    err = SendGetWirelessRegulatoryConfigComplete(respBuf);
+    err     = SendGetWirelessRegulatoryConfigComplete(respBuf);
     respBuf = NULL;
     SuccessOrExit(err);
 
@@ -911,7 +880,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MockNetworkProvisioningServer::CompleteSetWirelessRegulatoryConfig(PacketBuffer* regConfigTLV)
+WEAVE_ERROR MockNetworkProvisioningServer::CompleteSetWirelessRegulatoryConfig(PacketBuffer * regConfigTLV)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WirelessRegConfig newRegConfig;
@@ -944,7 +913,8 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteSetWirelessRegulatoryConfig(P
             }
             if (i == RegConfig.NumSupportedRegDomains)
             {
-                SendStatusReport(kWeaveProfile_NetworkProvisioning, Profiles::NetworkProvisioning::kStatusCode_UnsupportedRegulatoryDomain);
+                SendStatusReport(kWeaveProfile_NetworkProvisioning,
+                                 Profiles::NetworkProvisioning::kStatusCode_UnsupportedRegulatoryDomain);
                 ExitNow();
             }
         }
@@ -957,7 +927,8 @@ WEAVE_ERROR MockNetworkProvisioningServer::CompleteSetWirelessRegulatoryConfig(P
             RegConfig.OpLocation != kWirelessOperatingLocation_Indoors &&
             RegConfig.OpLocation != kWirelessOperatingLocation_Outdoors)
         {
-            SendStatusReport(kWeaveProfile_NetworkProvisioning, Profiles::NetworkProvisioning::kStatusCode_UnsupportedOperatingLocation);
+            SendStatusReport(kWeaveProfile_NetworkProvisioning,
+                             Profiles::NetworkProvisioning::kStatusCode_UnsupportedOperatingLocation);
             ExitNow();
         }
     }
@@ -982,19 +953,19 @@ exit:
     return err;
 }
 
-void MockNetworkProvisioningServer::PrintNetworkInfo(NetworkInfo& netInfo, const char *prefix)
+void MockNetworkProvisioningServer::PrintNetworkInfo(NetworkInfo & netInfo, const char * prefix)
 {
-    printf("%sNetwork Type: %d\n", prefix, (int)netInfo.NetworkType);
+    printf("%sNetwork Type: %d\n", prefix, (int) netInfo.NetworkType);
     if (netInfo.NetworkId != -1)
-        printf("%sNetwork Id: %ld\n", prefix, (long)netInfo.NetworkId);
+        printf("%sNetwork Id: %ld\n", prefix, (long) netInfo.NetworkId);
     if (netInfo.WiFiSSID != NULL)
         printf("%sWiFi SSID: %s\n", prefix, netInfo.WiFiSSID);
     if (netInfo.WiFiMode != -1)
-        printf("%sWiFi Mode: %d\n", prefix, (int)netInfo.WiFiMode);
+        printf("%sWiFi Mode: %d\n", prefix, (int) netInfo.WiFiMode);
     if (netInfo.WiFiRole != -1)
-        printf("%sWiFi Role: %d\n", prefix, (int)netInfo.WiFiRole);
+        printf("%sWiFi Role: %d\n", prefix, (int) netInfo.WiFiRole);
     if (netInfo.WiFiSecurityType != -1)
-        printf("%sWiFi Security Type: %d\n", prefix, (int)netInfo.WiFiSecurityType);
+        printf("%sWiFi Security Type: %d\n", prefix, (int) netInfo.WiFiSecurityType);
     if (netInfo.WiFiKey != NULL)
     {
         char keyBuf[256];
@@ -1021,21 +992,20 @@ void MockNetworkProvisioningServer::PrintNetworkInfo(NetworkInfo& netInfo, const
         printf("\n");
     }
     if (netInfo.WirelessSignalStrength != INT16_MIN)
-        printf("%sWireless Signal Strength: %d\n", prefix, (int)netInfo.WirelessSignalStrength);
+        printf("%sWireless Signal Strength: %d\n", prefix, (int) netInfo.WirelessSignalStrength);
 }
 
-void MockNetworkProvisioningServer::PrintWirelessRegConfig(WirelessRegConfig& regConfig, const char *prefix)
+void MockNetworkProvisioningServer::PrintWirelessRegConfig(WirelessRegConfig & regConfig, const char * prefix)
 {
     if (regConfig.IsRegDomainPresent())
         printf("%sRegulatory Domain: %c%c\n", prefix, regConfig.RegDomain.Code[0], regConfig.RegDomain.Code[1]);
     if (regConfig.IsOpLocationPresent())
-        printf("%sOperating Location: %d\n", prefix, (int)regConfig.OpLocation);
+        printf("%sOperating Location: %d\n", prefix, (int) regConfig.OpLocation);
     if (regConfig.NumSupportedRegDomains > 0)
     {
         printf("%sSupported Regulatory Domains:", prefix);
         for (uint16_t i = 0; i < regConfig.NumSupportedRegDomains; i++)
-            printf("%c%c%c", (i == 0) ? ' ' : ',',
-                   regConfig.SupportedRegDomains[i].Code[0],
+            printf("%c%c%c", (i == 0) ? ' ' : ',', regConfig.SupportedRegDomains[i].Code[0],
                    regConfig.SupportedRegDomains[i].Code[1]);
         printf("\n");
     }
@@ -1046,8 +1016,9 @@ WEAVE_ERROR MockNetworkProvisioningServer::SendStatusReport(uint32_t statusProfi
     if (statusProfileId == kWeaveProfile_Common && statusCode == Common::kStatus_Success)
         printf("Sending StatusReport: Success\n");
     else if (sysError == WEAVE_NO_ERROR)
-        printf("Sending StatusReport: Status code = %u, Status profile = %lu\n", statusCode, (unsigned long)statusProfileId);
+        printf("Sending StatusReport: Status code = %u, Status profile = %lu\n", statusCode, (unsigned long) statusProfileId);
     else
-        printf("Sending StatusReport: Status code = %u, Status profile = %lu, System error = %s\n", statusCode, (unsigned long)statusProfileId, nl::ErrorStr(sysError));
+        printf("Sending StatusReport: Status code = %u, Status profile = %lu, System error = %s\n", statusCode,
+               (unsigned long) statusProfileId, nl::ErrorStr(sysError));
     return this->NetworkProvisioningServer::SendStatusReport(statusProfileId, statusCode, sysError);
 }

@@ -77,7 +77,7 @@ namespace Logging {
  */
 enum LogModule
 {
-    kLogModule_NotSpecified         = 0,
+    kLogModule_NotSpecified = 0,
 
     kLogModule_Inet,
     kLogModule_Ble,
@@ -127,7 +127,7 @@ enum LogCategory
      *   that no messages should be logged.
      *
      */
-    kLogCategory_None           = 0,
+    kLogCategory_None = 0,
 
     /*!<
      *   Indicates a category of log message that describes an unexpected
@@ -145,7 +145,7 @@ enum LogCategory
      *   messages.
      *
      */
-    kLogCategory_Error          = 1,
+    kLogCategory_Error = 1,
 
     /*!<
      *   Indicates a category of log message that describes an event
@@ -163,7 +163,7 @@ enum LogCategory
      *   requested resource types, error numbers, etc.).
      *
      */
-    kLogCategory_Progress       = 2,
+    kLogCategory_Progress = 2,
 
     /*!<
      *   Indicates a category of log message that describes detailed
@@ -174,19 +174,19 @@ enum LogCategory
      *   kLogCategory_Progress categories.
      *
      */
-    kLogCategory_Detail         = 3,
+    kLogCategory_Detail = 3,
 
     /*!<
      *   Indicates a category of log message that describes information
      *   needed by IE and QA teams for automated testing.
      *
      */
-    kLogCategory_Retain         = 4,
+    kLogCategory_Retain = 4,
 
-    kLogCategory_Max            = kLogCategory_Retain
+    kLogCategory_Max = kLogCategory_Retain
 };
 
-extern void Log(uint8_t module, uint8_t category, const char *msg, ...);
+extern void Log(uint8_t module, uint8_t category, const char * msg, ...);
 extern uint8_t GetLogFilter(void);
 extern void SetLogFilter(uint8_t category);
 
@@ -208,7 +208,8 @@ extern void SetLogFilter(uint8_t category);
  *
  */
 #ifndef WeaveLogError
-#define WeaveLogError(MOD, MSG, ...) nl::Weave::Logging::Log( nl::Weave::Logging::kLogModule_##MOD , nl::Weave::Logging::kLogCategory_Error, MSG, ## __VA_ARGS__)
+#define WeaveLogError(MOD, MSG, ...)                                                                                               \
+    nl::Weave::Logging::Log(nl::Weave::Logging::kLogModule_##MOD, nl::Weave::Logging::kLogCategory_Error, MSG, ##__VA_ARGS__)
 #endif
 #else
 #define WeaveLogError(MOD, MSG, ...)
@@ -228,12 +229,12 @@ extern void SetLogFilter(uint8_t category);
  *
  */
 #ifndef WeaveLogProgress
-#define WeaveLogProgress(MOD, MSG, ...) nl::Weave::Logging::Log( nl::Weave::Logging::kLogModule_##MOD , nl::Weave::Logging::kLogCategory_Progress, MSG, ## __VA_ARGS__)
+#define WeaveLogProgress(MOD, MSG, ...)                                                                                            \
+    nl::Weave::Logging::Log(nl::Weave::Logging::kLogModule_##MOD, nl::Weave::Logging::kLogCategory_Progress, MSG, ##__VA_ARGS__)
 #endif
 #else
 #define WeaveLogProgress(MOD, MSG, ...)
 #endif
-
 
 #ifndef WEAVE_DETAIL_LOGGING
 #define WEAVE_DETAIL_LOGGING 1
@@ -249,15 +250,16 @@ extern void SetLogFilter(uint8_t category);
  *
  */
 #ifndef WeaveLogDetail
-#define WeaveLogDetail(MOD, MSG, ...) nl::Weave::Logging::Log( nl::Weave::Logging::kLogModule_##MOD , nl::Weave::Logging::kLogCategory_Detail, MSG, ## __VA_ARGS__)
+#define WeaveLogDetail(MOD, MSG, ...)                                                                                              \
+    nl::Weave::Logging::Log(nl::Weave::Logging::kLogModule_##MOD, nl::Weave::Logging::kLogCategory_Detail, MSG, ##__VA_ARGS__)
 #endif
 #else
 #define WeaveLogDetail(MOD, MSG, ...)
 #endif
 
 #ifndef WEAVE_RETAIN_LOGGING
-#define WEAVE_RETAIN_LOGGING WEAVE_PROGRESS_LOGGING
-#define WeaveLogRetain(MOD, MSG, ...) WeaveLogProgress(MOD, MSG, ## __VA_ARGS__)
+#define WEAVE_RETAIN_LOGGING          WEAVE_PROGRESS_LOGGING
+#define WeaveLogRetain(MOD, MSG, ...) WeaveLogProgress(MOD, MSG, ##__VA_ARGS__)
 #endif
 
 #if WEAVE_RETAIN_LOGGING
@@ -271,7 +273,8 @@ extern void SetLogFilter(uint8_t category);
  *
  */
 #ifndef WeaveLogRetain
-#define WeaveLogRetain(MOD, MSG, ...) nl::Weave::Logging::Log( nl::Weave::Logging::kLogModule_##MOD , nl::Weave::Logging::kLogCategory_Retain, MSG, ## __VA_ARGS__)
+#define WeaveLogRetain(MOD, MSG, ...)                                                                                              \
+    nl::Weave::Logging::Log(nl::Weave::Logging::kLogModule_##MOD, nl::Weave::Logging::kLogCategory_Retain, MSG, ##__VA_ARGS__)
 #endif
 
 #else // #if WEAVE_RETAIN_LOGGING
@@ -283,7 +286,6 @@ extern void SetLogFilter(uint8_t category);
 #define WeaveLogRetain(MOD, MSG, ...)
 #endif // #if WEAVE_RETAIN_LOGGING
 
-
 #if WEAVE_ERROR_LOGGING || WEAVE_PROGRESS_LOGGING || WEAVE_DETAIL_LOGGING || WEAVE_RETAIN_LOGGING
 #define _WEAVE_USE_LOGGING 1
 #else
@@ -292,27 +294,26 @@ extern void SetLogFilter(uint8_t category);
 
 #if _WEAVE_USE_LOGGING
 
-#define nlWeaveLoggingWeavePrefixLen 6
-#define nlWeaveLoggingModuleNameLen 3
+#define nlWeaveLoggingWeavePrefixLen      6
+#define nlWeaveLoggingModuleNameLen       3
 #define nlWeaveLoggingMessageSeparatorLen 2
-#define nlWeaveLoggingMessageTrailerLen 2
-#define nlWeaveLoggingTotalMessagePadding (nlWeaveLoggingWeavePrefixLen + \
-                                           nlWeaveLoggingModuleNameLen + \
-                                           nlWeaveLoggingMessageSeparatorLen + \
-                                           nlWeaveLoggingMessageTrailerLen)
+#define nlWeaveLoggingMessageTrailerLen   2
+#define nlWeaveLoggingTotalMessagePadding                                                                                          \
+    (nlWeaveLoggingWeavePrefixLen + nlWeaveLoggingModuleNameLen + nlWeaveLoggingMessageSeparatorLen +                              \
+     nlWeaveLoggingMessageTrailerLen)
 
-extern void GetMessageWithPrefix(char *buf, uint8_t bufSize, uint8_t module, const char *msg);
-extern void GetModuleName(char *buf, uint8_t module);
+extern void GetMessageWithPrefix(char * buf, uint8_t bufSize, uint8_t module, const char * msg);
+extern void GetModuleName(char * buf, uint8_t module);
 void PrintMessagePrefix(uint8_t module);
 
 #else
 
-static inline void GetMessageWithPrefix(char *buf, uint8_t bufSize, uint8_t module, const char *msg)
+static inline void GetMessageWithPrefix(char * buf, uint8_t bufSize, uint8_t module, const char * msg)
 {
     return;
 }
 
-static inline void GetModuleName(char *buf, uint8_t module)
+static inline void GetModuleName(char * buf, uint8_t module)
 {
     return;
 }
@@ -330,8 +331,6 @@ extern uint8_t gLogFilter;
 #define IsCategoryEnabled(CAT) (true)
 
 #endif // WEAVE_LOG_FILTERING
-
-
 
 /**
  *  @def WeaveLogIfFalse(aCondition)
@@ -376,23 +375,20 @@ extern uint8_t gLogFilter;
 
 #if WEAVE_CONFIG_ENABLE_CONDITION_LOGGING && !defined(WeaveLogIfFalse)
 
-#define WeaveLogIfFalse(aCondition)                                                     \
-do                                                                                      \
-{                                                                                       \
-    if (!(aCondition))                                                                  \
-    {                                                                                   \
-        WeaveLogError(NotSpecified, "Condition Failed (%s) at %s:%d",                   \
-            #aCondition, __FILE__, __LINE__);                                           \
-    }                                                                                   \
-} while (0)
+#define WeaveLogIfFalse(aCondition)                                                                                                \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(aCondition))                                                                                                         \
+        {                                                                                                                          \
+            WeaveLogError(NotSpecified, "Condition Failed (%s) at %s:%d", #aCondition, __FILE__, __LINE__);                        \
+        }                                                                                                                          \
+    } while (0)
 
 #else // WEAVE_CONFIG_ENABLE_CONDITION_LOGGING
 
-#define WeaveLogIfFalse(aCondition) \
-    IgnoreUnusedVariable(aCondition)
+#define WeaveLogIfFalse(aCondition) IgnoreUnusedVariable(aCondition)
 
 #endif // WEAVE_CONFIG_ENABLE_CONDITION_LOGGING
-
 
 /**
  *  @def WeaveLogFunctError(aErr)
@@ -436,23 +432,20 @@ do                                                                              
 
 #if WEAVE_CONFIG_ENABLE_FUNCT_ERROR_LOGGING && !defined(WeaveLogFunctError)
 
-#define WeaveLogFunctError(aErr)                                                           \
-do                                                                                         \
-{                                                                                          \
-    if ((aErr) != WEAVE_NO_ERROR)                                                          \
-    {                                                                                      \
-        WeaveLogError(NotSpecified, "%s at %s:%d", nl::ErrorStr(aErr), __FILE__, __LINE__);\
-    }                                                                                      \
-} while (0)
+#define WeaveLogFunctError(aErr)                                                                                                   \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((aErr) != WEAVE_NO_ERROR)                                                                                              \
+        {                                                                                                                          \
+            WeaveLogError(NotSpecified, "%s at %s:%d", nl::ErrorStr(aErr), __FILE__, __LINE__);                                    \
+        }                                                                                                                          \
+    } while (0)
 
 #else // WEAVE_CONFIG_ENABLE_FUNCT_ERROR_LOGGING
 
-#define WeaveLogFunctError(aErr) \
-    IgnoreUnusedVariable(aErr)
+#define WeaveLogFunctError(aErr) IgnoreUnusedVariable(aErr)
 
 #endif // WEAVE_CONFIG_ENABLE_FUNCT_ERROR_LOGGING
-
-
 
 } // namespace Logging
 } // namespace Weave

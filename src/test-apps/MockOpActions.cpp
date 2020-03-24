@@ -33,43 +33,41 @@ MockOpActions::MockOpActions()
     mOpCount = 0;
 }
 
-MockOpActions::~MockOpActions()
-{
-}
+MockOpActions::~MockOpActions() { }
 
-bool MockOpActions::SetDelay(const char* opName, uint32_t delay)
+bool MockOpActions::SetDelay(const char * opName, uint32_t delay)
 {
-    Op *op = FindOp(opName, true);
+    Op * op = FindOp(opName, true);
     if (op == NULL)
         return false;
     op->Delay = delay;
     return true;
 }
 
-uint32_t MockOpActions::GetDelay(const char* opName)
+uint32_t MockOpActions::GetDelay(const char * opName)
 {
-    Op *op = FindOp(opName);
+    Op * op = FindOp(opName);
     if (op == NULL)
         return 0;
     return op->Delay;
 }
 
-bool MockOpActions::SetAbort(const char* opName, bool abort)
+bool MockOpActions::SetAbort(const char * opName, bool abort)
 {
-    Op *op = FindOp(opName, true);
+    Op * op = FindOp(opName, true);
     if (op == NULL)
         return false;
     op->Abort = abort;
     return true;
 }
 
-bool MockOpActions::GetAbort(const char* opName)
+bool MockOpActions::GetAbort(const char * opName)
 {
-    Op *op = FindOp(opName);
+    Op * op = FindOp(opName);
     return op != NULL && op->Delay;
 }
 
-MockOpActions::Op *MockOpActions::FindOp(const char *opName, bool add)
+MockOpActions::Op * MockOpActions::FindOp(const char * opName, bool add)
 {
     opName = NormalizeOpName(opName);
     if (opName == NULL)
@@ -77,7 +75,7 @@ MockOpActions::Op *MockOpActions::FindOp(const char *opName, bool add)
 
     for (uint32_t i = 0; i < mOpCount; i++)
     {
-        Op& op = mOps[i];
+        Op & op = mOps[i];
         if (strcmp(op.OpName, opName) == 0)
             return &op;
     }
@@ -85,12 +83,12 @@ MockOpActions::Op *MockOpActions::FindOp(const char *opName, bool add)
     if (!add || mOpCount == kMaxOps)
         return NULL;
 
-    Op *op = &mOps[mOpCount++];
+    Op * op    = &mOps[mOpCount++];
     op->OpName = opName;
     return op;
 }
 
-const char *MockOpActions::NormalizeOpName(const char *opName)
+const char * MockOpActions::NormalizeOpName(const char * opName)
 {
     if (strcasecmp(opName, "scan-networks") == 0 || strcasecmp(opName, "scannetworks") == 0)
         return "scan-networks";
@@ -104,7 +102,8 @@ const char *MockOpActions::NormalizeOpName(const char *opName)
         return "enable-network";
     if (strcasecmp(opName, "disable-network") == 0 || strcasecmp(opName, "disablenetwork") == 0)
         return "disable-network";
-    if (strcasecmp(opName, "test-connectivity") == 0 || strcasecmp(opName, "testconnectivity") == 0 || strcasecmp(opName, "testcon") == 0)
+    if (strcasecmp(opName, "test-connectivity") == 0 || strcasecmp(opName, "testconnectivity") == 0 ||
+        strcasecmp(opName, "testcon") == 0)
         return "test-connectivity";
     if (strcasecmp(opName, "set-rendezvous-mode") == 0 || strcasecmp(opName, "setrendezvousmode") == 0)
         return "set-rendezvous-mode";

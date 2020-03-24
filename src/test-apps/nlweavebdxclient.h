@@ -50,49 +50,52 @@ using namespace ::nl::Weave;
 class BulkDataTransferClient
 {
 public:
-	BulkDataTransferClient();
-	~BulkDataTransferClient();
+    BulkDataTransferClient();
+    ~BulkDataTransferClient();
 
-	WeaveExchangeManager *ExchangeMgr;		// [READ ONLY] Exchange manager object
-	const WeaveFabricState *FabricState;	// [READ ONLY] Fabric state object
-	uint8_t EncryptionType;                         // Encryption type to use when sending an Echo Request
-	uint16_t KeyId;                                 // Encryption key to use when sending an Echo Request
+    WeaveExchangeManager * ExchangeMgr;   // [READ ONLY] Exchange manager object
+    const WeaveFabricState * FabricState; // [READ ONLY] Fabric state object
+    uint8_t EncryptionType;               // Encryption type to use when sending an Echo Request
+    uint16_t KeyId;                       // Encryption key to use when sending an Echo Request
 
-	WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr, const char *DestFileName);
-    void setCon(WeaveConnection *con);
-	WEAVE_ERROR Shutdown();
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr, const char * DestFileName);
+    void setCon(WeaveConnection * con);
+    WEAVE_ERROR Shutdown();
 
-    WEAVE_ERROR SendReceiveInitRequest(WeaveConnection *con);
+    WEAVE_ERROR SendReceiveInitRequest(WeaveConnection * con);
     WEAVE_ERROR SendReceiveInitRequest(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendReceiveInitRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
-    WEAVE_ERROR SendBlockQueryRequest(WeaveConnection *con);
+    WEAVE_ERROR SendBlockQueryRequest(WeaveConnection * con);
     WEAVE_ERROR SendBlockQueryRequest(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendBlockQueryRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
-    WEAVE_ERROR SendBlockEOFAck(WeaveConnection *con);
+    WEAVE_ERROR SendBlockEOFAck(WeaveConnection * con);
     WEAVE_ERROR SendBlockEOFAck(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendBlockEOFAck(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
 
 private:
-	ExchangeContext *ExchangeCtx;			// The exchange context for the most recently started Echo exchange.
+    ExchangeContext * ExchangeCtx; // The exchange context for the most recently started Echo exchange.
     uint8_t mBlockCounter;
-    WeaveConnection *mCon;
+    WeaveConnection * mCon;
     int DestFile;
 
-	static void HandleReceiveInitResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleBlockQueryResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleBlockEOFAckResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleReceiveInitResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                          uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockQueryResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                         uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleBlockEOFAckResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                          uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
     WEAVE_ERROR SendReceiveInitRequest();
     WEAVE_ERROR SendBlockQueryRequest();
     WEAVE_ERROR SendBlockEOFAck();
 
-	BulkDataTransferClient(const BulkDataTransferClient&);   // not defined
+    BulkDataTransferClient(const BulkDataTransferClient &); // not defined
 };
 
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
 
-#endif //BULK_DATA_TRANSFER_CLIENT_H_
+#endif // BULK_DATA_TRANSFER_CLIENT_H_

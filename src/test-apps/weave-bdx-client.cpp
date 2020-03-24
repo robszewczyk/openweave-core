@@ -38,33 +38,28 @@ using namespace nl::Weave::Profiles::Security;
 
 #define TOOL_NAME "weave-bdx-client"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 static void StartClientConnection();
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
-const char *DestIPAddrStr = NULL;
-const char *DestFileName = NULL;
+const char * DestIPAddrStr = NULL;
+const char * DestFileName  = NULL;
 BulkDataTransferClient BDXClient;
 bool ClientConEstablished = false;
-bool DestHostNameResolved = false;  // only used for UDP
+bool DestHostNameResolved = false; // only used for UDP
 
-//Globals used by BDX-client
+// Globals used by BDX-client
 bool WaitingForBDXResp = false;
-uint64_t DestNodeId = 1;
+uint64_t DestNodeId    = 1;
 IPAddress DestIPAddr;
-WeaveConnection *Con = NULL;
+WeaveConnection * Con = NULL;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "output-file", kArgumentRequired, 'o' },
-    { "dest-addr",   kArgumentRequired, 'D' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "output-file", kArgumentRequired, 'o' }, { "dest-addr", kArgumentRequired, 'D' }, { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -o, --output-file <filename>\n"
     "       File to which bulk data will be written. Bulk data not written to disk\n"
     "       by default. Accepts paths relative to current working directory.\n"
@@ -75,31 +70,15 @@ static const char *gToolOptionHelp =
     "       address or an IPv6 address.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-ip-addr>\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-ip-addr>\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -129,8 +108,8 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     // Initialize the BDX-client application.
     err = BDXClient.Init(&ExchangeMgr, DestFileName);
@@ -149,13 +128,13 @@ int main(int argc, char *argv[])
     else
         printf("Sending BDX requests to node %" PRIX64 " at %s\n", DestNodeId, DestIPAddrStr);
 
-    //Set up connection and connect callbacks to handle success/failure cases
+    // Set up connection and connect callbacks to handle success/failure cases
     StartClientConnection();
 
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -193,9 +172,9 @@ void StartClientConnection()
     }
     printf("@@@ 3+ (Con: %p)\n", Con);
     Con->OnConnectionComplete = HandleConnectionComplete;
-    Con->OnConnectionClosed = HandleConnectionClosed;
+    Con->OnConnectionClosed   = HandleConnectionClosed;
 
-    printf("@@@ 3++ (DestNodeId: %ld, DestIPAddrStr: %s)\n", (long)DestNodeId, DestIPAddrStr);
+    printf("@@@ 3++ (DestNodeId: %ld, DestIPAddrStr: %s)\n", (long) DestNodeId, DestIPAddrStr);
     IPAddress::FromString(DestIPAddrStr, DestIPAddr);
     WEAVE_ERROR err = Con->Connect(DestNodeId, kWeaveAuthMode_Unauthenticated, DestIPAddr);
     if (err != WEAVE_NO_ERROR)
@@ -211,28 +190,20 @@ void StartClientConnection()
     printf("@@@ 5 StartClientConnection exiting\n");
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'o':
-        DestFileName = arg;
-        break;
-    case 'S':
-        UsePASE = true;
-        break;
-    case 'D':
-        DestIPAddrStr = arg;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'o': DestFileName = arg; break;
+    case 'S': UsePASE = true; break;
+    case 'D': DestIPAddrStr = arg; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc < 1)
     {
@@ -246,12 +217,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    const char *nodeId = argv[0];
-    char *p = (char *)strchr(nodeId, '@');
+    const char * nodeId = argv[0];
+    char * p            = (char *) strchr(nodeId, '@');
     if (p != NULL)
     {
-        *p = 0;
-        DestIPAddrStr = p+1;
+        *p            = 0;
+        DestIPAddrStr = p + 1;
     }
 
     if (!ParseNodeId(nodeId, DestNodeId))
@@ -263,7 +234,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -273,7 +244,7 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     con->OnConnectionClosed = HandleConnectionClosed;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     printf("@@@ 1 HandleConnectionComplete entering\n");
 
@@ -295,14 +266,14 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
 
     ClientConEstablished = true;
 
-    PacketBuffer *payloadBuf = PacketBuffer::New();
+    PacketBuffer * payloadBuf = PacketBuffer::New();
     if (payloadBuf == NULL)
     {
         printf("@@@ 3 Unable to allocate PacketBuffer\n");
         return;
     }
 
-    //Send the ReceiveInit request
+    // Send the ReceiveInit request
     if (Con != NULL)
     {
         printf("@@@ 4 Sending TCP bdx request\n");
@@ -328,7 +299,7 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     printf("@@@ 7 HandleConnectionComplete exiting\n");
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));

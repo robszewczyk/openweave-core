@@ -18,33 +18,36 @@
 #include <BleLayer/BlePlatformDelegate.h>
 #include "WeaveDeviceManager-BlePlatformDelegate.h"
 
-DeviceManager_BlePlatformDelegate::DeviceManager_BlePlatformDelegate(BleLayer *ble)
+DeviceManager_BlePlatformDelegate::DeviceManager_BlePlatformDelegate(BleLayer * ble)
 {
-    Ble = ble;
-    writeCB = NULL;
+    Ble         = ble;
+    writeCB     = NULL;
     subscribeCB = NULL;
-    closeCB = NULL;
+    closeCB     = NULL;
 }
 
-bool DeviceManager_BlePlatformDelegate::SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool DeviceManager_BlePlatformDelegate::SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                                const nl::Ble::WeaveBleUUID * charId)
 {
     const bool subscribe = true;
 
     if (subscribeCB && svcId && charId)
     {
-        return subscribeCB(connObj, (void *)svcId->bytes, (void *)charId->bytes, subscribe);
+        return subscribeCB(connObj, (void *) svcId->bytes, (void *) charId->bytes, subscribe);
     }
 
     return false;
 }
 
-bool DeviceManager_BlePlatformDelegate::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool DeviceManager_BlePlatformDelegate::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj,
+                                                                  const nl::Ble::WeaveBleUUID * svcId,
+                                                                  const nl::Ble::WeaveBleUUID * charId)
 {
     const bool subscribe = true;
 
     if (subscribeCB && svcId && charId)
     {
-        return subscribeCB(connObj, (void *)svcId->bytes, (void *)charId->bytes, !subscribe);
+        return subscribeCB(connObj, (void *) svcId->bytes, (void *) charId->bytes, !subscribe);
     }
 
     return false;
@@ -66,40 +69,47 @@ uint16_t DeviceManager_BlePlatformDelegate::GetMTU(BLE_CONNECTION_OBJECT connObj
     return 0;
 }
 
-bool DeviceManager_BlePlatformDelegate::SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf)
+bool DeviceManager_BlePlatformDelegate::SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                       const nl::Ble::WeaveBleUUID * charId, nl::Weave::System::PacketBuffer * pBuf)
 {
     // TODO Python queue-based implementation
 
-    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to it.
+    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to
+    // it.
     nl::Weave::System::PacketBuffer::Free(pBuf);
 
     return false;
 }
 
-bool DeviceManager_BlePlatformDelegate::SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf)
+bool DeviceManager_BlePlatformDelegate::SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                         const nl::Ble::WeaveBleUUID * charId,
+                                                         nl::Weave::System::PacketBuffer * pBuf)
 {
     bool ret = false;
 
     if (writeCB && svcId && charId && pBuf)
     {
-        ret = writeCB(connObj, (void *)svcId->bytes, (void *)charId->bytes, (void *)pBuf->Start(), pBuf->DataLength());
+        ret = writeCB(connObj, (void *) svcId->bytes, (void *) charId->bytes, (void *) pBuf->Start(), pBuf->DataLength());
     }
 
-    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to it.
-    // We release pBuf's reference here since its payload bytes were copied into a new NSData object by WeaveBleMgr.py's writeCB, and
-    // in both the error and succees cases this code has no further use for the pBuf PacketBuffer.
+    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to
+    // it. We release pBuf's reference here since its payload bytes were copied into a new NSData object by WeaveBleMgr.py's
+    // writeCB, and in both the error and succees cases this code has no further use for the pBuf PacketBuffer.
     nl::Weave::System::PacketBuffer::Free(pBuf);
 
     return ret;
 }
 
-bool DeviceManager_BlePlatformDelegate::SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf)
+bool DeviceManager_BlePlatformDelegate::SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                        const nl::Ble::WeaveBleUUID * charId,
+                                                        nl::Weave::System::PacketBuffer * pBuf)
 {
     // TODO Python queue-based implementation
     return false;
 }
 
-bool DeviceManager_BlePlatformDelegate::SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool DeviceManager_BlePlatformDelegate::SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext,
+                                                         const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId)
 {
     // TODO Python queue-based implementation
     return false;

@@ -42,8 +42,7 @@ WEAVE_ERROR Write(Key key, uint32_t value)
     return ConfigurationMgr().WritePersistedStorageValue(key, value);
 }
 
-} // PersistedStorage
-} // Platform
-} // Weave
-} // nl
-
+} // namespace PersistedStorage
+} // namespace Platform
+} // namespace Weave
+} // namespace nl

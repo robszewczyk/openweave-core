@@ -37,9 +37,9 @@ namespace DeviceLayer {
 
 class PlatformManagerImpl;
 namespace Internal {
-template<class> class GenericPlatformManagerImpl;
-template<class> class GenericPlatformManagerImpl_FreeRTOS;
-}
+template <class> class GenericPlatformManagerImpl;
+template <class> class GenericPlatformManagerImpl_FreeRTOS;
+} // namespace Internal
 
 /**
  * Manages publication and subscription of Weave Data Management traits for a Weave device.
@@ -56,14 +56,13 @@ class TraitManager final
     typedef ::nl::Weave::Profiles::DataManagement_Current::PropertyPathHandle PropertyPathHandle;
 
 public:
-
     // ===== Members that define the public interface of the TraitManager
 
     enum ServiceSubscriptionMode
     {
-        kServiceSubscriptionMode_NotSupported               = 0,
-        kServiceSubscriptionMode_Disabled                   = 1,
-        kServiceSubscriptionMode_Enabled                    = 2,
+        kServiceSubscriptionMode_NotSupported = 0,
+        kServiceSubscriptionMode_Disabled     = 1,
+        kServiceSubscriptionMode_Enabled      = 2,
     };
 
     ServiceSubscriptionMode GetServiceSubscriptionMode(void);
@@ -73,7 +72,7 @@ public:
     WEAVE_ERROR SetServiceSubscribeConfirmIntervalMS(uint32_t val) const;
 
     WEAVE_ERROR SubscribeServiceTrait(const ResourceIdentifier & resId, const uint64_t & instanceId,
-            PropertyPathHandle basePathHandle, TraitDataSink * dataSink);
+                                      PropertyPathHandle basePathHandle, TraitDataSink * dataSink);
     WEAVE_ERROR UnsubscribeServiceTrait(TraitDataSink * dataSink);
 
     WEAVE_ERROR PublishTrait(const uint64_t & instanceId, TraitDataSource * dataSource);
@@ -81,12 +80,11 @@ public:
     WEAVE_ERROR UnpublishTrait(TraitDataSource * dataSource);
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend class ::nl::Weave::DeviceLayer::PlatformManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
+    template <class> friend class Internal::GenericPlatformManagerImpl;
+    template <class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
     friend TraitManager & TraitMgr(void);
 
     static TraitManager sInstance;
@@ -98,8 +96,8 @@ private:
 
     enum
     {
-        kFlag_ServiceSubscriptionEstablished        = 0x01,
-        kFlag_ServiceSubscriptionActivated          = 0x02,
+        kFlag_ServiceSubscriptionEstablished = 0x01,
+        kFlag_ServiceSubscriptionActivated   = 0x02,
     };
 
     ServiceSubscriptionMode mServiceSubMode;
@@ -112,24 +110,27 @@ private:
 
     static void ActivateServiceSubscription(intptr_t arg);
     static void HandleSubscriptionEngineEvent(void * appState, SubscriptionEngine::EventID eventType,
-            const SubscriptionEngine::InEventParam & inParam, SubscriptionEngine::OutEventParam & outParam);
+                                              const SubscriptionEngine::InEventParam & inParam,
+                                              SubscriptionEngine::OutEventParam & outParam);
     static void HandleServiceBindingEvent(void * appState, ::nl::Weave::Binding::EventType eventType,
-        const ::nl::Weave::Binding::InEventParam & inParam, ::nl::Weave::Binding::OutEventParam & outParam);
+                                          const ::nl::Weave::Binding::InEventParam & inParam,
+                                          ::nl::Weave::Binding::OutEventParam & outParam);
     static void HandleOutboundServiceSubscriptionEvent(void * appState, SubscriptionClient::EventID eventType,
-            const SubscriptionClient::InEventParam & inParam, SubscriptionClient::OutEventParam & outParam);
+                                                       const SubscriptionClient::InEventParam & inParam,
+                                                       SubscriptionClient::OutEventParam & outParam);
     static void HandleInboundSubscriptionEvent(void * aAppState, SubscriptionHandler::EventID eventType,
-            const SubscriptionHandler::InEventParam & inParam, SubscriptionHandler::OutEventParam & outParam);
+                                               const SubscriptionHandler::InEventParam & inParam,
+                                               SubscriptionHandler::OutEventParam & outParam);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    TraitManager() = default;
+    TraitManager()  = default;
     ~TraitManager() = default;
 
     // No copy, move or assignment.
-    TraitManager(const TraitManager &) = delete;
+    TraitManager(const TraitManager &)  = delete;
     TraitManager(const TraitManager &&) = delete;
-    TraitManager & operator=(const TraitManager &) = delete;
+    TraitManager & operator =(const TraitManager &) = delete;
 };
 
 inline TraitManager::ServiceSubscriptionMode TraitManager::GetServiceSubscriptionMode(void)

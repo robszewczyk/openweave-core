@@ -33,8 +33,8 @@ namespace Internal {
  */
 enum
 {
-    kThreadNetworkId                                = 1,
-    kWiFiStationNetworkId                           = 2,
+    kThreadNetworkId      = 1,
+    kWiFiStationNetworkId = 2,
 };
 
 class DeviceNetworkInfo
@@ -48,15 +48,15 @@ public:
     enum
     {
         // ---- WiFi-specific Limits ----
-        kMaxWiFiSSIDLength                  = 32,
-        kMaxWiFiKeyLength                   = 64,
+        kMaxWiFiSSIDLength = 32,
+        kMaxWiFiKeyLength  = 64,
 
         // ---- Thread-specific Limits ----
-        kMaxThreadNetworkNameLength         = 16,
-        kThreadExtendedPANIdLength          = 8,
-        kThreadMeshPrefixLength             = 8,
-        kThreadNetworkKeyLength             = 16,
-        kThreadPSKcLength                   = 16,
+        kMaxThreadNetworkNameLength = 16,
+        kThreadExtendedPANIdLength  = 8,
+        kThreadMeshPrefixLength     = 8,
+        kThreadNetworkKeyLength     = 16,
+        kThreadPSKcLength           = 16,
     };
 
     // clang-format off

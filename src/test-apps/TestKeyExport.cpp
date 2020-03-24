@@ -50,13 +50,13 @@ using namespace nl::Weave::Profiles::Security::KeyExport;
 using namespace nl::Weave::Profiles::Security::AppKeys;
 using namespace nl::Weave::ASN1;
 
-using nl::Weave::Crypto::EncodedECPublicKey;
 using nl::Weave::Crypto::EncodedECPrivateKey;
+using nl::Weave::Crypto::EncodedECPublicKey;
 using nl::Weave::System::PacketBuffer;
 
 #define DEBUG_PRINT_ENABLE 0
 
-static WEAVE_ERROR InitValidationContext(ValidationContext& validContext)
+static WEAVE_ERROR InitValidationContext(ValidationContext & validContext)
 {
     WEAVE_ERROR err;
     ASN1UniversalTime validTime;
@@ -66,11 +66,11 @@ static WEAVE_ERROR InitValidationContext(ValidationContext& validContext)
     validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
 
     // Set the effective validation time.
-    validTime.Year = 2017;
+    validTime.Year  = 2017;
     validTime.Month = 01;
-    validTime.Day = 31;
+    validTime.Day   = 31;
     validTime.Hour = validTime.Minute = validTime.Second = 0;
-    err = PackCertTime(validTime, validContext.EffectiveTime);
+    err                                                  = PackCertTime(validTime, validContext.EffectiveTime);
     SuccessOrExit(err);
 
 exit:
@@ -104,10 +104,7 @@ private:
     bool mIsInitiator;
 
 public:
-    TestKeyExportDelegate(bool isInitiator)
-    : mIsInitiator(isInitiator)
-    {
-    }
+    TestKeyExportDelegate(bool isInitiator) : mIsInitiator(isInitiator) { }
 
 #if !WEAVE_CONFIG_LEGACY_KEY_EXPORT_DELEGATE
 
@@ -122,7 +119,7 @@ public:
     }
 
     WEAVE_ERROR GenerateNodeSignature(WeaveKeyExport * keyExport, const uint8_t * msgHash, uint8_t msgHashLen,
-        TLVWriter & writer) __OVERRIDE
+                                      TLVWriter & writer) __OVERRIDE
     {
         WEAVE_ERROR err;
         const uint8_t * privKey = NULL;
@@ -131,32 +128,34 @@ public:
         err = GetNodePrivateKey(keyExport->IsInitiator(), privKey, privKeyLen);
         SuccessOrExit(err);
 
-        err = GenerateAndEncodeWeaveECDSASignature(writer, TLV::ContextTag(kTag_WeaveSignature_ECDSASignatureData), msgHash, msgHashLen, privKey, privKeyLen);
+        err = GenerateAndEncodeWeaveECDSASignature(writer, TLV::ContextTag(kTag_WeaveSignature_ECDSASignatureData), msgHash,
+                                                   msgHashLen, privKey, privKeyLen);
         SuccessOrExit(err);
 
     exit:
         if (privKey != NULL)
         {
             WEAVE_ERROR relErr = ReleaseNodePrivateKey(keyExport->IsInitiator(), privKey);
-            err = (err == WEAVE_NO_ERROR) ? relErr : err;
+            err                = (err == WEAVE_NO_ERROR) ? relErr : err;
         }
         return err;
     }
 
     WEAVE_ERROR BeginCertValidation(WeaveKeyExport * keyExport, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE
+                                    WeaveCertificateSet & certSet) __OVERRIDE
     {
         return BeginCertValidation(keyExport->IsInitiator(), certSet, validCtx);
     }
 
-    WEAVE_ERROR HandleCertValidationResult(WeaveKeyExport * keyExport, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet, uint32_t requestedKeyId) __OVERRIDE
+    WEAVE_ERROR HandleCertValidationResult(WeaveKeyExport * keyExport, ValidationContext & validCtx, WeaveCertificateSet & certSet,
+                                           uint32_t requestedKeyId) __OVERRIDE
     {
-        return HandleCertValidationResult(keyExport->IsInitiator(), certSet, validCtx, NULL, keyExport->MessageInfo(), requestedKeyId);
+        return HandleCertValidationResult(keyExport->IsInitiator(), certSet, validCtx, NULL, keyExport->MessageInfo(),
+                                          requestedKeyId);
     }
 
     WEAVE_ERROR EndCertValidation(WeaveKeyExport * keyExport, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE
+                                  WeaveCertificateSet & certSet) __OVERRIDE
     {
         return EndCertValidation(keyExport->IsInitiator(), certSet, validCtx);
     }
@@ -169,16 +168,17 @@ public:
 #endif // !WEAVE_CONFIG_LEGACY_KEY_EXPORT_DELEGATE
 
     // Get the key export certificate set for the local node.
-    WEAVE_ERROR GetNodeCertSet(bool isInitiator, WeaveCertificateSet& certSet)
+    WEAVE_ERROR GetNodeCertSet(bool isInitiator, WeaveCertificateSet & certSet)
     {
         WEAVE_ERROR err;
-        WeaveCertificateData *cert;
+        WeaveCertificateData * cert;
         bool certSetInitialized = false;
 
         VerifyOrExit(isInitiator == mIsInitiator, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
         // Initialize certificate set.
-        err = certSet.Init(kMaxCerts, kCertDecodeBufferSize, nl::Weave::Platform::Security::MemoryAlloc, nl::Weave::Platform::Security::MemoryFree);
+        err = certSet.Init(kMaxCerts, kCertDecodeBufferSize, nl::Weave::Platform::Security::MemoryAlloc,
+                           nl::Weave::Platform::Security::MemoryFree);
         SuccessOrExit(err);
         certSetInitialized = true;
 
@@ -189,7 +189,8 @@ public:
         cert->CertFlags |= kCertFlag_IsTrusted;
 
         // Load the intermediate (DeviceCA) cert.
-        err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength, 0, cert);
+        err =
+            certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength, 0, cert);
         SuccessOrExit(err);
 
         // Load the signing cert.
@@ -212,7 +213,7 @@ public:
     }
 
     // Called when the key export engine is done with the certificate set returned by GetNodeCertSet().
-    WEAVE_ERROR ReleaseNodeCertSet(bool isInitiator, WeaveCertificateSet& certSet)
+    WEAVE_ERROR ReleaseNodeCertSet(bool isInitiator, WeaveCertificateSet & certSet)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -225,23 +226,23 @@ public:
     }
 
     // Get the local node's private key.
-    WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t& weavePrivKeyLen)
+    WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         VerifyOrExit(isInitiator == mIsInitiator, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-        weavePrivKey = (uint8_t *)nl::Weave::Platform::Security::MemoryAlloc(kMaxDevicePrivateKeySize);
+        weavePrivKey = (uint8_t *) nl::Weave::Platform::Security::MemoryAlloc(kMaxDevicePrivateKeySize);
         VerifyOrExit(weavePrivKey != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
         if (isInitiator)
         {
-            memcpy((uint8_t *)weavePrivKey, TestDevice1_PrivateKey, TestDevice1_PrivateKeyLength);
+            memcpy((uint8_t *) weavePrivKey, TestDevice1_PrivateKey, TestDevice1_PrivateKeyLength);
             weavePrivKeyLen = TestDevice1_PrivateKeyLength;
         }
         else
         {
-            memcpy((uint8_t *)weavePrivKey, TestDevice2_PrivateKey, TestDevice2_PrivateKeyLength);
+            memcpy((uint8_t *) weavePrivKey, TestDevice2_PrivateKey, TestDevice2_PrivateKeyLength);
             weavePrivKeyLen = TestDevice1_PrivateKeyLength;
         }
 
@@ -258,7 +259,7 @@ public:
 
         if (weavePrivKey != NULL)
         {
-            nl::Weave::Platform::Security::MemoryFree((void *)weavePrivKey);
+            nl::Weave::Platform::Security::MemoryFree((void *) weavePrivKey);
             weavePrivKey = NULL;
         }
 
@@ -268,16 +269,17 @@ public:
 
     // Prepare the supplied certificate set and validation context for use in validating the certificate of a peer.
     // This method is responsible for loading the trust anchors into the certificate set.
-    WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext)
+    WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext)
     {
         WEAVE_ERROR err;
-        WeaveCertificateData *cert;
+        WeaveCertificateData * cert;
         bool certSetInitialized = false;
 
         VerifyOrExit(isInitiator == mIsInitiator, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
         // Initialize certificate set.
-        err = certSet.Init(kMaxCerts, kCertDecodeBufferSize, nl::Weave::Platform::Security::MemoryAlloc, nl::Weave::Platform::Security::MemoryFree);
+        err = certSet.Init(kMaxCerts, kCertDecodeBufferSize, nl::Weave::Platform::Security::MemoryAlloc,
+                           nl::Weave::Platform::Security::MemoryFree);
         SuccessOrExit(err);
         certSetInitialized = true;
 
@@ -299,8 +301,8 @@ public:
 
     // Called with the results of validating the peer's certificate.
     // Requestor verifies that response came from expected node.
-    WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext,
-                                                   const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t requestedKeyId)
+    WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext,
+                                           const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo, uint32_t requestedKeyId)
     {
         WEAVE_ERROR err;
 
@@ -334,7 +336,7 @@ public:
     }
 
     // Called when peer certificate validation is complete.
-    WEAVE_ERROR EndCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext)
+    WEAVE_ERROR EndCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -347,7 +349,8 @@ public:
     }
 
     // Called by requestor and responder to verify that received message was appropriately secured when the message isn't signed.
-    WEAVE_ERROR ValidateUnsignedKeyExportMessage(bool isInitiator, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t requestedKeyId)
+    WEAVE_ERROR ValidateUnsignedKeyExportMessage(bool isInitiator, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                                 uint32_t requestedKeyId)
     {
         WEAVE_ERROR err;
 
@@ -361,13 +364,11 @@ public:
         //   - Currently there is no use case where fabric secret or any other key can be exported if the
         //     request/response messages are unsigned. This function should always return
         //     WEAVE_ERROR_UNAUTHORIZED_KEY_EXPORT_RESPONSE error.
-        if (requestedKeyId == WeaveKeyId::kFabricSecret &&
-            WeaveKeyId::IsSessionKey(msgInfo->KeyId) &&
+        if (requestedKeyId == WeaveKeyId::kFabricSecret && WeaveKeyId::IsSessionKey(msgInfo->KeyId) &&
             msgInfo->PeerAuthMode == kWeaveAuthMode_PASE_PairingCode)
             err = WEAVE_NO_ERROR;
         else if (WeaveKeyId::GetType(requestedKeyId) == WeaveKeyId::kType_AppIntermediateKey &&
-                 WeaveKeyId::IsSessionKey(msgInfo->KeyId) &&
-                 msgInfo->PeerAuthMode == kWeaveAuthMode_CASE_ServiceEndPoint)
+                 WeaveKeyId::IsSessionKey(msgInfo->KeyId) && msgInfo->PeerAuthMode == kWeaveAuthMode_CASE_ServiceEndPoint)
             err = WEAVE_NO_ERROR;
         else
             err = WEAVE_ERROR_UNAUTHORIZED_KEY_EXPORT_RESPONSE;
@@ -377,98 +378,93 @@ public:
     }
 };
 
-
 enum
 {
-    kKeyExportRequestError_None             = 0,
+    kKeyExportRequestError_None = 0,
     kKeyExportRequestError_InvalidConfig,
 };
 
 enum
 {
-    kKeyExportResponseError_None             = 0,
+    kKeyExportResponseError_None = 0,
     kKeyExportResponseError_Reconfigure,
     kKeyExportResponseError_NoCommonConfig,
 };
 
 // Test input vector format.
-struct TestContext {
+struct TestContext
+{
     uint8_t config;
     bool signMessages;
-    const uint32_t* requestedKeyId;
-    const uint32_t* expectedKeyId;
-    const uint8_t* expectedKey;
-    const uint8_t* expectedKeyLen;
-    const uint16_t* msgKeyId;
+    const uint32_t * requestedKeyId;
+    const uint32_t * expectedKeyId;
+    const uint8_t * expectedKey;
+    const uint8_t * expectedKeyLen;
+    const uint16_t * msgKeyId;
     WeaveAuthMode msgKeyAuthMode;
     uint8_t requestErrorType;
     uint8_t responseErrorType;
 };
 
-static const uint32_t sFabricSecretId = WeaveKeyId::kFabricSecret;
+static const uint32_t sFabricSecretId  = WeaveKeyId::kFabricSecret;
 static const uint32_t sClientRootKeyId = WeaveKeyId::kClientRootKey;
-static const uint16_t sNoneKeyId = WeaveKeyId::kNone;
+static const uint16_t sNoneKeyId       = WeaveKeyId::kNone;
 
 // Test input data.
 static struct TestContext sContext[] = {
     // Proposed Config1 tests.
-    { kKeyExportConfig_Config1, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret,
-      &sFabricSecretLen, &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode,
-      kKeyExportRequestError_InvalidConfig, kKeyExportResponseError_None },
+    { kKeyExportConfig_Config1, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret, &sFabricSecretLen,
+      &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode, kKeyExportRequestError_InvalidConfig,
+      kKeyExportResponseError_None },
     { kKeyExportConfig_Config1, false, &sIntermediateKeyId_FRK_EC, &sIntermediateKeyId_FRK_E2, sIntermediateKey_FRK_E2,
-      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint,
-      kKeyExportRequestError_None, kKeyExportResponseError_None },
-    { kKeyExportConfig_Config1, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey,
-      &sClientRootKeyLen, &sNoneKeyId, kWeaveAuthMode_Unauthenticated,
-      kKeyExportRequestError_None, kKeyExportResponseError_None },
+      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint, kKeyExportRequestError_None,
+      kKeyExportResponseError_None },
+    { kKeyExportConfig_Config1, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey, &sClientRootKeyLen, &sNoneKeyId,
+      kWeaveAuthMode_Unauthenticated, kKeyExportRequestError_None, kKeyExportResponseError_None },
     // Proposed Config2 tests.
-    { kKeyExportConfig_Config2, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret,
-      &sFabricSecretLen, &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode,
-      kKeyExportRequestError_None, kKeyExportResponseError_None },
+    { kKeyExportConfig_Config2, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret, &sFabricSecretLen,
+      &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode, kKeyExportRequestError_None, kKeyExportResponseError_None },
     { kKeyExportConfig_Config2, false, &sIntermediateKeyId_FRK_EC, &sIntermediateKeyId_FRK_E2, sIntermediateKey_FRK_E2,
       &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint,
       kKeyExportRequestError_InvalidConfig, kKeyExportResponseError_None },
-    { kKeyExportConfig_Config2, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey,
-      &sClientRootKeyLen, &sNoneKeyId, kWeaveAuthMode_Unauthenticated,
-      kKeyExportRequestError_None, kKeyExportResponseError_None },
+    { kKeyExportConfig_Config2, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey, &sClientRootKeyLen, &sNoneKeyId,
+      kWeaveAuthMode_Unauthenticated, kKeyExportRequestError_None, kKeyExportResponseError_None },
     // Proposed Config1 reconfigured to Config2 tests.
-    { kKeyExportConfig_Config1, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret,
-      &sFabricSecretLen, &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode,
-      kKeyExportRequestError_None, kKeyExportResponseError_Reconfigure },
+    { kKeyExportConfig_Config1, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret, &sFabricSecretLen,
+      &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode, kKeyExportRequestError_None,
+      kKeyExportResponseError_Reconfigure },
     { kKeyExportConfig_Config1, false, &sIntermediateKeyId_FRK_EC, &sIntermediateKeyId_FRK_E2, sIntermediateKey_FRK_E2,
-      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint,
-      kKeyExportRequestError_None, kKeyExportResponseError_Reconfigure },
-    { kKeyExportConfig_Config1, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey,
-      &sClientRootKeyLen, &sNoneKeyId, kWeaveAuthMode_Unauthenticated,
-      kKeyExportRequestError_InvalidConfig, kKeyExportResponseError_Reconfigure },
+      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint, kKeyExportRequestError_None,
+      kKeyExportResponseError_Reconfigure },
+    { kKeyExportConfig_Config1, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey, &sClientRootKeyLen, &sNoneKeyId,
+      kWeaveAuthMode_Unauthenticated, kKeyExportRequestError_InvalidConfig, kKeyExportResponseError_Reconfigure },
     // Proposed Config2 reconfigured to Config1 tests.
-    { kKeyExportConfig_Config2, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret,
-      &sFabricSecretLen, &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode,
-      kKeyExportRequestError_None, kKeyExportResponseError_Reconfigure },
+    { kKeyExportConfig_Config2, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret, &sFabricSecretLen,
+      &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode, kKeyExportRequestError_None,
+      kKeyExportResponseError_Reconfigure },
     { kKeyExportConfig_Config2, false, &sIntermediateKeyId_FRK_EC, &sIntermediateKeyId_FRK_E2, sIntermediateKey_FRK_E2,
-      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint,
-      kKeyExportRequestError_None, kKeyExportResponseError_Reconfigure },
-    { kKeyExportConfig_Config2, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey,
-      &sClientRootKeyLen, &sNoneKeyId, kWeaveAuthMode_Unauthenticated,
-      kKeyExportRequestError_None, kKeyExportResponseError_Reconfigure },
+      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint, kKeyExportRequestError_None,
+      kKeyExportResponseError_Reconfigure },
+    { kKeyExportConfig_Config2, true, &sClientRootKeyId, &sClientRootKeyId, sClientRootKey, &sClientRootKeyLen, &sNoneKeyId,
+      kWeaveAuthMode_Unauthenticated, kKeyExportRequestError_None, kKeyExportResponseError_Reconfigure },
     // No common Configs for requester and responder tests.
-    { kKeyExportConfig_Config1, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret,
-      &sFabricSecretLen, &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode,
-      kKeyExportRequestError_InvalidConfig, kKeyExportResponseError_NoCommonConfig },
+    { kKeyExportConfig_Config1, false, &sFabricSecretId, &sFabricSecretId, sFabricSecret, &sFabricSecretLen,
+      &sTestDefaultSessionKeyId, kWeaveAuthMode_PASE_PairingCode, kKeyExportRequestError_InvalidConfig,
+      kKeyExportResponseError_NoCommonConfig },
     { kKeyExportConfig_Config2, false, &sIntermediateKeyId_FRK_EC, &sIntermediateKeyId_FRK_E2, sIntermediateKey_FRK_E2,
-      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint,
-      kKeyExportRequestError_None, kKeyExportResponseError_NoCommonConfig },
+      &sIntermediateKeyLen_FRK_E2, &sTestDefaultSessionKeyId, kWeaveAuthMode_CASE_ServiceEndPoint, kKeyExportRequestError_None,
+      kKeyExportResponseError_NoCommonConfig },
 };
 
 // Number of test context examples.
 static const size_t kTestElements = sizeof(sContext) / sizeof(struct TestContext);
 
-static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
+static void KeyExportProtocol_Test(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     WeaveKeyExport initiatorEng;
     WeaveKeyExport responderEng;
-    PacketBuffer *msgBuf = NULL;
+    PacketBuffer * msgBuf = NULL;
     TestKeyExportDelegate initiatorDelegate(true);
     TestKeyExportDelegate responderDelegate(false);
     TestGroupKeyStore keyStore;
@@ -479,31 +475,36 @@ static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
     IPPacketInfo pktInfo;
     WeaveMessageInfo msgInfo;
 
-    struct TestContext *theContext = (struct TestContext *)(inContext);
+    struct TestContext * theContext = (struct TestContext *) (inContext);
 
     for (size_t ith = 0; ith < kTestElements; ith++, theContext++)
     {
-        uint8_t proposedConfig = theContext->config;
-        bool signMessages = theContext->signMessages;
-        uint32_t keyId = *theContext->requestedKeyId;
-        uint32_t expectedKeyId = *theContext->expectedKeyId;
-        const uint8_t* expectedKey = theContext->expectedKey;
-        uint8_t expectedKeyLen = *theContext->expectedKeyLen;
+        uint8_t proposedConfig      = theContext->config;
+        bool signMessages           = theContext->signMessages;
+        uint32_t keyId              = *theContext->requestedKeyId;
+        uint32_t expectedKeyId      = *theContext->expectedKeyId;
+        const uint8_t * expectedKey = theContext->expectedKey;
+        uint8_t expectedKeyLen      = *theContext->expectedKeyLen;
 
         msgInfo.Clear();
         pktInfo.Clear();
-        msgInfo.KeyId = *theContext->msgKeyId;
+        msgInfo.KeyId        = *theContext->msgKeyId;
         msgInfo.PeerAuthMode = theContext->msgKeyAuthMode;
         msgInfo.InPacketInfo = &pktInfo;
 
         sCurrentUTCTime = sEpochKey2_StartTime + 1;
 
         if (theContext->responseErrorType == kKeyExportResponseError_Reconfigure)
-            printf("Running Key Export Protocol Test with proposed Config%d (Reconfigured to Config%d) with %s messages to export KeyId = %08X.\n",
-                   proposedConfig, (KeyExport::kKeyExportSupportedConfig_All & ~proposedConfig), (signMessages ? "Signed" : "Unsigned"), keyId);
+            printf(
+                "Running Key Export Protocol Test with proposed Config%d (Reconfigured to Config%d) with %s messages to export "
+                "KeyId = %08X.\n",
+                proposedConfig, (KeyExport::kKeyExportSupportedConfig_All & ~proposedConfig),
+                (signMessages ? "Signed" : "Unsigned"), keyId);
         else if (theContext->responseErrorType == kKeyExportResponseError_NoCommonConfig)
-            printf("Running Key Export Protocol Test with proposed Config%d while responder only supports Config%d, which results in NoCommonConfig error.\n",
-                   proposedConfig, (KeyExport::kKeyExportSupportedConfig_All & ~proposedConfig));
+            printf(
+                "Running Key Export Protocol Test with proposed Config%d while responder only supports Config%d, which results in "
+                "NoCommonConfig error.\n",
+                proposedConfig, (KeyExport::kKeyExportSupportedConfig_All & ~proposedConfig));
         else
             printf("Running Key Export Protocol Test with proposed Config%d with %s messages to export KeyId = %08X.\n",
                    proposedConfig, (signMessages ? "Signed" : "Unsigned"), keyId);
@@ -522,7 +523,8 @@ static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
             msgBuf = PacketBuffer::New();
             NL_TEST_ASSERT(inSuite, msgBuf != NULL);
 
-            err = initiatorEng.GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, proposedConfig, keyId, signMessages);
+            err = initiatorEng.GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, proposedConfig,
+                                                        keyId, signMessages);
 
             if (theContext->requestErrorType == kKeyExportRequestError_InvalidConfig)
             {
@@ -540,7 +542,8 @@ static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
                 msgBuf = PacketBuffer::New();
                 NL_TEST_ASSERT(inSuite, msgBuf != NULL);
 
-                err = initiatorEng.GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, proposedConfig, keyId, signMessages);
+                err = initiatorEng.GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, proposedConfig,
+                                                            keyId, signMessages);
             }
 
             NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -600,7 +603,8 @@ static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
                 msgBuf = PacketBuffer::New();
                 NL_TEST_ASSERT(inSuite, msgBuf != NULL);
 
-                err = initiatorEng.GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, newConfig, keyId, signMessages);
+                err = initiatorEng.GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, newConfig,
+                                                            keyId, signMessages);
                 NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
                 msgBuf->SetDataLength(dataLen);
@@ -642,8 +646,8 @@ static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
 #endif
 
         {
-            err = initiatorEng.ProcessKeyExportResponse(msgBuf->Start(), msgBuf->DataLength(), &msgInfo,
-                                                        exportedKey, sizeof(exportedKey), exportedKeyLen, exportedKeyId);
+            err = initiatorEng.ProcessKeyExportResponse(msgBuf->Start(), msgBuf->DataLength(), &msgInfo, exportedKey,
+                                                        sizeof(exportedKey), exportedKeyLen, exportedKeyId);
             NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
             PacketBuffer::Free(msgBuf);
@@ -662,23 +666,16 @@ static void KeyExportProtocol_Test(nlTestSuite *inSuite, void *inContext)
     }
 }
 
-
 /**
  *   Test Suite. It lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("KeyExportProtocol",                KeyExportProtocol_Test),
-    NL_TEST_SENTINEL()
-};
+static const nlTest sTests[] = { NL_TEST_DEF("KeyExportProtocol", KeyExportProtocol_Test), NL_TEST_SENTINEL() };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
-    nlTestSuite testSuite = {
-        "weave-key-export-protocol",
-        &sTests[0]
-    };
+    nlTestSuite testSuite = { "weave-key-export-protocol", &sTests[0] };
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);

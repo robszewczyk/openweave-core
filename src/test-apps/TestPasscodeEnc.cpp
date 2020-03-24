@@ -43,44 +43,30 @@ using namespace nl::Weave::Profiles::Security::Passcodes;
 
 #define DEBUG_PRINT_ENABLE 0
 
-static const uint8_t sWeavePasscode[] =
-{
-    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42
+static const uint8_t sWeavePasscode[] = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42 };
+
+static const uint8_t sWeavePaddedPasscode[] = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+                                                0x38, 0x39, 0x41, 0x42, 0x00, 0x00, 0x00, 0x00 };
+
+static const uint8_t sWeaveEncryptedPasscodeConfig1[] = {
+    0x01, 0x00, 0x00, 0x00, 0x00, 0xC9, 0x25, 0xA8, 0xF4, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42,
+    0x00, 0x00, 0x00, 0x00, 0x7A, 0x3E, 0xD3, 0xA4, 0x18, 0x86, 0x25, 0x09, 0xCA, 0x96, 0xF7, 0xC9, 0x05, 0x42, 0x13, 0x43,
 };
 
-static const uint8_t sWeavePaddedPasscode[] =
-{
-    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x00, 0x00, 0x00, 0x00
+static const uint8_t sWeaveEncryptedPasscodeConfig2_Rotating[] = {
+    0x02, 0x04, 0x54, 0x00, 0x00, 0xC9, 0x25, 0xA8, 0xF4, 0xC7, 0x0A, 0x3E, 0xBA, 0xDF, 0x33, 0xA1, 0xCE, 0xB4, 0x94, 0xF0, 0xE0,
+    0xE6, 0x23, 0x98, 0x2F, 0x52, 0xD0, 0xC7, 0xAE, 0xB5, 0x1B, 0xCB, 0x4D, 0xFD, 0x72, 0x77, 0xE7, 0xA6, 0x95, 0xFB, 0xAC,
 };
 
-static const uint8_t sWeaveEncryptedPasscodeConfig1[] =
-{
-    0x01, 0x00, 0x00, 0x00, 0x00, 0xC9, 0x25, 0xA8, 0xF4, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
-    0x37, 0x38, 0x39, 0x41, 0x42, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x3E, 0xD3, 0xA4, 0x18, 0x86, 0x25,
-    0x09, 0xCA, 0x96, 0xF7, 0xC9, 0x05, 0x42, 0x13, 0x43,
+static const uint8_t sWeaveEncryptedPasscodeConfig2_Static[] = {
+    0x02, 0x04, 0x44, 0x00, 0x00, 0xC9, 0x25, 0xA8, 0xF4, 0x3E, 0x8D, 0xA7, 0x68, 0xC7, 0x67, 0x91, 0xF9, 0x16, 0xC3, 0x42, 0x2C,
+    0x82, 0x26, 0x4B, 0xDE, 0x14, 0x39, 0x2B, 0x38, 0x7B, 0xDA, 0x88, 0xF8, 0xFD, 0x72, 0x77, 0xE7, 0xA6, 0x95, 0xFB, 0xAC,
 };
 
-static const uint8_t sWeaveEncryptedPasscodeConfig2_Rotating[] =
-{
-    0x02, 0x04, 0x54, 0x00, 0x00, 0xC9, 0x25, 0xA8, 0xF4, 0xC7, 0x0A, 0x3E, 0xBA, 0xDF, 0x33, 0xA1,
-    0xCE, 0xB4, 0x94, 0xF0, 0xE0, 0xE6, 0x23, 0x98, 0x2F, 0x52, 0xD0, 0xC7, 0xAE, 0xB5, 0x1B, 0xCB,
-    0x4D, 0xFD, 0x72, 0x77, 0xE7, 0xA6, 0x95, 0xFB, 0xAC,
-};
+static const uint8_t sLongWeavePasscode[] = { 0x5A, 0x59, 0x58, 0x57, 0x56, 0x55, 0x54, 0x53,
+                                              0x52, 0x51, 0x50, 0x4F, 0x4E, 0x4D, 0x4C, 0x4B };
 
-static const uint8_t sWeaveEncryptedPasscodeConfig2_Static[] =
-{
-    0x02, 0x04, 0x44, 0x00, 0x00, 0xC9, 0x25, 0xA8, 0xF4, 0x3E, 0x8D, 0xA7, 0x68, 0xC7, 0x67, 0x91,
-    0xF9, 0x16, 0xC3, 0x42, 0x2C, 0x82, 0x26, 0x4B, 0xDE, 0x14, 0x39, 0x2B, 0x38, 0x7B, 0xDA, 0x88,
-    0xF8, 0xFD, 0x72, 0x77, 0xE7, 0xA6, 0x95, 0xFB, 0xAC,
-};
-
-static const uint8_t sLongWeavePasscode[] =
-{
-    0x5A, 0x59, 0x58, 0x57, 0x56, 0x55, 0x54, 0x53, 0x52, 0x51, 0x50, 0x4F, 0x4E, 0x4D, 0x4C, 0x4B
-};
-
-
-void PasscodeEncryptConfig1_Test1(nlTestSuite *inSuite, void *inContext)
+void PasscodeEncryptConfig1_Test1(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     const uint8_t config = kPasscode_Config1_TEST_ONLY;
@@ -91,8 +77,7 @@ void PasscodeEncryptConfig1_Test1(nlTestSuite *inSuite, void *inContext)
     size_t encPasscodeLen;
 
     // Encrypt passcode.
-    err = EncryptPasscode(config, kPasscodeConfig1_KeyId, sPasscodeEncryptionKeyNonce,
-                          sWeavePasscode, sizeof(sWeavePasscode),
+    err = EncryptPasscode(config, kPasscodeConfig1_KeyId, sPasscodeEncryptionKeyNonce, sWeavePasscode, sizeof(sWeavePasscode),
                           encPasscode, sizeof(encPasscode), encPasscodeLen, NULL);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, encPasscodeLen == sizeof(sWeaveEncryptedPasscodeConfig1));
@@ -141,7 +126,7 @@ void PasscodeEncryptConfig1_Test1(nlTestSuite *inSuite, void *inContext)
 #endif
 }
 
-void PasscodeEncryptConfig2_Test1(nlTestSuite *inSuite, void *inContext)
+void PasscodeEncryptConfig2_Test1(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     const uint8_t config = kPasscode_Config2;
@@ -153,9 +138,8 @@ void PasscodeEncryptConfig2_Test1(nlTestSuite *inSuite, void *inContext)
     size_t encPasscodeLen;
 
     // Encrypt passcode.
-    err = EncryptPasscode(config, sPasscodeEncRotatingKeyId_CRK_E0_G4, sPasscodeEncryptionKeyNonce,
-                          sWeavePasscode, sizeof(sWeavePasscode),
-                          encPasscode, sizeof(encPasscode), encPasscodeLen, &keyStore);
+    err = EncryptPasscode(config, sPasscodeEncRotatingKeyId_CRK_E0_G4, sPasscodeEncryptionKeyNonce, sWeavePasscode,
+                          sizeof(sWeavePasscode), encPasscode, sizeof(encPasscode), encPasscodeLen, &keyStore);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, encPasscodeLen == sizeof(sWeaveEncryptedPasscodeConfig2_Rotating));
     NL_TEST_ASSERT(inSuite, memcmp(encPasscode, sWeaveEncryptedPasscodeConfig2_Rotating, encPasscodeLen) == 0);
@@ -205,7 +189,7 @@ void PasscodeEncryptConfig2_Test1(nlTestSuite *inSuite, void *inContext)
 #endif
 }
 
-void PasscodeEncryptConfig2_Test2(nlTestSuite *inSuite, void *inContext)
+void PasscodeEncryptConfig2_Test2(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     const uint8_t config = kPasscode_Config2;
@@ -217,9 +201,8 @@ void PasscodeEncryptConfig2_Test2(nlTestSuite *inSuite, void *inContext)
     size_t encPasscodeLen;
 
     // Encrypt passcode.
-    err = EncryptPasscode(config, sPasscodeEncStaticKeyId_CRK_G4, sPasscodeEncryptionKeyNonce,
-                          sWeavePasscode, sizeof(sWeavePasscode),
-                          encPasscode, sizeof(encPasscode), encPasscodeLen, &keyStore);
+    err = EncryptPasscode(config, sPasscodeEncStaticKeyId_CRK_G4, sPasscodeEncryptionKeyNonce, sWeavePasscode,
+                          sizeof(sWeavePasscode), encPasscode, sizeof(encPasscode), encPasscodeLen, &keyStore);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, encPasscodeLen == sizeof(sWeaveEncryptedPasscodeConfig2_Static));
     NL_TEST_ASSERT(inSuite, memcmp(encPasscode, sWeaveEncryptedPasscodeConfig2_Static, encPasscodeLen) == 0);
@@ -269,7 +252,7 @@ void PasscodeEncryptConfig2_Test2(nlTestSuite *inSuite, void *inContext)
 #endif
 }
 
-void PasscodeEncryptConfig2_LongPasscodeTest(nlTestSuite *inSuite, void *inContext)
+void PasscodeEncryptConfig2_LongPasscodeTest(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     const uint8_t config = kPasscode_Config2;
@@ -280,9 +263,8 @@ void PasscodeEncryptConfig2_LongPasscodeTest(nlTestSuite *inSuite, void *inConte
     size_t encPasscodeLen;
 
     // Encrypt passcode.
-    err = EncryptPasscode(config, sPasscodeEncStaticKeyId_CRK_G4, sPasscodeEncryptionKeyNonce,
-                          sLongWeavePasscode, sizeof(sLongWeavePasscode),
-                          encPasscode, sizeof(encPasscode), encPasscodeLen, &keyStore);
+    err = EncryptPasscode(config, sPasscodeEncStaticKeyId_CRK_G4, sPasscodeEncryptionKeyNonce, sLongWeavePasscode,
+                          sizeof(sLongWeavePasscode), encPasscode, sizeof(encPasscode), encPasscodeLen, &keyStore);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
     // Decrypt passcode.
@@ -292,7 +274,7 @@ void PasscodeEncryptConfig2_LongPasscodeTest(nlTestSuite *inSuite, void *inConte
     NL_TEST_ASSERT(inSuite, memcmp(passcode, sLongWeavePasscode, passcodeLen) == 0);
 }
 
-void EncryptedPasscodeUtils_Test1(nlTestSuite *inSuite, void *inContext)
+void EncryptedPasscodeUtils_Test1(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     uint8_t config;
@@ -308,18 +290,22 @@ void EncryptedPasscodeUtils_Test1(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, config == kPasscode_Config2);
 
-    err = GetEncryptedPasscodeKeyId(sWeaveEncryptedPasscodeConfig2_Rotating, sizeof(sWeaveEncryptedPasscodeConfig2_Rotating), keyId);
+    err =
+        GetEncryptedPasscodeKeyId(sWeaveEncryptedPasscodeConfig2_Rotating, sizeof(sWeaveEncryptedPasscodeConfig2_Rotating), keyId);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, keyId == sPasscodeEncRotatingKeyId_CRK_E0_G4);
 
-    err = GetEncryptedPasscodeNonce(sWeaveEncryptedPasscodeConfig2_Rotating, sizeof(sWeaveEncryptedPasscodeConfig2_Rotating), nonce);
+    err =
+        GetEncryptedPasscodeNonce(sWeaveEncryptedPasscodeConfig2_Rotating, sizeof(sWeaveEncryptedPasscodeConfig2_Rotating), nonce);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, nonce == sPasscodeEncryptionKeyNonce);
 
-    err = GetEncryptedPasscodeFingerprint(sWeaveEncryptedPasscodeConfig2_Rotating, sizeof(sWeaveEncryptedPasscodeConfig2_Rotating), fingerprint, sizeof(fingerprint), fingerprintLen);
+    err = GetEncryptedPasscodeFingerprint(sWeaveEncryptedPasscodeConfig2_Rotating, sizeof(sWeaveEncryptedPasscodeConfig2_Rotating),
+                                          fingerprint, sizeof(fingerprint), fingerprintLen);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, fingerprintLen == kPasscodeFingerprintLen);
-    const uint8_t *expectedFingerprint = sWeaveEncryptedPasscodeConfig2_Rotating + sizeof(sWeaveEncryptedPasscodeConfig2_Rotating) - kPasscodeFingerprintLen;
+    const uint8_t * expectedFingerprint =
+        sWeaveEncryptedPasscodeConfig2_Rotating + sizeof(sWeaveEncryptedPasscodeConfig2_Rotating) - kPasscodeFingerprintLen;
     NL_TEST_ASSERT(inSuite, memcmp(fingerprint, expectedFingerprint, fingerprintLen) == 0);
 
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG1_TEST_ONLY
@@ -329,26 +315,22 @@ void EncryptedPasscodeUtils_Test1(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, false == IsSupportedPasscodeEncryptionConfig(0xFF));
 }
 
-
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     static const nlTest tests[] = {
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG1_TEST_ONLY
-        NL_TEST_DEF("PasscodeEncryptConfig1_Test1",             PasscodeEncryptConfig1_Test1),
+        NL_TEST_DEF("PasscodeEncryptConfig1_Test1", PasscodeEncryptConfig1_Test1),
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASSCODE_CONFIG2
-        NL_TEST_DEF("PasscodeEncryptConfig2_Test1",             PasscodeEncryptConfig2_Test1),
-        NL_TEST_DEF("PasscodeEncryptConfig2_Test2",             PasscodeEncryptConfig2_Test2),
-        NL_TEST_DEF("PasscodeEncryptConfig2_LongPasscodeTest",  PasscodeEncryptConfig2_LongPasscodeTest),
+        NL_TEST_DEF("PasscodeEncryptConfig2_Test1", PasscodeEncryptConfig2_Test1),
+        NL_TEST_DEF("PasscodeEncryptConfig2_Test2", PasscodeEncryptConfig2_Test2),
+        NL_TEST_DEF("PasscodeEncryptConfig2_LongPasscodeTest", PasscodeEncryptConfig2_LongPasscodeTest),
 #endif
-        NL_TEST_DEF("EncryptedPasscodeUtils_Test1",             EncryptedPasscodeUtils_Test1),
+        NL_TEST_DEF("EncryptedPasscodeUtils_Test1", EncryptedPasscodeUtils_Test1),
         NL_TEST_SENTINEL()
     };
 
-    static nlTestSuite testSuite = {
-        "passcode-encryption",
-        &tests[0]
-    };
+    static nlTestSuite testSuite = { "passcode-encryption", &tests[0] };
 
     nl_test_set_output_style(OUTPUT_CSV);
 

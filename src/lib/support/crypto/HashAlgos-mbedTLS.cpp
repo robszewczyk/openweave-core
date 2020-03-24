@@ -57,11 +57,11 @@ void SHA1::Begin()
 
 void SHA1::AddData(const uint8_t * data, uint16_t dataLen)
 {
-    int res = mbedtls_sha1_update_ret(&mSHACtx, data, (size_t)dataLen);
+    int res = mbedtls_sha1_update_ret(&mSHACtx, data, (size_t) dataLen);
     VerifyOrDie(res == 0);
 }
 
-void SHA1::Finish(uint8_t *hashBuf)
+void SHA1::Finish(uint8_t * hashBuf)
 {
     int res = mbedtls_sha1_finish_ret(&mSHACtx, hashBuf);
     VerifyOrDie(res == 0);
@@ -90,7 +90,7 @@ void SHA256::Begin()
 
 void SHA256::AddData(const uint8_t * data, uint16_t dataLen)
 {
-    int res = mbedtls_sha256_update_ret(&mSHACtx, data, (size_t)dataLen);
+    int res = mbedtls_sha256_update_ret(&mSHACtx, data, (size_t) dataLen);
     VerifyOrDie(res == 0);
 }
 

@@ -45,9 +45,9 @@ namespace DeviceLayer {
 
 struct WeaveDeviceEvent;
 
+using nl::Weave::ExchangeMgr;
 using nl::Weave::FabricState;
 using nl::Weave::MessageLayer;
-using nl::Weave::ExchangeMgr;
 using nl::Weave::SecurityMgr;
 
 extern nl::Weave::System::Layer SystemLayer;

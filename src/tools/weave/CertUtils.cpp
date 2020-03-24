@@ -35,7 +35,8 @@
 using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::ASN1;
 
-enum {
+enum
+{
     kMaxWeaveCertInflationFactor = 5 // Maximum ratio of the size of buffer needed to hold an X.509 certificate
                                      // relative to the size of buffer needed to hold its Weave counterpart.
                                      // This value (5) is conservatively big given that certificates contain large
@@ -43,18 +44,18 @@ enum {
                                      // much closer to 1.5.
 };
 
-bool ReadCert(const char *fileName, X509 *& cert)
+bool ReadCert(const char * fileName, X509 *& cert)
 {
     CertFormat origCertFmt;
     return ReadCert(fileName, cert, origCertFmt);
 }
 
-bool ReadCert(const char *fileName, X509 *& cert, CertFormat& origCertFmt)
+bool ReadCert(const char * fileName, X509 *& cert, CertFormat & origCertFmt)
 {
     bool res = true;
     WEAVE_ERROR err;
-    uint8_t *certBuf = NULL;
-    const uint8_t *p;
+    uint8_t * certBuf = NULL;
+    const uint8_t * p;
     uint32_t certLen;
     CertFormat curCertFmt;
 
@@ -82,8 +83,8 @@ bool ReadCert(const char *fileName, X509 *& cert, CertFormat& origCertFmt)
 
     if (curCertFmt == kCertFormat_Weave_Raw)
     {
-        uint32_t convertedCertLen = certLen * kMaxWeaveCertInflationFactor;
-        uint8_t *convertedCertBuf = (uint8_t *)malloc((size_t)convertedCertLen);
+        uint32_t convertedCertLen  = certLen * kMaxWeaveCertInflationFactor;
+        uint8_t * convertedCertBuf = (uint8_t *) malloc((size_t) convertedCertLen);
 
         err = ConvertWeaveCertToX509Cert(certBuf, certLen, convertedCertBuf, convertedCertLen, convertedCertLen);
         if (err != WEAVE_NO_ERROR)
@@ -97,29 +98,31 @@ bool ReadCert(const char *fileName, X509 *& cert, CertFormat& origCertFmt)
         certBuf = convertedCertBuf;
         certLen = convertedCertLen;
 
-        curCertFmt= kCertFormat_X509_DER;
+        curCertFmt = kCertFormat_X509_DER;
     }
 
-    p = certBuf;
+    p    = certBuf;
     cert = d2i_X509(NULL, &p, certLen);
     if (cert == NULL)
         ReportOpenSSLErrorAndExit("d2i_X509", res = false);
 
 exit:
-    if (cert != NULL && !res) {
+    if (cert != NULL && !res)
+    {
         X509_free(cert);
         cert = NULL;
     }
-    if (certBuf != NULL) {
+    if (certBuf != NULL)
+    {
         free(certBuf);
     }
     return res;
 }
 
-bool ReadCertPEM(const char *fileName, X509 *& cert)
+bool ReadCertPEM(const char * fileName, X509 *& cert)
 {
-    bool res = true;
-    FILE *file = NULL;
+    bool res    = true;
+    FILE * file = NULL;
 
     file = fopen(fileName, "r");
     if (file == NULL)
@@ -141,7 +144,7 @@ exit:
     return res;
 }
 
-bool ReadWeaveCert(const char *fileName, uint8_t *& certBuf, uint32_t& certLen)
+bool ReadWeaveCert(const char * fileName, uint8_t *& certBuf, uint32_t & certLen)
 {
     bool res = true;
     CertFormat certFmt;
@@ -163,7 +166,7 @@ bool ReadWeaveCert(const char *fileName, uint8_t *& certBuf, uint32_t& certLen)
 
     if (certFmt == kCertFormat_Weave_Base64)
     {
-        uint8_t *rawCertBuf = Base64Decode(certBuf, certLen, NULL, 0, certLen);
+        uint8_t * rawCertBuf = Base64Decode(certBuf, certLen, NULL, 0, certLen);
         if (rawCertBuf == NULL)
         {
             ExitNow(res = false);
@@ -182,11 +185,11 @@ exit:
     return res;
 }
 
-bool LoadWeaveCert(const char *fileName, bool isTrused, WeaveCertificateSet& certSet, uint8_t *& certBuf)
+bool LoadWeaveCert(const char * fileName, bool isTrused, WeaveCertificateSet & certSet, uint8_t *& certBuf)
 {
     bool res = true;
     WEAVE_ERROR err;
-    WeaveCertificateData *cert;
+    WeaveCertificateData * cert;
     uint32_t certLen;
 
     if (certSet.CertCount == certSet.MaxCerts)
@@ -218,12 +221,12 @@ exit:
     return res;
 }
 
-bool WriteCert(X509 *cert, FILE *file, const char *fileName, CertFormat certFmt)
+bool WriteCert(X509 * cert, FILE * file, const char * fileName, CertFormat certFmt)
 {
-    bool res = true;
-    uint8_t *weaveCert = NULL;
+    bool res            = true;
+    uint8_t * weaveCert = NULL;
     uint32_t weaveCertLen;
-    char *weaveCertBase64 = NULL;
+    char * weaveCertBase64 = NULL;
 
     if (certFmt == kCertFormat_X509_PEM)
     {
@@ -259,7 +262,8 @@ bool WriteCert(X509 *cert, FILE *file, const char *fileName, CertFormat certFmt)
 
             if (fputs(weaveCertBase64, file) == EOF)
             {
-                fprintf(stderr, "weave: ERROR: Unable to write output certificate file (%s)\n%s\n", fileName, strerror(ferror(file) ? errno : ENOSPC));
+                fprintf(stderr, "weave: ERROR: Unable to write output certificate file (%s)\n%s\n", fileName,
+                        strerror(ferror(file) ? errno : ENOSPC));
                 ExitNow(res = false);
             }
         }
@@ -273,11 +277,11 @@ exit:
     return res;
 }
 
-bool WeaveEncodeCert(X509 *cert, uint8_t *& encodedCert, uint32_t& encodedCertLen)
+bool WeaveEncodeCert(X509 * cert, uint8_t *& encodedCert, uint32_t & encodedCertLen)
 {
     bool res = true;
     WEAVE_ERROR err;
-    uint8_t *derEncodedCert = NULL;
+    uint8_t * derEncodedCert = NULL;
     int32_t derEncodedCertLen;
 
     encodedCert = NULL;
@@ -286,7 +290,7 @@ bool WeaveEncodeCert(X509 *cert, uint8_t *& encodedCert, uint32_t& encodedCertLe
     if (derEncodedCertLen < 0)
         ReportOpenSSLErrorAndExit("i2d_X509", res = false);
 
-    encodedCert = (uint8_t *)malloc(derEncodedCertLen);
+    encodedCert = (uint8_t *) malloc(derEncodedCertLen);
     if (encodedCert == NULL)
     {
         fprintf(stderr, "Failed to encode certificate: Memory allocation failure\n");
@@ -309,25 +313,25 @@ exit:
     return res;
 }
 
-bool DEREncodeCert(X509 *cert, uint8_t *& encodedCert, uint32_t& encodedCertLen)
+bool DEREncodeCert(X509 * cert, uint8_t *& encodedCert, uint32_t & encodedCertLen)
 {
     int res;
 
     encodedCert = NULL;
-    res = i2d_X509(cert, &encodedCert);
+    res         = i2d_X509(cert, &encodedCert);
     if (res < 0)
         ReportOpenSSLErrorAndExit("i2d_X509", );
 
-    encodedCertLen = (uint32_t)res;
+    encodedCertLen = (uint32_t) res;
 
 exit:
     return res >= 0;
 }
 
-bool MakeDeviceCert(uint64_t devId, X509 *caCert, EVP_PKEY *caKey, const char *curveName, const struct tm& validFrom, uint32_t validDays,
-                    const EVP_MD *sigHashAlgo, X509 *& devCert, EVP_PKEY *& devKey)
+bool MakeDeviceCert(uint64_t devId, X509 * caCert, EVP_PKEY * caKey, const char * curveName, const struct tm & validFrom,
+                    uint32_t validDays, const EVP_MD * sigHashAlgo, X509 *& devCert, EVP_PKEY *& devKey)
 {
-    bool res = true;
+    bool res         = true;
     bool keySupplied = (devKey != NULL);
 
     devCert = NULL;
@@ -386,8 +390,8 @@ exit:
     return res;
 }
 
-bool MakeCACert(uint64_t newCertId, EVP_PKEY *newCertKey, X509 *caCert, EVP_PKEY *caKey, const struct tm& validFrom, uint32_t validDays,
-                const EVP_MD *sigHashAlgo, X509 *& newCert)
+bool MakeCACert(uint64_t newCertId, EVP_PKEY * newCertKey, X509 * caCert, EVP_PKEY * caKey, const struct tm & validFrom,
+                uint32_t validDays, const EVP_MD * sigHashAlgo, X509 *& newCert)
 {
     bool res = true;
 
@@ -401,7 +405,7 @@ bool MakeCACert(uint64_t newCertId, EVP_PKEY *newCertKey, X509 *caCert, EVP_PKEY
     if (caCert == NULL)
     {
         caCert = newCert;
-        caKey = newCertKey;
+        caKey  = newCertKey;
     }
 
     // Set the certificate version (must be 2, a.k.a. v3).
@@ -456,8 +460,8 @@ exit:
     return res;
 }
 
-bool MakeCodeSigningCert(uint64_t newCertId, EVP_PKEY *newCertKey, X509 *caCert, EVP_PKEY *caKey, const struct tm& validFrom, uint32_t validDays,
-                         const EVP_MD *sigHashAlgo, X509 *& newCert)
+bool MakeCodeSigningCert(uint64_t newCertId, EVP_PKEY * newCertKey, X509 * caCert, EVP_PKEY * caKey, const struct tm & validFrom,
+                         uint32_t validDays, const EVP_MD * sigHashAlgo, X509 *& newCert)
 {
     bool res = true;
 
@@ -519,8 +523,8 @@ exit:
     return res;
 }
 
-bool MakeServiceEndpointCert(uint64_t newCertId, EVP_PKEY *newCertKey, X509 *caCert, EVP_PKEY *caKey, const struct tm& validFrom, uint32_t validDays,
-                             const EVP_MD *sigHashAlgo, X509 *& newCert)
+bool MakeServiceEndpointCert(uint64_t newCertId, EVP_PKEY * newCertKey, X509 * caCert, EVP_PKEY * caKey,
+                             const struct tm & validFrom, uint32_t validDays, const EVP_MD * sigHashAlgo, X509 *& newCert)
 {
     bool res = true;
 
@@ -581,8 +585,8 @@ exit:
     return res;
 }
 
-bool MakeGeneralCert(const char *subject, EVP_PKEY *newCertKey, X509 *caCert, EVP_PKEY *caKey, const struct tm& validFrom, uint32_t validDays,
-                     const EVP_MD *sigHashAlgo, X509 *& newCert)
+bool MakeGeneralCert(const char * subject, EVP_PKEY * newCertKey, X509 * caCert, EVP_PKEY * caKey, const struct tm & validFrom,
+                     uint32_t validDays, const EVP_MD * sigHashAlgo, X509 *& newCert)
 {
     bool res = true;
 
@@ -596,7 +600,7 @@ bool MakeGeneralCert(const char *subject, EVP_PKEY *newCertKey, X509 *caCert, EV
     if (caCert == NULL)
     {
         caCert = newCert;
-        caKey = newCertKey;
+        caKey  = newCertKey;
     }
 
     // Set the certificate version (must be 2, a.k.a. v3).
@@ -652,9 +656,9 @@ exit:
     return res;
 }
 
-bool ResignCert(X509 *cert, X509 *caCert, EVP_PKEY *caKey, const EVP_MD *sigHashAlgo)
+bool ResignCert(X509 * cert, X509 * caCert, EVP_PKEY * caKey, const EVP_MD * sigHashAlgo)
 {
-    bool res = true;
+    bool res            = true;
     int authKeyIdExtLoc = -1;
 
     if (!SetCertSerialNumber(cert))
@@ -688,11 +692,11 @@ exit:
 // the SetCertSerialNumber() function to achieve similar functionality.
 #if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
 
-bool SetCertSerialNumber(X509 *cert)
+bool SetCertSerialNumber(X509 * cert)
 {
     bool res = true;
     uint64_t rnd;
-    ASN1_INTEGER *snInt = X509_get_serialNumber(cert);
+    ASN1_INTEGER * snInt = X509_get_serialNumber(cert);
 
     // Generate a random value to be used as the serial number.
     if (!RAND_bytes(reinterpret_cast<uint8_t *>(&rnd), sizeof(rnd)))
@@ -711,13 +715,13 @@ exit:
 
 #else // (OPENSSL_VERSION_NUMBER < 0x10100000L)
 
-bool SetCertSerialNumber(X509 *cert)
+bool SetCertSerialNumber(X509 * cert)
 {
     bool res = true;
     uint8_t rnd[8];
-    const uint8_t *rndPtr = rnd;
-    long rndLen = sizeof(rnd);
-    ASN1_INTEGER *snInt = X509_get_serialNumber(cert);
+    const uint8_t * rndPtr = rnd;
+    long rndLen            = sizeof(rnd);
+    ASN1_INTEGER * snInt   = X509_get_serialNumber(cert);
 
     // Generate a random value to be used as the serial number.
     if (!RAND_bytes(rnd, sizeof(rnd)))
@@ -744,19 +748,19 @@ exit:
 
 #endif // (OPENSSL_VERSION_NUMBER >= 0x10100000L)
 
-bool SetCertSubjectName(X509 *cert, int attrNID, const char *subjectName)
+bool SetCertSubjectName(X509 * cert, int attrNID, const char * subjectName)
 {
     bool res = true;
-    int len = strlen(subjectName);
+    int len  = strlen(subjectName);
 
-    if (!X509_NAME_add_entry_by_NID(X509_get_subject_name(cert), attrNID, MBSTRING_UTF8, (unsigned char *)subjectName, len, -1, 0))
+    if (!X509_NAME_add_entry_by_NID(X509_get_subject_name(cert), attrNID, MBSTRING_UTF8, (unsigned char *) subjectName, len, -1, 0))
         ReportOpenSSLErrorAndExit("X509_NAME_add_entry_by_NID", res = false);
 
 exit:
     return res;
 }
 
-bool SetWeaveCertSubjectName(X509 *cert, int attrNID, uint64_t id)
+bool SetWeaveCertSubjectName(X509 * cert, int attrNID, uint64_t id)
 {
     char idStr[17];
 
@@ -764,13 +768,12 @@ bool SetWeaveCertSubjectName(X509 *cert, int attrNID, uint64_t id)
     return SetCertSubjectName(cert, attrNID, idStr);
 }
 
-bool SetCertTimeField(ASN1_TIME *s, const struct tm& value)
+bool SetCertTimeField(ASN1_TIME * s, const struct tm & value)
 {
     char timeStr[16];
 
     // Encode the time as a string in the form YYYYMMDDHHMMSSZ.
-    snprintf(timeStr, sizeof(timeStr), "%04d%02d%02d%02d%02d%02dZ",
-             value.tm_year + 1900, value.tm_mon + 1, value.tm_mday,
+    snprintf(timeStr, sizeof(timeStr), "%04d%02d%02d%02d%02d%02dZ", value.tm_year + 1900, value.tm_mon + 1, value.tm_mday,
              value.tm_hour, value.tm_min, value.tm_sec);
 
     // X.509/RFC-5280 mandates that times before 2050 UTC must be encoded as ASN.1 UTCTime values, while
@@ -792,7 +795,7 @@ bool SetCertTimeField(ASN1_TIME *s, const struct tm& value)
     return true;
 }
 
-bool SetValidityTime(X509 *cert, const struct tm& validFrom, uint32_t validDays)
+bool SetValidityTime(X509 * cert, const struct tm & validFrom, uint32_t validDays)
 {
     struct tm validTo;
     time_t validToTime;
@@ -805,8 +808,8 @@ bool SetValidityTime(X509 *cert, const struct tm& validFrom, uint32_t validDays)
     validTo.tm_mday += validDays;
     validTo.tm_sec -= 1; // Ensure validity period is exactly a multiple of a day.
     validTo.tm_isdst = -1;
-    validToTime = mktime(&validTo);
-    if (validToTime == (time_t)-1)
+    validToTime      = mktime(&validTo);
+    if (validToTime == (time_t) -1)
     {
         fprintf(stderr, "mktime() failed\n");
         return false;
@@ -824,12 +827,12 @@ bool SetValidityTime(X509 *cert, const struct tm& validFrom, uint32_t validDays)
     return true;
 }
 
-bool AddExtension(X509 *devCert, int extNID, const char *extStr)
+bool AddExtension(X509 * devCert, int extNID, const char * extStr)
 {
     bool res = true;
-    X509_EXTENSION *ex;
+    X509_EXTENSION * ex;
 
-    ex = X509V3_EXT_nconf_nid(NULL, NULL, extNID, (char *)extStr);
+    ex = X509V3_EXT_nconf_nid(NULL, NULL, extNID, (char *) extStr);
     if (ex == NULL)
         ReportOpenSSLErrorAndExit("X509V3_EXT_conf_nid", res = false);
 
@@ -842,11 +845,11 @@ exit:
     return res;
 }
 
-bool AddSubjectKeyId(X509 *cert)
+bool AddSubjectKeyId(X509 * cert)
 {
-    bool res = true;
-    ASN1_OCTET_STRING *pkHashOS = NULL;
-    ASN1_BIT_STRING *pk = X509_get0_pubkey_bitstr(cert);
+    bool res                     = true;
+    ASN1_OCTET_STRING * pkHashOS = NULL;
+    ASN1_BIT_STRING * pk         = X509_get0_pubkey_bitstr(cert);
     unsigned char pkHash[EVP_MAX_MD_SIZE];
     unsigned int pkHashLen;
 
@@ -883,10 +886,10 @@ exit:
     return res;
 }
 
-bool AddAuthorityKeyId(X509 *cert, X509 *caCert)
+bool AddAuthorityKeyId(X509 * cert, X509 * caCert)
 {
     bool res = true;
-    AUTHORITY_KEYID *akid;
+    AUTHORITY_KEYID * akid;
     int isCritical, index = 0;
 
     akid = AUTHORITY_KEYID_new();
@@ -896,7 +899,7 @@ bool AddAuthorityKeyId(X509 *cert, X509 *caCert)
         ExitNow(res = false);
     }
 
-    akid->keyid = (ASN1_OCTET_STRING *)X509_get_ext_d2i(caCert, NID_subject_key_identifier, &isCritical, &index);
+    akid->keyid = (ASN1_OCTET_STRING *) X509_get_ext_d2i(caCert, NID_subject_key_identifier, &isCritical, &index);
     if (akid->keyid == NULL)
         ReportOpenSSLErrorAndExit("X509_get_ext_d2i", res = false);
 
@@ -907,16 +910,16 @@ exit:
     return res;
 }
 
-bool X509PEMToDER(uint8_t *cert, uint32_t& certLen)
+bool X509PEMToDER(uint8_t * cert, uint32_t & certLen)
 {
     bool res = true;
-    BIO *certBIO;
-    char *name = NULL;
-    char *header = NULL;
-    uint8_t *data = NULL;
+    BIO * certBIO;
+    char * name    = NULL;
+    char * header  = NULL;
+    uint8_t * data = NULL;
     long dataLen;
 
-    certBIO = BIO_new_mem_buf((void*)cert, certLen);
+    certBIO = BIO_new_mem_buf((void *) cert, certLen);
     if (certBIO == NULL)
     {
         fprintf(stderr, "Memory allocation error\n");
@@ -941,11 +944,11 @@ exit:
     return res;
 }
 
-bool X509DERToPEM(uint8_t *cert, uint32_t& certLen, uint32_t bufLen)
+bool X509DERToPEM(uint8_t * cert, uint32_t & certLen, uint32_t bufLen)
 {
     bool res = true;
-    BIO *certBIO;
-    BUF_MEM *pemBuf;
+    BIO * certBIO;
+    BUF_MEM * pemBuf;
 
     certBIO = BIO_new(BIO_s_mem());
     if (certBIO == NULL)
@@ -954,10 +957,10 @@ bool X509DERToPEM(uint8_t *cert, uint32_t& certLen, uint32_t bufLen)
         ExitNow(res = false);
     }
 
-    if (!PEM_write_bio(certBIO, "CERTIFICATE", (char *)"", cert, certLen))
+    if (!PEM_write_bio(certBIO, "CERTIFICATE", (char *) "", cert, certLen))
         ReportOpenSSLErrorAndExit("PEM_write_bio", res = false);
 
-    (void)BIO_flush(certBIO);
+    (void) BIO_flush(certBIO);
 
     BIO_get_mem_ptr(certBIO, &pemBuf);
 
@@ -976,12 +979,12 @@ exit:
     return res;
 }
 
-CertFormat DetectCertFormat(uint8_t *cert, uint32_t certLen)
+CertFormat DetectCertFormat(uint8_t * cert, uint32_t certLen)
 {
-    static const uint8_t weaveRawPrefix[] = { 0xD5, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00 };
-    static const char *weaveB64Prefix = "1QAABAAB";
+    static const uint8_t weaveRawPrefix[]   = { 0xD5, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00 };
+    static const char * weaveB64Prefix      = "1QAABAAB";
     static const uint32_t weaveB64PrefixLen = sizeof(weaveB64Prefix) - 1;
-    static const char *pemMarker = "-----BEGIN CERTIFICATE-----";
+    static const char * pemMarker           = "-----BEGIN CERTIFICATE-----";
 
     if (certLen > sizeof(weaveRawPrefix) && memcmp(cert, weaveRawPrefix, sizeof(weaveRawPrefix)) == 0)
         return kCertFormat_Weave_Raw;

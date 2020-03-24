@@ -24,22 +24,21 @@
 using namespace nl::Ble;
 
 extern "C" {
-typedef bool (*WriteBleCharacteristicCBFunct)(void *connObj, void *svcId, void *charId, void *buffer, uint16_t length);
-typedef bool (*SubscribeBleCharacteristicCBFunct)(void *connObj, void *svcId, void *charId, bool subscribe);
-typedef bool (*CloseBleCBFunct)(void *connObj);
+typedef bool (*WriteBleCharacteristicCBFunct)(void * connObj, void * svcId, void * charId, void * buffer, uint16_t length);
+typedef bool (*SubscribeBleCharacteristicCBFunct)(void * connObj, void * svcId, void * charId, bool subscribe);
+typedef bool (*CloseBleCBFunct)(void * connObj);
 }
 
-class DeviceManager_BlePlatformDelegate :
-    public nl::Ble::BlePlatformDelegate
+class DeviceManager_BlePlatformDelegate : public nl::Ble::BlePlatformDelegate
 {
 public:
-    BleLayer *Ble;
+    BleLayer * Ble;
     WriteBleCharacteristicCBFunct writeCB;
     SubscribeBleCharacteristicCBFunct subscribeCB;
     CloseBleCBFunct closeCB;
 
     // ctor
-    DeviceManager_BlePlatformDelegate(BleLayer *ble);
+    DeviceManager_BlePlatformDelegate(BleLayer * ble);
 
     // Set callback used to send GATT write request
     inline void SetWriteCharCB(WriteBleCharacteristicCBFunct cb) { writeCB = cb; };
@@ -47,14 +46,20 @@ public:
     inline void SetCloseCB(CloseBleCBFunct cb) { closeCB = cb; };
 
     // Virtuals from BlePlatformDelegate:
-    bool SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId);
-    bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId);
+    bool SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                 const nl::Ble::WeaveBleUUID * charId);
+    bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                   const nl::Ble::WeaveBleUUID * charId);
     bool CloseConnection(BLE_CONNECTION_OBJECT connObj);
     uint16_t GetMTU(BLE_CONNECTION_OBJECT connObj) const;
-    bool SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf);
-    bool SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf);
-    bool SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, nl::Weave::System::PacketBuffer *pBuf);
-    bool SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId);
+    bool SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId,
+                        nl::Weave::System::PacketBuffer * pBuf);
+    bool SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId,
+                          nl::Weave::System::PacketBuffer * pBuf);
+    bool SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId,
+                         nl::Weave::System::PacketBuffer * pBuf);
+    bool SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext,
+                          const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId);
 };
 
 #endif /* DEVICEMANAGER_BLEPLATFORMDELEGATE_H_ */

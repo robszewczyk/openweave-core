@@ -52,7 +52,6 @@
 #include <Weave/Profiles/bulk-data-transfer/Development/BulkDataTransfer.h>
 #endif
 
-
 using nl::StatusReportStr;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::BulkDataTransfer;
@@ -62,7 +61,7 @@ using namespace nl::Weave::Logging;
 
 #define TOOL_NAME "weave-bdx-server-development"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
 // Global instances for this test program
 #ifdef BDX_TEST_USE_TEST_APP_IMPL
@@ -71,17 +70,12 @@ BulkDataTransferServer BDXServer;
 BdxServer BDXServer;
 #endif
 
-const char *SaveFileLocation = NULL;
-const char *TempFileLocation = NULL;
+const char * SaveFileLocation = NULL;
+const char * TempFileLocation = NULL;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "received-loc", kArgumentRequired, 'R' },
-    { "temp-loc",     kArgumentRequired, 'T' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "received-loc", kArgumentRequired, 'R' }, { "temp-loc", kArgumentRequired, 'T' }, { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -R, --received-loc <path>\n"
     "       Location to save a transferred file.\n"
     "\n"
@@ -89,31 +83,14 @@ static const char *gToolOptionHelp =
     "       Location to keep temporary files.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
     nl::Weave::System::Stats::Snapshot before;
@@ -158,7 +135,7 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnAcceptError  = HandleAcceptConnectionError;
 
     // Initialize the BDX-server application.
 #ifdef BDX_TEST_USE_TEST_APP_IMPL
@@ -187,7 +164,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -207,7 +184,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -219,9 +196,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         TempFileLocation = arg;
         SetTempLocation(TempFileLocation);
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

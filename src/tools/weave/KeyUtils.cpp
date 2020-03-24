@@ -39,10 +39,10 @@ using namespace nl::Weave::ASN1;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Crypto;
 
-bool ReadPrivateKey(const char *fileName, const char *prompt, EVP_PKEY *& key)
+bool ReadPrivateKey(const char * fileName, const char * prompt, EVP_PKEY *& key)
 {
-    bool res = true;
-    uint8_t *keyData = NULL;
+    bool res          = true;
+    uint8_t * keyData = NULL;
     uint32_t keyDataLen;
 
     key = NULL;
@@ -61,10 +61,10 @@ exit:
     return res;
 }
 
-bool ReadPublicKey(const char *fileName, EVP_PKEY *& key)
+bool ReadPublicKey(const char * fileName, EVP_PKEY *& key)
 {
-    bool res = true;
-    uint8_t *keyData = NULL;
+    bool res          = true;
+    uint8_t * keyData = NULL;
     uint32_t keyDataLen;
 
     key = NULL;
@@ -77,17 +77,17 @@ bool ReadPublicKey(const char *fileName, EVP_PKEY *& key)
     res = DecodePublicKey(keyData, keyDataLen, kKeyFormat_Unknown, fileName, key);
 
 exit:
-  if (keyData != NULL)
-      free(keyData);
-  return res;
+    if (keyData != NULL)
+        free(keyData);
+    return res;
 }
 
-bool ReadWeavePrivateKey(const char *fileName, uint8_t *& key, uint32_t &keyLen)
+bool ReadWeavePrivateKey(const char * fileName, uint8_t *& key, uint32_t & keyLen)
 {
     bool res = true;
     KeyFormat keyFormat;
 
-    key = NULL;
+    key    = NULL;
     keyLen = 0;
 
     res = ReadFileIntoMem(fileName, key, keyLen);
@@ -103,7 +103,7 @@ bool ReadWeavePrivateKey(const char *fileName, uint8_t *& key, uint32_t &keyLen)
     keyFormat = DetectKeyFormat(key, keyLen);
     if (keyFormat == kKeyFormat_Weave_Base64)
     {
-        uint8_t *tmpKeyBuf = Base64Decode(key, keyLen, NULL, 0, keyLen);
+        uint8_t * tmpKeyBuf = Base64Decode(key, keyLen, NULL, 0, keyLen);
         if (tmpKeyBuf == NULL)
             ExitNow(res = false);
         free(key);
@@ -119,13 +119,13 @@ exit:
     if (!res && key != NULL)
     {
         free(key);
-        key = NULL;
+        key    = NULL;
         keyLen = 0;
     }
     return res;
 }
 
-WEAVE_ERROR DecodeWeavePrivateKey(const uint8_t *encodedKeyBuf, uint32_t encodedKeyLen, EVP_PKEY *& key)
+WEAVE_ERROR DecodeWeavePrivateKey(const uint8_t * encodedKeyBuf, uint32_t encodedKeyLen, EVP_PKEY *& key)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
@@ -143,7 +143,7 @@ WEAVE_ERROR DecodeWeavePrivateKey(const uint8_t *encodedKeyBuf, uint32_t encoded
     if (tag == ProfileTag(kWeaveProfile_Security, kTag_EllipticCurvePrivateKey))
     {
         uint32_t weaveCurveId;
-        EC_KEY *ecKey;
+        EC_KEY * ecKey;
         EncodedECPublicKey pubKey;
         EncodedECPrivateKey privKey;
 
@@ -172,11 +172,12 @@ exit:
     return err;
 }
 
-bool DecodePrivateKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char *keySource, const char *prompt, EVP_PKEY *& key)
+bool DecodePrivateKey(const uint8_t * keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char * keySource,
+                      const char * prompt, EVP_PKEY *& key)
 {
-    bool res = true;
-    uint8_t *tmpKeyBuf = NULL;
-    BIO *keyBIO = NULL;
+    bool res            = true;
+    uint8_t * tmpKeyBuf = NULL;
+    BIO * keyBIO        = NULL;
 
     key = NULL;
 
@@ -186,11 +187,12 @@ bool DecodePrivateKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat key
     if (keyFormat == kKeyFormat_Weave_Base64)
     {
         tmpKeyBuf = Base64Decode(keyData, keyDataLen, NULL, 0, keyDataLen);
-        if (tmpKeyBuf == NULL) {
+        if (tmpKeyBuf == NULL)
+        {
             fprintf(stderr, "Base64 decoding error\n");
             ExitNow(res = false);
         }
-        keyData = tmpKeyBuf;
+        keyData   = tmpKeyBuf;
         keyFormat = kKeyFormat_Weave_Raw;
     }
 
@@ -212,7 +214,7 @@ bool DecodePrivateKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat key
         EVP_set_pw_prompt(prompt);
 #endif
 
-        keyBIO = BIO_new_mem_buf((void *)keyData, keyDataLen);
+        keyBIO = BIO_new_mem_buf((void *) keyData, keyDataLen);
         if (keyBIO == NULL)
         {
             fprintf(stderr, "Memory allocation error\n");
@@ -245,17 +247,17 @@ exit:
     return res;
 }
 
-bool DecodePublicKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char *keySource, EVP_PKEY *& key)
+bool DecodePublicKey(const uint8_t * keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char * keySource, EVP_PKEY *& key)
 {
-    bool res = true;
-    uint8_t *tmpKeyBuf = NULL;
-    BIO *keyBIO = NULL;
-    key = NULL;
+    bool res            = true;
+    uint8_t * tmpKeyBuf = NULL;
+    BIO * keyBIO        = NULL;
+    key                 = NULL;
 
     if (keyFormat == kKeyFormat_Unknown)
         keyFormat = DetectKeyFormat(keyData, keyDataLen);
 
-    keyBIO = BIO_new_mem_buf((void *)keyData, keyDataLen);
+    keyBIO = BIO_new_mem_buf((void *) keyData, keyDataLen);
     if (keyBIO == NULL)
     {
         fprintf(stderr, "Memory allocation error\n");
@@ -269,7 +271,6 @@ bool DecodePublicKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat keyF
             fprintf(stderr, "Unable to read %s\n", keySource);
             ReportOpenSSLErrorAndExit("PEM_read_bio_PUBKEY", res = false);
         }
-
     }
     else if (keyFormat == kKeyFormat_DER)
     {
@@ -277,7 +278,7 @@ bool DecodePublicKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat keyF
         {
             fprintf(stderr, "Unable to read %s\n", keySource);
             ReportOpenSSLErrorAndExit("d2i_PUBKEY_bio", res = false);
-	}
+        }
     }
     else
     {
@@ -293,7 +294,7 @@ exit:
     return res;
 }
 
-bool DetectKeyFormat(FILE *keyFile, KeyFormat& keyFormat)
+bool DetectKeyFormat(FILE * keyFile, KeyFormat & keyFormat)
 {
     uint8_t keyData[16];
     int lenRead;
@@ -308,25 +309,25 @@ bool DetectKeyFormat(FILE *keyFile, KeyFormat& keyFormat)
 
     fseek(keyFile, 0, SEEK_SET);
 
-    keyFormat = DetectKeyFormat(keyData, (uint32_t)lenRead);
+    keyFormat = DetectKeyFormat(keyData, (uint32_t) lenRead);
     return true;
 }
 
-KeyFormat DetectKeyFormat(const uint8_t *key, uint32_t keyLen)
+KeyFormat DetectKeyFormat(const uint8_t * key, uint32_t keyLen)
 {
-    static const uint8_t ecWeaveRawPrefix[] = { 0xD5, 0x00, 0x00, 0x04, 0x00, 0x02, 0x00 };
-    static const char *ecWeaveB64Prefix = "1QAABAAC";
+    static const uint8_t ecWeaveRawPrefix[]   = { 0xD5, 0x00, 0x00, 0x04, 0x00, 0x02, 0x00 };
+    static const char * ecWeaveB64Prefix      = "1QAABAAC";
     static const uint32_t ecWeaveB64PrefixLen = sizeof(ecWeaveB64Prefix) - 1;
-    static const char *ecPEMMarker = "-----BEGIN EC PRIVATE KEY-----";
+    static const char * ecPEMMarker           = "-----BEGIN EC PRIVATE KEY-----";
 
-    static const uint8_t rsaWeaveRawPrefix[] = { 0xD5, 0x00, 0x00, 0x04, 0x00, 0x03, 0x00 };
-    static const char *rsaWeaveB64Prefix = "1QAABAAD";
+    static const uint8_t rsaWeaveRawPrefix[]   = { 0xD5, 0x00, 0x00, 0x04, 0x00, 0x03, 0x00 };
+    static const char * rsaWeaveB64Prefix      = "1QAABAAD";
     static const uint32_t rsaWeaveB64PrefixLen = sizeof(rsaWeaveB64Prefix) - 1;
-    static const char *rsaPEMMarker = "-----BEGIN RSA PRIVATE KEY-----";
+    static const char * rsaPEMMarker           = "-----BEGIN RSA PRIVATE KEY-----";
 
-    static const char *pkcs8PEMMarker = "-----BEGIN PRIVATE KEY-----";
+    static const char * pkcs8PEMMarker = "-----BEGIN PRIVATE KEY-----";
 
-    static const char *ecPUBPEMMarker = "-----BEGIN PUBLIC KEY-----";
+    static const char * ecPUBPEMMarker = "-----BEGIN PUBLIC KEY-----";
 
     if (keyLen > sizeof(ecWeaveRawPrefix) && memcmp(key, ecWeaveRawPrefix, sizeof(ecWeaveRawPrefix)) == 0)
         return kKeyFormat_Weave_Raw;
@@ -355,11 +356,11 @@ KeyFormat DetectKeyFormat(const uint8_t *key, uint32_t keyLen)
     return kKeyFormat_DER;
 }
 
-bool GenerateKeyPair(const char *curveName, EVP_PKEY *& key)
+bool GenerateKeyPair(const char * curveName, EVP_PKEY *& key)
 {
-    bool res = true;
-    EC_KEY *ecKey = NULL;
-    EC_GROUP *ecGroup = NULL;
+    bool res           = true;
+    EC_KEY * ecKey     = NULL;
+    EC_GROUP * ecGroup = NULL;
     int curveNID;
 
     key = NULL;
@@ -408,13 +409,13 @@ exit:
     return res;
 }
 
-bool EncodePrivateKey(EVP_PKEY *key, KeyFormat keyFormat, uint8_t *& encodedKey, uint32_t& encodedKeyLen)
+bool EncodePrivateKey(EVP_PKEY * key, KeyFormat keyFormat, uint8_t *& encodedKey, uint32_t & encodedKeyLen)
 {
-    bool res = true;
-    PKCS8_PRIV_KEY_INFO *pkcs8Key = NULL;
-    EC_KEY *ecKey;
-    BIO *outBIO = NULL;
-    BUF_MEM *memBuf;
+    bool res                       = true;
+    PKCS8_PRIV_KEY_INFO * pkcs8Key = NULL;
+    EC_KEY * ecKey;
+    BIO * outBIO = NULL;
+    BUF_MEM * memBuf;
 
     encodedKey = NULL;
 
@@ -431,8 +432,8 @@ bool EncodePrivateKey(EVP_PKEY *key, KeyFormat keyFormat, uint8_t *& encodedKey,
 
     ecKey = EVP_PKEY_get1_EC_KEY(key);
 
-    if (keyFormat == kKeyFormat_DER || keyFormat == kKeyFormat_DER_PKCS8 ||
-        keyFormat == kKeyFormat_PEM || keyFormat == kKeyFormat_PEM_PKCS8)
+    if (keyFormat == kKeyFormat_DER || keyFormat == kKeyFormat_DER_PKCS8 || keyFormat == kKeyFormat_PEM ||
+        keyFormat == kKeyFormat_PEM_PKCS8)
     {
         outBIO = BIO_new(BIO_s_mem());
         if (outBIO == NULL)
@@ -478,7 +479,7 @@ bool EncodePrivateKey(EVP_PKEY *key, KeyFormat keyFormat, uint8_t *& encodedKey,
 
         BIO_get_mem_ptr(outBIO, &memBuf);
 
-        encodedKey = (uint8_t *)malloc(memBuf->length);
+        encodedKey = (uint8_t *) malloc(memBuf->length);
         if (encodedKey == NULL)
         {
             fprintf(stderr, "Memory allocation error\n");
@@ -491,15 +492,15 @@ bool EncodePrivateKey(EVP_PKEY *key, KeyFormat keyFormat, uint8_t *& encodedKey,
 
     else
     {
-        uint8_t *tmpEncodedKey;
+        uint8_t * tmpEncodedKey;
         uint32_t tmpEncodedKeyLen;
 
         res = WeaveEncodeECPrivateKey(ecKey, true, tmpEncodedKey, tmpEncodedKeyLen);
-        VerifyOrExit(res == true, (void)0);
+        VerifyOrExit(res == true, (void) 0);
 
         if (keyFormat == kKeyFormat_Weave_Raw)
         {
-            encodedKey = tmpEncodedKey;
+            encodedKey    = tmpEncodedKey;
             encodedKeyLen = tmpEncodedKeyLen;
         }
         else
@@ -525,7 +526,7 @@ exit:
 }
 
 // TODO: remove this
-bool WeaveEncodePrivateKey(EVP_PKEY *key, uint8_t *& encodedKey, uint32_t& encodedKeyLen)
+bool WeaveEncodePrivateKey(EVP_PKEY * key, uint8_t *& encodedKey, uint32_t & encodedKeyLen)
 {
     bool res = true;
 
@@ -536,8 +537,8 @@ bool WeaveEncodePrivateKey(EVP_PKEY *key, uint8_t *& encodedKey, uint32_t& encod
     }
     else if (EVP_PKEY_type(EVP_PKEY_id(key)) == EVP_PKEY_EC)
     {
-        EC_KEY *ecKey = EVP_PKEY_get1_EC_KEY(key);
-        res = WeaveEncodeECPrivateKey(ecKey, true, encodedKey, encodedKeyLen);
+        EC_KEY * ecKey = EVP_PKEY_get1_EC_KEY(key);
+        res            = WeaveEncodeECPrivateKey(ecKey, true, encodedKey, encodedKeyLen);
     }
     else
     {
@@ -549,7 +550,7 @@ exit:
     return res;
 }
 
-bool WeaveEncodeECPrivateKey(EC_KEY *key, bool includePubKey, uint8_t *& encodedKey, uint32_t& encodedKeyLen)
+bool WeaveEncodeECPrivateKey(EC_KEY * key, bool includePubKey, uint8_t *& encodedKey, uint32_t & encodedKeyLen)
 {
     bool res = true;
     WEAVE_ERROR err;
@@ -558,9 +559,9 @@ bool WeaveEncodeECPrivateKey(EC_KEY *key, bool includePubKey, uint8_t *& encoded
     uint32_t encodedKeyBufLen;
     OID curveOID;
 
-    encodedPubKey.ECPoint = NULL;
+    encodedPubKey.ECPoint  = NULL;
     encodedPrivKey.PrivKey = NULL;
-    encodedKey = NULL;
+    encodedKey             = NULL;
 
     curveOID = NIDToWeaveOID(EC_GROUP_get_curve_name(EC_KEY_get0_group(key)));
     if (curveOID == kOID_Unknown)
@@ -569,8 +570,8 @@ bool WeaveEncodeECPrivateKey(EC_KEY *key, bool includePubKey, uint8_t *& encoded
         ExitNow(res = false);
     }
 
-    encodedPrivKey.PrivKeyLen = (uint16_t)BN_num_bytes(EC_KEY_get0_private_key(key));
-    encodedPrivKey.PrivKey = (uint8_t *)malloc(encodedPrivKey.PrivKeyLen);
+    encodedPrivKey.PrivKeyLen = (uint16_t) BN_num_bytes(EC_KEY_get0_private_key(key));
+    encodedPrivKey.PrivKey    = (uint8_t *) malloc(encodedPrivKey.PrivKeyLen);
     if (encodedPrivKey.PrivKey == NULL)
     {
         fprintf(stderr, "Memory allocation failure\n");
@@ -581,14 +582,16 @@ bool WeaveEncodeECPrivateKey(EC_KEY *key, bool includePubKey, uint8_t *& encoded
 
     if (includePubKey)
     {
-        encodedPubKey.ECPointLen = (uint32_t)EC_POINT_point2oct(EC_KEY_get0_group(key), EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, NULL, 0, NULL);
-        encodedPubKey.ECPoint = (uint8_t *)malloc(encodedPubKey.ECPointLen);
+        encodedPubKey.ECPointLen = (uint32_t) EC_POINT_point2oct(EC_KEY_get0_group(key), EC_KEY_get0_public_key(key),
+                                                                 POINT_CONVERSION_UNCOMPRESSED, NULL, 0, NULL);
+        encodedPubKey.ECPoint    = (uint8_t *) malloc(encodedPubKey.ECPointLen);
         if (encodedPubKey.ECPoint == NULL)
         {
             fprintf(stderr, "Memory allocation failure\n");
             ExitNow(res = false);
         }
-        if (EC_POINT_point2oct(EC_KEY_get0_group(key), EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, encodedPubKey.ECPoint, encodedPubKey.ECPointLen, NULL) == 0)
+        if (EC_POINT_point2oct(EC_KEY_get0_group(key), EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED,
+                               encodedPubKey.ECPoint, encodedPubKey.ECPointLen, NULL) == 0)
             ReportOpenSSLErrorAndExit("EC_POINT_point2oct", res = false);
     }
     else
@@ -596,14 +599,15 @@ bool WeaveEncodeECPrivateKey(EC_KEY *key, bool includePubKey, uint8_t *& encoded
 
     encodedKeyBufLen = 64 + encodedPrivKey.PrivKeyLen + encodedPubKey.ECPointLen;
 
-    encodedKey = (uint8_t *)malloc(encodedKeyBufLen);
+    encodedKey = (uint8_t *) malloc(encodedKeyBufLen);
     if (encodedKey == NULL)
     {
         fprintf(stderr, "Memory allocation failure\n");
         ExitNow(res = false);
     }
 
-    err = EncodeWeaveECPrivateKey(OIDToWeaveCurveId(curveOID), &encodedPubKey, encodedPrivKey, encodedKey, encodedKeyBufLen, encodedKeyLen);
+    err = EncodeWeaveECPrivateKey(OIDToWeaveCurveId(curveOID), &encodedPubKey, encodedPrivKey, encodedKey, encodedKeyBufLen,
+                                  encodedKeyLen);
     if (err != WEAVE_NO_ERROR)
     {
         fprintf(stderr, "Failed to Weave encode EC private key: %s\n", nl::ErrorStr(err));
@@ -623,10 +627,10 @@ exit:
     return res;
 }
 
-bool ReadPublicKey(const char *fileName, const char *prompt, EVP_PKEY *& key)
+bool ReadPublicKey(const char * fileName, const char * prompt, EVP_PKEY *& key)
 {
-    bool res = true;
-    uint8_t *keyData = NULL;
+    bool res          = true;
+    uint8_t * keyData = NULL;
     uint32_t keyDataLen;
 
     key = NULL;
@@ -643,10 +647,11 @@ exit:
     return res;
 }
 
-bool DecodePublicKeyOnly(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char *keySource, EVP_PKEY *& key, bool noErrorOutput)
+bool DecodePublicKeyOnly(const uint8_t * keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char * keySource, EVP_PKEY *& key,
+                         bool noErrorOutput)
 {
-    bool res = true;
-    BIO *keyBIO = NULL;
+    bool res     = true;
+    BIO * keyBIO = NULL;
 
     key = NULL;
 
@@ -662,7 +667,7 @@ bool DecodePublicKeyOnly(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat 
         ExitNow(res = false);
     }
 
-    keyBIO = BIO_new_mem_buf((void *)keyData, keyDataLen);
+    keyBIO = BIO_new_mem_buf((void *) keyData, keyDataLen);
     if (keyBIO == NULL)
     {
         if (!noErrorOutput)
@@ -674,7 +679,8 @@ bool DecodePublicKeyOnly(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat 
     {
         if (PEM_read_bio_PUBKEY(keyBIO, &key, NULL, NULL) == NULL)
         {
-            if (!noErrorOutput) {
+            if (!noErrorOutput)
+            {
                 fprintf(stderr, "Unable to read %s\n", keySource);
                 ReportOpenSSLErrorAndExit("PEM_read_bio_PUBKEY", res = false);
             }
@@ -685,7 +691,8 @@ bool DecodePublicKeyOnly(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat 
     {
         if (d2i_PUBKEY_bio(keyBIO, &key) == NULL)
         {
-            if (!noErrorOutput) {
+            if (!noErrorOutput)
+            {
                 fprintf(stderr, "Unable to read %s\n", keySource);
                 ReportOpenSSLErrorAndExit("d2i_PUBKEY_bio", res = false);
             }
@@ -699,21 +706,20 @@ exit:
     return res;
 }
 
-bool DecodePublicKey(const uint8_t *keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char *prompt, const char *keySource, EVP_PKEY *& key)
+bool DecodePublicKey(const uint8_t * keyData, uint32_t keyDataLen, KeyFormat keyFormat, const char * prompt, const char * keySource,
+                     EVP_PKEY *& key)
 {
     bool res = true;
-    key = NULL;
-    res = DecodePublicKeyOnly(keyData, keyDataLen, keyFormat, keySource, key, true);
+    key      = NULL;
+    res      = DecodePublicKeyOnly(keyData, keyDataLen, keyFormat, keySource, key, true);
     if (!res)
         return DecodePrivateKey(keyData, keyDataLen, keyFormat, prompt, keySource, key);
     return res;
 }
 
-KeyFormat DetectPublicKeyFormat(const uint8_t *key, uint32_t keyLen)
+KeyFormat DetectPublicKeyFormat(const uint8_t * key, uint32_t keyLen)
 {
-    static const char *publicKeyPEMMarker = "-----BEGIN PUBLIC KEY-----";
+    static const char * publicKeyPEMMarker = "-----BEGIN PUBLIC KEY-----";
 
-    return ContainsPEMMarker(publicKeyPEMMarker, key, keyLen)
-        ? kKeyFormat_PEM
-        : kKeyFormat_DER;
+    return ContainsPEMMarker(publicKeyPEMMarker, key, keyLen) ? kKeyFormat_PEM : kKeyFormat_DER;
 }

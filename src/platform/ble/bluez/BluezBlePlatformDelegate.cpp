@@ -167,9 +167,7 @@ void BluezBlePlatformDelegate::HandleBleDelegate(nl::Weave::System::Layer * aLay
         args->WriteReceived.MsgBuf = NULL;
         break;
 
-    default:
-        WeaveLogError(Ble, "Unknown or unimplemented event: %d", args->EventType);
-        break;
+    default: WeaveLogError(Ble, "Unknown or unimplemented event: %d", args->EventType); break;
     }
 
 exit:
@@ -181,7 +179,7 @@ exit:
 
 nl::Weave::System::Error BluezBlePlatformDelegate::NewEventParams(InEventParam ** aParam)
 {
-    *aParam = new InEventParam();
+    *aParam                     = new InEventParam();
     (*aParam)->PlatformDelegate = this;
 
     return WEAVE_SYSTEM_NO_ERROR;

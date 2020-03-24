@@ -46,22 +46,21 @@ private:
      */
     enum
     {
-        kMask_KeyFlags                                      = 0xF0000000,  /**< Weave key flag field mask. */
-        kMask_KeyType                                       = 0x0FFFF000,  /**< Weave key type field mask. */
-        kMask_KeyNumber                                     = 0x00000FFF,  /**< Weave key number field mask. */
-        kMask_RootKeyNumber                                 = 0x00000C00,  /**< Application group root key number field mask. */
-        kMask_EpochKeyNumber                                = 0x00000380,  /**< Application group epoch key number field mask. */
-        kMask_GroupLocalNumber                              = 0x0000007F,  /**< Application group local number field mask. */
+        kMask_KeyFlags         = 0xF0000000, /**< Weave key flag field mask. */
+        kMask_KeyType          = 0x0FFFF000, /**< Weave key type field mask. */
+        kMask_KeyNumber        = 0x00000FFF, /**< Weave key number field mask. */
+        kMask_RootKeyNumber    = 0x00000C00, /**< Application group root key number field mask. */
+        kMask_EpochKeyNumber   = 0x00000380, /**< Application group epoch key number field mask. */
+        kMask_GroupLocalNumber = 0x0000007F, /**< Application group local number field mask. */
 
-        kShift_RootKeyNumber                                = 10,          /**< Application group root key number field shift. */
-        kShift_EpochKeyNumber                               = 7,           /**< Application group epoch key number field shift. */
-        kShift_GroupLocalNumber                             = 0,           /**< Application group local number field shift. */
+        kShift_RootKeyNumber    = 10, /**< Application group root key number field shift. */
+        kShift_EpochKeyNumber   = 7,  /**< Application group epoch key number field shift. */
+        kShift_GroupLocalNumber = 0,  /**< Application group local number field shift. */
 
-        kFlag_UseCurrentEpochKey                            = 0x80000000,  /**< Used to indicate that the key is of logical current type. */
+        kFlag_UseCurrentEpochKey = 0x80000000, /**< Used to indicate that the key is of logical current type. */
 
-        kTypeModifier_IncorporatesEpochKey                  = 0x00001000,  /**< Used to indicate that the key incorporates group epoch key. */
+        kTypeModifier_IncorporatesEpochKey = 0x00001000, /**< Used to indicate that the key incorporates group epoch key. */
     };
-
 
 public:
     /**
@@ -149,10 +148,7 @@ public:
      *  @return                type of the key ID.
      *
      */
-    static uint32_t GetType(uint32_t keyId)
-    {
-        return keyId & kMask_KeyType;
-    }
+    static uint32_t GetType(uint32_t keyId) { return keyId & kMask_KeyType; }
 
     /**
      *  Determine whether the specified key ID is of a general type.
@@ -161,10 +157,7 @@ public:
      *  @return      true      if the keyId has General type.
      *
      */
-    static bool IsGeneralKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_General;
-    }
+    static bool IsGeneralKey(uint32_t keyId) { return GetType(keyId) == kType_General; }
 
     /**
      *  Determine whether the specified key ID is of a session type.
@@ -173,10 +166,7 @@ public:
      *  @return      true      if the keyId of a session type.
      *
      */
-    static bool IsSessionKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_Session;
-    }
+    static bool IsSessionKey(uint32_t keyId) { return GetType(keyId) == kType_Session; }
 
     /**
      *  Determine whether the specified key ID is of an application static type.
@@ -185,10 +175,7 @@ public:
      *  @return      true      if the keyId of an application static type.
      *
      */
-    static bool IsAppStaticKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_AppStaticKey;
-    }
+    static bool IsAppStaticKey(uint32_t keyId) { return GetType(keyId) == kType_AppStaticKey; }
 
     /**
      *  Determine whether the specified key ID is of an application rotating type.
@@ -197,10 +184,7 @@ public:
      *  @return      true      if the keyId of an application rotating type.
      *
      */
-    static bool IsAppRotatingKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_AppRotatingKey;
-    }
+    static bool IsAppRotatingKey(uint32_t keyId) { return GetType(keyId) == kType_AppRotatingKey; }
 
     static bool IsAppGroupKey(uint32_t keyId);
 
@@ -211,10 +195,7 @@ public:
      *  @return      true      if the keyId of an application root key type.
      *
      */
-    static bool IsAppRootKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_AppRootKey;
-    }
+    static bool IsAppRootKey(uint32_t keyId) { return GetType(keyId) == kType_AppRootKey; }
 
     /**
      *  Determine whether the specified key ID is of an application epoch key type.
@@ -223,10 +204,7 @@ public:
      *  @return      true      if the keyId of an application epoch key type.
      *
      */
-    static bool IsAppEpochKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_AppEpochKey;
-    }
+    static bool IsAppEpochKey(uint32_t keyId) { return GetType(keyId) == kType_AppEpochKey; }
 
     /**
      *  Determine whether the specified key ID is of an application group master key type.
@@ -235,10 +213,7 @@ public:
      *  @return  true      if the keyId of an application group master key type.
      *
      */
-    static bool IsAppGroupMasterKey(uint32_t keyId)
-    {
-        return GetType(keyId) == kType_AppGroupMasterKey;
-    }
+    static bool IsAppGroupMasterKey(uint32_t keyId) { return GetType(keyId) == kType_AppGroupMasterKey; }
 
     /**
      *  Construct session key ID given session key number.
@@ -247,10 +222,7 @@ public:
      *  @return      session key ID.
      *
      */
-    static uint16_t MakeSessionKeyId(uint16_t sessionKeyNumber)
-    {
-        return kType_Session | (sessionKeyNumber & kMask_KeyNumber);
-    }
+    static uint16_t MakeSessionKeyId(uint16_t sessionKeyNumber) { return kType_Session | (sessionKeyNumber & kMask_KeyNumber); }
 
     /**
      *  Construct general key ID given general key number.
@@ -259,10 +231,7 @@ public:
      *  @return      general key ID.
      *
      */
-    static uint16_t MakeGeneralKeyId(uint16_t generalKeyNumber)
-    {
-        return kType_General | (generalKeyNumber & kMask_KeyNumber);
-    }
+    static uint16_t MakeGeneralKeyId(uint16_t generalKeyNumber) { return kType_General | (generalKeyNumber & kMask_KeyNumber); }
 
     /**
      *  Get application group root key ID that was used to derive specified application key.
@@ -271,10 +240,7 @@ public:
      *  @return      root key ID.
      *
      */
-    static uint32_t GetRootKeyId(uint32_t keyId)
-    {
-        return kType_AppRootKey | (keyId & kMask_RootKeyNumber);
-    }
+    static uint32_t GetRootKeyId(uint32_t keyId) { return kType_AppRootKey | (keyId & kMask_RootKeyNumber); }
 
     /**
      *  Get application group epoch key ID that was used to derive specified application key.
@@ -283,10 +249,7 @@ public:
      *  @return      epoch key ID.
      *
      */
-    static uint32_t GetEpochKeyId(uint32_t keyId)
-    {
-        return kType_AppEpochKey | (keyId & kMask_EpochKeyNumber);
-    }
+    static uint32_t GetEpochKeyId(uint32_t keyId) { return kType_AppEpochKey | (keyId & kMask_EpochKeyNumber); }
 
     /**
      *  Get application group master key ID that was used to derive specified application key.
@@ -295,10 +258,7 @@ public:
      *  @return      application group master key ID.
      *
      */
-    static uint32_t GetAppGroupMasterKeyId(uint32_t keyId)
-    {
-        return kType_AppGroupMasterKey | (keyId & kMask_GroupLocalNumber);
-    }
+    static uint32_t GetAppGroupMasterKeyId(uint32_t keyId) { return kType_AppGroupMasterKey | (keyId & kMask_GroupLocalNumber); }
 
     /**
      *  Get application group root key number that was used to derive specified application key.
@@ -307,10 +267,7 @@ public:
      *  @return      root key number.
      *
      */
-    static uint8_t GetRootKeyNumber(uint32_t keyId)
-    {
-        return (keyId & kMask_RootKeyNumber) >> kShift_RootKeyNumber;
-    }
+    static uint8_t GetRootKeyNumber(uint32_t keyId) { return (keyId & kMask_RootKeyNumber) >> kShift_RootKeyNumber; }
 
     /**
      *  Get application group epoch key number that was used to derive specified application key.
@@ -319,10 +276,7 @@ public:
      *  @return      epoch key number.
      *
      */
-    static uint8_t GetEpochKeyNumber(uint32_t keyId)
-    {
-        return (keyId & kMask_EpochKeyNumber) >> kShift_EpochKeyNumber;
-    }
+    static uint8_t GetEpochKeyNumber(uint32_t keyId) { return (keyId & kMask_EpochKeyNumber) >> kShift_EpochKeyNumber; }
 
     /**
      *  Get application group local number that was used to derive specified application key.
@@ -331,10 +285,7 @@ public:
      *  @return      application group local number.
      *
      */
-    static uint8_t GetAppGroupLocalNumber(uint32_t keyId)
-    {
-        return (keyId & kMask_GroupLocalNumber) >> kShift_GroupLocalNumber;
-    }
+    static uint8_t GetAppGroupLocalNumber(uint32_t keyId) { return (keyId & kMask_GroupLocalNumber) >> kShift_GroupLocalNumber; }
 
     /**
      *  Construct application group root key ID given root key number.
@@ -343,10 +294,7 @@ public:
      *  @return      root key ID.
      *
      */
-    static uint32_t MakeRootKeyId(uint8_t rootKeyNumber)
-    {
-        return kType_AppRootKey | (rootKeyNumber << kShift_RootKeyNumber);
-    }
+    static uint32_t MakeRootKeyId(uint8_t rootKeyNumber) { return kType_AppRootKey | (rootKeyNumber << kShift_RootKeyNumber); }
 
     /**
      *  Construct application group root key ID given epoch key number.
@@ -355,10 +303,7 @@ public:
      *  @return      epoch key ID.
      *
      */
-    static uint32_t MakeEpochKeyId(uint8_t epochKeyNumber)
-    {
-        return kType_AppEpochKey | (epochKeyNumber << kShift_EpochKeyNumber);
-    }
+    static uint32_t MakeEpochKeyId(uint8_t epochKeyNumber) { return kType_AppEpochKey | (epochKeyNumber << kShift_EpochKeyNumber); }
 
     /**
      *  Construct application group master key ID given application group local number.
@@ -379,10 +324,7 @@ public:
      *  @return      application current key ID.
      *
      */
-    static uint32_t ConvertToCurrentAppKeyId(uint32_t keyId)
-    {
-        return (keyId & ~kMask_EpochKeyNumber) | kFlag_UseCurrentEpochKey;
-    }
+    static uint32_t ConvertToCurrentAppKeyId(uint32_t keyId) { return (keyId & ~kMask_EpochKeyNumber) | kFlag_UseCurrentEpochKey; }
 
     /**
      *  Determine whether the specified application group key ID incorporates epoch key.
@@ -391,20 +333,17 @@ public:
      *  @return      true      if the keyId incorporates epoch key.
      *
      */
-    static bool IncorporatesEpochKey(uint32_t keyId)
-    {
-        return (keyId & kTypeModifier_IncorporatesEpochKey) != 0;
-    }
+    static bool IncorporatesEpochKey(uint32_t keyId) { return (keyId & kTypeModifier_IncorporatesEpochKey) != 0; }
 
     static bool UsesCurrentEpochKey(uint32_t keyId);
     static bool IncorporatesRootKey(uint32_t keyId);
     static bool IncorporatesAppGroupMasterKey(uint32_t keyId);
 
-    static uint32_t MakeAppKeyId(uint32_t keyType, uint32_t rootKeyId, uint32_t epochKeyId,
-                                 uint32_t appGroupMasterKeyId, bool useCurrentEpochKey);
+    static uint32_t MakeAppKeyId(uint32_t keyType, uint32_t rootKeyId, uint32_t epochKeyId, uint32_t appGroupMasterKeyId,
+                                 bool useCurrentEpochKey);
     static uint32_t MakeAppIntermediateKeyId(uint32_t rootKeyId, uint32_t epochKeyId, bool useCurrentEpochKey);
-    static uint32_t MakeAppRotatingKeyId(uint32_t rootKeyId, uint32_t epochKeyId,
-                                         uint32_t appGroupMasterKeyId, bool useCurrentEpochKey);
+    static uint32_t MakeAppRotatingKeyId(uint32_t rootKeyId, uint32_t epochKeyId, uint32_t appGroupMasterKeyId,
+                                         bool useCurrentEpochKey);
     static uint32_t MakeAppStaticKeyId(uint32_t rootKeyId, uint32_t appGroupMasterKeyId);
     static uint32_t ConvertToStaticAppKeyId(uint32_t keyId);
     static uint32_t UpdateEpochKeyId(uint32_t keyId, uint32_t epochKeyId);
@@ -412,7 +351,7 @@ public:
     static bool IsValidKeyId(uint32_t keyId);
     static bool IsMessageEncryptionKeyId(uint32_t keyId, bool allowLogicalKeys = true);
     static bool IsSameKeyOrGroup(uint32_t keyId1, uint32_t keyId2);
-    static const char *DescribeKey(uint32_t keyId);
+    static const char * DescribeKey(uint32_t keyId);
 };
 
 } // namespace Weave

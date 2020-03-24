@@ -35,13 +35,11 @@ namespace Internal {
 /**
  * Implements the Weave Device Description profile for a Weave device.
  */
-class DeviceDescriptionServer final
-    : public ::nl::Weave::Profiles::DeviceDescription::DeviceDescriptionServer
+class DeviceDescriptionServer final : public ::nl::Weave::Profiles::DeviceDescription::DeviceDescriptionServer
 {
     typedef ::nl::Weave::Profiles::DeviceDescription::DeviceDescriptionServer ServerBaseClass;
 
 public:
-
     // ===== Members for internal use by other Device Layer components.
 
     WEAVE_ERROR Init();
@@ -54,7 +52,6 @@ public:
     void OnPlatformEvent(const WeaveDeviceEvent * event);
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend DeviceDescriptionServer & DeviceDescriptionSvr(void);
@@ -71,20 +68,19 @@ private:
     uint32_t mUserSelectedModeEndTime; // Monotonic system time scaled to units of 1024ms.
     uint16_t mUserSelectedModeTimeoutSec;
 
-    static void HandleIdentifyRequest(void *appState, uint64_t nodeId, const IPAddress& nodeAddr,
-            const ::nl::Weave::Profiles::DeviceDescription::IdentifyRequestMessage& reqMsg, bool& sendResp,
-            ::nl::Weave::Profiles::DeviceDescription::IdentifyResponseMessage& respMsg);
+    static void HandleIdentifyRequest(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                      const ::nl::Weave::Profiles::DeviceDescription::IdentifyRequestMessage & reqMsg,
+                                      bool & sendResp, ::nl::Weave::Profiles::DeviceDescription::IdentifyResponseMessage & respMsg);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    DeviceDescriptionServer() = default;
+    DeviceDescriptionServer()  = default;
     ~DeviceDescriptionServer() = default;
 
     // No copy, move or assignment.
-    DeviceDescriptionServer(const DeviceDescriptionServer &) = delete;
+    DeviceDescriptionServer(const DeviceDescriptionServer &)  = delete;
     DeviceDescriptionServer(const DeviceDescriptionServer &&) = delete;
-    DeviceDescriptionServer & operator=(const DeviceDescriptionServer &) = delete;
+    DeviceDescriptionServer & operator =(const DeviceDescriptionServer &) = delete;
 };
 
 /**
@@ -99,6 +95,5 @@ inline DeviceDescriptionServer & DeviceDescriptionSvr(void)
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-
 
 #endif // DEVICE_DESCRIPTION_SERVER_H

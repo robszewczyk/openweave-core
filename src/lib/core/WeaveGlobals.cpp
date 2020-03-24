@@ -33,10 +33,10 @@
 namespace nl {
 namespace Weave {
 
-NL_DLL_EXPORT WeaveFabricState     FabricState;
-NL_DLL_EXPORT WeaveMessageLayer    MessageLayer;
+NL_DLL_EXPORT WeaveFabricState FabricState;
+NL_DLL_EXPORT WeaveMessageLayer MessageLayer;
 NL_DLL_EXPORT WeaveExchangeManager ExchangeMgr;
 NL_DLL_EXPORT WeaveSecurityManager SecurityMgr;
 
-} // namespace nl
 } // namespace Weave
+} // namespace nl

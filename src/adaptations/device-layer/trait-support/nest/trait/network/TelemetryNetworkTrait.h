@@ -29,8 +29,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Nest {
 namespace Trait {
@@ -39,8 +37,9 @@ namespace TelemetryNetworkTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0x601U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0x601U
 };
 
 //
@@ -53,19 +52,20 @@ struct NetworkDHCPFailureEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x601U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x601U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkDHCPFailureEvent_array {
+struct NetworkDHCPFailureEvent_array
+{
     uint32_t num;
-    NetworkDHCPFailureEvent *buf;
+    NetworkDHCPFailureEvent * buf;
 };
-
 
 } // namespace TelemetryNetworkTrait
 } // namespace Network

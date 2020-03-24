@@ -46,7 +46,7 @@ enum
  *                                          pairing code contains invalid characters, or if the initial characters
  *                                          of the pairing code are not consistent with the check character.
  */
-WEAVE_ERROR KryptonitePairingCodeToDeviceId(const char *pairingCode, uint64_t& deviceId)
+WEAVE_ERROR KryptonitePairingCodeToDeviceId(const char * pairingCode, uint64_t & deviceId)
 {
     WEAVE_ERROR err;
     size_t pairingCodeLen = strlen(pairingCode);
@@ -82,7 +82,7 @@ exit:
  *                                          is too small.
  *
  */
-WEAVE_ERROR KryptoniteDeviceIdToPairingCode(uint64_t deviceId, char *pairingCodeBuf, size_t pairingCodeBufSize)
+WEAVE_ERROR KryptoniteDeviceIdToPairingCode(uint64_t deviceId, char * pairingCodeBuf, size_t pairingCodeBufSize)
 {
     WEAVE_ERROR err;
 

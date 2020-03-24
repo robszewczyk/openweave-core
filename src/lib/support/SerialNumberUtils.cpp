@@ -30,11 +30,11 @@
 
 namespace nl {
 
-enum {
+enum
+{
     kDaysInDecember = 31,
-    kDaysInWeek = 7
+    kDaysInWeek     = 7
 };
-
 
 /**
  *  @def DateToManufacturingWeek
@@ -58,7 +58,7 @@ enum {
  *    [OUTPUT] Nest manufacturing week (1=1st week of year, 2=2nd week of year, ...).
  *
  */
-void DateToManufacturingWeek(uint16_t year, uint8_t month, uint8_t day, uint16_t& mfgYear, uint8_t& mfgWeek)
+void DateToManufacturingWeek(uint16_t year, uint8_t month, uint8_t day, uint16_t & mfgYear, uint8_t & mfgWeek)
 {
     // For years that do not end on a Saturday, the last few days of the year belong to week 1 of the
     // following year.
@@ -103,7 +103,7 @@ void DateToManufacturingWeek(uint16_t year, uint8_t month, uint8_t day, uint16_t
  *    Day of month corresponding to the first day of the manufacturing week, in standard form (1=1st, 2=2nd, ...).
  *
  */
-void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t& year, uint8_t& month, uint8_t& day)
+void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t & year, uint8_t & month, uint8_t & day)
 {
     uint8_t firstWeekdayOfYear = FirstWeekdayOfYear(mfgYear);
 
@@ -113,17 +113,17 @@ void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t& year, 
         // If the year starts on a Sunday, then than week 1 starts on 1/1.
         if (firstWeekdayOfYear == 0)
         {
-            year = mfgYear;
+            year  = mfgYear;
             month = 1;
-            day = 1;
+            day   = 1;
         }
 
         // Otherwise week 1 starts on the last Sunday of the previous year.
         else
         {
-            year = mfgYear - 1;
+            year  = mfgYear - 1;
             month = 12;
-            day = (kDaysInDecember + 1) - firstWeekdayOfYear;
+            day   = (kDaysInDecember + 1) - firstWeekdayOfYear;
         }
     }
 
@@ -136,14 +136,15 @@ void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t& year, 
     }
 }
 
-#define CONVERT_DECIMAL2(PTR, VAL)                                      \
-    do {                                                                \
-        uint16_t v = (PTR)[0] - '0';                                    \
-        VerifyOrExit(v <= 9, err = WEAVE_ERROR_INVALID_ARGUMENT);       \
-        VAL = v * 10;                                                   \
-        v = (PTR)[1] - '0';                                             \
-        VerifyOrExit(v <= 9, err = WEAVE_ERROR_INVALID_ARGUMENT);       \
-        VAL += v;                                                       \
+#define CONVERT_DECIMAL2(PTR, VAL)                                                                                                 \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        uint16_t v = (PTR)[0] - '0';                                                                                               \
+        VerifyOrExit(v <= 9, err = WEAVE_ERROR_INVALID_ARGUMENT);                                                                  \
+        VAL = v * 10;                                                                                                              \
+        v   = (PTR)[1] - '0';                                                                                                      \
+        VerifyOrExit(v <= 9, err = WEAVE_ERROR_INVALID_ARGUMENT);                                                                  \
+        VAL += v;                                                                                                                  \
     } while (0)
 
 /**
@@ -172,7 +173,7 @@ void ManufacturingWeekToDate(uint16_t mfgYear, uint8_t mfgWeek, uint16_t& year, 
  *    represents the start of the week in which the device was manufactured. This day
  *    is always a Sunday.
  */
-WEAVE_ERROR ExtractManufacturingDateFromSerialNumber(const char *serialNum, uint16_t& year, uint8_t& month, uint8_t& day)
+WEAVE_ERROR ExtractManufacturingDateFromSerialNumber(const char * serialNum, uint16_t & year, uint8_t & month, uint8_t & day)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t mfgWeek;
@@ -209,7 +210,7 @@ static bool IsBase34NoIOChar(char ch)
  *    True if the string is a Nest serial number.
  *
  */
-bool IsValidSerialNumber(const char *serialNum)
+bool IsValidSerialNumber(const char * serialNum)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t mfgWeek;
@@ -251,4 +252,4 @@ exit:
     return err == WEAVE_NO_ERROR;
 }
 
-}
+} // namespace nl

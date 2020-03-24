@@ -48,23 +48,18 @@
 #include <lwip/init.h>
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-
 #define PRINT_TEST_NAME() printf("\n%s\n", __func__);
-
-
 
 using namespace nl;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles::DataManagement;
 using namespace Schema::Nest::Test::Trait;
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // System/Platform definitions
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 namespace nl {
 namespace Weave {
@@ -73,28 +68,28 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
 
 SubscriptionEngine * SubscriptionEngine::GetInstance()
 {
-    static SubscriptionEngine *gSubscriptionEngine = NULL;
+    static SubscriptionEngine * gSubscriptionEngine = NULL;
     return gSubscriptionEngine;
 }
 
 namespace Platform {
-    // For unit tests, a dummy critical section is sufficient.
-    void CriticalSectionEnter()
-    {
-        return;
-    }
+// For unit tests, a dummy critical section is sufficient.
+void CriticalSectionEnter()
+{
+    return;
+}
 
-    void CriticalSectionExit()
-    {
-        return;
-    }
+void CriticalSectionExit()
+{
+    return;
+}
 
-} // Platform
+} // namespace Platform
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-} // Profiles
-} // Weave
-} // nl
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING && WEAVE_CONFIG_ENABLE_WDM_UPDATE
 namespace nl {
@@ -102,86 +97,85 @@ namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current) {
 
-class WdmUpdateEncoderTest {
-    public:
-        WdmUpdateEncoderTest();
-        ~WdmUpdateEncoderTest() { }
+class WdmUpdateEncoderTest
+{
+public:
+    WdmUpdateEncoderTest();
+    ~WdmUpdateEncoderTest() { }
 
-        // Tests
-        void SetupTest();
-        void TearDownTest();
+    // Tests
+    void SetupTest();
+    void TearDownTest();
 
-        void TestInitCleanup(nlTestSuite *inSuite, void *inContext);
-        void TestOneLeaf(nlTestSuite *inSuite, void *inContext);
-        void TestRoot(nlTestSuite *inSuite, void *inContext);
-        void TestWholeDictionary(nlTestSuite *inSuite, void *inContext);
-        void TestTwoProperties(nlTestSuite *inSuite, void *inContext);
-        void TestDictionaryElements(nlTestSuite *inSuite, void *inContext);
-        void TestStructure(nlTestSuite *inSuite, void *inContext);
-        void TestOverflowDictionary(nlTestSuite *inSuite, void *inContext);
-        void TestOverflowRoot(nlTestSuite *inSuite, void *inContext);
-        void TestDataElementTooBig(nlTestSuite *inSuite, void *inContext);
-        void TestBadInputs(nlTestSuite *inSuite, void *inContext);
-        void TestStoreTooSmall(nlTestSuite *inSuite, void *inContext);
+    void TestInitCleanup(nlTestSuite * inSuite, void * inContext);
+    void TestOneLeaf(nlTestSuite * inSuite, void * inContext);
+    void TestRoot(nlTestSuite * inSuite, void * inContext);
+    void TestWholeDictionary(nlTestSuite * inSuite, void * inContext);
+    void TestTwoProperties(nlTestSuite * inSuite, void * inContext);
+    void TestDictionaryElements(nlTestSuite * inSuite, void * inContext);
+    void TestStructure(nlTestSuite * inSuite, void * inContext);
+    void TestOverflowDictionary(nlTestSuite * inSuite, void * inContext);
+    void TestOverflowRoot(nlTestSuite * inSuite, void * inContext);
+    void TestDataElementTooBig(nlTestSuite * inSuite, void * inContext);
+    void TestBadInputs(nlTestSuite * inSuite, void * inContext);
+    void TestStoreTooSmall(nlTestSuite * inSuite, void * inContext);
 
-        void TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestSuite *inSuite, void *inContext, bool aRemoveAll);
-        void TestRemoveDictionaryItemsBetweenPayloads(nlTestSuite *inSuite, void *inContext);
+    void TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestSuite * inSuite, void * inContext, bool aRemoveAll);
+    void TestRemoveDictionaryItemsBetweenPayloads(nlTestSuite * inSuite, void * inContext);
 
-    private:
-        // The encoder
-        UpdateEncoder mEncoder;
-        UpdateEncoder::Context mContext;
+private:
+    // The encoder
+    UpdateEncoder mEncoder;
+    UpdateEncoder::Context mContext;
 
-        // These are here for convenience
-        PacketBuffer *mBuf;
-        TraitPath mTP;
+    // These are here for convenience
+    PacketBuffer * mBuf;
+    TraitPath mTP;
 
-        //
-        // The state usually held by the SubscriptionClient
-        //
+    //
+    // The state usually held by the SubscriptionClient
+    //
 
-        // The list of path to encode
-        TraitPathStore mPathList;
-        TraitPathStore::Record mStorage[10];
+    // The list of path to encode
+    TraitPathStore mPathList;
+    TraitPathStore::Record mStorage[10];
 
-        // The Trait instances
-        TestATraitUpdatableDataSink mTestATraitUpdatableDataSink0;
+    // The Trait instances
+    TestATraitUpdatableDataSink mTestATraitUpdatableDataSink0;
 
-        // The catalog
-        SingleResourceSinkTraitCatalog mSinkCatalog;
-        SingleResourceSinkTraitCatalog::CatalogItem mSinkCatalogStore[9];
+    // The catalog
+    SingleResourceSinkTraitCatalog mSinkCatalog;
+    SingleResourceSinkTraitCatalog::CatalogItem mSinkCatalogStore[9];
 
-        // The set of TraitDataHandles assigned by the catalog
-        // to the Trait instances
-        enum
-        {
-            kTestATraitSink0Index = 0,
-            kTestATraitSink1Index,
-            kTestBTraitSinkIndex,
-            kLocaleSettingsSinkIndex,
-            kBoltLockSettingTraitSinkIndex,
-            kApplicationKeysTraitSinkIndex,
+    // The set of TraitDataHandles assigned by the catalog
+    // to the Trait instances
+    enum
+    {
+        kTestATraitSink0Index = 0,
+        kTestATraitSink1Index,
+        kTestBTraitSinkIndex,
+        kLocaleSettingsSinkIndex,
+        kBoltLockSettingTraitSinkIndex,
+        kApplicationKeysTraitSinkIndex,
 
-            kLocaleCapabilitiesSourceIndex,
-            kTestATraitSource0Index,
-            kTestATraitSource1Index,
-            kTestBTraitSourceIndex,
-            kTestBLargeTraitSourceIndex,
-            kMaxNumTraitHandles,
-        };
-        TraitDataHandle mTraitHandleSet[kMaxNumTraitHandles];
+        kLocaleCapabilitiesSourceIndex,
+        kTestATraitSource0Index,
+        kTestATraitSource1Index,
+        kTestBTraitSourceIndex,
+        kTestBLargeTraitSourceIndex,
+        kMaxNumTraitHandles,
+    };
+    TraitDataHandle mTraitHandleSet[kMaxNumTraitHandles];
 
-        // Test support functions
-        void BasicTestBody(nlTestSuite *inSuite);
-        void InitEncoderContext(nlTestSuite *inSuite);
-        void VerifyDataList(nlTestSuite *inSuite, PacketBuffer *aBuf, size_t aItemToStartFrom = 0);
-
+    // Test support functions
+    void BasicTestBody(nlTestSuite * inSuite);
+    void InitEncoderContext(nlTestSuite * inSuite);
+    void VerifyDataList(nlTestSuite * inSuite, PacketBuffer * aBuf, size_t aItemToStartFrom = 0);
 };
 
 WdmUpdateEncoderTest::WdmUpdateEncoderTest() :
-    mBuf(NULL),
-    mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID),
-            mSinkCatalogStore, sizeof(mSinkCatalogStore) / sizeof(mSinkCatalogStore[0]))
+    mBuf(NULL), mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore,
+                             sizeof(mSinkCatalogStore) / sizeof(mSinkCatalogStore[0]))
 {
     mPathList.Init(mStorage, ArraySize(mStorage));
 
@@ -189,7 +183,6 @@ WdmUpdateEncoderTest::WdmUpdateEncoderTest() :
 
     mTestATraitUpdatableDataSink0.SetUpdateEncoder(&mEncoder);
 }
-
 
 void WdmUpdateEncoderTest::SetupTest()
 {
@@ -199,7 +192,7 @@ void WdmUpdateEncoderTest::SetupTest()
 
     for (int32_t i = 0; i < 10; i++)
     {
-        mTestATraitUpdatableDataSink0.tai_map[i] = i+100;
+        mTestATraitUpdatableDataSink0.tai_map[i] = i + 100;
     }
 }
 
@@ -212,8 +205,7 @@ void WdmUpdateEncoderTest::TearDownTest()
     }
 }
 
-
-void WdmUpdateEncoderTest::InitEncoderContext(nlTestSuite *inSuite)
+void WdmUpdateEncoderTest::InitEncoderContext(nlTestSuite * inSuite)
 {
     if (NULL == mBuf)
     {
@@ -223,25 +215,24 @@ void WdmUpdateEncoderTest::InitEncoderContext(nlTestSuite *inSuite)
 
     mBuf->SetDataLength(0);
 
-    mContext.mBuf = mBuf;
-    mContext.mMaxPayloadSize = mBuf->AvailableDataLength();
-    mContext.mUpdateRequestIndex = 7;
-    mContext.mExpiryTimeMicroSecond = 0;
-    mContext.mItemInProgress = 0;
+    mContext.mBuf                             = mBuf;
+    mContext.mMaxPayloadSize                  = mBuf->AvailableDataLength();
+    mContext.mUpdateRequestIndex              = 7;
+    mContext.mExpiryTimeMicroSecond           = 0;
+    mContext.mItemInProgress                  = 0;
     mContext.mNextDictionaryElementPathHandle = kNullPropertyPathHandle;
-    mContext.mInProgressUpdateList = &mPathList;
-    mContext.mDataSinkCatalog = &mSinkCatalog;
+    mContext.mInProgressUpdateList            = &mPathList;
+    mContext.mDataSinkCatalog                 = &mSinkCatalog;
 }
 
-void WdmUpdateEncoderTest::TestInitCleanup(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestInitCleanup(nlTestSuite * inSuite, void * inContext)
 {
     PRINT_TEST_NAME();
 
     NL_TEST_ASSERT(inSuite, 0 == mPathList.GetNumItems());
 }
 
-
-void WdmUpdateEncoderTest::VerifyDataList(nlTestSuite *inSuite, PacketBuffer *aBuf, size_t aItemToStartFrom)
+void WdmUpdateEncoderTest::VerifyDataList(nlTestSuite * inSuite, PacketBuffer * aBuf, size_t aItemToStartFrom)
 {
     WEAVE_ERROR err;
     nl::Weave::TLV::TLVReader reader;
@@ -263,7 +254,7 @@ void WdmUpdateEncoderTest::VerifyDataList(nlTestSuite *inSuite, PacketBuffer *aB
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
     uint32_t updateRequestIndex = 0;
-    err = parser.GetUpdateRequestIndex(&updateRequestIndex);
+    err                         = parser.GetUpdateRequestIndex(&updateRequestIndex);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
     NL_TEST_ASSERT(inSuite, updateRequestIndex == mContext.mUpdateRequestIndex);
 
@@ -271,15 +262,13 @@ void WdmUpdateEncoderTest::VerifyDataList(nlTestSuite *inSuite, PacketBuffer *aB
 
     size_t firstItemNotEncoded = mContext.mItemInProgress;
 
-    for (size_t i = aItemToStartFrom;
-            i < firstItemNotEncoded;
-            i = mPathList.GetNextValidItem(i))
+    for (size_t i = aItemToStartFrom; i < firstItemNotEncoded; i = mPathList.GetNextValidItem(i))
     {
-        DataElement::Parser       element;
-        TraitDataSink *           dataSink = NULL;
-        TraitDataHandle           handle;
-        PropertyPathHandle        pathHandle;
-        SchemaVersionRange        versionRange;
+        DataElement::Parser element;
+        TraitDataSink * dataSink = NULL;
+        TraitDataHandle handle;
+        PropertyPathHandle pathHandle;
+        SchemaVersionRange versionRange;
         nl::Weave::TLV::TLVReader pathReader;
 
         count++;
@@ -294,7 +283,6 @@ void WdmUpdateEncoderTest::VerifyDataList(nlTestSuite *inSuite, PacketBuffer *aB
 
         err = element.GetReaderOnPath(&pathReader);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
-
 
         err = mSinkCatalog.AddressToHandle(pathReader, handle, versionRange);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -311,7 +299,7 @@ void WdmUpdateEncoderTest::VerifyDataList(nlTestSuite *inSuite, PacketBuffer *aB
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
         if (dataSink->GetSchemaEngine()->IsDictionary(tp.mPropertyPathHandle) &&
-                false == mPathList.AreFlagsSet(i, SubscriptionClient::kFlag_ForceMerge))
+            false == mPathList.AreFlagsSet(i, SubscriptionClient::kFlag_ForceMerge))
         {
             // This dictionary should be encoded so that it gets completely replaced:
             // that is, the path points to its parent.
@@ -329,8 +317,7 @@ exit:
     return;
 }
 
-
-void WdmUpdateEncoderTest::BasicTestBody(nlTestSuite *inSuite)
+void WdmUpdateEncoderTest::BasicTestBody(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err;
 
@@ -345,17 +332,13 @@ void WdmUpdateEncoderTest::BasicTestBody(nlTestSuite *inSuite)
     VerifyDataList(inSuite, mBuf);
 }
 
-
-void WdmUpdateEncoderTest::TestOneLeaf(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestOneLeaf(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     PRINT_TEST_NAME();
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaC)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaC) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -363,20 +346,15 @@ void WdmUpdateEncoderTest::TestOneLeaf(nlTestSuite *inSuite, void *inContext)
     BasicTestBody(inSuite);
 
     NL_TEST_ASSERT(inSuite, 1 == mPathList.GetNumItems());
-
 }
 
-
-void WdmUpdateEncoderTest::TestRoot(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestRoot(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     PRINT_TEST_NAME();
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        kRootPropertyPathHandle
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], kRootPropertyPathHandle };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -388,17 +366,13 @@ void WdmUpdateEncoderTest::TestRoot(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, 2 == mPathList.GetNumItems());
 }
 
-
-void WdmUpdateEncoderTest::TestWholeDictionary(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestWholeDictionary(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     PRINT_TEST_NAME();
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -408,23 +382,19 @@ void WdmUpdateEncoderTest::TestWholeDictionary(nlTestSuite *inSuite, void *inCon
     NL_TEST_ASSERT(inSuite, 1 == mPathList.GetNumItems());
 }
 
-
-void WdmUpdateEncoderTest::TestTwoProperties(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestTwoProperties(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     PRINT_TEST_NAME();
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaA)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaA) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
     mTP.mPropertyPathHandle = CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaB);
-    err = mPathList.AddItem(mTP);
+    err                     = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
     BasicTestBody(inSuite);
@@ -432,8 +402,7 @@ void WdmUpdateEncoderTest::TestTwoProperties(nlTestSuite *inSuite, void *inConte
     NL_TEST_ASSERT(inSuite, 2 == mPathList.GetNumItems());
 }
 
-
-void WdmUpdateEncoderTest::TestDictionaryElements(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestDictionaryElements(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -441,10 +410,7 @@ void WdmUpdateEncoderTest::TestDictionaryElements(nlTestSuite *inSuite, void *in
 
     for (uint32_t i = 0; i < 10; i++)
     {
-        mTP = {
-            mTraitHandleSet[kTestATraitSink0Index],
-            CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI_Value, i)
-        };
+        mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI_Value, i) };
 
         err = mPathList.AddItem(mTP);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -455,17 +421,13 @@ void WdmUpdateEncoderTest::TestDictionaryElements(nlTestSuite *inSuite, void *in
     NL_TEST_ASSERT(inSuite, 10 == mPathList.GetNumItems());
 }
 
-
-void WdmUpdateEncoderTest::TestStructure(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestStructure(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     PRINT_TEST_NAME();
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -475,7 +437,7 @@ void WdmUpdateEncoderTest::TestStructure(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, 1 == mPathList.GetNumItems());
 }
 
-void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -488,16 +450,13 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
 
     SetupTest();
 
-    uint16_t totLen = mBuf->TotalLength();
+    uint16_t totLen    = mBuf->TotalLength();
     uint16_t available = mBuf->AvailableDataLength();
     printf("totLen empty: %" PRIu16 " bytes; available %" PRIu16 "\n", totLen, mBuf->AvailableDataLength());
 
     // encode the first item by itself
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -515,10 +474,7 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
 
     mBuf = PacketBuffer::New(0);
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -533,8 +489,8 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
     NL_TEST_ASSERT(inSuite, 2 == mPathList.GetNumItems());
 
     uint16_t encodedTwoItems = mBuf->TotalLength();
-    printf("encoded with two items: %" PRIu16 " bytes; totLen: %" PRIu16 " available %" PRIu16 "\n",
-            encodedTwoItems, mBuf->TotalLength(), mBuf->AvailableDataLength());
+    printf("encoded with two items: %" PRIu16 " bytes; totLen: %" PRIu16 " available %" PRIu16 "\n", encodedTwoItems,
+           mBuf->TotalLength(), mBuf->AvailableDataLength());
 
     PacketBuffer::Free(mBuf);
     mBuf = NULL;
@@ -542,14 +498,11 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
     // Repeat the test with all the payload lengths that fit the first DataElement but not the
     // full second one.
 
-    for (uint16_t reserved = (available - encodedTwoItems +1); reserved <= (available - encodedOneItemLen); reserved++)
+    for (uint16_t reserved = (available - encodedTwoItems + 1); reserved <= (available - encodedOneItemLen); reserved++)
     {
         SetupTest();
 
-        mTP = {
-            mTraitHandleSet[kTestATraitSink0Index],
-            CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-        };
+        mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
         err = mPathList.AddItem(mTP);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -602,7 +555,7 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
             {
                 NL_TEST_ASSERT(inSuite, 3 == mPathList.GetNumItems());
             }
-            NL_TEST_ASSERT(inSuite, mContext.mItemInProgress == (mPathList.GetNumItems() -1));
+            NL_TEST_ASSERT(inSuite, mContext.mItemInProgress == (mPathList.GetNumItems() - 1));
         }
 
         // next payload
@@ -616,7 +569,7 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
         mBuf = PacketBuffer::New(0);
         NL_TEST_ASSERT(inSuite, NULL != mBuf);
 
-        mContext.mBuf = mBuf;
+        mContext.mBuf            = mBuf;
         mContext.mMaxPayloadSize = mBuf->AvailableDataLength();
 
         size_t itemToStartFrom = mContext.mItemInProgress;
@@ -637,7 +590,7 @@ void WdmUpdateEncoderTest::TestOverflowDictionary(nlTestSuite *inSuite, void *in
     }
 }
 
-void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -650,16 +603,13 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
 
     SetupTest();
 
-    uint16_t totLen = mBuf->TotalLength();
+    uint16_t totLen    = mBuf->TotalLength();
     uint16_t available = mBuf->AvailableDataLength();
     printf("totLen empty: %" PRIu16 " bytes; available %" PRIu16 "\n", totLen, mBuf->AvailableDataLength());
 
     // encode the first item by itself
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -677,10 +627,7 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
 
     mBuf = PacketBuffer::New(0);
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -696,8 +643,8 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
     NL_TEST_ASSERT(inSuite, 3 == mPathList.GetNumItems());
 
     uint16_t encodedTwoItems = mBuf->TotalLength();
-    printf("encoded with two items: %" PRIu16 " bytes; totLen: %" PRIu16 " available %" PRIu16 "\n",
-            encodedTwoItems, mBuf->TotalLength(), mBuf->AvailableDataLength());
+    printf("encoded with two items: %" PRIu16 " bytes; totLen: %" PRIu16 " available %" PRIu16 "\n", encodedTwoItems,
+           mBuf->TotalLength(), mBuf->AvailableDataLength());
 
     PacketBuffer::Free(mBuf);
     mBuf = NULL;
@@ -705,14 +652,11 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
     // Repeat the test with all the payload lengths that fit the first DataElement but not the
     // full second one.
 
-    for (uint16_t reserved = (available - encodedTwoItems +1); reserved <= (available - encodedOneItemLen); reserved++)
+    for (uint16_t reserved = (available - encodedTwoItems + 1); reserved <= (available - encodedOneItemLen); reserved++)
     {
         SetupTest();
 
-        mTP = {
-            mTraitHandleSet[kTestATraitSink0Index],
-            CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-        };
+        mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
         err = mPathList.AddItem(mTP);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -763,7 +707,7 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
             // Root didn't fit
             NL_TEST_ASSERT(inSuite, 2 == mPathList.GetNumItems());
         }
-        NL_TEST_ASSERT(inSuite, mContext.mItemInProgress == (mPathList.GetNumItems() -1));
+        NL_TEST_ASSERT(inSuite, mContext.mItemInProgress == (mPathList.GetNumItems() - 1));
 
         // next payload
 
@@ -776,7 +720,7 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
         mBuf = PacketBuffer::New(0);
         NL_TEST_ASSERT(inSuite, NULL != mBuf);
 
-        mContext.mBuf = mBuf;
+        mContext.mBuf            = mBuf;
         mContext.mMaxPayloadSize = mBuf->AvailableDataLength();
 
         size_t itemToStartFrom = mContext.mItemInProgress;
@@ -797,7 +741,7 @@ void WdmUpdateEncoderTest::TestOverflowRoot(nlTestSuite *inSuite, void *inContex
     }
 }
 
-void WdmUpdateEncoderTest::TestDataElementTooBig(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestDataElementTooBig(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -810,16 +754,13 @@ void WdmUpdateEncoderTest::TestDataElementTooBig(nlTestSuite *inSuite, void *inC
 
     SetupTest();
 
-    uint16_t totLen = mBuf->TotalLength();
+    uint16_t totLen    = mBuf->TotalLength();
     uint16_t available = mBuf->AvailableDataLength();
     printf("totLen empty: %" PRIu16 " bytes; available %" PRIu16 "\n", totLen, mBuf->AvailableDataLength());
 
     // encode the item to measure it
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -833,14 +774,11 @@ void WdmUpdateEncoderTest::TestDataElementTooBig(nlTestSuite *inSuite, void *inC
 
     // Repeat the test with all the payload lengths that don't fit the element
 
-    for (uint16_t reserved = (available - encodedOneItemLen +1); reserved <= (available); reserved++)
+    for (uint16_t reserved = (available - encodedOneItemLen + 1); reserved <= (available); reserved++)
     {
         SetupTest();
 
-        mTP = {
-            mTraitHandleSet[kTestATraitSink0Index],
-            CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD)
-        };
+        mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaD) };
 
         err = mPathList.AddItem(mTP);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -865,7 +803,7 @@ void WdmUpdateEncoderTest::TestDataElementTooBig(nlTestSuite *inSuite, void *inC
     }
 }
 
-void WdmUpdateEncoderTest::TestBadInputs(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestBadInputs(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -874,10 +812,7 @@ void WdmUpdateEncoderTest::TestBadInputs(nlTestSuite *inSuite, void *inContext)
     // Test that mNextDictionaryElementPathHandle should be kNull.. if the
     // current item is not a dictionary.
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaC)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaC) };
 
     err = mPathList.AddItem(mTP);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -891,16 +826,13 @@ void WdmUpdateEncoderTest::TestBadInputs(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, mBuf->TotalLength() == 0);
 }
 
-void WdmUpdateEncoderTest::TestStoreTooSmall(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestStoreTooSmall(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     PRINT_TEST_NAME();
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        kRootPropertyPathHandle
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], kRootPropertyPathHandle };
 
     // Fill the store with paths that will trigger adding private ones.
     while (err == WEAVE_NO_ERROR)
@@ -916,7 +848,7 @@ void WdmUpdateEncoderTest::TestStoreTooSmall(nlTestSuite *inSuite, void *inConte
     NL_TEST_ASSERT(inSuite, mBuf->TotalLength() == 0);
 }
 
-void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestSuite *inSuite, void *inContext, bool aRemoveAll)
+void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestSuite * inSuite, void * inContext, bool aRemoveAll)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t maxKey = 20;
@@ -930,13 +862,10 @@ void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestS
     // Magic numbers: I know 20 items won't fit in 100 bytes.
     for (int32_t i = 1; i <= maxKey; i++)
     {
-        mTestATraitUpdatableDataSink0.tai_map[i] = i+100;
+        mTestATraitUpdatableDataSink0.tai_map[i] = i + 100;
     }
 
-    mTP = {
-        mTraitHandleSet[kTestATraitSink0Index],
-        CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI)
-    };
+    mTP = { mTraitHandleSet[kTestATraitSink0Index], CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI) };
 
     err = mPathList.AddItem(mTP);
 
@@ -972,7 +901,7 @@ void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestS
     mBuf = PacketBuffer::New(0);
     NL_TEST_ASSERT(inSuite, NULL != mBuf);
 
-    mContext.mBuf = mBuf;
+    mContext.mBuf            = mBuf;
     mContext.mMaxPayloadSize = mBuf->AvailableDataLength();
 
     err = mEncoder.EncodeRequest(mContext);
@@ -1013,7 +942,7 @@ void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestS
 
     if (false == aRemoveAll)
     {
-        for (size_t i = pivotKey+1; i <= maxKey; i++)
+        for (size_t i = pivotKey + 1; i <= maxKey; i++)
         {
             err = dataReader.Next();
             NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -1023,9 +952,8 @@ void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads_loop(nlTestS
 
     err = dataReader.Next();
     NL_TEST_ASSERT(inSuite, err != WEAVE_NO_ERROR);
-
 }
-void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads(nlTestSuite * inSuite, void * inContext)
 {
     TestRemoveDictionaryItemsBetweenPayloads_loop(inSuite, inContext, false);
 
@@ -1036,77 +964,74 @@ void WdmUpdateEncoderTest::TestRemoveDictionaryItemsBetweenPayloads(nlTestSuite 
     return;
 }
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}
-}
-}
-
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 WdmUpdateEncoderTest gWdmUpdateEncoderTest;
 
-
-
-void WdmUpdateEncoderTest_InitCleanup(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_InitCleanup(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestInitCleanup(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_OneLeaf(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_OneLeaf(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestOneLeaf(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_Root(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_Root(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestRoot(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_WholeDictionary(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_WholeDictionary(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestWholeDictionary(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_TwoProperties(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_TwoProperties(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestTwoProperties(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_DictionaryElements(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_DictionaryElements(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestDictionaryElements(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_Structure(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_Structure(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestStructure(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_OverflowDictionary(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_OverflowDictionary(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestOverflowDictionary(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_OverflowRoot(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_OverflowRoot(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestOverflowRoot(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_DataElementTooBig(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_DataElementTooBig(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestDataElementTooBig(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_BadInputs(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_BadInputs(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestBadInputs(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_StoreTooSmall(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_StoreTooSmall(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestStoreTooSmall(inSuite, inContext);
 }
 
-void WdmUpdateEncoderTest_RemoveDictionaryItemsBetweenPayloads(nlTestSuite *inSuite, void *inContext)
+void WdmUpdateEncoderTest_RemoveDictionaryItemsBetweenPayloads(nlTestSuite * inSuite, void * inContext)
 {
     gWdmUpdateEncoderTest.TestRemoveDictionaryItemsBetweenPayloads(inSuite, inContext);
 }
@@ -1117,19 +1042,19 @@ void WdmUpdateEncoderTest_RemoveDictionaryItemsBetweenPayloads(nlTestSuite *inSu
  *  Test Suite that lists all the test functions.
  */
 static const nlTest sTests[] = {
-    NL_TEST_DEF("Init and cleanup",  WdmUpdateEncoderTest_InitCleanup),
-    NL_TEST_DEF("Encode one leaf",  WdmUpdateEncoderTest_OneLeaf),
-    NL_TEST_DEF("Encode root",  WdmUpdateEncoderTest_Root),
-    NL_TEST_DEF("Encode whole dictionary",  WdmUpdateEncoderTest_WholeDictionary),
-    NL_TEST_DEF("Encode two properties",  WdmUpdateEncoderTest_TwoProperties),
-    NL_TEST_DEF("Encode dictionary elements",  WdmUpdateEncoderTest_DictionaryElements),
-    NL_TEST_DEF("Encode structure",  WdmUpdateEncoderTest_Structure),
-    NL_TEST_DEF("Encode overflowing dictionary",  WdmUpdateEncoderTest_OverflowDictionary),
-    NL_TEST_DEF("Encode overflowing root DE",  WdmUpdateEncoderTest_OverflowRoot),
-    NL_TEST_DEF("Fail to encode because DataElement is too big",  WdmUpdateEncoderTest_DataElementTooBig),
-    NL_TEST_DEF("Fail to encode because of bad inputs",  WdmUpdateEncoderTest_BadInputs),
-    NL_TEST_DEF("Fail to encode because the path store can't hold private paths",  WdmUpdateEncoderTest_StoreTooSmall),
-    NL_TEST_DEF("Remove dictionary items between payloads",  WdmUpdateEncoderTest_RemoveDictionaryItemsBetweenPayloads),
+    NL_TEST_DEF("Init and cleanup", WdmUpdateEncoderTest_InitCleanup),
+    NL_TEST_DEF("Encode one leaf", WdmUpdateEncoderTest_OneLeaf),
+    NL_TEST_DEF("Encode root", WdmUpdateEncoderTest_Root),
+    NL_TEST_DEF("Encode whole dictionary", WdmUpdateEncoderTest_WholeDictionary),
+    NL_TEST_DEF("Encode two properties", WdmUpdateEncoderTest_TwoProperties),
+    NL_TEST_DEF("Encode dictionary elements", WdmUpdateEncoderTest_DictionaryElements),
+    NL_TEST_DEF("Encode structure", WdmUpdateEncoderTest_Structure),
+    NL_TEST_DEF("Encode overflowing dictionary", WdmUpdateEncoderTest_OverflowDictionary),
+    NL_TEST_DEF("Encode overflowing root DE", WdmUpdateEncoderTest_OverflowRoot),
+    NL_TEST_DEF("Fail to encode because DataElement is too big", WdmUpdateEncoderTest_DataElementTooBig),
+    NL_TEST_DEF("Fail to encode because of bad inputs", WdmUpdateEncoderTest_BadInputs),
+    NL_TEST_DEF("Fail to encode because the path store can't hold private paths", WdmUpdateEncoderTest_StoreTooSmall),
+    NL_TEST_DEF("Remove dictionary items between payloads", WdmUpdateEncoderTest_RemoveDictionaryItemsBetweenPayloads),
 
     NL_TEST_SENTINEL()
 };
@@ -1137,7 +1062,7 @@ static const nlTest sTests[] = {
 /**
  *  Set up the test suite.
  */
-static int SuiteSetup(void *inContext)
+static int SuiteSetup(void * inContext)
 {
     return 0;
 }
@@ -1145,7 +1070,7 @@ static int SuiteSetup(void *inContext)
 /**
  *  Tear down the test suite.
  */
-static int SuiteTeardown(void *inContext)
+static int SuiteTeardown(void * inContext)
 {
     return 0;
 }
@@ -1153,7 +1078,7 @@ static int SuiteTeardown(void *inContext)
 /**
  *  Set up each test.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     gWdmUpdateEncoderTest.SetupTest();
 
@@ -1163,31 +1088,23 @@ static int TestSetup(void *inContext)
 /**
  *  Tear down each test.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     gWdmUpdateEncoderTest.TearDownTest();
 
     return 0;
 }
 
-
 /**
  *  Main
  */
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-    nlTestSuite theSuite = {
-        "weave-WdmUpdateEncoder",
-        &sTests[0],
-        SuiteSetup,
-        SuiteTeardown,
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-WdmUpdateEncoder", &sTests[0], SuiteSetup, SuiteTeardown, TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);
@@ -1198,9 +1115,9 @@ int main(int argc, char *argv[])
     return nlTestRunnerStats(&theSuite);
 }
 
-#else  // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING && WEAVE_CONFIG_ENABLE_WDM_UPDATE
+#else // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING && WEAVE_CONFIG_ENABLE_WDM_UPDATE
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     return 0;
 }

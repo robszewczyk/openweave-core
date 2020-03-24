@@ -78,12 +78,12 @@ static BleLayer sBle;
 static nl::Ble::Platform::BlueZ::BluezBleApplicationDelegate sBleApplicationDelegate;
 static nl::Ble::Platform::BlueZ::BluezBlePlatformDelegate sBlePlatformDelegate(&sBle);
 
-nl::Ble::Platform::BlueZ::BluezBleApplicationDelegate *getBluezApplicationDelegate()
+nl::Ble::Platform::BlueZ::BluezBleApplicationDelegate * getBluezApplicationDelegate()
 {
     return &sBleApplicationDelegate;
 }
 
-nl::Ble::Platform::BlueZ::BluezBlePlatformDelegate *getBluezPlatformDelegate()
+nl::Ble::Platform::BlueZ::BluezBlePlatformDelegate * getBluezPlatformDelegate()
 {
     return &sBlePlatformDelegate;
 }
@@ -97,19 +97,21 @@ nl::Ble::Platform::BlueZ::BluezBlePlatformDelegate *getBluezPlatformDelegate()
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-static sys_mbox* sLwIPEventQueue = NULL;
+static sys_mbox * sLwIPEventQueue     = NULL;
 static unsigned int sLwIPAcquireCount = 0;
 
 static void AcquireLwIP(void)
 {
-    if (sLwIPAcquireCount++ == 0) {
+    if (sLwIPAcquireCount++ == 0)
+    {
         sys_mbox_new(&sLwIPEventQueue, 100);
     }
 }
 
 static void ReleaseLwIP(void)
 {
-    if (sLwIPAcquireCount > 0 && --sLwIPAcquireCount == 0) {
+    if (sLwIPAcquireCount > 0 && --sLwIPAcquireCount == 0)
+    {
         tcpip_finish(NULL, NULL);
     }
 }
@@ -122,21 +124,21 @@ InetLayer Inet;
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP && !WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 std::vector<TapInterface> tapIFs;
 std::vector<struct netif> netIFs; // interface to filter
-#endif // WEAVE_SYSTEM_CONFIG_USE_LWIP && !WEAVE_SYSTEM_CONFIG_USE_SOCKETS
+#endif                            // WEAVE_SYSTEM_CONFIG_USE_LWIP && !WEAVE_SYSTEM_CONFIG_USE_SOCKETS
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 static bool NetworkIsReady();
-static void OnLwIPInitComplete(void *arg);
+static void OnLwIPInitComplete(void * arg);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 char DefaultTapDeviceName[32];
-bool Done = false;
+bool Done             = false;
 bool gSigusr1Received = false;
 
 uint16_t sTestDefaultUDPSessionKeyId = WeaveKeyId::MakeSessionKeyId(1);
 uint16_t sTestDefaultTCPSessionKeyId = WeaveKeyId::MakeSessionKeyId(2);
-uint16_t sTestDefaultSessionKeyId = WeaveKeyId::MakeSessionKeyId(42);
+uint16_t sTestDefaultSessionKeyId    = WeaveKeyId::MakeSessionKeyId(42);
 
 bool sSuppressAccessControls = false;
 
@@ -154,7 +156,7 @@ void InitToolCommon()
     FAIL_ERROR(err, "InitSecureRandomDataSource() failed");
 
     // Initialized the rand() generator with a seed from the secure random data source.
-    err = nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *)&randSeed, sizeof(randSeed));
+    err = nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *) &randSeed, sizeof(randSeed));
     FAIL_ERROR(err, "Random number generator seeding failed");
     srand(randSeed);
 
@@ -179,7 +181,7 @@ void SetSIGUSR1Handler(void)
 
 void DoneOnHandleSIGUSR1(int signum)
 {
-    Done = true;
+    Done             = true;
     gSigusr1Received = true;
 }
 
@@ -192,7 +194,7 @@ void SetSignalHandler(SignalHandler handler)
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = handler;
 
-    for (i = 0; i < sizeof(signals)/sizeof(signals[0]); i++)
+    for (i = 0; i < sizeof(signals) / sizeof(signals[0]); i++)
     {
         if (sigaction(signals[i], &sa, NULL) == -1)
         {
@@ -214,17 +216,17 @@ void UseStdoutLineBuffering()
 #if !WEAVE_TUNNEL_CONFIG_WILL_OVERRIDE_ADDR_ROUTING_FUNCS
 
 #if !WEAVE_SYSTEM_CONFIG_USE_LWIP
-    /*
-     * Some structs are defined redundantly in netinet/in.h and linux/ipv6.h.
-     * So, cannot include both headers. Define struct in6_ifreq here.
-     * Copied from linux/ipv6.h
-     */
-    struct in6_ifreq
-    {
-        struct    in6_addr ifr6_addr;
-        uint32_t  ifr6_prefixlen;
-        int       ifr6_ifindex;
-    };
+/*
+ * Some structs are defined redundantly in netinet/in.h and linux/ipv6.h.
+ * So, cannot include both headers. Define struct in6_ifreq here.
+ * Copied from linux/ipv6.h
+ */
+struct in6_ifreq
+{
+    struct in6_addr ifr6_addr;
+    uint32_t ifr6_prefixlen;
+    int ifr6_ifindex;
+};
 #endif
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
@@ -245,7 +247,7 @@ static INET_ERROR InterfaceAddAddress_LwIP(InterfaceId tunIf, IPAddress ipAddr, 
     {
 #if LWIP_VERSION_MAJOR > 1
         ip6_addr_set(ip_2_ip6(&tunIf->ip6_addr[0]), &ip6_addr);
-#else // LWIP_VERSION_MAJOR <= 1
+#else  // LWIP_VERSION_MAJOR <= 1
         ip6_addr_set(&tunIf->ip6_addr[0], &ip6_addr);
 #endif // LWIP_VERSION_MAJOR <= 1
         index = 0;
@@ -286,7 +288,7 @@ static INET_ERROR InterfaceRemoveAddress_LwIP(InterfaceId tunIf, IPAddress ipAdd
     {
 #if LWIP_VERSION_MAJOR > 1
         ip6_addr_set_zero(ip_2_ip6(&tunIf->ip6_addr[0]));
-#else // LWIP_VERSION_MAJOR <= 1
+#else  // LWIP_VERSION_MAJOR <= 1
         ip6_addr_set_zero(&tunIf->ip6_addr[0]);
 #endif // LWIP_VERSION_MAJOR <= 1
     }
@@ -315,7 +317,7 @@ static INET_ERROR SetRouteToTunnelInterface_LwIP(InterfaceId tunIf, IPPrefix ipP
 
     LOCK_TCPIP_CORE();
 
-    ip6_prefix.addr = ipPrefix.IPAddr.ToIPv6();
+    ip6_prefix.addr       = ipPrefix.IPAddr.ToIPv6();
     ip6_prefix.prefix_len = ipPrefix.Length;
     if (routeAddDel == nl::Inet::TunEndPoint::kRouteTunIntf_Add)
     {
@@ -338,10 +340,10 @@ static INET_ERROR SetRouteToTunnelInterface_LwIP(InterfaceId tunIf, IPPrefix ipP
 static INET_ERROR InterfaceAddAddress_Linux(InterfaceId tunIf, IPAddress ipAddr, uint8_t prefixLen)
 {
     INET_ERROR err = INET_NO_ERROR;
-    int ret    = -1;
-    int sockfd = INET_INVALID_SOCKET_FD;
+    int ret        = -1;
+    int sockfd     = INET_INVALID_SOCKET_FD;
     struct in6_ifreq ifr6;
-    uint8_t *p = NULL;
+    uint8_t * p = NULL;
 
     p = &(ifr6.ifr6_addr.s6_addr[0]);
     for (int i = 0; i < 4; i++)
@@ -380,10 +382,10 @@ exit:
 static INET_ERROR InterfaceRemoveAddress_Linux(InterfaceId tunIf, IPAddress ipAddr, uint8_t prefixLen)
 {
     INET_ERROR err = INET_NO_ERROR;
-    int ret     = -1;
-    int sockfd  = INET_INVALID_SOCKET_FD;
+    int ret        = -1;
+    int sockfd     = INET_INVALID_SOCKET_FD;
     struct in6_ifreq ifr6;
-    uint8_t *p = NULL;
+    uint8_t * p = NULL;
 
     sockfd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
     if (sockfd < 0)
@@ -420,13 +422,13 @@ exit:
 static INET_ERROR SetRouteToTunnelInterface_Linux(InterfaceId tunIf, IPPrefix ipPrefix, nl::Inet::TunEndPoint::RouteOp routeAddDel)
 {
     INET_ERROR err = INET_NO_ERROR;
-    int ret     = -1;
-    int sockfd  = INET_INVALID_SOCKET_FD;
+    int ret        = -1;
+    int sockfd     = INET_INVALID_SOCKET_FD;
     struct ::in6_rtmsg route;
 
     memset(&route, 0, sizeof(struct in6_rtmsg));
 
-    route.rtmsg_dst = ipPrefix.IPAddr.ToIPv6();
+    route.rtmsg_dst     = ipPrefix.IPAddr.ToIPv6();
     route.rtmsg_dst_len = ipPrefix.Length;
 
     // Fill in in6_rtmsg flags
@@ -581,25 +583,25 @@ exit:
  */
 void nl::Weave::Profiles::WeaveTunnel::Platform::TunnelInterfaceUp(InterfaceId tunIf)
 {
-   WEAVE_ERROR err = WEAVE_NO_ERROR;
-   uint64_t globalId = 0;
-   IPAddress tunULAAddr;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint64_t globalId = 0;
+    IPAddress tunULAAddr;
 
-   /*
-    * Add the WiFi interface ULA address to the tunnel interface to ensure the selection of
-    * a Weave ULA as the source address for packets originating on the local node but destined
-    * for addresses reachable via the tunnel. Without this, the default IPv6 source address
-    * selection algorithm might choose an inappropriate source address, making it impossible
-    * for the destination node to respond.
-    */
-   globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
-   tunULAAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
-                                   nl::Weave::WeaveNodeIdToIPv6InterfaceId(ExchangeMgr.FabricState->LocalNodeId));
-   err = InterfaceAddAddress(tunIf, tunULAAddr, NL_INET_IPV6_MAX_PREFIX_LEN);
-   if (err != WEAVE_NO_ERROR)
-   {
-       WeaveLogError(WeaveTunnel, "Failed to add host address to Weave tunnel interface\n");
-   }
+    /*
+     * Add the WiFi interface ULA address to the tunnel interface to ensure the selection of
+     * a Weave ULA as the source address for packets originating on the local node but destined
+     * for addresses reachable via the tunnel. Without this, the default IPv6 source address
+     * selection algorithm might choose an inappropriate source address, making it impossible
+     * for the destination node to respond.
+     */
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
+    tunULAAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
+                                    nl::Weave::WeaveNodeIdToIPv6InterfaceId(ExchangeMgr.FabricState->LocalNodeId));
+    err        = InterfaceAddAddress(tunIf, tunULAAddr, NL_INET_IPV6_MAX_PREFIX_LEN);
+    if (err != WEAVE_NO_ERROR)
+    {
+        WeaveLogError(WeaveTunnel, "Failed to add host address to Weave tunnel interface\n");
+    }
 }
 
 /**
@@ -613,7 +615,7 @@ void nl::Weave::Profiles::WeaveTunnel::Platform::TunnelInterfaceUp(InterfaceId t
  */
 void nl::Weave::Profiles::WeaveTunnel::Platform::TunnelInterfaceDown(InterfaceId tunIf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
     uint64_t globalId = 0;
     IPAddress tunULAAddr;
 
@@ -621,10 +623,10 @@ void nl::Weave::Profiles::WeaveTunnel::Platform::TunnelInterfaceDown(InterfaceId
      * Remove the WiFi interface ULA address to the tunnel interface added during
      * TunnelInterfaceUp() call.
      */
-    globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
     tunULAAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
                                     nl::Weave::WeaveNodeIdToIPv6InterfaceId(ExchangeMgr.FabricState->LocalNodeId));
-    err = InterfaceRemoveAddress(tunIf, tunULAAddr, NL_INET_IPV6_MAX_PREFIX_LEN);
+    err        = InterfaceRemoveAddress(tunIf, tunULAAddr, NL_INET_IPV6_MAX_PREFIX_LEN);
     if (err != WEAVE_NO_ERROR)
     {
         WeaveLogError(WeaveTunnel, "Failed to remove host address from Weave tunnel interface\n");
@@ -643,8 +645,7 @@ void nl::Weave::Profiles::WeaveTunnel::Platform::TunnelInterfaceDown(InterfaceId
  *                         tunnel is established.
  *
  */
-void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished(InterfaceId tunIf,
-                                                                          TunnelAvailabilityMode tunMode)
+void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished(InterfaceId tunIf, TunnelAvailabilityMode tunMode)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     IPPrefix prefix;
@@ -653,7 +654,7 @@ void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished(Interf
 
     // Create prefix fd<globalId>::/48 to install route to tunnel interface
 
-    globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
     tunULAAddr = IPAddress::MakeULA(globalId, 0, 0);
 
     prefix.IPAddr = tunULAAddr;
@@ -711,7 +712,7 @@ void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelDisconnected(Inter
 
     // Delete route to tunnel interface for prefix fd<globalId>::/48
 
-    globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
     tunULAAddr = IPAddress::MakeULA(globalId, 0, 0);
 
     prefix.IPAddr = tunULAAddr;
@@ -738,11 +739,10 @@ void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelDisconnected(Inter
  *                         tunnel connection has been changed to.
  *
  */
-void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelModeChange(InterfaceId tunIf,
-                                                                         TunnelAvailabilityMode tunMode)
+void nl::Weave::Profiles::WeaveTunnel::Platform::ServiceTunnelModeChange(InterfaceId tunIf, TunnelAvailabilityMode tunMode)
 {
-    (void)tunIf;
-    (void)tunMode;
+    (void) tunIf;
+    (void) tunMode;
 }
 #endif // WEAVE_TUNNEL_CONFIG_WILL_OVERRIDE_ADDR_ROUTING_FUNCS
 
@@ -753,7 +753,7 @@ void InitSystemLayer()
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     AcquireLwIP();
     SystemLayer.Init(sLwIPEventQueue);
-#else // !WEAVE_SYSTEM_CONFIG_USE_LWIP
+#else  // !WEAVE_SYSTEM_CONFIG_USE_LWIP
     SystemLayer.Init(NULL);
 #endif // !WEAVE_SYSTEM_CONFIG_USE_LWIP
 }
@@ -774,15 +774,16 @@ static void PrintNetworkState()
 
     for (size_t j = 0; j < gNetworkOptions.TapDeviceName.size(); j++)
     {
-        struct netif *netIF = &(netIFs[j]);
-        TapInterface *tapIF = &(tapIFs[j]);
+        struct netif * netIF = &(netIFs[j]);
+        TapInterface * tapIF = &(tapIFs[j]);
 
         GetInterfaceName(netIF, intfName, sizeof(intfName));
 
         printf("LwIP interface ready\n");
         printf("  Interface Name: %s\n", intfName);
         printf("  Tap Device: %s\n", gNetworkOptions.TapDeviceName[j]);
-        printf("  MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n", tapIF->macAddr[0], tapIF->macAddr[1], tapIF->macAddr[2], tapIF->macAddr[3], tapIF->macAddr[4], tapIF->macAddr[5]);
+        printf("  MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n", tapIF->macAddr[0], tapIF->macAddr[1], tapIF->macAddr[2],
+               tapIF->macAddr[3], tapIF->macAddr[4], tapIF->macAddr[5]);
 #if INET_CONFIG_ENABLE_IPV4
         printf("  IPv4 Address: %s\n", ipaddr_ntoa(&(netIF->ip_addr)));
         printf("  IPv4 Mask: %s\n", ipaddr_ntoa(&(netIF->netmask)));
@@ -805,7 +806,7 @@ static void PrintNetworkState()
 
 void InitNetwork()
 {
-    void* lContext = NULL;
+    void * lContext = NULL;
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 #if WEAVE_SYSTEM_CONFIG_USE_SOCKETS
@@ -820,10 +821,10 @@ void InitNetwork()
     {
         for (size_t j = 0; j < gNetworkOptions.LocalIPv6Addr.size(); j++)
         {
-            uint64_t iid = gNetworkOptions.LocalIPv6Addr[j].InterfaceId();
-            char * tap_name = (char *)malloc(sizeof(DefaultTapDeviceName));
+            uint64_t iid    = gNetworkOptions.LocalIPv6Addr[j].InterfaceId();
+            char * tap_name = (char *) malloc(sizeof(DefaultTapDeviceName));
             snprintf(tap_name, sizeof(DefaultTapDeviceName), "weave-dev-%" PRIx64, iid & 0xFFFF);
-            tap_name[ sizeof(DefaultTapDeviceName) - 1] = 0;
+            tap_name[sizeof(DefaultTapDeviceName) - 1] = 0;
             gNetworkOptions.TapDeviceName.push_back(tap_name);
         }
     }
@@ -845,7 +846,8 @@ void InitNetwork()
         lwipErr = TapInterface_Init(&(tapIFs[j]), gNetworkOptions.TapDeviceName[j], NULL);
         if (lwipErr != ERR_OK)
         {
-            printf("Failed to initialize tap device %s: %s\n", gNetworkOptions.TapDeviceName[j], ErrorStr(System::MapErrorLwIP(lwipErr)));
+            printf("Failed to initialize tap device %s: %s\n", gNetworkOptions.TapDeviceName[j],
+                   ErrorStr(System::MapErrorLwIP(lwipErr)));
             exit(EXIT_FAILURE);
         }
     }
@@ -856,7 +858,7 @@ void InitNetwork()
 
     for (size_t j = 0; j < gNetworkOptions.TapDeviceName.size(); j++)
     {
-        std::vector<char *>addrsVec;
+        std::vector<char *> addrsVec;
         addrsVec.clear();
         if (gNetworkOptions.TapUseSystemConfig)
         {
@@ -865,9 +867,7 @@ void InitNetwork()
 
 #if INET_CONFIG_ENABLE_IPV4
 
-        IPAddress ip4Addr = (j < gNetworkOptions.LocalIPv4Addr.size())
-            ? gNetworkOptions.LocalIPv4Addr[j]
-            : IPAddress::Any;
+        IPAddress ip4Addr = (j < gNetworkOptions.LocalIPv4Addr.size()) ? gNetworkOptions.LocalIPv4Addr[j] : IPAddress::Any;
         for (size_t n = 0; n < addrsVec.size(); n++)
         {
             IPAddress auto_addr;
@@ -877,21 +877,20 @@ void InitNetwork()
             }
         }
 
-        IPAddress ip4Gateway = (j < gNetworkOptions.IPv4GatewayAddr.size())
-            ? gNetworkOptions.IPv4GatewayAddr[j]
-            : IPAddress::Any;
+        IPAddress ip4Gateway = (j < gNetworkOptions.IPv4GatewayAddr.size()) ? gNetworkOptions.IPv4GatewayAddr[j] : IPAddress::Any;
 
         {
 #if LWIP_VERSION_MAJOR > 1
             ip4_addr_t ip4AddrLwIP, ip4NetmaskLwIP, ip4GatewayLwIP;
-#else // LWIP_VERSION_MAJOR <= 1
+#else  // LWIP_VERSION_MAJOR <= 1
             ip_addr_t ip4AddrLwIP, ip4NetmaskLwIP, ip4GatewayLwIP;
 #endif // LWIP_VERSION_MAJOR <= 1
 
             ip4AddrLwIP = ip4Addr.ToIPv4();
             IP4_ADDR(&ip4NetmaskLwIP, 255, 255, 255, 0);
             ip4GatewayLwIP = ip4Gateway.ToIPv4();
-            netif_add(&(netIFs[j]), &ip4AddrLwIP, &ip4NetmaskLwIP, &ip4GatewayLwIP, &(tapIFs[j]), TapInterface_SetupNetif, tcpip_input);
+            netif_add(&(netIFs[j]), &ip4AddrLwIP, &ip4NetmaskLwIP, &ip4GatewayLwIP, &(tapIFs[j]), TapInterface_SetupNetif,
+                      tcpip_input);
         }
 
 #endif // INET_CONFIG_ENABLE_IPV4
@@ -908,7 +907,7 @@ void InitNetwork()
             {
                 static ip6_addr_t br_ip6_addr = gNetworkOptions.IPv6GatewayAddr[j].ToIPv6();
                 struct ip6_prefix ip6_prefix;
-                ip6_prefix.addr = nl::Inet::IPAddress::Any.ToIPv6();
+                ip6_prefix.addr       = nl::Inet::IPAddress::Any.ToIPv6();
                 ip6_prefix.prefix_len = 0;
                 ip6_add_route_entry(&ip6_prefix, &netIFs[j], &br_ip6_addr, NULL);
             }
@@ -938,7 +937,6 @@ void InitNetwork()
 
         netif_set_up(&(netIFs[j]));
         netif_set_link_up(&(netIFs[j]));
-
     }
 
     netif_set_default(&(netIFs[0]));
@@ -946,21 +944,21 @@ void InitNetwork()
 
     UNLOCK_TCPIP_CORE();
 
-
     while (!NetworkIsReady())
     {
         struct timeval lSleepTime;
-        lSleepTime.tv_sec = 0;
+        lSleepTime.tv_sec  = 0;
         lSleepTime.tv_usec = 100000;
         ServiceEvents(lSleepTime);
     }
 
-    //FIXME: this is kinda nasty :(
+    // FIXME: this is kinda nasty :(
     // Force new IP address to be ready, bypassing duplicate detection.
 
     for (size_t j = 0; j < gNetworkOptions.TapDeviceName.size(); j++)
     {
-        if (j < gNetworkOptions.LocalIPv6Addr.size()) {
+        if (j < gNetworkOptions.LocalIPv6Addr.size())
+        {
             netif_ip6_addr_set_state(&(netIFs[j]), 2, 0x30);
         }
         else
@@ -998,7 +996,7 @@ void InitNetwork()
     Inet.Init(SystemLayer, lContext);
 }
 
-void ServiceEvents(::timeval& aSleepTime)
+void ServiceEvents(::timeval & aSleepTime)
 {
     static bool printed = false;
     if (!printed)
@@ -1057,7 +1055,6 @@ void ServiceEvents(::timeval& aSleepTime)
             {
                 SystemLayer.DispatchEvents();
                 sRemainingSystemLayerEventDelay = gNetworkOptions.EventDelay;
-
             }
             else
                 sRemainingSystemLayerEventDelay--;
@@ -1066,7 +1063,6 @@ void ServiceEvents(::timeval& aSleepTime)
             // aSleepTime according to the next timer.
 
             SystemLayer.HandlePlatformTimer();
-
         }
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
     }
@@ -1102,7 +1098,6 @@ void ServiceEvents(::timeval& aSleepTime)
             // aSleepTime according to the next timer.
 
             Inet.HandlePlatformTimer();
-
         }
 #endif // INET_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES && WEAVE_SYSTEM_CONFIG_USE_LWIP
     }
@@ -1128,7 +1123,7 @@ static bool NetworkIsReady()
     return ready;
 }
 
-static void OnLwIPInitComplete(void *arg)
+static void OnLwIPInitComplete(void * arg)
 {
     printf("Waiting for addresses assignment...\n");
 }
@@ -1139,7 +1134,7 @@ void InitWeaveStack(bool listen, bool initExchangeMgr)
 {
     WEAVE_ERROR res;
     WeaveMessageLayer::InitContext initContext;
-    static nlDEFINE_ALIGNED_VAR(sTestGroupKeyStore, sizeof(TestGroupKeyStore), void*);
+    static nlDEFINE_ALIGNED_VAR(sTestGroupKeyStore, sizeof(TestGroupKeyStore), void *);
 
 #if CONFIG_BLE_PLATFORM_BLUEZ
     // Initialize the BleLayer object.
@@ -1168,10 +1163,10 @@ void InitWeaveStack(bool listen, bool initExchangeMgr)
         exit(EXIT_FAILURE);
     }
 
-    FabricState.FabricId = gWeaveNodeOptions.FabricId;
-    FabricState.LocalNodeId = gWeaveNodeOptions.LocalNodeId;
+    FabricState.FabricId      = gWeaveNodeOptions.FabricId;
+    FabricState.LocalNodeId   = gWeaveNodeOptions.LocalNodeId;
     FabricState.DefaultSubnet = gWeaveNodeOptions.SubnetId;
-    FabricState.PairingCode = gWeaveNodeOptions.PairingCode;
+    FabricState.PairingCode   = gWeaveNodeOptions.PairingCode;
 
     // When using sockets we must listen on specific addresses, rather than ANY. Otherwise you will only be
     // able to run a single Weave application per system.
@@ -1194,16 +1189,16 @@ void InitWeaveStack(bool listen, bool initExchangeMgr)
     // TODO mock-device BLE support?
 
     initContext.systemLayer = &SystemLayer;
-    initContext.inet = &Inet;
+    initContext.inet        = &Inet;
     initContext.fabricState = &FabricState;
-    initContext.listenTCP = listen;
-    initContext.listenUDP = true;
+    initContext.listenTCP   = listen;
+    initContext.listenUDP   = true;
 #if WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
     initContext.enableEphemeralUDPPort = gWeaveNodeOptions.UseEphemeralUDPPort;
 #endif // WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
 
 #if CONFIG_BLE_PLATFORM_BLUEZ
-    initContext.ble = &sBle;
+    initContext.ble       = &sBle;
     initContext.listenBLE = true;
 #endif /* CONFIG_NETWORK_LAYER_BLE */
 
@@ -1231,7 +1226,7 @@ void InitWeaveStack(bool listen, bool initExchangeMgr)
             printf("WeaveSecurityManager.Init failed: %s\n", ErrorStr(res));
             exit(EXIT_FAILURE);
         }
-        SecurityMgr.IdleSessionTimeout = gGeneralSecurityOptions.GetIdleSessionTimeout();
+        SecurityMgr.IdleSessionTimeout      = gGeneralSecurityOptions.GetIdleSessionTimeout();
         SecurityMgr.SessionEstablishTimeout = gGeneralSecurityOptions.GetSessionEstablishmentTimeout();
 
         if (gTAKEOptions.ForceReauth)
@@ -1292,7 +1287,7 @@ void PrintNodeConfig()
 #if INET_CONFIG_ENABLE_IPV4
             && FabricState.ListenIPv4Addr == IPAddress::Any
 #endif // INET_CONFIG_ENABLE_IPV4
-            )
+        )
             printf(" any\n");
         else
         {
@@ -1311,7 +1306,7 @@ void PrintNodeConfig()
             }
 #endif // INET_CONFIG_ENABLE_IPV4
         }
-#else // WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
+#else  // WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
         printf(" any\n");
 #endif // WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
     }
@@ -1333,7 +1328,7 @@ void ShutdownWeaveStack()
     FabricState.Shutdown();
 }
 
-void DumpMemory(const uint8_t *mem, uint32_t len, const char *prefix, uint32_t rowWidth)
+void DumpMemory(const uint8_t * mem, uint32_t len, const char * prefix, uint32_t rowWidth)
 {
     (void) DumpMemory;
 
@@ -1364,7 +1359,7 @@ void DumpMemory(const uint8_t *mem, uint32_t len, const char *prefix, uint32_t r
     }
 }
 
-void DumpMemoryCStyle(const uint8_t *mem, uint32_t len, const char *prefix, uint32_t rowWidth)
+void DumpMemoryCStyle(const uint8_t * mem, uint32_t len, const char * prefix, uint32_t rowWidth)
 {
     (void) DumpMemoryCStyle;
 
@@ -1382,7 +1377,7 @@ void DumpMemoryCStyle(const uint8_t *mem, uint32_t len, const char *prefix, uint
     }
 }
 
-bool IsZeroBytes(const uint8_t *buf, uint32_t len)
+bool IsZeroBytes(const uint8_t * buf, uint32_t len)
 {
     for (; len > 0; len--, buf++)
         if (*buf != 0)
@@ -1390,14 +1385,14 @@ bool IsZeroBytes(const uint8_t *buf, uint32_t len)
     return true;
 }
 
-void PrintMACAddress(const uint8_t *buf, uint32_t len)
+void PrintMACAddress(const uint8_t * buf, uint32_t len)
 {
     for (; len > 0; buf++, len--)
     {
         if (len != 1)
-            printf("%02X:", (unsigned)*buf);
+            printf("%02X:", (unsigned) *buf);
         else
-            printf("%02X", (unsigned)*buf);
+            printf("%02X", (unsigned) *buf);
     }
 }
 
@@ -1405,7 +1400,8 @@ void PrintAddresses()
 {
     InterfaceAddressIterator iterator;
     printf("Valid addresses: \n");
-    for (; iterator.HasCurrent(); iterator.Next()) {
+    for (; iterator.HasCurrent(); iterator.Next())
+    {
         IPAddress addr = iterator.GetAddress();
         char buf[80];
         addr.ToString(buf, 80);
@@ -1413,10 +1409,10 @@ void PrintAddresses()
     }
 }
 
-uint8_t *ReadFileArg(const char *fileName, uint32_t& len, uint32_t maxLen)
+uint8_t * ReadFileArg(const char * fileName, uint32_t & len, uint32_t maxLen)
 {
-    FILE *file = NULL;
-    uint8_t *fileData = NULL;
+    FILE * file        = NULL;
+    uint8_t * fileData = NULL;
     long fileLen;
     size_t fileStatus;
 
@@ -1445,7 +1441,7 @@ uint8_t *ReadFileArg(const char *fileName, uint32_t& len, uint32_t maxLen)
         return NULL;
     }
 
-    fileData = (uint8_t *)malloc((size_t)len);
+    fileData = (uint8_t *) malloc((size_t) len);
     if (fileData == NULL)
     {
         printf("Out of memory reading %s\n", fileName);
@@ -1453,7 +1449,7 @@ uint8_t *ReadFileArg(const char *fileName, uint32_t& len, uint32_t maxLen)
         return NULL;
     }
 
-    fileStatus = fread(fileData, 1, (size_t)len, file);
+    fileStatus = fread(fileData, 1, (size_t) len, file);
 
     if ((fileStatus != len) || ferror(file))
     {
@@ -1468,7 +1464,7 @@ uint8_t *ReadFileArg(const char *fileName, uint32_t& len, uint32_t maxLen)
     return fileData;
 }
 
-void HandleMessageReceiveError(WeaveMessageLayer *msgLayer, WEAVE_ERROR err, const IPPacketInfo *pktInfo)
+void HandleMessageReceiveError(WeaveMessageLayer * msgLayer, WEAVE_ERROR err, const IPPacketInfo * pktInfo)
 {
     const char * const default_format = "Error receiving message from %s: %s\n";
 
@@ -1498,16 +1494,16 @@ void HandleMessageReceiveError(WeaveMessageLayer *msgLayer, WEAVE_ERROR err, con
     }
 }
 
-void HandleAcceptConnectionError(WeaveMessageLayer *msgLayer, WEAVE_ERROR err)
+void HandleAcceptConnectionError(WeaveMessageLayer * msgLayer, WEAVE_ERROR err)
 {
     printf("Error accepting incoming connection: %s\n", ErrorStr(err));
 }
 
 #if CONFIG_BLE_PLATFORM_BLUEZ
 
-void *WeaveBleIOLoop(void *arg)
+void * WeaveBleIOLoop(void * arg)
 {
-    if (!nl::Ble::Platform::BlueZ::RunBluezIOThread((nl::Ble::Platform::BlueZ::BluezPeripheralArgs *)arg))
+    if (!nl::Ble::Platform::BlueZ::RunBluezIOThread((nl::Ble::Platform::BlueZ::BluezPeripheralArgs *) arg))
     {
         exit(EXIT_FAILURE);
     }
@@ -1516,11 +1512,11 @@ void *WeaveBleIOLoop(void *arg)
 }
 #endif /* CONFIG_BLE_PLATFORM_BLUEZ */
 
-void PrintStatsCounters(nl::Weave::System::Stats::count_t *counters, const char *aPrefix)
+void PrintStatsCounters(nl::Weave::System::Stats::count_t * counters, const char * aPrefix)
 {
     size_t i;
-    const nl::Weave::System::Stats::Label *strings = nl::Weave::System::Stats::GetStrings();
-    const char *prefix = aPrefix ? aPrefix : "";
+    const nl::Weave::System::Stats::Label * strings = nl::Weave::System::Stats::GetStrings();
+    const char * prefix                             = aPrefix ? aPrefix : "";
 
     for (i = 0; i < nl::Weave::System::Stats::kNumEntries; i++)
     {
@@ -1528,11 +1524,12 @@ void PrintStatsCounters(nl::Weave::System::Stats::count_t *counters, const char 
     }
 }
 
-bool ProcessStats(nl::Weave::System::Stats::Snapshot &aBefore, nl::Weave::System::Stats::Snapshot &aAfter, bool aPrint, const char *aPrefix)
+bool ProcessStats(nl::Weave::System::Stats::Snapshot & aBefore, nl::Weave::System::Stats::Snapshot & aAfter, bool aPrint,
+                  const char * aPrefix)
 {
     bool leak = false;
     nl::Weave::System::Stats::Snapshot delta;
-    const char *prefix = aPrefix ? aPrefix : "";
+    const char * prefix = aPrefix ? aPrefix : "";
     struct timeval sleepTime;
     uint64_t nowUsec;
     uint64_t upperBoundUsec;
@@ -1552,12 +1549,12 @@ bool ProcessStats(nl::Weave::System::Stats::Snapshot &aBefore, nl::Weave::System
     // Fault-injection tests can require a longer time, since sometimes an EC is
     // freed only after the max number of retransmissions.
     // To allow extra time in this loop, see gFaultInjectionOptions.ExtraCleanupTimeMsec.
-    sleepTime.tv_sec = 0;
+    sleepTime.tv_sec  = 0;
     sleepTime.tv_usec = 100000;
 
     nl::Weave::Stats::UpdateSnapshot(aAfter);
 
-    nowUsec = Now();
+    nowUsec        = Now();
     upperBoundUsec = nowUsec + 800000 + (gFaultInjectionOptions.ExtraCleanupTimeMsec * 1000);
 
     while (Now() < upperBoundUsec)
@@ -1606,11 +1603,9 @@ void PrintFaultInjectionCounters(void)
 {
     size_t i;
     nl::FaultInjection::Identifier faultId;
-    nl::FaultInjection::GetManagerFn faultMgrTable[] = {
-        nl::Weave::FaultInjection::GetManager,
-        nl::Inet::FaultInjection::GetManager,
-        nl::Weave::System::FaultInjection::GetManager
-    };
+    nl::FaultInjection::GetManagerFn faultMgrTable[] = { nl::Weave::FaultInjection::GetManager,
+                                                         nl::Inet::FaultInjection::GetManager,
+                                                         nl::Weave::System::FaultInjection::GetManager };
 
     if (!gFaultInjectionOptions.PrintFaultCounters)
     {
@@ -1620,27 +1615,26 @@ void PrintFaultInjectionCounters(void)
     printf("\nFaultInjection counters:\n");
     for (i = 0; i < sizeof(faultMgrTable) / sizeof(faultMgrTable[0]); i++)
     {
-        nl::FaultInjection::Manager &mgr = faultMgrTable[i]();
+        nl::FaultInjection::Manager & mgr = faultMgrTable[i]();
 
         for (faultId = 0; faultId < mgr.GetNumFaults(); faultId++)
         {
-            printf("%s_%s: %u\n", mgr.GetName(), mgr.GetFaultNames()[faultId],
-                    mgr.GetFaultRecords()[faultId].mNumTimesChecked);
+            printf("%s_%s: %u\n", mgr.GetName(), mgr.GetFaultNames()[faultId], mgr.GetFaultRecords()[faultId].mNumTimesChecked);
         }
     }
     printf("End of FaultInjection counters\n");
-
 }
 
-struct RestartCallbackContext {
+struct RestartCallbackContext
+{
     int mArgc;
-    char **mArgv;
+    char ** mArgv;
 };
 static struct RestartCallbackContext gRestartCallbackCtx;
 
 static void RebootCallbackFn(void)
 {
-    char *lArgv[gRestartCallbackCtx.mArgc +2];
+    char * lArgv[gRestartCallbackCtx.mArgc + 2];
     int i;
     int j = 0;
 
@@ -1686,16 +1680,14 @@ exit:
     return;
 }
 
-static void PostInjectionCallbackFn(nl::FaultInjection::Manager *aManager,
-                             nl::FaultInjection::Identifier aId,
-                             nl::FaultInjection::Record *aFaultRecord)
+static void PostInjectionCallbackFn(nl::FaultInjection::Manager * aManager, nl::FaultInjection::Identifier aId,
+                                    nl::FaultInjection::Record * aFaultRecord)
 {
     uint16_t numargs = aFaultRecord->mNumArguments;
     uint16_t i;
 
-    printf("***** Injecting fault %s_%s, instance number: %u; reboot: %s",
-                            aManager->GetName(), aManager->GetFaultNames()[aId],
-                            aFaultRecord->mNumTimesChecked, aFaultRecord->mReboot ? "yes" : "no");
+    printf("***** Injecting fault %s_%s, instance number: %u; reboot: %s", aManager->GetName(), aManager->GetFaultNames()[aId],
+           aFaultRecord->mNumTimesChecked, aFaultRecord->mReboot ? "yes" : "no");
     if (numargs)
     {
         printf(" with %u args:", numargs);
@@ -1709,52 +1701,51 @@ static void PostInjectionCallbackFn(nl::FaultInjection::Manager *aManager,
     printf("\n");
 }
 
-static nl::FaultInjection::GlobalContext gFaultInjectionGlobalContext = {
-    {
-        RebootCallbackFn,
-        PostInjectionCallbackFn
-    }
-};
+static nl::FaultInjection::GlobalContext gFaultInjectionGlobalContext = { { RebootCallbackFn, PostInjectionCallbackFn } };
 
 static nl::FaultInjection::Callback sFuzzECHeaderCb;
 static nl::FaultInjection::Callback sAsyncEventCb;
 
-static bool PrintFaultInjectionMaxArgCbFn(nl::FaultInjection::Manager &mgr, nl::FaultInjection::Identifier aId, nl::FaultInjection::Record *aFaultRecord, void *aContext)
+static bool PrintFaultInjectionMaxArgCbFn(nl::FaultInjection::Manager & mgr, nl::FaultInjection::Identifier aId,
+                                          nl::FaultInjection::Record * aFaultRecord, void * aContext)
 {
-    const char *faultName = mgr.GetFaultNames()[aId];
+    const char * faultName = mgr.GetFaultNames()[aId];
 
     if (gFaultInjectionOptions.PrintFaultCounters && aFaultRecord->mNumArguments)
     {
         printf("FI_instance_params: %s_%s_s%u maxArg: %u;\n", mgr.GetName(), faultName, aFaultRecord->mNumTimesChecked,
-                aFaultRecord->mArguments[0]);
+               aFaultRecord->mArguments[0]);
     }
 
     return false;
 }
 
-static bool PrintWeaveFaultInjectionMaxArgCbFn(nl::FaultInjection::Identifier aId, nl::FaultInjection::Record *aFaultRecord, void *aContext)
+static bool PrintWeaveFaultInjectionMaxArgCbFn(nl::FaultInjection::Identifier aId, nl::FaultInjection::Record * aFaultRecord,
+                                               void * aContext)
 {
-    nl::FaultInjection::Manager &mgr = nl::Weave::FaultInjection::GetManager();
+    nl::FaultInjection::Manager & mgr = nl::Weave::FaultInjection::GetManager();
 
     return PrintFaultInjectionMaxArgCbFn(mgr, aId, aFaultRecord, aContext);
 }
 
-static bool PrintSystemFaultInjectionMaxArgCbFn(nl::FaultInjection::Identifier aId, nl::FaultInjection::Record *aFaultRecord, void *aContext)
+static bool PrintSystemFaultInjectionMaxArgCbFn(nl::FaultInjection::Identifier aId, nl::FaultInjection::Record * aFaultRecord,
+                                                void * aContext)
 {
-    nl::FaultInjection::Manager &mgr = nl::Weave::System::FaultInjection::GetManager();
+    nl::FaultInjection::Manager & mgr = nl::Weave::System::FaultInjection::GetManager();
 
     return PrintFaultInjectionMaxArgCbFn(mgr, aId, aFaultRecord, aContext);
 }
 
-void SetupFaultInjectionContext(int argc, char *argv[])
+void SetupFaultInjectionContext(int argc, char * argv[])
 {
     SetupFaultInjectionContext(argc, argv, NULL, NULL);
 }
 
-void SetupFaultInjectionContext(int argc, char *argv[], int32_t (*aNumEventsAvailable)(void), void (*aInjectAsyncEvents)(int32_t index))
+void SetupFaultInjectionContext(int argc, char * argv[], int32_t (*aNumEventsAvailable)(void),
+                                void (*aInjectAsyncEvents)(int32_t index))
 {
-    nl::FaultInjection::Manager &weavemgr = nl::Weave::FaultInjection::GetManager();
-    nl::FaultInjection::Manager &systemmgr = nl::Weave::System::FaultInjection::GetManager();
+    nl::FaultInjection::Manager & weavemgr  = nl::Weave::FaultInjection::GetManager();
+    nl::FaultInjection::Manager & systemmgr = nl::Weave::System::FaultInjection::GetManager();
 
     gRestartCallbackCtx.mArgc = argc;
     gRestartCallbackCtx.mArgv = argv;
@@ -1785,17 +1776,16 @@ void SetupFaultInjectionContext(int argc, char *argv[], int32_t (*aNumEventsAvai
  *                          process events until at least this number of milliseconds
  *                          has elapsed. If NULL, the parameter is ignored.
  */
-void ServiceNetworkUntil(const bool *aDone, const uint32_t *aIntervalMs)
+void ServiceNetworkUntil(const bool * aDone, const uint32_t * aIntervalMs)
 {
     uint64_t startTimeMs = NowMs();
-    uint64_t elapsedMs = 0;
+    uint64_t elapsedMs   = 0;
     struct timeval sleepTime;
 
-    sleepTime.tv_sec = 0;
+    sleepTime.tv_sec  = 0;
     sleepTime.tv_usec = 100000;
 
-    while (((aDone != NULL) && !(*aDone)) ||
-           ((aIntervalMs != NULL) && (elapsedMs < *aIntervalMs)))
+    while (((aDone != NULL) && !(*aDone)) || ((aIntervalMs != NULL) && (elapsedMs < *aIntervalMs)))
     {
         ServiceNetwork(sleepTime);
 

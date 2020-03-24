@@ -27,70 +27,63 @@
 #ifndef _WEAVE_TRAIT_SECURITY__USER_PINCODES_SETTINGS_TRAIT_C_H_
 #define _WEAVE_TRAIT_SECURITY__USER_PINCODES_SETTINGS_TRAIT_C_H_
 
+//
+// Commands
+//
 
+typedef enum
+{
+    kSetUserPincodeRequestId    = 0x1,
+    kGetUserPincodeRequestId    = 0x2,
+    kDeleteUserPincodeRequestId = 0x3,
+} schema_weave_security_user_pincodes_settings_trait_command_id_t;
 
-    //
-    // Commands
-    //
+// SetUserPincodeRequest Parameters
+typedef enum
+{
+    kSetUserPincodeRequestParameter_UserPincode = 1,
+} schema_weave_security_user_pincodes_settings_trait_set_user_pincode_request_param_t;
+// GetUserPincodeRequest Parameters
+typedef enum
+{
+    kGetUserPincodeRequestParameter_UserId = 1,
+} schema_weave_security_user_pincodes_settings_trait_get_user_pincode_request_param_t;
+// DeleteUserPincodeRequest Parameters
+typedef enum
+{
+    kDeleteUserPincodeRequestParameter_UserId = 1,
+} schema_weave_security_user_pincodes_settings_trait_delete_user_pincode_request_param_t;
 
-    typedef enum
-    {
-      kSetUserPincodeRequestId = 0x1,
-      kGetUserPincodeRequestId = 0x2,
-      kDeleteUserPincodeRequestId = 0x3,
-    } schema_weave_security_user_pincodes_settings_trait_command_id_t;
+// SetUserPincodeResponse Parameters
+typedef enum
+{
+    kSetUserPincodeResponseParameter_Status = 1,
+} schema_weave_security_user_pincodes_settings_trait_set_user_pincode_response_param_t;
+// GetUserPincodeResponse Parameters
+typedef enum
+{
+    kGetUserPincodeResponseParameter_UserPincode = 1,
+} schema_weave_security_user_pincodes_settings_trait_get_user_pincode_response_param_t;
+// DeleteUserPincodeResponse Parameters
+typedef enum
+{
+    kDeleteUserPincodeResponseParameter_Status = 1,
+} schema_weave_security_user_pincodes_settings_trait_delete_user_pincode_response_param_t;
 
+//
+// Enums
+//
 
-    // SetUserPincodeRequest Parameters
-    typedef enum
-    {
-        kSetUserPincodeRequestParameter_UserPincode = 1,
-    } schema_weave_security_user_pincodes_settings_trait_set_user_pincode_request_param_t;
-    // GetUserPincodeRequest Parameters
-    typedef enum
-    {
-        kGetUserPincodeRequestParameter_UserId = 1,
-    } schema_weave_security_user_pincodes_settings_trait_get_user_pincode_request_param_t;
-    // DeleteUserPincodeRequest Parameters
-    typedef enum
-    {
-        kDeleteUserPincodeRequestParameter_UserId = 1,
-    } schema_weave_security_user_pincodes_settings_trait_delete_user_pincode_request_param_t;
-
-
-    // SetUserPincodeResponse Parameters
-    typedef enum
-    {
-        kSetUserPincodeResponseParameter_Status = 1,
-    } schema_weave_security_user_pincodes_settings_trait_set_user_pincode_response_param_t;
-    // GetUserPincodeResponse Parameters
-    typedef enum
-    {
-        kGetUserPincodeResponseParameter_UserPincode = 1,
-    } schema_weave_security_user_pincodes_settings_trait_get_user_pincode_response_param_t;
-    // DeleteUserPincodeResponse Parameters
-    typedef enum
-    {
-        kDeleteUserPincodeResponseParameter_Status = 1,
-    } schema_weave_security_user_pincodes_settings_trait_delete_user_pincode_response_param_t;
-
-    //
-    // Enums
-    //
-
-    // PincodeErrorCodes
-    typedef enum
-    {
-    PINCODE_ERROR_CODES_DUPLICATE_PINCODE = 1,
-    PINCODE_ERROR_CODES_TOO_MANY_PINCODES = 2,
-    PINCODE_ERROR_CODES_INVALID_PINCODE = 3,
+// PincodeErrorCodes
+typedef enum
+{
+    PINCODE_ERROR_CODES_DUPLICATE_PINCODE       = 1,
+    PINCODE_ERROR_CODES_TOO_MANY_PINCODES       = 2,
+    PINCODE_ERROR_CODES_INVALID_PINCODE         = 3,
     PINCODE_ERROR_CODES_SUCCESS_PINCODE_DELETED = 4,
-    PINCODE_ERROR_CODES_SUCCESS_PINCODE_STATUS = 5,
-    PINCODE_ERROR_CODES_DUPLICATE_NONCE = 6,
-    PINCODE_ERROR_CODES_EXCEEDED_RATE_LIMIT = 7,
-    } schema_weave_security_user_pincodes_settings_trait_pincode_error_codes_t;
-
-
-
+    PINCODE_ERROR_CODES_SUCCESS_PINCODE_STATUS  = 5,
+    PINCODE_ERROR_CODES_DUPLICATE_NONCE         = 6,
+    PINCODE_ERROR_CODES_EXCEEDED_RATE_LIMIT     = 7,
+} schema_weave_security_user_pincodes_settings_trait_pincode_error_codes_t;
 
 #endif // _WEAVE_TRAIT_SECURITY__USER_PINCODES_SETTINGS_TRAIT_C_H_

@@ -44,20 +44,20 @@ namespace Internal {
 // by nvm3_open() on alignment or size violation.
 
 // Local version of SDK macro (avoids uninitialized var compile error).
-#define WEAVE_NVM3_DEFINE_SECTION_STATIC_DATA(name, nvmSize, cacheSize) \
-    static nvm3_CacheEntry_t name##_cache[cacheSize];                   \
-    static uint8_t           name##_nvm[nvmSize] SL_ATTRIBUTE_SECTION(STRINGIZE(name##_section))
+#define WEAVE_NVM3_DEFINE_SECTION_STATIC_DATA(name, nvmSize, cacheSize)                                                            \
+    static nvm3_CacheEntry_t name##_cache[cacheSize];                                                                              \
+    static uint8_t name##_nvm[nvmSize] SL_ATTRIBUTE_SECTION(STRINGIZE(name##_section))
 
 // Local version of SDK macro (allows Weave to configure the maximum nvm3 object size and headroom).
-#define WEAVE_NVM3_DEFINE_SECTION_INIT_DATA(name, maxObjectSize, repackHeadroom) \
-    static nvm3_Init_t name = {                                                  \
-        (nvm3_HalPtr_t)name##_nvm,                                               \
-        sizeof(name##_nvm),                                                      \
-        name##_cache,                                                            \
-        sizeof(name##_cache) / sizeof(nvm3_CacheEntry_t),                        \
-        maxObjectSize,                                                           \
-        repackHeadroom,                                                          \
-        &nvm3_halFlashHandle,                                                    \
+#define WEAVE_NVM3_DEFINE_SECTION_INIT_DATA(name, maxObjectSize, repackHeadroom)                                                   \
+    static nvm3_Init_t name = {                                                                                                    \
+        (nvm3_HalPtr_t) name##_nvm,                                                                                                \
+        sizeof(name##_nvm),                                                                                                        \
+        name##_cache,                                                                                                              \
+        sizeof(name##_cache) / sizeof(nvm3_CacheEntry_t),                                                                          \
+        maxObjectSize,                                                                                                             \
+        repackHeadroom,                                                                                                            \
+        &nvm3_halFlashHandle,                                                                                                      \
     }
 
 #define WEAVE_NVM3_REPACK_HEADROOM 64 // Threshold for User non-forced nvm3 flash repacking.
@@ -66,8 +66,7 @@ static nvm3_Handle_t handle;
 
 // Declare NVM3 data area and cache.
 
-WEAVE_NVM3_DEFINE_SECTION_STATIC_DATA(weaveNvm3,
-                                      WEAVE_DEVICE_CONFIG_NVM3_NUM_FLASH_PAGES_FOR_STORAGE *FLASH_PAGE_SIZE,
+WEAVE_NVM3_DEFINE_SECTION_STATIC_DATA(weaveNvm3, WEAVE_DEVICE_CONFIG_NVM3_NUM_FLASH_PAGES_FOR_STORAGE * FLASH_PAGE_SIZE,
                                       WEAVE_DEVICE_CONFIG_NVM3_MAX_NUM_OBJECTS);
 
 WEAVE_NVM3_DEFINE_SECTION_INIT_DATA(weaveNvm3, WEAVE_DEVICE_CONFIG_NVM3_MAX_OBJECT_SIZE, WEAVE_NVM3_REPACK_HEADROOM);
@@ -75,7 +74,7 @@ WEAVE_NVM3_DEFINE_SECTION_INIT_DATA(weaveNvm3, WEAVE_DEVICE_CONFIG_NVM3_MAX_OBJE
 WEAVE_ERROR EFR32Config::Init()
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     err = MapNvm3Error(nvm3_open(&handle, &weaveNvm3));
     SuccessOrExit(err);
@@ -90,13 +89,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::ReadConfigValue(Key key, bool &val)
+WEAVE_ERROR EFR32Config::ReadConfigValue(Key key, bool & val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    objectType;
-    size_t      dataLen;
-    bool        tmpVal;
+    bool needClose = false;
+    uint32_t objectType;
+    size_t dataLen;
+    bool tmpVal;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -121,13 +120,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::ReadConfigValue(Key key, uint32_t &val)
+WEAVE_ERROR EFR32Config::ReadConfigValue(Key key, uint32_t & val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    objectType;
-    size_t      dataLen;
-    uint32_t    tmpVal;
+    bool needClose = false;
+    uint32_t objectType;
+    size_t dataLen;
+    uint32_t tmpVal;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -152,13 +151,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::ReadConfigValue(Key key, uint64_t &val)
+WEAVE_ERROR EFR32Config::ReadConfigValue(Key key, uint64_t & val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    objectType;
-    size_t      dataLen;
-    uint64_t    tmpVal;
+    bool needClose = false;
+    uint32_t objectType;
+    size_t dataLen;
+    uint64_t tmpVal;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -183,12 +182,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::ReadConfigValueStr(Key key, char *buf, size_t bufSize, size_t &outLen)
+WEAVE_ERROR EFR32Config::ReadConfigValueStr(Key key, char * buf, size_t bufSize, size_t & outLen)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    objectType;
-    size_t      dataLen;
+    bool needClose = false;
+    uint32_t objectType;
+    size_t dataLen;
 
     outLen = 0;
 
@@ -241,12 +240,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::ReadConfigValueBin(Key key, uint8_t *buf, size_t bufSize, size_t &outLen)
+WEAVE_ERROR EFR32Config::ReadConfigValueBin(Key key, uint8_t * buf, size_t bufSize, size_t & outLen)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    objectType;
-    size_t      dataLen;
+    bool needClose = false;
+    uint32_t objectType;
+    size_t dataLen;
 
     outLen = 0;
 
@@ -281,11 +280,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::ReadConfigValueCounter(uint8_t counterIdx, uint32_t &val)
+WEAVE_ERROR EFR32Config::ReadConfigValueCounter(uint8_t counterIdx, uint32_t & val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    tmpVal;
+    bool needClose = false;
+    uint32_t tmpVal;
 
     Key key = kMinConfigKey_WeaveCounter + counterIdx;
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
@@ -310,7 +309,7 @@ exit:
 WEAVE_ERROR EFR32Config::WriteConfigValue(Key key, bool val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_ERROR_INVALID_ARGUMENT); // Verify key id.
 
@@ -332,7 +331,7 @@ exit:
 WEAVE_ERROR EFR32Config::WriteConfigValue(Key key, uint32_t val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -354,7 +353,7 @@ exit:
 WEAVE_ERROR EFR32Config::WriteConfigValue(Key key, uint64_t val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -373,15 +372,15 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::WriteConfigValueStr(Key key, const char *str)
+WEAVE_ERROR EFR32Config::WriteConfigValueStr(Key key, const char * str)
 {
     return WriteConfigValueStr(key, str, (str != NULL) ? strlen(str) : 0);
 }
 
-WEAVE_ERROR EFR32Config::WriteConfigValueStr(Key key, const char *str, size_t strLen)
+WEAVE_ERROR EFR32Config::WriteConfigValueStr(Key key, const char * str, size_t strLen)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -410,10 +409,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EFR32Config::WriteConfigValueBin(Key key, const uint8_t *data, size_t dataLen)
+WEAVE_ERROR EFR32Config::WriteConfigValueBin(Key key, const uint8_t * data, size_t dataLen)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
 
@@ -446,7 +445,7 @@ exit:
 WEAVE_ERROR EFR32Config::WriteConfigValueCounter(uint8_t counterIdx, uint32_t val)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     Key key = kMinConfigKey_WeaveCounter + counterIdx;
     VerifyOrExit(ValidConfigKey(key), err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND); // Verify key id.
@@ -469,7 +468,7 @@ exit:
 WEAVE_ERROR EFR32Config::ClearConfigValue(Key key)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
+    bool needClose = false;
 
     err = MapNvm3Error(nvm3_open(&handle, &weaveNvm3));
     SuccessOrExit(err);
@@ -490,9 +489,9 @@ exit:
 bool EFR32Config::ConfigValueExists(Key key)
 {
     WEAVE_ERROR err;
-    bool        needClose = false;
-    uint32_t    objectType;
-    size_t      dataLen;
+    bool needClose = false;
+    uint32_t objectType;
+    size_t dataLen;
 
     err = MapNvm3Error(nvm3_open(&handle, &weaveNvm3));
     SuccessOrExit(err);
@@ -518,7 +517,7 @@ WEAVE_ERROR EFR32Config::FactoryResetConfig(void)
 
     // Iterate over all the Weave Config nvm3 records and delete each one...
     err = ForEachRecord(kMinConfigKey_WeaveConfig, kMaxConfigKey_WeaveConfig, false,
-                        [](const Key &nvm3Key, const size_t &length) -> WEAVE_ERROR {
+                        [](const Key & nvm3Key, const size_t & length) -> WEAVE_ERROR {
                             WEAVE_ERROR err2;
 
                             err2 = ClearConfigValue(nvm3Key);
@@ -543,15 +542,9 @@ WEAVE_ERROR EFR32Config::MapNvm3Error(Ecode_t nvm3Res)
 
     switch (nvm3Res)
     {
-    case ECODE_NVM3_OK:
-        err = WEAVE_NO_ERROR;
-        break;
-    case ECODE_NVM3_ERR_KEY_NOT_FOUND:
-        err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND;
-        break;
-    default:
-        err = (nvm3Res & 0xFF) + WEAVE_DEVICE_CONFIG_EFR32_NVM3_ERROR_MIN;
-        break;
+    case ECODE_NVM3_OK: err = WEAVE_NO_ERROR; break;
+    case ECODE_NVM3_ERR_KEY_NOT_FOUND: err = WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND; break;
+    default: err = (nvm3Res & 0xFF) + WEAVE_DEVICE_CONFIG_EFR32_NVM3_ERROR_MIN; break;
     }
 
     return err;
@@ -566,9 +559,9 @@ WEAVE_ERROR EFR32Config::ForEachRecord(Key firstNvm3Key, Key lastNvm3Key, bool a
 
     for (Key nvm3Key = firstNvm3Key; nvm3Key <= lastNvm3Key; ++nvm3Key)
     {
-        Ecode_t  nvm3Res;
+        Ecode_t nvm3Res;
         uint32_t objectType;
-        size_t   dataLen;
+        size_t dataLen;
 
         // Open nvm3 handle for reading on each iteration.
         err = MapNvm3Error(nvm3_open(&handle, &weaveNvm3));
@@ -594,9 +587,7 @@ WEAVE_ERROR EFR32Config::ForEachRecord(Key firstNvm3Key, Key lastNvm3Key, bool a
                 err = funct(nvm3Key, dataLen);
             }
             break;
-        default:
-            err = MapNvm3Error(nvm3Res);
-            break;
+        default: err = MapNvm3Error(nvm3Res); break;
         }
 
         SuccessOrExit(err);

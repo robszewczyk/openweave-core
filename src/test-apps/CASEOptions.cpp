@@ -47,7 +47,7 @@ using namespace nl::Weave::Profiles::Security::CASE;
 
 CASEOptions gCASEOptions;
 
-WEAVE_ERROR LoadCertsFromServiceConfig(const uint8_t *serviceConfig, uint16_t serviceConfigLen, WeaveCertificateSet& certSet)
+WEAVE_ERROR LoadCertsFromServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen, WeaveCertificateSet & certSet)
 {
     WEAVE_ERROR err;
     nl::Weave::TLV::TLVReader reader;
@@ -72,7 +72,7 @@ exit:
     return err;
 }
 
-bool ParseCASEConfig(const char *str, uint32_t& output)
+bool ParseCASEConfig(const char * str, uint32_t & output)
 {
     uint32_t configNum;
 
@@ -81,31 +81,26 @@ bool ParseCASEConfig(const char *str, uint32_t& output)
 
     switch (configNum)
     {
-    case 1:
-        output = kCASEConfig_Config1;
-        return true;
-    case 2:
-        output = kCASEConfig_Config2;
-        return true;
-    default:
-        return false;
+    case 1: output = kCASEConfig_Config1; return true;
+    case 2: output = kCASEConfig_Config2; return true;
+    default: return false;
     }
 }
 
 // Parse a sequence of zero or more unsigned integers corresponding to a list
 // of allowed CASE configurations.  Integer values must be separated by either
 // a comma or a space.
-bool ParseAllowedCASEConfigs(const char *strConst, uint8_t& output)
+bool ParseAllowedCASEConfigs(const char * strConst, uint8_t & output)
 {
-    bool res = true;
-    char *str = strdup(strConst);
+    bool res   = true;
+    char * str = strdup(strConst);
     uint32_t configNum;
 
     output = 0;
 
-    for (char *p = str; p != NULL; )
+    for (char * p = str; p != NULL; )
     {
-        char *sep = strchr(p, ',');
+        char * sep = strchr(p, ',');
         if (sep == NULL)
             sep = strchr(p, ' ');
 
@@ -138,18 +133,17 @@ bool ParseAllowedCASEConfigs(const char *strConst, uint8_t& output)
 
 CASEOptions::CASEOptions()
 {
-    static OptionDef optionDefs[] =
-    {
+    static OptionDef optionDefs[] = {
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-        { "node-cert",              kArgumentRequired,      kToolCommonOpt_NodeCert             },
-        { "node-key",               kArgumentRequired,      kToolCommonOpt_NodeKey              },
-        { "ca-cert",                kArgumentRequired,      kToolCommonOpt_CACert               },
-        { "no-ca-cert",             kNoArgument,            kToolCommonOpt_NoCACert             },
-        { "case-config",            kArgumentRequired,      kToolCommonOpt_CASEConfig           },
-        { "allowed-case-configs",   kArgumentRequired,      kToolCommonOpt_AllowedCASEConfigs   },
-        { "debug-case",             kNoArgument,            kToolCommonOpt_DebugCASE            },
+        { "node-cert", kArgumentRequired, kToolCommonOpt_NodeCert },
+        { "node-key", kArgumentRequired, kToolCommonOpt_NodeKey },
+        { "ca-cert", kArgumentRequired, kToolCommonOpt_CACert },
+        { "no-ca-cert", kNoArgument, kToolCommonOpt_NoCACert },
+        { "case-config", kArgumentRequired, kToolCommonOpt_CASEConfig },
+        { "allowed-case-configs", kArgumentRequired, kToolCommonOpt_AllowedCASEConfigs },
+        { "debug-case", kNoArgument, kToolCommonOpt_DebugCASE },
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-        { "case-use-known-key",     kNoArgument,            kToolCommonOpt_CASEUseKnownECDHKey  },
+        { "case-use-known-key", kNoArgument, kToolCommonOpt_CASEUseKnownECDHKey },
 #endif // WEAVE_CONFIG_SECURITY_TEST_MODE
 #endif // WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
         { }
@@ -197,44 +191,44 @@ CASEOptions::CASEOptions()
         "";
 
     // Defaults
-    InitiatorCASEConfig = kCASEConfig_NotSpecified;
-    AllowedCASEConfigs = 0; // 0 causes code to use default value provided by WeaveSecurityManager
-    NodeCert = NULL;
-    NodeCertLength = 0;
-    NodePrivateKey = NULL;
-    NodePrivateKeyLength = 0;
-    NodeIntermediateCert = NULL;
+    InitiatorCASEConfig        = kCASEConfig_NotSpecified;
+    AllowedCASEConfigs         = 0; // 0 causes code to use default value provided by WeaveSecurityManager
+    NodeCert                   = NULL;
+    NodeCertLength             = 0;
+    NodePrivateKey             = NULL;
+    NodePrivateKeyLength       = 0;
+    NodeIntermediateCert       = NULL;
     NodeIntermediateCertLength = 0;
-    ServiceConfig = NULL;
-    ServiceConfigLength = 0;
-    NodePayload = NULL;
-    NodePayloadLength = 0;
-    Debug = false;
+    ServiceConfig              = NULL;
+    ServiceConfigLength        = 0;
+    NodePayload                = NULL;
+    NodePayloadLength          = 0;
+    Debug                      = false;
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
     UseKnownECDHKey = false;
 #endif
 }
 
-bool CASEOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool CASEOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
 
     case kToolCommonOpt_NodeCert:
-        if (!ReadCertFile(arg, (uint8_t *&)NodeCert, NodeCertLength))
+        if (!ReadCertFile(arg, (uint8_t *&) NodeCert, NodeCertLength))
             return false;
         break;
     case kToolCommonOpt_NodeKey:
-        if (!ReadPrivateKeyFile(arg, (uint8_t *&)NodePrivateKey, NodePrivateKeyLength))
+        if (!ReadPrivateKeyFile(arg, (uint8_t *&) NodePrivateKey, NodePrivateKeyLength))
             return false;
         break;
     case kToolCommonOpt_CACert:
-        if (!ReadCertFile(arg, (uint8_t *&)NodeIntermediateCert, NodeIntermediateCertLength))
+        if (!ReadCertFile(arg, (uint8_t *&) NodeIntermediateCert, NodeIntermediateCertLength))
             return false;
         break;
     case kToolCommonOpt_NoCACert:
-        NodeIntermediateCert = NULL;
+        NodeIntermediateCert       = NULL;
         NodeIntermediateCertLength = 0;
         break;
     case kToolCommonOpt_CASEConfig:
@@ -251,30 +245,24 @@ bool CASEOptions::HandleOption(const char *progName, OptionSet *optSet, int id, 
             return false;
         }
         break;
-    case kToolCommonOpt_DebugCASE:
-        Debug = true;
-        break;
+    case kToolCommonOpt_DebugCASE: Debug = true; break;
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-    case kToolCommonOpt_CASEUseKnownECDHKey:
-        UseKnownECDHKey = true;
-        break;
-#endif //WEAVE_CONFIG_SECURITY_TEST_MODE
+    case kToolCommonOpt_CASEUseKnownECDHKey: UseKnownECDHKey = true; break;
+#endif // WEAVE_CONFIG_SECURITY_TEST_MODE
 
 #endif // WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
 
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool CASEOptions::ReadCertFile(const char *fileName, uint8_t *& certBuf, uint16_t& certLen)
+bool CASEOptions::ReadCertFile(const char * fileName, uint8_t *& certBuf, uint16_t & certLen)
 {
     uint32_t len;
 
-    static const char *certB64Prefix = "1QAABAAB";
+    static const char * certB64Prefix    = "1QAABAAB";
     static const size_t certB64PrefixLen = sizeof(certB64Prefix) - 1;
 
     // Read the specified file into a malloced buffer.
@@ -285,7 +273,7 @@ bool CASEOptions::ReadCertFile(const char *fileName, uint8_t *& certBuf, uint16_
     // If the certificate is in base-64 format, convert it to raw TLV.
     if (len > certB64PrefixLen && memcmp(certBuf, certB64Prefix, certB64PrefixLen) == 0)
     {
-        len = nl::Base64Decode((const char *)certBuf, len, (uint8_t *)certBuf);
+        len = nl::Base64Decode((const char *) certBuf, len, (uint8_t *) certBuf);
         if (len == UINT16_MAX)
         {
             printf("Invalid certificate format: %s\n", fileName);
@@ -295,16 +283,16 @@ bool CASEOptions::ReadCertFile(const char *fileName, uint8_t *& certBuf, uint16_
         }
     }
 
-    certLen = (uint16_t)len;
+    certLen = (uint16_t) len;
 
     return true;
 }
 
-bool CASEOptions::ReadPrivateKeyFile(const char *fileName, uint8_t *& keyBuf, uint16_t& keyLen)
+bool CASEOptions::ReadPrivateKeyFile(const char * fileName, uint8_t *& keyBuf, uint16_t & keyLen)
 {
     uint32_t len;
 
-    static const char *keyB64Prefix = "1QAABAAC";
+    static const char * keyB64Prefix    = "1QAABAAC";
     static const size_t keyB64PrefixLen = sizeof(keyB64Prefix) - 1;
 
     // Read the specified file into a malloced buffer.
@@ -315,7 +303,7 @@ bool CASEOptions::ReadPrivateKeyFile(const char *fileName, uint8_t *& keyBuf, ui
     // If the private key is in base-64 format, convert it to raw TLV.
     if (len > keyB64PrefixLen && memcmp(keyBuf, keyB64Prefix, keyB64PrefixLen) == 0)
     {
-        len = nl::Base64Decode((const char *)keyBuf, len, (uint8_t *)keyBuf);
+        len = nl::Base64Decode((const char *) keyBuf, len, (uint8_t *) keyBuf);
         if (len == UINT16_MAX)
         {
             printf("Invalid private key format: %s\n", fileName);
@@ -325,14 +313,14 @@ bool CASEOptions::ReadPrivateKeyFile(const char *fileName, uint8_t *& keyBuf, ui
         }
     }
 
-    keyLen = (uint16_t)len;
+    keyLen = (uint16_t) len;
 
     return true;
 }
 
 WEAVE_ERROR CASEOptions::GetNodeCert(const uint8_t *& nodeCert, uint16_t & nodeCertLen)
 {
-    nodeCert = NodeCert;
+    nodeCert    = NodeCert;
     nodeCertLen = NodeCertLength;
 
     if (nodeCert == NULL || nodeCertLen == 0)
@@ -346,17 +334,17 @@ WEAVE_ERROR CASEOptions::GetNodeCert(const uint8_t *& nodeCert, uint16_t & nodeC
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR CASEOptions::GetNodePrivateKey(const uint8_t *& weavePrivKey, uint16_t& weavePrivKeyLen)
+WEAVE_ERROR CASEOptions::GetNodePrivateKey(const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen)
 {
-    weavePrivKey = NodePrivateKey;
+    weavePrivKey    = NodePrivateKey;
     weavePrivKeyLen = NodePrivateKeyLength;
 
     if (weavePrivKey == NULL || weavePrivKeyLen == 0)
     {
         if (!GetTestNodePrivateKey(FabricState.LocalNodeId, weavePrivKey, weavePrivKeyLen))
         {
-        printf("ERROR: Node private key not configured\n");
-        return WEAVE_ERROR_KEY_NOT_FOUND;
+            printf("ERROR: Node private key not configured\n");
+            return WEAVE_ERROR_KEY_NOT_FOUND;
         }
     }
     return WEAVE_NO_ERROR;
@@ -370,11 +358,11 @@ WEAVE_ERROR CASEOptions::EncodeNodeCertInfo(const BeginSessionContext & msgCtx, 
     const uint8_t * nodeCert;
     uint16_t nodeCertLen;
     const uint8_t * intermediateCert = NodeIntermediateCert;
-    uint16_t intermediateCertLen = NodeIntermediateCertLength;
+    uint16_t intermediateCertLen     = NodeIntermediateCertLength;
 
     if (intermediateCert == NULL || intermediateCertLen == 0)
     {
-        intermediateCert = nl::NestCerts::Development::DeviceCA::Cert;
+        intermediateCert    = nl::NestCerts::Development::DeviceCA::Cert;
         intermediateCertLen = nl::NestCerts::Development::DeviceCA::CertLength;
     }
 
@@ -388,8 +376,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR CASEOptions::GenerateNodeSignature(const BeginSessionContext & msgCtx,
-        const uint8_t * msgHash, uint8_t msgHashLen, TLVWriter & writer, uint64_t tag)
+WEAVE_ERROR CASEOptions::GenerateNodeSignature(const BeginSessionContext & msgCtx, const uint8_t * msgHash, uint8_t msgHashLen,
+                                               TLVWriter & writer, uint64_t tag)
 {
     WEAVE_ERROR err;
     const uint8_t * nodePrivKey;
@@ -405,26 +393,25 @@ exit:
     return err;
 }
 
-WEAVE_ERROR CASEOptions::EncodeNodePayload(const BeginSessionContext & msgCtx,
-        uint8_t * payloadBuf, uint16_t payloadBufSize, uint16_t & payloadLen)
+WEAVE_ERROR CASEOptions::EncodeNodePayload(const BeginSessionContext & msgCtx, uint8_t * payloadBuf, uint16_t payloadBufSize,
+                                           uint16_t & payloadLen)
 {
     return GetNodePayload(msgCtx.IsInitiator(), payloadBuf, payloadBufSize, payloadLen);
 }
 
 WEAVE_ERROR CASEOptions::BeginValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-        WeaveCertificateSet & certSet)
+                                         WeaveCertificateSet & certSet)
 {
     return BeginCertValidation(msgCtx.IsInitiator(), certSet, validCtx);
 }
 
 WEAVE_ERROR CASEOptions::HandleValidationResult(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-        WeaveCertificateSet & certSet, WEAVE_ERROR & validRes)
+                                                WeaveCertificateSet & certSet, WEAVE_ERROR & validRes)
 {
     return HandleCertValidationResult(msgCtx.IsInitiator(), validRes, validCtx.SigningCert, msgCtx.PeerNodeId, certSet, validCtx);
 }
 
-void CASEOptions::EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-        WeaveCertificateSet & certSet)
+void CASEOptions::EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx, WeaveCertificateSet & certSet)
 {
     EndCertValidation(certSet, validCtx);
 }
@@ -432,17 +419,17 @@ void CASEOptions::EndValidation(const BeginSessionContext & msgCtx, ValidationCo
 #else // !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
 // Get the CASE Certificate Information structure for the local node.
-WEAVE_ERROR CASEOptions::GetNodeCertInfo(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen)
+WEAVE_ERROR CASEOptions::GetNodeCertInfo(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen)
 {
     WEAVE_ERROR err;
-    const uint8_t *nodeCert;
+    const uint8_t * nodeCert;
     uint16_t nodeCertLen;
     const uint8_t * intCert = NodeIntermediateCert;
-    uint16_t intCertLen = NodeIntermediateCertLength;
+    uint16_t intCertLen     = NodeIntermediateCertLength;
 
     if (intCert == NULL || intCertLen == 0)
     {
-        intCert = nl::NestCerts::Development::DeviceCA::Cert;
+        intCert    = nl::NestCerts::Development::DeviceCA::Cert;
         intCertLen = nl::NestCerts::Development::DeviceCA::CertLength;
     }
 
@@ -457,13 +444,13 @@ exit:
 }
 
 // Get the local node's private key.
-WEAVE_ERROR CASEOptions::GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t& weavePrivKeyLen)
+WEAVE_ERROR CASEOptions::GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen)
 {
     return GetNodePrivateKey(weavePrivKey, weavePrivKeyLen);
 }
 
 // Called when the CASE engine is done with the buffer returned by GetNodePrivateKey().
-WEAVE_ERROR CASEOptions::ReleaseNodePrivateKey(const uint8_t *weavePrivKey)
+WEAVE_ERROR CASEOptions::ReleaseNodePrivateKey(const uint8_t * weavePrivKey)
 {
     // nothing to do
     return WEAVE_NO_ERROR;
@@ -471,7 +458,7 @@ WEAVE_ERROR CASEOptions::ReleaseNodePrivateKey(const uint8_t *weavePrivKey)
 
 #endif // WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
-WEAVE_ERROR CASEOptions::GetNodePayload(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& payloadLen)
+WEAVE_ERROR CASEOptions::GetNodePayload(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & payloadLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -502,10 +489,10 @@ exit:
 
 // Prepare the supplied certificate set and validation context for use in validating the certificate of a peer.
 // This method is responsible for loading the trust anchors into the certificate set.
-WEAVE_ERROR CASEOptions::BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR CASEOptions::BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext)
 {
     WEAVE_ERROR err;
-    WeaveCertificateData *cert;
+    WeaveCertificateData * cert;
 
     err = certSet.Init(10, 1024);
     SuccessOrExit(err);
@@ -520,8 +507,7 @@ WEAVE_ERROR CASEOptions::BeginCertValidation(bool isInitiator, WeaveCertificateS
         for (uint8_t i = 0; i < certSet.CertCount; i++)
         {
             cert = &certSet.Certs[i];
-            if ((cert->CertFlags & kCertFlag_IsTrusted) != 0 &&
-                cert->CertType == kCertType_General &&
+            if ((cert->CertFlags & kCertFlag_IsTrusted) != 0 && cert->CertType == kCertType_General &&
                 cert->SubjectDN.AttrOID == ASN1::kOID_AttributeType_CommonName)
             {
                 cert->CertType = kCertType_AccessToken;
@@ -539,7 +525,7 @@ WEAVE_ERROR CASEOptions::BeginCertValidation(bool isInitiator, WeaveCertificateS
         SuccessOrExit(err);
         cert->CertFlags |= kCertFlag_IsTrusted;
 
-        const uint8_t *caCert;
+        const uint8_t * caCert;
         uint16_t caCertLen;
 
         GetTestCACert(TestMockRoot_CAId, caCert, caCertLen);
@@ -548,10 +534,12 @@ WEAVE_ERROR CASEOptions::BeginCertValidation(bool isInitiator, WeaveCertificateS
         SuccessOrExit(err);
         cert->CertFlags |= kCertFlag_IsTrusted;
 
-        err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+        err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength,
+                               kDecodeFlag_GenerateTBSHash, cert);
         SuccessOrExit(err);
 
-        err = certSet.LoadCert(nl::NestCerts::Production::DeviceCA::Cert, nl::NestCerts::Production::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+        err = certSet.LoadCert(nl::NestCerts::Production::DeviceCA::Cert, nl::NestCerts::Production::DeviceCA::CertLength,
+                               kDecodeFlag_GenerateTBSHash, cert);
         SuccessOrExit(err);
 
         GetTestCACert(TestMockServiceEndpointCA_CAId, caCert, caCertLen);
@@ -561,13 +549,13 @@ WEAVE_ERROR CASEOptions::BeginCertValidation(bool isInitiator, WeaveCertificateS
     }
 
     memset(&validContext, 0, sizeof(validContext));
-    validContext.EffectiveTime = SecondsSinceEpochToPackedCertTime(time(NULL));
-    validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+    validContext.EffectiveTime       = SecondsSinceEpochToPackedCertTime(time(NULL));
+    validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
     validContext.RequiredKeyPurposes = (isInitiator) ? kKeyPurposeFlag_ServerAuth : kKeyPurposeFlag_ClientAuth;
 
     if (Debug)
     {
-        validContext.CertValidationResults = (WEAVE_ERROR *)malloc(sizeof(WEAVE_ERROR) * certSet.MaxCerts);
+        validContext.CertValidationResults    = (WEAVE_ERROR *) malloc(sizeof(WEAVE_ERROR) * certSet.MaxCerts);
         validContext.CertValidationResultsLen = certSet.MaxCerts;
     }
 
@@ -576,8 +564,9 @@ exit:
 }
 
 // Called when peer certificate validation is complete.
-WEAVE_ERROR CASEOptions::HandleCertValidationResult(bool isInitiator, WEAVE_ERROR& validRes, WeaveCertificateData *peerCert,
-        uint64_t peerNodeId, WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR CASEOptions::HandleCertValidationResult(bool isInitiator, WEAVE_ERROR & validRes, WeaveCertificateData * peerCert,
+                                                    uint64_t peerNodeId, WeaveCertificateSet & certSet,
+                                                    ValidationContext & validContext)
 {
     // If the peer's certificate is otherwise valid...
     if (validRes == WEAVE_NO_ERROR)
@@ -640,7 +629,7 @@ WEAVE_ERROR CASEOptions::HandleCertValidationResult(bool isInitiator, WEAVE_ERRO
             printf("Certificate validation failed: %s\n", nl::ErrorStr(validRes));
 
         if (peerCert != NULL)
-            printf("Peer certificate: %d\n", (int)(peerCert - certSet.Certs));
+            printf("Peer certificate: %d\n", (int) (peerCert - certSet.Certs));
 
         printf("\nValidation results:\n\n");
         PrintCertValidationResults(stdout, certSet, validContext, 2);
@@ -650,7 +639,7 @@ WEAVE_ERROR CASEOptions::HandleCertValidationResult(bool isInitiator, WEAVE_ERRO
 }
 
 // Called when peer certificate validation is complete.
-WEAVE_ERROR CASEOptions::EndCertValidation(WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR CASEOptions::EndCertValidation(WeaveCertificateSet & certSet, ValidationContext & validContext)
 {
     if (Debug)
         free(validContext.CertValidationResults);

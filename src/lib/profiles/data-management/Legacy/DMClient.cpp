@@ -98,21 +98,21 @@ void DMClient::Clear(void)
 {
     int i;
 
-    for (i = 0; i<kViewPoolSize; i++)
+    for (i = 0; i < kViewPoolSize; i++)
         mViewPool[i].Free();
     SYSTEM_STATS_RESET(nl::Weave::System::Stats::kWDMLegacy_NumViews);
 
-    for (i = 0; i<kUpdatePoolSize; i++)
+    for (i = 0; i < kUpdatePoolSize; i++)
         mUpdatePool[i].Free();
     SYSTEM_STATS_RESET(nl::Weave::System::Stats::kWDMLegacy_NumUpdates);
 
 #if WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
 
-    for (i = 0; i<kSubscribePoolSize; i++)
+    for (i = 0; i < kSubscribePoolSize; i++)
         mSubscribePool[i].Free();
     SYSTEM_STATS_RESET(nl::Weave::System::Stats::kWDMLegacy_NumSubscribes);
 
-    for (i = 0; i<kCancelSubscriptionPoolSize; i++)
+    for (i = 0; i < kCancelSubscriptionPoolSize; i++)
         mCancelSubscriptionPool[i].Free();
     SYSTEM_STATS_RESET(nl::Weave::System::Stats::kWDMLegacy_NumCancels);
 
@@ -159,7 +159,7 @@ void DMClient::Finalize(void)
  *                                  giving a reason for the failure.
  */
 
-void DMClient::IncompleteIndication(Binding *aBinding, StatusReport &aReport)
+void DMClient::IncompleteIndication(Binding * aBinding, StatusReport & aReport)
 {
     ProtocolEngine::IncompleteIndication(aBinding, aReport);
 
@@ -216,11 +216,12 @@ void DMClient::IncompleteIndication(Binding *aBinding, StatusReport &aReport)
  *  initialize or start the transaction.
  */
 
-WEAVE_ERROR DMClient::ViewRequest(const uint64_t &aDestinationId, ReferencedTLVData &aPathList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::ViewRequest(const uint64_t & aDestinationId, ReferencedTLVData & aPathList, uint16_t aTxnId,
+                                  uint32_t aTimeout)
 {
-    WEAVE_ERROR err = WEAVE_ERROR_INCORRECT_STATE;
-    Binding *binding = GetBinding(aDestinationId);
-    View *view;
+    WEAVE_ERROR err   = WEAVE_ERROR_INCORRECT_STATE;
+    Binding * binding = GetBinding(aDestinationId);
+    View * view;
 
     if (binding)
     {
@@ -274,10 +275,10 @@ exit:
  *  initialize or start the transaction.
  */
 
-WEAVE_ERROR DMClient::ViewRequest(ReferencedTLVData &aPathList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::ViewRequest(ReferencedTLVData & aPathList, uint16_t aTxnId, uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
-    View *view = NewView();
+    View * view     = NewView();
 
     if (view)
     {
@@ -335,11 +336,11 @@ exit:
  *  @return true if a match is found, false otherwise.
  */
 
-bool DMClient::HasSubscription(const TopicIdentifier &aTopicId, const uint64_t &aPublisherId)
+bool DMClient::HasSubscription(const TopicIdentifier & aTopicId, const uint64_t & aPublisherId)
 {
     bool retVal = false;
 
-    retVal =  sNotifier.HasSubscription(aTopicId, aPublisherId, this);
+    retVal = sNotifier.HasSubscription(aTopicId, aPublisherId, this);
 
     return retVal;
 }
@@ -384,11 +385,12 @@ bool DMClient::HasSubscription(const TopicIdentifier &aTopicId, const uint64_t &
  *  #WEAVE_ERROR reflecting a failure to install the subscription.
  */
 
-WEAVE_ERROR DMClient::BeginSubscription(const TopicIdentifier &aAssignedId, const TopicIdentifier &aRequestedId, const uint64_t &aPublisherId)
+WEAVE_ERROR DMClient::BeginSubscription(const TopicIdentifier & aAssignedId, const TopicIdentifier & aRequestedId,
+                                        const uint64_t & aPublisherId)
 {
     WEAVE_ERROR err;
 
-    err =  sNotifier.InstallSubscription(aAssignedId, aRequestedId, aPublisherId, this);
+    err = sNotifier.InstallSubscription(aAssignedId, aRequestedId, aPublisherId, this);
 
     return err;
 }
@@ -406,7 +408,8 @@ WEAVE_ERROR DMClient::BeginSubscription(const TopicIdentifier &aAssignedId, cons
  *    subscription that has been established using SubscribeRequest(),
  *    use CancelSubscriptionRequest().
  *
- *  @sa CancelSubscriptionRequest(const uint64_t &aDestinationId, const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t aTimeout)
+ *  @sa CancelSubscriptionRequest(const uint64_t &aDestinationId, const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t
+ * aTimeout)
  *
  *  @param [in]     aTopicId            A reference to a topic ID
  *                                      associated with the
@@ -421,14 +424,13 @@ WEAVE_ERROR DMClient::BeginSubscription(const TopicIdentifier &aAssignedId, cons
  *  #WEAVE_ERROR reflecting a failure to remove the subscription.
  */
 
-WEAVE_ERROR DMClient::EndSubscription(const TopicIdentifier &aTopicId, const uint64_t &aPublisherId)
+WEAVE_ERROR DMClient::EndSubscription(const TopicIdentifier & aTopicId, const uint64_t & aPublisherId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     sNotifier.RemoveSubscription(aTopicId, aPublisherId, this);
 
     return err;
-
 }
 
 /**
@@ -467,12 +469,13 @@ WEAVE_ERROR DMClient::EndSubscription(const TopicIdentifier &aTopicId, const uin
  *  initialize or start the transaction.
  */
 
-WEAVE_ERROR DMClient::SubscribeRequest(const uint64_t &aDestinationId, const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::SubscribeRequest(const uint64_t & aDestinationId, const TopicIdentifier & aTopicId, uint16_t aTxnId,
+                                       uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Binding *binding = GetBinding(aDestinationId);
-    Subscribe *subscribe;
+    Binding * binding = GetBinding(aDestinationId);
+    Subscribe * subscribe;
 
     if (binding)
     {
@@ -532,11 +535,11 @@ exit:
  *  initialize or start the transaction.
  */
 
-WEAVE_ERROR DMClient::SubscribeRequest(const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::SubscribeRequest(const TopicIdentifier & aTopicId, uint16_t aTxnId, uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Subscribe *subscribe = NewSubscribe();
+    Subscribe * subscribe = NewSubscribe();
 
     if (subscribe)
     {
@@ -593,12 +596,13 @@ exit:
  *  initialize or start the transaction.
  */
 
-WEAVE_ERROR DMClient::SubscribeRequest(const uint64_t &aDestinationId, ReferencedTLVData &aPathList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::SubscribeRequest(const uint64_t & aDestinationId, ReferencedTLVData & aPathList, uint16_t aTxnId,
+                                       uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Binding *binding = GetBinding(aDestinationId);
-    Subscribe *subscribe;
+    Binding * binding = GetBinding(aDestinationId);
+    Subscribe * subscribe;
 
     if (binding)
     {
@@ -660,11 +664,11 @@ exit:
  *  initialize or start the transaction.
  */
 
-WEAVE_ERROR DMClient::SubscribeRequest(ReferencedTLVData &aPathList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::SubscribeRequest(ReferencedTLVData & aPathList, uint16_t aTxnId, uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Subscribe *subscribe = NewSubscribe();
+    Subscribe * subscribe = NewSubscribe();
 
     if (subscribe)
     {
@@ -723,10 +727,11 @@ exit:
  *  a failure to cancel the subscription.
  */
 
-WEAVE_ERROR DMClient::CancelSubscriptionRequest(const uint64_t &aDestinationId, const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::CancelSubscriptionRequest(const uint64_t & aDestinationId, const TopicIdentifier & aTopicId, uint16_t aTxnId,
+                                                uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    Binding *binding;
+    Binding * binding;
 
     if (HasSubscription(aTopicId, aDestinationId))
     {
@@ -745,7 +750,7 @@ WEAVE_ERROR DMClient::CancelSubscriptionRequest(const uint64_t &aDestinationId, 
 
         if (binding)
         {
-            CancelSubscription *cancel = NewCancelSubscription();
+            CancelSubscription * cancel = NewCancelSubscription();
 
             if (cancel)
             {
@@ -821,13 +826,13 @@ WEAVE_ERROR DMClient::CancelSubscriptionRequest(const uint64_t &aDestinationId, 
  *  a failure to cancel the subscription.
  */
 
-WEAVE_ERROR DMClient::CancelSubscriptionRequest(const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::CancelSubscriptionRequest(const TopicIdentifier & aTopicId, uint16_t aTxnId, uint32_t aTimeout)
 {
-    WEAVE_ERROR err = WEAVE_ERROR_INCORRECT_STATE;
-    uint64_t &defaultPeer = mBindingTable[kDefaultBindingTableIndex].mPeerNodeId;
+    WEAVE_ERROR err        = WEAVE_ERROR_INCORRECT_STATE;
+    uint64_t & defaultPeer = mBindingTable[kDefaultBindingTableIndex].mPeerNodeId;
 
     if (defaultPeer != kNodeIdNotSpecified)
-        err =  CancelSubscriptionRequest(defaultPeer, aTopicId, aTxnId, aTimeout);
+        err = CancelSubscriptionRequest(defaultPeer, aTopicId, aTxnId, aTimeout);
 
     return err;
 }
@@ -884,11 +889,12 @@ WEAVE_ERROR DMClient::CancelSubscriptionRequest(const TopicIdentifier &aTopicId,
  *  #WEAVE_ERROR reflecting an update failure.
  */
 
-WEAVE_ERROR DMClient::UpdateRequest(const uint64_t &aDestinationId, ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::UpdateRequest(const uint64_t & aDestinationId, ReferencedTLVData & aDataList, uint16_t aTxnId,
+                                    uint32_t aTimeout)
 {
-    WEAVE_ERROR err = WEAVE_ERROR_INCORRECT_STATE;
-    Binding *binding = GetBinding(aDestinationId);
-    Update *update;
+    WEAVE_ERROR err   = WEAVE_ERROR_INCORRECT_STATE;
+    Binding * binding = GetBinding(aDestinationId);
+    Update * update;
 
     if (binding)
     {
@@ -956,11 +962,10 @@ exit:
  *  #WEAVE_ERROR reflecting an update failure.
  */
 
-WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout)
 {
     return UpdateRequest(aDataList, aTxnId, aTimeout, false);
 }
-
 
 /**
  *  @brief
@@ -1000,10 +1005,10 @@ WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData &aDataList, uint16_t aTxnI
  *  #WEAVE_ERROR reflecting an update failure.
  */
 
-WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout, bool aUseLegacyMsgType)
+WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout, bool aUseLegacyMsgType)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
-    Update *update = NewUpdate();
+    Update * update = NewUpdate();
 
     if (update)
     {
@@ -1054,10 +1059,10 @@ exit:
  *  #WEAVE_ERROR reflecting an update failure.
  */
 
-WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::UpdateRequest(ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
-    Update *update = NewUpdate();
+    Update * update = NewUpdate();
 
     if (update)
     {
@@ -1105,37 +1110,36 @@ WEAVE_ERROR DMClient::CancelTransactionRequest(uint16_t aTxnId, WEAVE_ERROR aErr
 
     if (aTxnId == kTransactionIdNotSpecified)
     {
-        for (i = 0; i<kViewPoolSize; i++)
+        for (i = 0; i < kViewPoolSize; i++)
             mViewPool[i].Finalize();
 
-        for (i = 0; i<kUpdatePoolSize; i++)
+        for (i = 0; i < kUpdatePoolSize; i++)
             mUpdatePool[i].Finalize();
 
 #if WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
 
-        for (i = 0; i<kSubscribePoolSize; i++)
+        for (i = 0; i < kSubscribePoolSize; i++)
             mSubscribePool[i].Finalize();
 
-        for (i = 0; i<kCancelSubscriptionPoolSize; i++)
+        for (i = 0; i < kCancelSubscriptionPoolSize; i++)
             mCancelSubscriptionPool[i].Finalize();
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
-
     }
 
     else
     {
-        for (i = 0; i<kViewPoolSize; i++)
+        for (i = 0; i < kViewPoolSize; i++)
         {
-            View &v = mViewPool[i];
+            View & v = mViewPool[i];
 
             if (!v.IsFree())
                 VerifyOrExit(v.mTxnId != aTxnId, err = v.Finalize());
         }
 
-        for (i = 0; i<kUpdatePoolSize; i++)
+        for (i = 0; i < kUpdatePoolSize; i++)
         {
-            Update &u = mUpdatePool[i];
+            Update & u = mUpdatePool[i];
 
             if (!u.IsFree())
                 VerifyOrExit(u.mTxnId != aTxnId, err = u.Finalize());
@@ -1143,24 +1147,23 @@ WEAVE_ERROR DMClient::CancelTransactionRequest(uint16_t aTxnId, WEAVE_ERROR aErr
 
 #if WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
 
-        for (i = 0; i<kSubscribePoolSize; i++)
+        for (i = 0; i < kSubscribePoolSize; i++)
         {
-            Subscribe &s = mSubscribePool[i];
+            Subscribe & s = mSubscribePool[i];
 
             if (!s.IsFree())
                 VerifyOrExit(s.mTxnId != aTxnId, err = s.Finalize());
         }
 
-        for (i = 0; i<kCancelSubscriptionPoolSize; i++)
+        for (i = 0; i < kCancelSubscriptionPoolSize; i++)
         {
-            CancelSubscription &c = mCancelSubscriptionPool[i];
+            CancelSubscription & c = mCancelSubscriptionPool[i];
 
             if (!c.IsFree())
                 VerifyOrExit(c.mTxnId != aTxnId, err = c.Finalize());
         }
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
-
     }
 
 exit:
@@ -1172,7 +1175,7 @@ exit:
  * public interface to WDM and so are declared protected in DMClient.h
  */
 
-WEAVE_ERROR DMClient::View::Init(DMClient *aClient, ReferencedTLVData &aPathList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::View::Init(DMClient * aClient, ReferencedTLVData & aPathList, uint16_t aTxnId, uint32_t aTimeout)
 {
     DMTransaction::Init(aClient, aTxnId, aTimeout);
 
@@ -1190,7 +1193,7 @@ void DMClient::View::Free(void)
     SYSTEM_STATS_DECREMENT(nl::Weave::System::Stats::kWDMLegacy_NumViews);
 }
 
-WEAVE_ERROR DMClient::View::SendRequest(PacketBuffer *aBuffer, uint16_t aSendFlags)
+WEAVE_ERROR DMClient::View::SendRequest(PacketBuffer * aBuffer, uint16_t aSendFlags)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1199,7 +1202,7 @@ WEAVE_ERROR DMClient::View::SendRequest(PacketBuffer *aBuffer, uint16_t aSendFla
     err = mPathList.pack(aBuffer);
     SuccessOrExit(err);
 
-    err = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_ViewRequest, aBuffer, aSendFlags);
+    err     = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_ViewRequest, aBuffer, aSendFlags);
     aBuffer = NULL;
 
 exit:
@@ -1219,23 +1222,23 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DMClient::View::OnStatusReceived(const uint64_t &aResponderId, StatusReport &aStatus)
+WEAVE_ERROR DMClient::View::OnStatusReceived(const uint64_t & aResponderId, StatusReport & aStatus)
 {
-    DMClient *client = static_cast<DMClient *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMClient * client = static_cast<DMClient *>(mEngine);
+    uint16_t txnId    = mTxnId;
 
     Finalize();
 
     return client->ViewConfirm(aResponderId, aStatus, txnId);
 }
 
-WEAVE_ERROR DMClient::View::OnResponseReceived(const uint64_t &aResponderId, uint8_t aMsgType, PacketBuffer *aMsg)
+WEAVE_ERROR DMClient::View::OnResponseReceived(const uint64_t & aResponderId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
     WEAVE_ERROR appErr = WEAVE_NO_ERROR;
 
-    DMClient *client = static_cast<DMClient *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMClient * client = static_cast<DMClient *>(mEngine);
+    uint16_t txnId    = mTxnId;
 
     ReferencedTLVData dataList;
 
@@ -1258,10 +1261,10 @@ exit:
     return err;
 }
 
-DMClient::View *DMClient::NewView(void)
+DMClient::View * DMClient::NewView(void)
 {
     int i;
-    View *result = NULL;
+    View * result = NULL;
 
     for (i = 0; i < kViewPoolSize; i++)
     {
@@ -1279,7 +1282,7 @@ DMClient::View *DMClient::NewView(void)
 
 #if WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
 
-WEAVE_ERROR DMClient::Subscribe::Init(DMClient *aClient, const TopicIdentifier &aTopicId, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::Subscribe::Init(DMClient * aClient, const TopicIdentifier & aTopicId, uint16_t aTxnId, uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1299,11 +1302,11 @@ WEAVE_ERROR DMClient::Subscribe::Init(DMClient *aClient, const TopicIdentifier &
     return err;
 }
 
-WEAVE_ERROR DMClient::Subscribe::Init(DMClient *aClient, ReferencedTLVData &aPathList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMClient::Subscribe::Init(DMClient * aClient, ReferencedTLVData & aPathList, uint16_t aTxnId, uint32_t aTimeout)
 {
     DMTransaction::Init(aClient, aTxnId, aTimeout);
 
-    mTopicId = kTopicIdNotSpecified;
+    mTopicId  = kTopicIdNotSpecified;
     mPathList = aPathList;
 
     return WEAVE_NO_ERROR;
@@ -1319,7 +1322,7 @@ void DMClient::Subscribe::Free(void)
     SYSTEM_STATS_DECREMENT(nl::Weave::System::Stats::kWDMLegacy_NumSubscribes);
 }
 
-WEAVE_ERROR DMClient::Subscribe::SendRequest(PacketBuffer *aBuffer, uint16_t aSendFlags)
+WEAVE_ERROR DMClient::Subscribe::SendRequest(PacketBuffer * aBuffer, uint16_t aSendFlags)
 {
     WEAVE_ERROR err;
 
@@ -1339,7 +1342,7 @@ WEAVE_ERROR DMClient::Subscribe::SendRequest(PacketBuffer *aBuffer, uint16_t aSe
         }
     }
 
-    err = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_SubscribeRequest, aBuffer, aSendFlags);
+    err     = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_SubscribeRequest, aBuffer, aSendFlags);
     aBuffer = NULL;
 
 exit:
@@ -1359,25 +1362,25 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DMClient::Subscribe::OnStatusReceived(const uint64_t &aResponderId, StatusReport &aStatus)
+WEAVE_ERROR DMClient::Subscribe::OnStatusReceived(const uint64_t & aResponderId, StatusReport & aStatus)
 {
-    DMClient *client = static_cast<DMClient *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMClient * client = static_cast<DMClient *>(mEngine);
+    uint16_t txnId    = mTxnId;
 
     Finalize();
 
     return client->SubscribeConfirm(aResponderId, aStatus, txnId);
 }
 
-WEAVE_ERROR DMClient::Subscribe::OnResponseReceived(const uint64_t &aResponderId, uint8_t aMsgType, PacketBuffer *aMsg)
+WEAVE_ERROR DMClient::Subscribe::OnResponseReceived(const uint64_t & aResponderId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
     WEAVE_ERROR appErr = WEAVE_NO_ERROR;
     ReferencedTLVData dataList;
     TopicIdentifier topicId;
 
-    DMClient *client = static_cast<DMClient *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMClient * client = static_cast<DMClient *>(mEngine);
+    uint16_t txnId    = mTxnId;
 
     {
         MessageIterator i(aMsg);
@@ -1425,10 +1428,10 @@ exit:
     return err;
 }
 
-DMClient::Subscribe *DMClient::NewSubscribe(void)
+DMClient::Subscribe * DMClient::NewSubscribe(void)
 {
     int i;
-    Subscribe *result = NULL;
+    Subscribe * result = NULL;
 
     for (i = 0; i < kSubscribePoolSize; i++)
     {
@@ -1444,9 +1447,7 @@ DMClient::Subscribe *DMClient::NewSubscribe(void)
     return result;
 }
 
-WEAVE_ERROR DMClient::CancelSubscription::Init(DMClient *aClient,
-                                               const TopicIdentifier &aTopicId,
-                                               uint16_t aTxnId,
+WEAVE_ERROR DMClient::CancelSubscription::Init(DMClient * aClient, const TopicIdentifier & aTopicId, uint16_t aTxnId,
                                                uint32_t aTimeout)
 {
     WEAVE_ERROR err;
@@ -1469,7 +1470,7 @@ void DMClient::CancelSubscription::Free(void)
     SYSTEM_STATS_DECREMENT(nl::Weave::System::Stats::kWDMLegacy_NumCancels);
 }
 
-WEAVE_ERROR DMClient::CancelSubscription::SendRequest(PacketBuffer *aBuffer, uint16_t aSendFlags)
+WEAVE_ERROR DMClient::CancelSubscription::SendRequest(PacketBuffer * aBuffer, uint16_t aSendFlags)
 {
     WEAVE_ERROR err;
 
@@ -1483,7 +1484,7 @@ WEAVE_ERROR DMClient::CancelSubscription::SendRequest(PacketBuffer *aBuffer, uin
         SuccessOrExit(err);
     }
 
-    err = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_CancelSubscriptionRequest, aBuffer, aSendFlags);
+    err     = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_CancelSubscriptionRequest, aBuffer, aSendFlags);
     aBuffer = NULL;
 
 exit:
@@ -1495,20 +1496,20 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DMClient::CancelSubscription::OnStatusReceived(const uint64_t &aResponderId, StatusReport &aStatus)
+WEAVE_ERROR DMClient::CancelSubscription::OnStatusReceived(const uint64_t & aResponderId, StatusReport & aStatus)
 {
-    DMClient *client = static_cast<DMClient *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMClient * client = static_cast<DMClient *>(mEngine);
+    uint16_t txnId    = mTxnId;
 
     Finalize();
 
     return client->CancelSubscriptionConfirm(aResponderId, mTopicId, aStatus, txnId);
 }
 
-DMClient::CancelSubscription *DMClient::NewCancelSubscription(void)
+DMClient::CancelSubscription * DMClient::NewCancelSubscription(void)
 {
     int i;
-    CancelSubscription *result = NULL;
+    CancelSubscription * result = NULL;
 
     for (i = 0; i < kCancelSubscriptionPoolSize; i++)
     {
@@ -1526,10 +1527,7 @@ DMClient::CancelSubscription *DMClient::NewCancelSubscription(void)
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
 
-WEAVE_ERROR DMClient::Update::Init(DMClient *aClient,
-                                   ReferencedTLVData &aDataList,
-                                   uint16_t aTxnId,
-                                   uint32_t aTimeout)
+WEAVE_ERROR DMClient::Update::Init(DMClient * aClient, ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout)
 {
     DMTransaction::Init(aClient, aTxnId, aTimeout);
 
@@ -1547,7 +1545,7 @@ void DMClient::Update::Free(void)
     SYSTEM_STATS_DECREMENT(nl::Weave::System::Stats::kWDMLegacy_NumUpdates);
 }
 
-WEAVE_ERROR DMClient::Update::SendRequest(PacketBuffer *aBuffer, uint16_t aSendFlags)
+WEAVE_ERROR DMClient::Update::SendRequest(PacketBuffer * aBuffer, uint16_t aSendFlags)
 {
     WEAVE_ERROR err;
     uint8_t msgType = kMsgType_UpdateRequest;
@@ -1564,7 +1562,7 @@ WEAVE_ERROR DMClient::Update::SendRequest(PacketBuffer *aBuffer, uint16_t aSendF
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_CLIENT_LEGACY_MESSAGE_TYPES
 
-    err = mExchangeCtx->SendMessage(kWeaveProfile_WDM, msgType, aBuffer, aSendFlags);
+    err     = mExchangeCtx->SendMessage(kWeaveProfile_WDM, msgType, aBuffer, aSendFlags);
     aBuffer = NULL;
 
 exit:
@@ -1584,20 +1582,20 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DMClient::Update::OnStatusReceived(const uint64_t &aResponderId, StatusReport &aStatus)
+WEAVE_ERROR DMClient::Update::OnStatusReceived(const uint64_t & aResponderId, StatusReport & aStatus)
 {
-    DMClient *client = static_cast<DMClient *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMClient * client = static_cast<DMClient *>(mEngine);
+    uint16_t txnId    = mTxnId;
 
     Finalize();
 
     return client->UpdateConfirm(aResponderId, aStatus, txnId);
 }
 
-DMClient::Update *DMClient::NewUpdate(void)
+DMClient::Update * DMClient::NewUpdate(void)
 {
     int i;
-    Update *result = NULL;
+    Update * result = NULL;
 
     for (i = 0; i < kUpdatePoolSize; i++)
     {

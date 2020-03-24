@@ -46,12 +46,9 @@ using namespace nl::Weave::TLV;
  * @retval true                 The keys are equal.
  * @retval false                The keys are not equal.
  */
-bool EncodedRSAKey::IsEqual(const EncodedRSAKey& other) const
+bool EncodedRSAKey::IsEqual(const EncodedRSAKey & other) const
 {
-    return (Key != NULL &&
-            other.Key != NULL &&
-            Len == other.Len &&
-            memcmp(Key, other.Key, Len) == 0);
+    return (Key != NULL && other.Key != NULL && Len == other.Len && memcmp(Key, other.Key, Len) == 0);
 }
 
 /**
@@ -62,12 +59,9 @@ bool EncodedRSAKey::IsEqual(const EncodedRSAKey& other) const
  * @retval true                 The signatures are equal.
  * @retval false                The signatures are not equal.
  */
-bool EncodedRSASignature::IsEqual(const EncodedRSASignature& other) const
+bool EncodedRSASignature::IsEqual(const EncodedRSASignature & other) const
 {
-    return (Sig != NULL &&
-            other.Sig != NULL &&
-            Len == other.Len &&
-            memcmp(Sig, other.Sig, Len) == 0);
+    return (Sig != NULL && other.Sig != NULL && Len == other.Len && memcmp(Sig, other.Sig, Len) == 0);
 }
 
 /**
@@ -79,7 +73,7 @@ bool EncodedRSASignature::IsEqual(const EncodedRSASignature& other) const
  * @retval #WEAVE_NO_ERROR      If the operation succeeded.
  * @retval other                Other Weave error codes related to signature reading.
  */
-WEAVE_ERROR EncodedRSASignature::ReadSignature(TLVReader& reader)
+WEAVE_ERROR EncodedRSASignature::ReadSignature(TLVReader & reader)
 {
     WEAVE_ERROR err;
 
@@ -132,13 +126,11 @@ static int ShaNIDFromSigAlgoOID(OID sigAlgoOID)
  *                              generating the signature or encoding the signature.
  *
  */
-WEAVE_ERROR GenerateAndEncodeWeaveRSASignature(OID sigAlgoOID,
-                                               TLVWriter& writer, uint64_t tag,
-                                               const uint8_t * hash, uint8_t hashLen,
-                                               const uint8_t * keyDER, uint16_t keyDERLen)
+WEAVE_ERROR GenerateAndEncodeWeaveRSASignature(OID sigAlgoOID, TLVWriter & writer, uint64_t tag, const uint8_t * hash,
+                                               uint8_t hashLen, const uint8_t * keyDER, uint16_t keyDERLen)
 {
     WEAVE_ERROR err;
-    RSA *rsa = NULL;
+    RSA * rsa = NULL;
     uint8_t sigBuf[EncodedRSASignature::kMaxValueLength];
     uint32_t sigLen;
     EncodedRSASignature sig;
@@ -161,7 +153,8 @@ WEAVE_ERROR GenerateAndEncodeWeaveRSASignature(OID sigAlgoOID,
     SuccessOrExit(err);
 
 exit:
-    if (NULL != rsa) RSA_free(rsa);
+    if (NULL != rsa)
+        RSA_free(rsa);
 
     return err;
 }
@@ -183,15 +176,13 @@ exit:
  *
  * @retval #WEAVE_NO_ERROR      If the operation succeeded.
  */
-WEAVE_ERROR VerifyRSASignature(OID sigAlgoOID,
-                               const uint8_t * hash, uint8_t hashLen,
-                               const EncodedRSASignature& sig,
+WEAVE_ERROR VerifyRSASignature(OID sigAlgoOID, const uint8_t * hash, uint8_t hashLen, const EncodedRSASignature & sig,
                                const uint8_t * certDER, uint16_t certDERLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BIO *certBuf = NULL;
-    X509 *cert = NULL;
-    EVP_PKEY *pubKey = NULL;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    BIO * certBuf     = NULL;
+    X509 * cert       = NULL;
+    EVP_PKEY * pubKey = NULL;
     int shaNID;
     int res;
 
@@ -214,9 +205,12 @@ WEAVE_ERROR VerifyRSASignature(OID sigAlgoOID,
     VerifyOrExit(res == 1, err = WEAVE_ERROR_INVALID_SIGNATURE);
 
 exit:
-    if (NULL != pubKey) EVP_PKEY_free(pubKey);
-    if (NULL != cert) X509_free(cert);
-    if (NULL != certBuf) BIO_free(certBuf);
+    if (NULL != pubKey)
+        EVP_PKEY_free(pubKey);
+    if (NULL != cert)
+        X509_free(cert);
+    if (NULL != certBuf)
+        BIO_free(certBuf);
 
     return err;
 }

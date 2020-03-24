@@ -29,8 +29,6 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Common {
@@ -41,15 +39,13 @@ struct Timer
     int64_t timeBasis;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct Timer_array {
+struct Timer_array
+{
     uint32_t num;
-    Timer *buf;
+    Timer * buf;
 };
-
-
 
 } // namespace Common
 } // namespace Weave

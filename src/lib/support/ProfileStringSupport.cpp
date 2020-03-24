@@ -38,7 +38,7 @@ namespace Support {
 /**
  *  Registry singly-linked list head pointer.
  */
-static ProfileStringContext *sProfileStringContextHead;
+static ProfileStringContext * sProfileStringContextHead;
 
 /**
  *  @brief
@@ -57,11 +57,11 @@ static ProfileStringContext *sProfileStringContextHead;
  *  if found; otherwise, NULL.
  *
  */
-static ProfileStringContext *FindProfileStringContext(const ProfileStringContext &inContext)
+static ProfileStringContext * FindProfileStringContext(const ProfileStringContext & inContext)
 {
-    ProfileStringContext *current;
+    ProfileStringContext * current;
 
-    current  = sProfileStringContextHead;
+    current = sProfileStringContextHead;
 
     while (current != NULL)
     {
@@ -94,10 +94,10 @@ static ProfileStringContext *FindProfileStringContext(const ProfileStringContext
  *  @return true if the context was inserted; otherwise, false.
  *
  */
-static bool InsertProfileStringContext(ProfileStringContext &inOutContext)
+static bool InsertProfileStringContext(ProfileStringContext & inOutContext)
 {
-    ProfileStringContext *current;
-    ProfileStringContext *previous;
+    ProfileStringContext * current;
+    ProfileStringContext * previous;
     bool insert = true;
 
     previous = NULL;
@@ -119,7 +119,7 @@ static bool InsertProfileStringContext(ProfileStringContext &inOutContext)
         }
 
         previous = current;
-        current = current->mNext;
+        current  = current->mNext;
     }
 
     if (insert)
@@ -166,10 +166,10 @@ static bool InsertProfileStringContext(ProfileStringContext &inOutContext)
  *  @return true if the context was removed; otherwise, false.
  *
  */
-static bool RemoveProfileStringContext(ProfileStringContext &inOutContext)
+static bool RemoveProfileStringContext(ProfileStringContext & inOutContext)
 {
-    ProfileStringContext *current;
-    ProfileStringContext *previous;
+    ProfileStringContext * current;
+    ProfileStringContext * previous;
     bool remove = false;
 
     previous = NULL;
@@ -185,7 +185,7 @@ static bool RemoveProfileStringContext(ProfileStringContext &inOutContext)
         }
 
         previous = current;
-        current = current->mNext;
+        current  = current->mNext;
     }
 
     if (remove)
@@ -232,11 +232,11 @@ static bool RemoveProfileStringContext(ProfileStringContext &inOutContext)
  *  @sa UnregisterProfielStringInfo
  *
  */
-NL_DLL_EXPORT WEAVE_ERROR RegisterProfileStringInfo(ProfileStringContext &inOutContext)
+NL_DLL_EXPORT WEAVE_ERROR RegisterProfileStringInfo(ProfileStringContext & inOutContext)
 {
     const bool status = InsertProfileStringContext(inOutContext);
 
-    return ((status)? WEAVE_NO_ERROR : WEAVE_ERROR_PROFILE_STRING_CONTEXT_ALREADY_REGISTERED);
+    return ((status) ? WEAVE_NO_ERROR : WEAVE_ERROR_PROFILE_STRING_CONTEXT_ALREADY_REGISTERED);
 }
 
 /**
@@ -261,7 +261,7 @@ NL_DLL_EXPORT WEAVE_ERROR RegisterProfileStringInfo(ProfileStringContext &inOutC
  *  @sa RegisterProfielStringInfo
  *
  */
-NL_DLL_EXPORT WEAVE_ERROR UnregisterProfileStringInfo(ProfileStringContext &inOutContext)
+NL_DLL_EXPORT WEAVE_ERROR UnregisterProfileStringInfo(ProfileStringContext & inOutContext)
 {
     const bool status = RemoveProfileStringContext(inOutContext);
 
@@ -283,11 +283,11 @@ NL_DLL_EXPORT WEAVE_ERROR UnregisterProfileStringInfo(ProfileStringContext &inOu
  *  @sa UnregisterProfielStringInfo
  *
  */
-NL_DLL_EXPORT const ProfileStringInfo *FindProfileStringInfo(uint32_t inProfileId)
+NL_DLL_EXPORT const ProfileStringInfo * FindProfileStringInfo(uint32_t inProfileId)
 {
-    const ProfileStringInfo    info      = { inProfileId, NULL, NULL, NULL };
-    const ProfileStringContext target    = { NULL, info };
-    ProfileStringContext *     context;
+    const ProfileStringInfo info      = { inProfileId, NULL, NULL, NULL };
+    const ProfileStringContext target = { NULL, info };
+    ProfileStringContext * context;
 
     context = FindProfileStringContext(target);
 

@@ -51,12 +51,12 @@ typedef enum
 class BluezBleApplicationDelegate : public nl::Ble::BleApplicationDelegate
 {
 public:
-    BluezBleApplicationDelegate() {};
-    virtual ~BluezBleApplicationDelegate() {};
+    BluezBleApplicationDelegate() { };
+    virtual ~BluezBleApplicationDelegate() { };
 
     // Application can use this callback to get notification regarding
     // BLE activity
-    virtual void NotifyBleActivity(BleActivity bleActivity) {};
+    virtual void NotifyBleActivity(BleActivity bleActivity) { };
 
     // BleApplicationDelegate function overrides
     // Application can use this callback to get notification regarding

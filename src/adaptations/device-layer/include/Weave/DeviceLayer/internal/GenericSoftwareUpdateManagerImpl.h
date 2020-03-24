@@ -42,8 +42,7 @@ namespace Internal {
  * or indirectly) by the SoftwareUpdateManagerImpl class, which also appears as the template's ImplClass
  * parameter.
  */
-template<class ImplClass>
-class GenericSoftwareUpdateManagerImpl
+template <class ImplClass> class GenericSoftwareUpdateManagerImpl
 {
     using StatusReport = ::nl::Weave::Profiles::StatusReporting::StatusReport;
 
@@ -55,9 +54,9 @@ protected:
 
     void _SetRetryPolicyCallback(const SoftwareUpdateManager::RetryPolicyCallback aRetryPolicyCallback);
 
-    static void _DefaultEventHandler(void *apAppState, SoftwareUpdateManager::EventType aEvent,
-                             const SoftwareUpdateManager::InEventParam& aInParam,
-                             SoftwareUpdateManager::OutEventParam& aOutParam);
+    static void _DefaultEventHandler(void * apAppState, SoftwareUpdateManager::EventType aEvent,
+                                     const SoftwareUpdateManager::InEventParam & aInParam,
+                                     SoftwareUpdateManager::OutEventParam & aOutParam);
 
     WEAVE_ERROR _Abort(void);
     WEAVE_ERROR _CheckNow(void);
@@ -74,7 +73,7 @@ protected:
     void SoftwareUpdateFinished(WEAVE_ERROR aError);
 
     WEAVE_ERROR InstallImage(void);
-    WEAVE_ERROR StoreImageBlock(uint32_t aLength, uint8_t *aData);
+    WEAVE_ERROR StoreImageBlock(uint32_t aLength, uint8_t * aData);
     WEAVE_ERROR GetIntegrityTypeList(::nl::Weave::Profiles::SoftwareUpdate::IntegrityTypeList * aIntegrityTypeList);
 
 private:
@@ -84,7 +83,7 @@ private:
     void CheckImageState(void);
     void CheckImageIntegrity(void);
     void DriveState(SoftwareUpdateManager::State aNextState);
-    void GetEventState(int32_t& aEventState);
+    void GetEventState(int32_t & aEventState);
     void HandleImageQueryResponse(PacketBuffer * aPayload);
     void HandleStatusReport(PacketBuffer * aPayload);
     void SendQuery(void);
@@ -98,26 +97,18 @@ private:
 
     static void PrepareBinding(intptr_t arg);
     static void StartDownload(intptr_t arg);
-    static void HandleHoldOffTimerExpired(::nl::Weave::System::Layer * aLayer,
-                                          void * aAppState,
-                                          ::nl::Weave::System::Error aError);
+    static void HandleHoldOffTimerExpired(::nl::Weave::System::Layer * aLayer, void * aAppState, ::nl::Weave::System::Error aError);
     static void HandleServiceBindingEvent(void * appState, ::nl::Weave::Binding::EventType eventType,
                                           const ::nl::Weave::Binding::InEventParam & inParam,
                                           ::nl::Weave::Binding::OutEventParam & outParam);
-    static void HandleResponse(ExchangeContext * ec,
-                               const IPPacketInfo * pktInfo,
-                               const WeaveMessageInfo * msgInfo,
-                               uint32_t profileId,
-                               uint8_t msgType,
-                               PacketBuffer * payload);
-    static void OnKeyError(ExchangeContext *aEc, WEAVE_ERROR aKeyError);
+    static void HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void OnKeyError(ExchangeContext * aEc, WEAVE_ERROR aKeyError);
     static void OnResponseTimeout(ExchangeContext * aEC);
-    static void DefaultRetryPolicyCallback(void * const aAppState,
-                                           SoftwareUpdateManager::RetryParam & aRetryParam,
+    static void DefaultRetryPolicyCallback(void * const aAppState, SoftwareUpdateManager::RetryParam & aRetryParam,
                                            uint32_t & aOutIntervalMsec);
 
 private:
-
     SoftwareUpdateManager::State mState;
 
     void * mAppState;

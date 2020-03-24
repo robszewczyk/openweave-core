@@ -37,27 +37,23 @@ namespace Security {
 
 #if WEAVE_CONFIG_HASH_IMPLEMENTATION_MINCRYPT
 
-SHA1::SHA1()
-{
-}
+SHA1::SHA1() { }
 
-SHA1::~SHA1()
-{
-}
+SHA1::~SHA1() { }
 
 void SHA1::Begin()
 {
     SHA_init(&mSHACtx);
 }
 
-void SHA1::AddData(const uint8_t *data, uint16_t dataLen)
+void SHA1::AddData(const uint8_t * data, uint16_t dataLen)
 {
     SHA_update(&mSHACtx, data, dataLen);
 }
 
-void SHA1::Finish(uint8_t *hashBuf)
+void SHA1::Finish(uint8_t * hashBuf)
 {
-    const uint8_t *hashResult = SHA_final(&mSHACtx);
+    const uint8_t * hashResult = SHA_final(&mSHACtx);
     memcpy(hashBuf, hashResult, kHashLength);
 }
 
@@ -66,27 +62,23 @@ void SHA1::Reset()
     memset(this, 0, sizeof(*this));
 }
 
-SHA256::SHA256()
-{
-}
+SHA256::SHA256() { }
 
-SHA256::~SHA256()
-{
-}
+SHA256::~SHA256() { }
 
 void SHA256::Begin()
 {
     SHA256_init(&mSHACtx);
 }
 
-void SHA256::AddData(const uint8_t *data, uint16_t dataLen)
+void SHA256::AddData(const uint8_t * data, uint16_t dataLen)
 {
     SHA256_update(&mSHACtx, data, dataLen);
 }
 
-void SHA256::Finish(uint8_t *hashBuf)
+void SHA256::Finish(uint8_t * hashBuf)
 {
-    const uint8_t *hashResult = SHA256_final(&mSHACtx);
+    const uint8_t * hashResult = SHA256_final(&mSHACtx);
     memcpy(hashBuf, hashResult, kHashLength);
 }
 

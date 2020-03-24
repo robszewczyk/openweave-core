@@ -22,7 +22,6 @@
  *          for use on platforms that use OpenThread.
  */
 
-
 #ifndef GENERIC_THREAD_STACK_MANAGER_IMPL_OPENTHREAD_H
 #define GENERIC_THREAD_STACK_MANAGER_IMPL_OPENTHREAD_H
 
@@ -50,8 +49,7 @@ class DeviceNetworkInfo;
  * The class is designed to be independent of the choice of host OS (e.g. RTOS or posix) and
  * network stack (e.g. LwIP or other IP stack).
  */
-template<class ImplClass>
-class GenericThreadStackManagerImpl_OpenThread
+template <class ImplClass> class GenericThreadStackManagerImpl_OpenThread
 {
 public:
     // ===== Platform-specific methods directly callable by the application.
@@ -60,7 +58,6 @@ public:
     static void OnOpenThreadStateChange(uint32_t flags, void * context);
 
 protected:
-
     // ===== Methods that implement the ThreadStackManager abstract interface.
 
     void _ProcessThreadActivity(void);
@@ -82,7 +79,7 @@ protected:
     WEAVE_ERROR _GetAndLogThreadStatsCounters(void);
     WEAVE_ERROR _GetAndLogThreadTopologyMinimal(void);
     WEAVE_ERROR _GetAndLogThreadTopologyFull(void);
-    WEAVE_ERROR _GetPrimary802154MACAddress(uint8_t *buf);
+    WEAVE_ERROR _GetPrimary802154MACAddress(uint8_t * buf);
     void _OnWoBLEAdvertisingStart(void);
     void _OnWoBLEAdvertisingStop(void);
 
@@ -93,13 +90,12 @@ protected:
     WEAVE_ERROR AdjustPollingInterval(void);
 
 private:
-
     // ===== Private members for use by this class only.
 
     otInstance * mOTInst;
     ConnectivityManager::ThreadPollingConfig mPollingConfig;
 
-    inline ImplClass * Impl() { return static_cast<ImplClass*>(this); }
+    inline ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 };
 
 // Instruct the compiler to instantiate the template only when explicitly told to do so.
@@ -108,20 +104,17 @@ extern template class GenericThreadStackManagerImpl_OpenThread<ThreadStackManage
 /**
  * Returns the underlying OpenThread instance object.
  */
-template<class ImplClass>
-inline otInstance * GenericThreadStackManagerImpl_OpenThread<ImplClass>::OTInstance() const
+template <class ImplClass> inline otInstance * GenericThreadStackManagerImpl_OpenThread<ImplClass>::OTInstance() const
 {
     return mOTInst;
 }
 
-template<class ImplClass>
-inline void GenericThreadStackManagerImpl_OpenThread<ImplClass>::_OnWoBLEAdvertisingStart(void)
+template <class ImplClass> inline void GenericThreadStackManagerImpl_OpenThread<ImplClass>::_OnWoBLEAdvertisingStart(void)
 {
     // Do nothing by default.
 }
 
-template<class ImplClass>
-inline void GenericThreadStackManagerImpl_OpenThread<ImplClass>::_OnWoBLEAdvertisingStop(void)
+template <class ImplClass> inline void GenericThreadStackManagerImpl_OpenThread<ImplClass>::_OnWoBLEAdvertisingStop(void)
 {
     // Do nothing by default.
 }
@@ -130,6 +123,5 @@ inline void GenericThreadStackManagerImpl_OpenThread<ImplClass>::_OnWoBLEAdverti
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-
 
 #endif // GENERIC_THREAD_STACK_MANAGER_IMPL_OPENTHREAD_H

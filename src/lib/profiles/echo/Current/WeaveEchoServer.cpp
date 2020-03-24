@@ -31,24 +31,23 @@ namespace Profiles {
 
 WeaveEchoServer::WeaveEchoServer()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState           = NULL;
+    ExchangeMgr           = NULL;
     OnEchoRequestReceived = NULL;
 }
 
-WEAVE_ERROR WeaveEchoServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR WeaveEchoServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
+    ExchangeMgr           = exchangeMgr;
+    FabricState           = exchangeMgr->FabricState;
     OnEchoRequestReceived = NULL;
 
     // Register to receive unsolicited Echo Request messages from the exchange manager.
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, HandleEchoRequest,
-            this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, HandleEchoRequest, this);
 
     return WEAVE_NO_ERROR;
 }
@@ -66,10 +65,10 @@ WEAVE_ERROR WeaveEchoServer::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-void WeaveEchoServer::HandleEchoRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveEchoServer::HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WeaveEchoServer *echoApp = (WeaveEchoServer *) ec->AppState;
+    WeaveEchoServer * echoApp = (WeaveEchoServer *) ec->AppState;
 
     // NOTE: we already know this is an Echo Request message because we explicitly registered with the
     // Exchange Manager for unsolicited Echo Requests.

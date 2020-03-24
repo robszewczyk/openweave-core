@@ -37,17 +37,17 @@ namespace Heartbeat {
 
 WeaveHeartbeatSender::WeaveHeartbeatSender()
 {
-    mHeartbeatBase = 0;
-    mFabricState = NULL;
-    mExchangeMgr = NULL;
-    mBinding = NULL;
-    mExchangeCtx = NULL;
-    mEventCallback = NULL;
+    mHeartbeatBase          = 0;
+    mFabricState            = NULL;
+    mExchangeMgr            = NULL;
+    mBinding                = NULL;
+    mExchangeCtx            = NULL;
+    mEventCallback          = NULL;
     mHeartbeatInterval_msec = 0;
-    mHeartbeatPhase_msec = 0;
-    mHeartbeatWindow_msec = 0;
-    mSubscriptionState = 0;
-    mRequestAck = false;
+    mHeartbeatPhase_msec    = 0;
+    mHeartbeatWindow_msec   = 0;
+    mSubscriptionState      = 0;
+    mRequestAck             = false;
 }
 
 /**
@@ -64,7 +64,8 @@ WeaveHeartbeatSender::WeaveHeartbeatSender()
  * @retval #WEAVE_ERROR_INVALID_ARGUMENT    If any of the supplied arguments is null.
  * @retval #WEAVE_NO_ERROR                  On success.
  */
-WEAVE_ERROR WeaveHeartbeatSender::Init(WeaveExchangeManager *exchangeMgr, Binding *binding, EventCallback eventCallback, void *appState)
+WEAVE_ERROR WeaveHeartbeatSender::Init(WeaveExchangeManager * exchangeMgr, Binding * binding, EventCallback eventCallback,
+                                       void * appState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -74,19 +75,19 @@ WEAVE_ERROR WeaveHeartbeatSender::Init(WeaveExchangeManager *exchangeMgr, Bindin
     VerifyOrExit(binding != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(eventCallback != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    AppState = appState;
+    AppState       = appState;
     mHeartbeatBase = 0;
-    mFabricState = exchangeMgr->FabricState;
-    mExchangeMgr = exchangeMgr;
-    mBinding = binding;
+    mFabricState   = exchangeMgr->FabricState;
+    mExchangeMgr   = exchangeMgr;
+    mBinding       = binding;
     binding->AddRef();
-    mExchangeCtx = NULL;
-    mEventCallback = eventCallback;
+    mExchangeCtx            = NULL;
+    mEventCallback          = eventCallback;
     mHeartbeatInterval_msec = 0;
-    mHeartbeatPhase_msec = 0;
-    mHeartbeatWindow_msec = 0;
-    mSubscriptionState = 0;
-    mRequestAck = false;
+    mHeartbeatPhase_msec    = 0;
+    mHeartbeatWindow_msec   = 0;
+    mSubscriptionState      = 0;
+    mRequestAck             = false;
 
     // Set the protocol callback on the binding object.  NOTE: This should only happen once the
     // app has explicitly started the subscription process by calling either InitiateSubscription() or
@@ -144,8 +145,8 @@ WEAVE_ERROR WeaveHeartbeatSender::Shutdown()
         mBinding = NULL;
     }
 
-    mExchangeMgr = NULL;
-    mFabricState = NULL;
+    mExchangeMgr   = NULL;
+    mFabricState   = NULL;
     mEventCallback = NULL;
 
     return WEAVE_NO_ERROR;
@@ -159,11 +160,11 @@ WEAVE_ERROR WeaveHeartbeatSender::Shutdown()
  * @param[out] window       A reference to an integer to receive the heartbeat randomization window.
  *
  */
-void WeaveHeartbeatSender::GetConfiguration(uint32_t& interval, uint32_t& phase, uint32_t& window) const
+void WeaveHeartbeatSender::GetConfiguration(uint32_t & interval, uint32_t & phase, uint32_t & window) const
 {
     interval = mHeartbeatInterval_msec;
-    phase = mHeartbeatPhase_msec;
-    window = mHeartbeatWindow_msec;
+    phase    = mHeartbeatPhase_msec;
+    window   = mHeartbeatWindow_msec;
 }
 
 /**
@@ -177,8 +178,8 @@ void WeaveHeartbeatSender::GetConfiguration(uint32_t& interval, uint32_t& phase,
 void WeaveHeartbeatSender::SetConfiguration(uint32_t interval, uint32_t phase, uint32_t window)
 {
     mHeartbeatInterval_msec = interval;
-    mHeartbeatPhase_msec = phase;
-    mHeartbeatWindow_msec = window;
+    mHeartbeatPhase_msec    = phase;
+    mHeartbeatWindow_msec   = window;
 }
 
 /**
@@ -213,7 +214,7 @@ WEAVE_ERROR WeaveHeartbeatSender::ScheduleHeartbeat()
 {
     // deltaTicks is mostly +ve and less than mHeartbeatInterval_msec since heartbeatBase is one interval ahead
     int32_t deltaTicks = (int32_t)(mHeartbeatBase - GetPlatformTimeMs());
-    int32_t interval = deltaTicks + mHeartbeatPhase_msec + GetRandomInterval(0, mHeartbeatWindow_msec);
+    int32_t interval   = deltaTicks + mHeartbeatPhase_msec + GetRandomInterval(0, mHeartbeatWindow_msec);
 
     // Update the mHeartBeatBase after the interval has been calculated so as to not
     // add the heartbeat interval twice to the base (causing heartbeat to be missed at the
@@ -249,7 +250,7 @@ WEAVE_ERROR WeaveHeartbeatSender::StopHeartbeat()
  */
 WEAVE_ERROR WeaveHeartbeatSender::SendHeartbeatNow()
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err                  = WEAVE_NO_ERROR;
     const bool scheduleNextHeartbeat = true;
 
     VerifyOrExit(mExchangeMgr != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -305,9 +306,9 @@ uint64_t WeaveHeartbeatSender::GetPlatformTimeMs(void)
  */
 uint32_t WeaveHeartbeatSender::GetRandomInterval(uint32_t minVal, uint32_t maxVal)
 {
-    const uint32_t range = maxVal - minVal + 1;
+    const uint32_t range   = maxVal - minVal + 1;
     const uint32_t buckets = RAND_MAX / range;
-    const uint32_t limit = buckets * range;
+    const uint32_t limit   = buckets * range;
 
     uint32_t r;
     do
@@ -322,10 +323,10 @@ uint32_t WeaveHeartbeatSender::GetRandomInterval(uint32_t minVal, uint32_t maxVa
  * Send a Weave Heartbeat message when the timer fires.
  *
  */
-void WeaveHeartbeatSender::HandleHeartbeatTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveHeartbeatSender::HandleHeartbeatTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     const bool scheduleNextHeartbeat = true;
-    WeaveHeartbeatSender* sender = reinterpret_cast<WeaveHeartbeatSender*>(aAppState);
+    WeaveHeartbeatSender * sender    = reinterpret_cast<WeaveHeartbeatSender *>(aAppState);
 
     sender->SendHeartbeat(scheduleNextHeartbeat);
 }
@@ -335,8 +336,8 @@ void WeaveHeartbeatSender::HandleHeartbeatTimer(System::Layer* aSystemLayer, voi
  */
 void WeaveHeartbeatSender::SendHeartbeat(bool scheduleNextHeartbeat)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payload = NULL;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    PacketBuffer * payload       = NULL;
     bool heartbeatSentWithoutACK = false;
 
     // Abort any existing exchange that is still in progress.  In practice this should never be necessary.
@@ -419,13 +420,13 @@ void WeaveHeartbeatSender::SendHeartbeat(bool scheduleNextHeartbeat)
         mExchangeCtx->SetAutoRequestAck(true);
 
     // Setup callbacks for ACK received and WRM send errors.
-    mExchangeCtx->OnAckRcvd = HandleAckReceived;
+    mExchangeCtx->OnAckRcvd   = HandleAckReceived;
     mExchangeCtx->OnSendError = HandleSendError;
 
 #endif
 
     // Send the heartbeat message to the peer.
-    err = mExchangeCtx->SendMessage(kWeaveProfile_Heartbeat, kHeartbeatMessageType_Heartbeat, payload);
+    err     = mExchangeCtx->SendMessage(kWeaveProfile_Heartbeat, kHeartbeatMessageType_Heartbeat, payload);
     payload = NULL;
     SuccessOrExit(err);
 
@@ -455,7 +456,7 @@ exit:
 
         // Deliver either a HeartbeatSent or HeartbeatFailed event to the application based on what happened.
         inParam.Clear();
-        inParam.Source = this;
+        inParam.Source                 = this;
         inParam.HeartbeatFailed.Reason = err;
         outParam.Clear();
         EventType eventType = (err == WEAVE_NO_ERROR) ? kEvent_HeartbeatSent : kEvent_HeartbeatFailed;
@@ -468,7 +469,8 @@ exit:
  *
  * Applications must call this function for any API events that they don't handle.
  */
-void WeaveHeartbeatSender::DefaultEventHandler(void *appState, EventType eventType, const InEventParam& inParam, OutEventParam& outParam)
+void WeaveHeartbeatSender::DefaultEventHandler(void * appState, EventType eventType, const InEventParam & inParam,
+                                               OutEventParam & outParam)
 {
     // No specific behavior currently required.
     outParam.DefaultHandlerCalled = true;
@@ -477,10 +479,11 @@ void WeaveHeartbeatSender::DefaultEventHandler(void *appState, EventType eventTy
 /**
  * Handle events from the binding object associated with the WeaveHeartbeatSender.
  */
-void WeaveHeartbeatSender::BindingEventCallback(void *appState, Binding::EventType eventType, const Binding::InEventParam& inParam, Binding::OutEventParam& outParam)
+void WeaveHeartbeatSender::BindingEventCallback(void * appState, Binding::EventType eventType,
+                                                const Binding::InEventParam & inParam, Binding::OutEventParam & outParam)
 {
     const bool scheduleNextHeartbeat = true;
-    WeaveHeartbeatSender *sender = (WeaveHeartbeatSender *)appState;
+    WeaveHeartbeatSender * sender    = (WeaveHeartbeatSender *) appState;
 
     switch (eventType)
     {
@@ -495,7 +498,7 @@ void WeaveHeartbeatSender::BindingEventCallback(void *appState, Binding::EventTy
         OutEventParam senderOutParam;
 
         senderInParam.Clear();
-        senderInParam.Source = sender;
+        senderInParam.Source                 = sender;
         senderInParam.HeartbeatFailed.Reason = inParam.PrepareFailed.Reason;
 
         senderOutParam.Clear();
@@ -505,17 +508,16 @@ void WeaveHeartbeatSender::BindingEventCallback(void *appState, Binding::EventTy
         break;
     }
 
-    default:
-        Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
+    default: Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
     }
 }
 
 /**
  * Handle the reception of a WRM acknowledgment for a heartbeat message that was sent reliably.
  */
-void WeaveHeartbeatSender::HandleAckReceived(ExchangeContext *ec, void *msgCtxt)
+void WeaveHeartbeatSender::HandleAckReceived(ExchangeContext * ec, void * msgCtxt)
 {
-    WeaveHeartbeatSender *sender = (WeaveHeartbeatSender *)ec->AppState;
+    WeaveHeartbeatSender * sender = (WeaveHeartbeatSender *) ec->AppState;
     InEventParam inParam;
     OutEventParam outParam;
 
@@ -535,9 +537,9 @@ void WeaveHeartbeatSender::HandleAckReceived(ExchangeContext *ec, void *msgCtxt)
 /**
  * Handle a failure to transmit a heartbeat message that was sent reliably.
  */
-void WeaveHeartbeatSender::HandleSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt)
+void WeaveHeartbeatSender::HandleSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt)
 {
-    WeaveHeartbeatSender *sender = (WeaveHeartbeatSender *)ec->AppState;
+    WeaveHeartbeatSender * sender = (WeaveHeartbeatSender *) ec->AppState;
     InEventParam inParam;
     OutEventParam outParam;
 
@@ -547,7 +549,7 @@ void WeaveHeartbeatSender::HandleSendError(ExchangeContext *ec, WEAVE_ERROR err,
     sender->mExchangeCtx = NULL;
 
     inParam.Clear();
-    inParam.Source = sender;
+    inParam.Source                 = sender;
     inParam.HeartbeatFailed.Reason = err;
 
     outParam.Clear();
@@ -604,7 +606,6 @@ void WeaveHeartbeatSender::HandleSendError(ExchangeContext *ec, WEAVE_ERROR err,
  * Sets the function that will be called to notify the application of events or changes that occur in the
  * WeaveHeartbeatSender.
  */
-
 
 } // namespace Heartbeat
 } // namespace Profiles

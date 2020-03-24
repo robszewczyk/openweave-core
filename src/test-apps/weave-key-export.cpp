@@ -48,42 +48,44 @@ using namespace nl::Weave::Profiles::Security;
 
 #define TOOL_NAME "weave-key-export"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 static void DriveSending();
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 static void StartClientConnection();
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleKeyExportComplete(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint32_t exportedKeyId, const uint8_t *exportedKey, uint16_t exportedKeyLen);
-static void HandleKeyExportError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, StatusReport *statusReport);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleKeyExportComplete(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint32_t exportedKeyId,
+                                    const uint8_t * exportedKey, uint16_t exportedKeyLen);
+static void HandleKeyExportError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                 StatusReport * statusReport);
 static void ParseDestAddress();
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-static void HandleServiceMgrStatus(void *appState, WEAVE_ERROR anError, StatusReport *aReport);
+static void HandleServiceMgrStatus(void * appState, WEAVE_ERROR anError, StatusReport * aReport);
 #endif
 
 int32_t MaxKeyExportCount = -1;
 int32_t KeyExportInterval = 1000000;
-bool UseTCP = true;
-bool Debug = false;
-bool SignKeyExportMsgs = true;
-uint32_t ExportKeyId = WeaveKeyId::kClientRootKey;
+bool UseTCP               = true;
+bool Debug                = false;
+bool SignKeyExportMsgs    = true;
+uint32_t ExportKeyId      = WeaveKeyId::kClientRootKey;
 uint64_t DestNodeId;
-const char *DestAddr = NULL;
-IPAddress DestIPAddr; // only used for UDP
-uint16_t DestPort = WEAVE_PORT; // only used for UDP
-InterfaceId DestIntf = INET_NULL_INTERFACEID; // only used for UDP
-uint64_t LastKeyExportTime = 0;
+const char * DestAddr = NULL;
+IPAddress DestIPAddr;                                     // only used for UDP
+uint16_t DestPort                = WEAVE_PORT;            // only used for UDP
+InterfaceId DestIntf             = INET_NULL_INTERFACEID; // only used for UDP
+uint64_t LastKeyExportTime       = 0;
 bool WaitingForKeyExportResponse = false;
-uint64_t KeyExportRequestCount = 0;
-uint64_t KeyExportResponseCount = 0;
-WeaveConnection *Con = NULL;
-bool ClientConInProgress = false;
-bool ClientConEstablished = false;
-WeaveAuthMode AuthMode = kWeaveAuthMode_Unauthenticated;
+uint64_t KeyExportRequestCount   = 0;
+uint64_t KeyExportResponseCount  = 0;
+WeaveConnection * Con            = NULL;
+bool ClientConInProgress         = false;
+bool ClientConEstablished        = false;
+WeaveAuthMode AuthMode           = kWeaveAuthMode_Unauthenticated;
 uint8_t InitiatorKeyExportConfig = kKeyExportConfig_Unspecified;
 
-uint32_t SenderBusyRespCount = 0;
+uint32_t SenderBusyRespCount          = 0;
 const uint32_t MaxSenderBusyRespCount = 10;
 // In case of SenderBusy, wait 10 seconds before trying again to establish a secure session
 const uint64_t SenderBusyRespDelay = 10 * nl::kMicrosecondsPerSecond;
@@ -107,10 +109,10 @@ enum NameResolutionStateEnum
 
 enum
 {
-    kToolOpt_UseServiceDir                          = 1000,
+    kToolOpt_UseServiceDir = 1000,
 };
 
-bool ParseKeyExportConfig(const char *str, uint8_t& output)
+bool ParseKeyExportConfig(const char * str, uint8_t & output)
 {
     uint32_t configNum;
 
@@ -119,37 +121,29 @@ bool ParseKeyExportConfig(const char *str, uint8_t& output)
 
     switch (configNum)
     {
-    case 1:
-        output = kKeyExportConfig_Config1;
-        return true;
-    case 2:
-        output = kKeyExportConfig_Config2;
-        return true;
-    default:
-        return false;
+    case 1: output = kKeyExportConfig_Config1; return true;
+    case 2: output = kKeyExportConfig_Config2; return true;
+    default: return false;
     }
 }
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "dest-addr",         kArgumentRequired, 'D' },
-    { "key-id",            kArgumentRequired, 'K' },
-    { "key-export-config", kArgumentRequired, 'k' },
-    { "dont-sign-msgs",    kNoArgument,       'd' },
-    { "count",             kArgumentRequired, 'c' },
-    { "interval",          kArgumentRequired, 'i' },
-    { "tcp",               kNoArgument,       't' },
-    { "udp",               kNoArgument,       'u' },
+static OptionDef gToolOptionDefs[] = { { "dest-addr", kArgumentRequired, 'D' },
+                                       { "key-id", kArgumentRequired, 'K' },
+                                       { "key-export-config", kArgumentRequired, 'k' },
+                                       { "dont-sign-msgs", kNoArgument, 'd' },
+                                       { "count", kArgumentRequired, 'c' },
+                                       { "interval", kArgumentRequired, 'i' },
+                                       { "tcp", kNoArgument, 't' },
+                                       { "udp", kNoArgument, 'u' },
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    { "wrmp",              kNoArgument,       'w' },
+                                       { "wrmp", kNoArgument, 'w' },
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { "service-dir",       kNoArgument,       kToolOpt_UseServiceDir },
+                                       { "service-dir", kNoArgument, kToolOpt_UseServiceDir },
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { }
-};
+                                       { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -D, --dest-addr <host>[:<port>][%<interface>]\n"
     "       Send Key Export Requests to a specific address rather than one\n"
     "       derived from the destination node id. <host> can be a hostname,\n"
@@ -199,46 +193,29 @@ static const char *const gToolOptionHelp =
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
     ;
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n"
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Send key export request and receive key export response messages.\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n" WEAVE_VERSION_STRING
+                                "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Send key export request and receive key export response messages.\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWRMPOptions,
-    &gCASEOptions,
-    &gKeyExportOptions,
-    &gDeviceDescOptions,
-    &gServiceDirClientOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
+static OptionSet * gToolOptionSets[] = {
+    &gToolOptions,       &gNetworkOptions,          &gWeaveNodeOptions,      &gWRMPOptions, &gCASEOptions, &gKeyExportOptions,
+    &gDeviceDescOptions, &gServiceDirClientOptions, &gFaultInjectionOptions, &gHelpOptions, NULL
 };
 
 static void ResetTestContext(void)
 {
-    Done = false;
+    Done                        = false;
     WaitingForKeyExportResponse = false;
-    KeyExportRequestCount = 0;
-    KeyExportResponseCount = 0;
-    SenderBusyRespCount = 0;
+    KeyExportRequestCount       = 0;
+    KeyExportResponseCount      = 0;
+    SenderBusyRespCount         = 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
     nl::Weave::System::Stats::Snapshot before;
@@ -253,7 +230,7 @@ int main(int argc, char *argv[])
 
     {
         unsigned int seed;
-        err = nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *)&seed, sizeof(seed));
+        err = nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *) &seed, sizeof(seed));
         FAIL_ERROR(err, "Random number generator seeding failed");
         srand(seed);
     }
@@ -284,9 +261,8 @@ int main(int argc, char *argv[])
         SecurityMgr.InitiatorAllowedKeyExportConfigs = gKeyExportOptions.AllowedKeyExportConfigs;
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache),
-            GetRootServiceDirectoryEntry, kWeaveAuthMode_CASE_ServiceEndPoint,
-            NULL, NULL, OverrideServiceConnectArguments);
+    err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache), GetRootServiceDirectoryEntry,
+                          kWeaveAuthMode_CASE_ServiceEndPoint, NULL, NULL, OverrideServiceConnectArguments);
     if (err != WEAVE_NO_ERROR)
     {
         printf("ServiceMgr.init() failed with error: %s\n", ErrorStr(err));
@@ -300,8 +276,8 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activities in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     PrintNodeConfig();
 
@@ -324,7 +300,7 @@ int main(int argc, char *argv[])
         while (!Done)
         {
             struct timeval sleepTime;
-            sleepTime.tv_sec = 0;
+            sleepTime.tv_sec  = 0;
             sleepTime.tv_usec = 100000;
 
             ServiceNetwork(sleepTime);
@@ -358,26 +334,20 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 't':
-        UseTCP = true;
-        break;
-    case 'u':
-        UseTCP = false;
-        break;
+    case 't': UseTCP = true; break;
+    case 'u': UseTCP = false; break;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     case 'w':
-        UseTCP = false;
+        UseTCP  = false;
         UseWRMP = true;
         break;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    case kToolOpt_UseServiceDir:
-        UseServiceDir = true;
-        break;
+    case kToolOpt_UseServiceDir: UseServiceDir = true; break;
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
     case 'K':
         if (!ParseInt(arg, ExportKeyId, 0) || !WeaveKeyId::IsValidKeyId(ExportKeyId))
@@ -393,9 +363,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'd':
-        SignKeyExportMsgs = false;
-        break;
+    case 'd': SignKeyExportMsgs = false; break;
     case 'c':
         if (!ParseInt(arg, MaxKeyExportCount) || MaxKeyExportCount < 0)
         {
@@ -411,18 +379,14 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         }
         KeyExportInterval = KeyExportInterval * 1000;
         break;
-    case 'D':
-        DestAddr = arg;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'D': DestAddr = arg; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -434,12 +398,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
 
         // TODO (arg clean up): generalize parsing of destination node ids and addresses.
 
-        const char *nodeId = argv[0];
-        char *p = (char *)strchr(nodeId, '@');
+        const char * nodeId = argv[0];
+        char * p            = (char *) strchr(nodeId, '@');
         if (p != NULL)
         {
-            *p = 0;
-            DestAddr = p+1;
+            *p       = 0;
+            DestAddr = p + 1;
         }
 
         if (!ParseNodeId(nodeId, DestNodeId))
@@ -486,9 +450,9 @@ void DriveSending()
         {
             printf("Connection closed\n");
             Con->Close();
-            Con = NULL;
+            Con                  = NULL;
             ClientConEstablished = false;
-            ClientConInProgress = false;
+            ClientConInProgress  = false;
         }
 
         Done = true;
@@ -508,8 +472,8 @@ void DriveSending()
         }
     }
 
-    err = SecurityMgr.StartKeyExport(Con, DestNodeId, DestIPAddr, DestPort, ExportKeyId, SignKeyExportMsgs,
-                                     NULL, HandleKeyExportComplete, HandleKeyExportError);
+    err               = SecurityMgr.StartKeyExport(Con, DestNodeId, DestIPAddr, DestPort, ExportKeyId, SignKeyExportMsgs, NULL,
+                                     HandleKeyExportComplete, HandleKeyExportError);
     LastKeyExportTime = Now();
     if (err == WEAVE_NO_ERROR)
     {
@@ -522,7 +486,7 @@ void DriveSending()
     }
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -551,11 +515,7 @@ void StartClientConnection()
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
     if (UseServiceDir)
     {
-        err = ServiceMgr.connect(DestNodeId,
-                                 AuthMode,
-                                 NULL,
-                                 HandleServiceMgrStatus,
-                                 HandleConnectionComplete);
+        err = ServiceMgr.connect(DestNodeId, AuthMode, NULL, HandleServiceMgrStatus, HandleConnectionComplete);
         if (err != WEAVE_NO_ERROR)
         {
             printf("WeaveServiceManager.Connect(): failed: %s\n", ErrorStr(err));
@@ -571,20 +531,20 @@ void StartClientConnection()
         {
             printf("WeaveConnection.Connect failed: %s\n", ErrorStr(WEAVE_ERROR_NO_MEMORY));
             LastKeyExportTime = Now();
-            Done = true;
+            Done              = true;
             return;
         }
         Con->OnConnectionComplete = HandleConnectionComplete;
-        Con->OnConnectionClosed = HandleConnectionClosed;
+        Con->OnConnectionClosed   = HandleConnectionClosed;
 
         err = Con->Connect(DestNodeId, AuthMode, DestAddr);
         if (err != WEAVE_NO_ERROR)
         {
             printf("WeaveConnection.Connect failed: %s\n", ErrorStr(err));
             Con->Close();
-            Con = NULL;
+            Con               = NULL;
             LastKeyExportTime = Now();
-            Done = true;
+            Done              = true;
             return;
         }
     }
@@ -592,7 +552,7 @@ void StartClientConnection()
     ClientConInProgress = true;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -601,11 +561,11 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     {
         printf("Connection FAILED to node %" PRIX64 " (%s): %s\n", con->PeerNodeId, ipAddrStr, ErrorStr(conErr));
         con->Close();
-        Con = NULL;
-        LastKeyExportTime = Now();
+        Con                  = NULL;
+        LastKeyExportTime    = Now();
         ClientConEstablished = false;
-        ClientConInProgress = false;
-        Done = true;
+        ClientConInProgress  = false;
+        Done                 = true;
         return;
     }
 
@@ -616,10 +576,10 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     con->OnConnectionClosed = HandleConnectionClosed;
 
     ClientConEstablished = true;
-    ClientConInProgress = false;
+    ClientConInProgress  = false;
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -636,18 +596,19 @@ void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
     }
 
     WaitingForKeyExportResponse = false;
-    ClientConEstablished = false;
-    ClientConInProgress = false;
+    ClientConEstablished        = false;
+    ClientConInProgress         = false;
 }
 
-void HandleKeyExportComplete(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint32_t exportedKeyId, const uint8_t *exportedKey, uint16_t exportedKeyLen)
+void HandleKeyExportComplete(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint32_t exportedKeyId,
+                             const uint8_t * exportedKey, uint16_t exportedKeyLen)
 {
     uint64_t peerNodeId;
     char ipAddrStr[64];
 
     WaitingForKeyExportResponse = false;
     KeyExportResponseCount++;
-    LastKeyExportTime = Now();
+    LastKeyExportTime   = Now();
     SenderBusyRespCount = 0;
 
     if (con != NULL)
@@ -661,12 +622,14 @@ void HandleKeyExportComplete(WeaveSecurityManager *sm, WeaveConnection *con, voi
         DestIPAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
     }
 
-    printf("Received Key Export Response from node %" PRIX64 " (%s) for requested keyId = 0x%08X.\n", peerNodeId, ipAddrStr, ExportKeyId);
+    printf("Received Key Export Response from node %" PRIX64 " (%s) for requested keyId = 0x%08X.\n", peerNodeId, ipAddrStr,
+           ExportKeyId);
     printf("Exported Key 0x%08X (%d bytes):\n", exportedKeyId, exportedKeyLen);
     DumpMemoryCStyle(exportedKey, exportedKeyLen, "  ", 16);
 }
 
-void HandleKeyExportError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, StatusReport *statusReport)
+void HandleKeyExportError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                          StatusReport * statusReport)
 {
     uint64_t peerNodeId;
     char ipAddrStr[64];
@@ -686,12 +649,13 @@ void HandleKeyExportError(WeaveSecurityManager *sm, WeaveConnection *con, void *
     }
 
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
-        printf("FAILED to export key (keyId = 0x%08X) from node %" PRIX64 " (%s): %s\n", ExportKeyId, peerNodeId, ipAddrStr, StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        printf("FAILED to export key (keyId = 0x%08X) from node %" PRIX64 " (%s): %s\n", ExportKeyId, peerNodeId, ipAddrStr,
+               StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     else
-        printf("FAILED to export key (keyId = 0x%08X) from node %" PRIX64 " (%s): %s\n", ExportKeyId, peerNodeId, ipAddrStr, ErrorStr(localErr));
+        printf("FAILED to export key (keyId = 0x%08X) from node %" PRIX64 " (%s): %s\n", ExportKeyId, peerNodeId, ipAddrStr,
+               ErrorStr(localErr));
 
-    isSenderBusy = (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED &&
-                    statusReport != NULL &&
+    isSenderBusy = (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL &&
                     statusReport->mProfileId == nl::Weave::Profiles::kWeaveProfile_Common &&
                     statusReport->mStatusCode == nl::Weave::Profiles::Common::kStatus_Busy);
 
@@ -708,9 +672,9 @@ void HandleKeyExportError(WeaveSecurityManager *sm, WeaveConnection *con, void *
         {
             printf("Connection closed\n");
             Con->Close();
-            Con = NULL;
+            Con                  = NULL;
             ClientConEstablished = false;
-            ClientConInProgress = false;
+            ClientConInProgress  = false;
         }
         Done = true;
     }
@@ -722,9 +686,9 @@ void ParseDestAddress()
     // parsing the destination node address for TCP connections.
 
     WEAVE_ERROR err;
-    const char *addr;
+    const char * addr;
     uint16_t addrLen;
-    const char *intfName;
+    const char * intfName;
     uint16_t intfNameLen;
 
     err = ParseHostPortAndInterface(DestAddr, strlen(DestAddr), addr, addrLen, DestPort, intfName, intfNameLen);
@@ -752,7 +716,7 @@ void ParseDestAddress()
 }
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-void HandleServiceMgrStatus(void* anAppState, WEAVE_ERROR anError, StatusReport *aReport)
+void HandleServiceMgrStatus(void * anAppState, WEAVE_ERROR anError, StatusReport * aReport)
 {
     if (aReport)
         printf("service directory status report [%" PRIx32 ", %" PRIx32 "]", aReport->mProfileId, aReport->mStatusCode);
@@ -760,8 +724,8 @@ void HandleServiceMgrStatus(void* anAppState, WEAVE_ERROR anError, StatusReport 
     else
         printf("service directory error %" PRIx32 "", static_cast<uint32_t>(anError));
 
-    LastKeyExportTime = Now();
+    LastKeyExportTime    = Now();
     ClientConEstablished = false;
-    ClientConInProgress = false;
+    ClientConInProgress  = false;
 }
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY

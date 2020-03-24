@@ -36,19 +36,22 @@ using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::Profiles::Security::PASE;
 using System::PacketBuffer;
 
-void saveCorpus(const uint8_t *inBuf, size_t size, char *fileName)
+void saveCorpus(const uint8_t * inBuf, size_t size, char * fileName)
 {
-    //Todo create better method of creating these.
-    FILE* file = fopen(fileName, "wb+" );
-    fwrite(inBuf, 1, size, file );
+    // Todo create better method of creating these.
+    FILE * file = fopen(fileName, "wb+");
+    fwrite(inBuf, 1, size, file);
     fclose(file);
 }
 
-void printCorpus(const uint8_t *inBuf, size_t size)
+void printCorpus(const uint8_t * inBuf, size_t size)
 {
     for (size_t i = 0; i < size; i++)
     {
-        if (i % 12 == 0) { printf("\n"); }
+        if (i % 12 == 0)
+        {
+            printf("\n");
+        }
         printf("0x%02X, ", inBuf[i]);
     }
     printf("\n");

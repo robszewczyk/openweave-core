@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace BoltLockTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe02U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe02U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -120,15 +120,15 @@ struct BoltLockActorStruct
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsAgentPresent(void);
 #endif
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct BoltLockActorStruct_array {
+struct BoltLockActorStruct_array
+{
     uint32_t num;
-    BoltLockActorStruct *buf;
+    BoltLockActorStruct * buf;
 };
 
 inline void BoltLockActorStruct::SetOriginatorNull(void)
@@ -176,30 +176,33 @@ struct BoltActuatorStateChangeEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xe02U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xe02U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct BoltActuatorStateChangeEvent_array {
+struct BoltActuatorStateChangeEvent_array
+{
     uint32_t num;
-    BoltActuatorStateChangeEvent *buf;
+    BoltActuatorStateChangeEvent * buf;
 };
-
 
 //
 // Commands
 //
 
-enum {
+enum
+{
     kBoltLockChangeRequestId = 0x1,
 };
 
-enum BoltLockChangeRequestParameters {
-    kBoltLockChangeRequestParameter_State = 1,
+enum BoltLockChangeRequestParameters
+{
+    kBoltLockChangeRequestParameter_State         = 1,
     kBoltLockChangeRequestParameter_BoltLockActor = 4,
 };
 
@@ -207,38 +210,42 @@ enum BoltLockChangeRequestParameters {
 // Enums
 //
 
-enum BoltState {
+enum BoltState
+{
     BOLT_STATE_RETRACTED = 1,
-    BOLT_STATE_EXTENDED = 2,
+    BOLT_STATE_EXTENDED  = 2,
 };
 
-enum BoltLockActorMethod {
-    BOLT_LOCK_ACTOR_METHOD_OTHER = 1,
-    BOLT_LOCK_ACTOR_METHOD_PHYSICAL = 2,
-    BOLT_LOCK_ACTOR_METHOD_KEYPAD_PIN = 3,
-    BOLT_LOCK_ACTOR_METHOD_LOCAL_IMPLICIT = 4,
+enum BoltLockActorMethod
+{
+    BOLT_LOCK_ACTOR_METHOD_OTHER                = 1,
+    BOLT_LOCK_ACTOR_METHOD_PHYSICAL             = 2,
+    BOLT_LOCK_ACTOR_METHOD_KEYPAD_PIN           = 3,
+    BOLT_LOCK_ACTOR_METHOD_LOCAL_IMPLICIT       = 4,
     BOLT_LOCK_ACTOR_METHOD_REMOTE_USER_EXPLICIT = 5,
     BOLT_LOCK_ACTOR_METHOD_REMOTE_USER_IMPLICIT = 6,
-    BOLT_LOCK_ACTOR_METHOD_REMOTE_USER_OTHER = 7,
-    BOLT_LOCK_ACTOR_METHOD_REMOTE_DELEGATE = 8,
-    BOLT_LOCK_ACTOR_METHOD_LOW_POWER_SHUTDOWN = 9,
-    BOLT_LOCK_ACTOR_METHOD_VOICE_ASSISTANT = 10,
+    BOLT_LOCK_ACTOR_METHOD_REMOTE_USER_OTHER    = 7,
+    BOLT_LOCK_ACTOR_METHOD_REMOTE_DELEGATE      = 8,
+    BOLT_LOCK_ACTOR_METHOD_LOW_POWER_SHUTDOWN   = 9,
+    BOLT_LOCK_ACTOR_METHOD_VOICE_ASSISTANT      = 10,
 };
 
-enum BoltActuatorState {
-    BOLT_ACTUATOR_STATE_OK = 1,
-    BOLT_ACTUATOR_STATE_LOCKING = 2,
-    BOLT_ACTUATOR_STATE_UNLOCKING = 3,
-    BOLT_ACTUATOR_STATE_MOVING = 4,
-    BOLT_ACTUATOR_STATE_JAMMED_LOCKING = 5,
+enum BoltActuatorState
+{
+    BOLT_ACTUATOR_STATE_OK               = 1,
+    BOLT_ACTUATOR_STATE_LOCKING          = 2,
+    BOLT_ACTUATOR_STATE_UNLOCKING        = 3,
+    BOLT_ACTUATOR_STATE_MOVING           = 4,
+    BOLT_ACTUATOR_STATE_JAMMED_LOCKING   = 5,
     BOLT_ACTUATOR_STATE_JAMMED_UNLOCKING = 6,
-    BOLT_ACTUATOR_STATE_JAMMED_OTHER = 7,
+    BOLT_ACTUATOR_STATE_JAMMED_OTHER     = 7,
 };
 
-enum BoltLockedState {
+enum BoltLockedState
+{
     BOLT_LOCKED_STATE_UNLOCKED = 1,
-    BOLT_LOCKED_STATE_LOCKED = 2,
-    BOLT_LOCKED_STATE_UNKNOWN = 3,
+    BOLT_LOCKED_STATE_LOCKED   = 2,
+    BOLT_LOCKED_STATE_UNKNOWN  = 3,
 };
 
 } // namespace BoltLockTrait

@@ -53,13 +53,13 @@ Command::Command(void)
 
 WEAVE_ERROR Command::Init(nl::Weave::ExchangeContext * aEC)
 {
-    mEC = aEC;
-    mFlags = 0;
-    commandType = 0;
-    mustBeVersion = 0;
+    mEC                       = aEC;
+    mFlags                    = 0;
+    commandType               = 0;
+    mustBeVersion             = 0;
     initiationTimeMicroSecond = 0;
-    actionTimeMicroSecond = 0;
-    expiryTimeMicroSecond = 0;
+    actionTimeMicroSecond     = 0;
+    expiryTimeMicroSecond     = 0;
 
     return WEAVE_NO_ERROR;
 }
@@ -278,8 +278,7 @@ WEAVE_ERROR Command::SendInProgress(void)
 
 exit:
     WeaveLogDetail(DataManagement, "Command[%d] [%04" PRIX16 "] %s %s", SubscriptionEngine::GetInstance()->GetCommandObjId(this),
-                   (NULL != mEC) ? mEC->ExchangeId : 0xFFFF,
-                   IsOneWay() ? "OneWay: Dropping Response to Sender in": "", __func__);
+                   (NULL != mEC) ? mEC->ExchangeId : 0xFFFF, IsOneWay() ? "OneWay: Dropping Response to Sender in" : "", __func__);
 
     WeaveLogFunctError(err);
 
@@ -400,8 +399,7 @@ WEAVE_ERROR Command::SendResponse(uint32_t traitInstanceVersion, nl::Weave::Syst
 
 exit:
     WeaveLogDetail(DataManagement, "Command[%d] [%04" PRIX16 "] %s %s", SubscriptionEngine::GetInstance()->GetCommandObjId(this),
-                   (NULL != mEC) ? mEC->ExchangeId : 0xFFFF,
-                   IsOneWay() ? "OneWay: Dropping Response to Sender in": "", __func__);
+                   (NULL != mEC) ? mEC->ExchangeId : 0xFFFF, IsOneWay() ? "OneWay: Dropping Response to Sender in" : "", __func__);
 
     WeaveLogFunctError(err);
 

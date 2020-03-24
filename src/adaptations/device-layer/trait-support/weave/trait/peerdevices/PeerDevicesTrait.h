@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace PeerDevicesTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1301U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1301U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -115,12 +115,12 @@ struct PeerDevice
     bool deviceReady;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct PeerDevice_array {
+struct PeerDevice_array
+{
     uint32_t num;
-    PeerDevice *buf;
+    PeerDevice * buf;
 };
 
 } // namespace PeerDevicesTrait

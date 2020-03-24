@@ -49,22 +49,21 @@ class PlatformManagerImpl;
 namespace Internal {
 
 class NetworkProvisioningServerImpl;
-template<class ImplClass> class GenericNetworkProvisioningServerImpl;
+template <class ImplClass> class GenericNetworkProvisioningServerImpl;
 
 } // namespace Internal
 
 /**
  * Concrete implementation of the ConnectivityManager singleton object for the ESP32 platform.
  */
-class ConnectivityManagerImpl final
-    : public ConnectivityManager,
-      public Internal::GenericConnectivityManagerImpl<ConnectivityManagerImpl>,
+class ConnectivityManagerImpl final : public ConnectivityManager,
+                                      public Internal::GenericConnectivityManagerImpl<ConnectivityManagerImpl>,
 #if WEAVE_DEVICE_CONFIG_ENABLE_WOBLE
-      public Internal::GenericConnectivityManagerImpl_BLE<ConnectivityManagerImpl>,
+                                      public Internal::GenericConnectivityManagerImpl_BLE<ConnectivityManagerImpl>,
 #else
-      public Internal::GenericConnectivityManagerImpl_NoBLE<ConnectivityManagerImpl>,
+                                      public Internal::GenericConnectivityManagerImpl_NoBLE<ConnectivityManagerImpl>,
 #endif
-      public Internal::GenericConnectivityManagerImpl_NoThread<ConnectivityManagerImpl>
+                                      public Internal::GenericConnectivityManagerImpl_NoThread<ConnectivityManagerImpl>
 {
     using TunnelConnNotifyReasons = ::nl::Weave::Profiles::WeaveTunnel::WeaveTunnelConnectionMgr::TunnelConnNotifyReasons;
 
@@ -73,7 +72,6 @@ class ConnectivityManagerImpl final
     friend class ConnectivityManager;
 
 private:
-
     // ===== Members that implement the ConnectivityManager abstract interface.
 
     WiFiStationMode _GetWiFiStationMode(void);
@@ -141,11 +139,11 @@ private:
 
     enum Flags
     {
-        kFlag_HaveIPv4InternetConnectivity      = 0x0001,
-        kFlag_HaveIPv6InternetConnectivity      = 0x0002,
-        kFlag_ServiceTunnelStarted              = 0x0004,
-        kFlag_ServiceTunnelUp                   = 0x0008,
-        kFlag_AwaitingConnectivity              = 0x0010,
+        kFlag_HaveIPv4InternetConnectivity = 0x0001,
+        kFlag_HaveIPv6InternetConnectivity = 0x0002,
+        kFlag_ServiceTunnelStarted         = 0x0004,
+        kFlag_ServiceTunnelUp              = 0x0008,
+        kFlag_AwaitingConnectivity         = 0x0010,
     };
 
     uint64_t mLastStationConnectFailTime;
@@ -181,7 +179,7 @@ private:
     static const char * WiFiStationStateToStr(WiFiStationState state);
     static const char * WiFiAPStateToStr(WiFiAPState state);
     static void RefreshMessageLayer(void);
-    static void HandleServiceTunnelNotification(TunnelConnNotifyReasons reason, WEAVE_ERROR err, void *appCtxt);
+    static void HandleServiceTunnelNotification(TunnelConnNotifyReasons reason, WEAVE_ERROR err, void * appCtxt);
 };
 
 inline bool ConnectivityManagerImpl::_IsWiFiStationApplicationControlled(void)
@@ -243,7 +241,6 @@ inline bool ConnectivityManagerImpl::_HaveServiceConnectivity(void)
 {
     return HaveServiceConnectivityViaTunnel() || HaveServiceConnectivityViaThread();
 }
-
 
 /**
  * Returns the public interface of the ConnectivityManager singleton object.

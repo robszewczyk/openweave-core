@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,8 +38,9 @@ namespace UserNFCTokenAccessTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe13U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe13U
 };
 
 //
@@ -57,22 +56,24 @@ struct UserNFCTokenAccessEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsUserIdPresent(void);
 #endif
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xe13U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xe13U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct UserNFCTokenAccessEvent_array {
+struct UserNFCTokenAccessEvent_array
+{
     uint32_t num;
-    UserNFCTokenAccessEvent *buf;
+    UserNFCTokenAccessEvent * buf;
 };
 
 inline void UserNFCTokenAccessEvent::SetUserIdNull(void)
@@ -96,14 +97,15 @@ inline bool UserNFCTokenAccessEvent::IsUserIdPresent(void)
 // Enums
 //
 
-enum UserNFCTokenAccessResult {
-    USER_NFC_TOKEN_ACCESS_RESULT_SUCCESS = 1,
-    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_UNKNOWN_TOKEN = 2,
-    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_INVALID_TOKEN = 3,
+enum UserNFCTokenAccessResult
+{
+    USER_NFC_TOKEN_ACCESS_RESULT_SUCCESS                 = 1,
+    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_UNKNOWN_TOKEN   = 2,
+    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_INVALID_TOKEN   = 3,
     USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_OUT_OF_SCHEDULE = 4,
-    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_TOKEN_DISABLED = 5,
+    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_TOKEN_DISABLED  = 5,
     USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_INVALID_VERSION = 6,
-    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_OTHER_REASON = 7,
+    USER_NFC_TOKEN_ACCESS_RESULT_FAILURE_OTHER_REASON    = 7,
 };
 
 } // namespace UserNFCTokenAccessTrait

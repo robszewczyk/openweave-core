@@ -55,12 +55,12 @@ private:
     // ===== Members that implement the ConfigurationManager public interface.
 
     WEAVE_ERROR _Init(void);
-    WEAVE_ERROR _GetPrimaryWiFiMACAddress(uint8_t *buf);
-    WEAVE_ERROR _GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor &deviceDesc);
-    ::nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase *_GetGroupKeyStore(void);
-    bool                                                         _CanFactoryReset(void);
-    void                                                         _InitiateFactoryReset(void);
-    WEAVE_ERROR _ReadPersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key key, uint32_t &value);
+    WEAVE_ERROR _GetPrimaryWiFiMACAddress(uint8_t * buf);
+    WEAVE_ERROR _GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor & deviceDesc);
+    ::nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase * _GetGroupKeyStore(void);
+    bool _CanFactoryReset(void);
+    void _InitiateFactoryReset(void);
+    WEAVE_ERROR _ReadPersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key key, uint32_t & value);
     WEAVE_ERROR _WritePersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key key, uint32_t value);
 
     // NOTE: Other public interface methods are implemented by GenericConfigurationManagerImpl<>.
@@ -68,8 +68,8 @@ private:
     // ===== Members for internal use by the following friends.
 
     friend class Internal::NetworkProvisioningServerImpl;
-    friend ConfigurationManager &    ConfigurationMgr(void);
-    friend ConfigurationManagerImpl &ConfigurationMgrImpl(void);
+    friend ConfigurationManager & ConfigurationMgr(void);
+    friend ConfigurationManagerImpl & ConfigurationMgrImpl(void);
 
     static ConfigurationManagerImpl sInstance;
 
@@ -84,7 +84,7 @@ private:
  * Weave applications should use this to access features of the ConfigurationManager object
  * that are common to all platforms.
  */
-inline ConfigurationManager &ConfigurationMgr(void)
+inline ConfigurationManager & ConfigurationMgr(void)
 {
     return ConfigurationManagerImpl::sInstance;
 }
@@ -95,12 +95,12 @@ inline ConfigurationManager &ConfigurationMgr(void)
  * Weave applications can use this to gain access to features of the ConfigurationManager
  * that are specific to the ESP32 platform.
  */
-inline ConfigurationManagerImpl &ConfigurationMgrImpl(void)
+inline ConfigurationManagerImpl & ConfigurationMgrImpl(void)
 {
     return ConfigurationManagerImpl::sInstance;
 }
 
-inline WEAVE_ERROR ConfigurationManagerImpl::_GetPrimaryWiFiMACAddress(uint8_t *buf)
+inline WEAVE_ERROR ConfigurationManagerImpl::_GetPrimaryWiFiMACAddress(uint8_t * buf)
 {
     return WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE;
 }

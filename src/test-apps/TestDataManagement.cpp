@@ -51,38 +51,37 @@ using namespace ::nl::Weave::Profiles::StatusReporting;
 
 #define TOOL_NAME "TestDataManagement"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
-static void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
-static void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
+static void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                           uint64_t peerNodeId, uint8_t encType);
+static void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                     uint64_t peerNodeId, StatusReport * statusReport);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 // static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
 
 uint64_t DestNodeId;
 IPAddress DestAddr = IPAddress::Any; // TODO BUG: This isn't used anywhere, despite being settable from the command-line.
-bool Debug = false;
+bool Debug         = false;
 
 /*
  * in some circumstances we may want to use multiple clients and then
  * we have to count them to know when we're done.
  */
 
-uint8_t gClientCount = 1;
+uint8_t gClientCount   = 1;
 uint8_t gClientCounter = 0;
-int gCyclingCnt = 32;
+int gCyclingCnt        = 32;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "dest-addr",      kArgumentRequired,  'D' },
-    { "cycling-cnt",    kArgumentRequired,  'c' },
+static OptionDef gToolOptionDefs[] = { { "dest-addr", kArgumentRequired, 'D' },
+                                       { "cycling-cnt", kArgumentRequired, 'c' },
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-    { "allow-dups",     kNoArgument,        'A' },
+                                       { "allow-dups", kNoArgument, 'A' },
 #endif
-    { }
-};
+                                       { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -D, --dest-addr <dest-node-ip-addr>\n"
     "       Send weave messages to a specific IPv4/IPv6 address rather than one\n"
     "       derived the destination node id.\n"
@@ -97,66 +96,42 @@ static const char *gToolOptionHelp =
 #endif
     "";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] [<dest-node-id>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>] [<dest-node-id>]\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-#define EnterTest(_name_, _errName_)                 \
-  WEAVE_ERROR _errName_ = (                          \
-    printf("\n\n"                                    \
-           _name_                                    \
-           "---\n"),                                 \
-    WEAVE_NO_ERROR                                   \
-  )
+#define EnterTest(_name_, _errName_) WEAVE_ERROR _errName_ = (printf("\n\n" _name_ "---\n"), WEAVE_NO_ERROR)
 
-#define DriveTest(_done_)                            \
-  do {                                               \
-    while (!(_done_))                                \
-    {                                                \
-        struct timeval sleepTime;                    \
-        sleepTime.tv_sec = 0;                        \
-        sleepTime.tv_usec = 100000;                  \
-        ServiceNetwork(sleepTime);                   \
-    }                                                \
-  } while (0)
+#define DriveTest(_done_)                                                                                                          \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        while (!(_done_))                                                                                                          \
+        {                                                                                                                          \
+            struct timeval sleepTime;                                                                                              \
+            sleepTime.tv_sec  = 0;                                                                                                 \
+            sleepTime.tv_usec = 100000;                                                                                            \
+            ServiceNetwork(sleepTime);                                                                                             \
+        }                                                                                                                          \
+    } while (0)
 
-#define ExitTest(_err_)                              \
-  do {                                               \
-    if ((_err_) == WEAVE_NO_ERROR)                   \
-        printf("Success\n");                         \
-    else                                             \
-    {                                                \
-        printf("error: %s\n", ErrorStr(_err_));      \
-        exit(-1);                                    \
-    }                                                \
-  } while (0)
+#define ExitTest(_err_)                                                                                                            \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((_err_) == WEAVE_NO_ERROR)                                                                                             \
+            printf("Success\n");                                                                                                   \
+        else                                                                                                                       \
+        {                                                                                                                          \
+            printf("error: %s\n", ErrorStr(_err_));                                                                                \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-static WEAVE_ERROR ValidatePath(TLVReader &aReader,
-                                const uint64_t &aTag,
-                                uint32_t aProfileId,
-                                const uint64_t &aInstanceId,
-                                uint32_t aPathLen,
-                                ...)
+static WEAVE_ERROR ValidatePath(TLVReader & aReader, const uint64_t & aTag, uint32_t aProfileId, const uint64_t & aInstanceId,
+                                uint32_t aPathLen, ...)
 {
     WEAVE_ERROR err;
 
@@ -281,11 +256,10 @@ exit:
  * a sub-class of the WDM client and supply the relevant methods as follows.
  */
 
-class DMTestClient :
-    public DMClient
+class DMTestClient : public DMClient
 {
 public:
-    WEAVE_ERROR ViewConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR ViewConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -296,7 +270,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR ViewConfirm(const uint64_t &aResponderId, ReferencedTLVData &aDataList, uint16_t aTxnId)
+    WEAVE_ERROR ViewConfirm(const uint64_t & aResponderId, ReferencedTLVData & aDataList, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -312,7 +286,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR UpdateConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR UpdateConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -327,14 +301,14 @@ public:
         return err;
     }
 
-    void IncompleteIndication(const uint64_t &aPeerNodeId, StatusReport &aReport)
+    void IncompleteIndication(const uint64_t & aPeerNodeId, StatusReport & aReport)
     {
         printf("processing: <incomplete indication>\n");
     }
 
 #if WEAVE_CONFIG_WDM_ALLOW_CLIENT_SUBSCRIPTION
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -348,9 +322,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId,
-                                 const TopicIdentifier &aTopicId,
-                                 uint16_t aTxnId)
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -361,9 +333,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId,
-                                 const TopicIdentifier &aTopicId,
-                                 ReferencedTLVData &aDataList,
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList,
                                  uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -387,14 +357,15 @@ public:
         return err;
     }
 
-    WEAVE_ERROR UnsubscribeIndication(const uint64_t &aPublisherId, const TopicIdentifier &aTopicId, StatusReport &aReport)
+    WEAVE_ERROR UnsubscribeIndication(const uint64_t & aPublisherId, const TopicIdentifier & aTopicId, StatusReport & aReport)
     {
-    printf("processing: <unsubscribe indication 0x%" PRIx64 ", 0x%" PRIx64 ">\n", aPublisherId, aTopicId);
+        printf("processing: <unsubscribe indication 0x%" PRIx64 ", 0x%" PRIx64 ">\n", aPublisherId, aTopicId);
 
-    return WEAVE_NO_ERROR;
+        return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR CancelSubscriptionConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR CancelSubscriptionConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, StatusReport & aStatus,
+                                          uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -414,7 +385,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR NotifyIndication(const TopicIdentifier &aTopicId, ReferencedTLVData &aDataList)
+    WEAVE_ERROR NotifyIndication(const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -447,10 +418,7 @@ public:
 class DMClientTester
 {
 public:
-    DMClientTester(uint8_t aTransport)
-    {
-        mTransport = aTransport;
-    }
+    DMClientTester(uint8_t aTransport) { mTransport = aTransport; }
 
     /*
      * test cases
@@ -488,15 +456,11 @@ public:
         err = StartDataListElement(writer);
         SuccessOrExit(err);
 
-        err = EncodePath(writer,
-                         ContextTag(kTag_WDMDataListElementPath),
-                         kWeaveProfile_Test,
-                         kInstanceIdNotSpecified,
-                         1,
+        err = EncodePath(writer, ContextTag(kTag_WDMDataListElementPath), kWeaveProfile_Test, kInstanceIdNotSpecified, 1,
                          ContextTag(kTag_IntegerItem));
         SuccessOrExit(err);
 
-        err = writer.Put(ContextTag(kTag_WDMDataListElementVersion), (uint64_t)1); // increment version
+        err = writer.Put(ContextTag(kTag_WDMDataListElementVersion), (uint64_t) 1); // increment version
         SuccessOrExit(err);
 
         err = writer.Put(ContextTag(kTag_WDMDataListElementData), 1); // write 1
@@ -516,7 +480,7 @@ public:
         err = client.mDatabase.Store(dataList);
         SuccessOrExit(err);
 
-        assert(client.mDatabase.mTestData.mVersion == 1); // check for 1
+        assert(client.mDatabase.mTestData.mVersion == 1);     // check for 1
         assert(client.mDatabase.mTestData.mIntegerItem == 1); // check for 1
 
     exit:
@@ -582,11 +546,7 @@ public:
         err = OpenDataListElement(dataListRdr, pathRdr, version);
         SuccessOrExit(err);
 
-        err = ValidatePath(pathRdr,
-                           ContextTag(kTag_WDMDataListElementPath),
-                           kWeaveProfile_Test,
-                           kInstanceIdNotSpecified,
-                           1,
+        err = ValidatePath(pathRdr, ContextTag(kTag_WDMDataListElementPath), kWeaveProfile_Test, kInstanceIdNotSpecified, 1,
                            ContextTag(kTag_IntegerItem));
         SuccessOrExit(err);
 
@@ -663,7 +623,7 @@ public:
          * back by applying the data list.
          */
 
-        client.mDatabase.mTestData.mVersion = 1;
+        client.mDatabase.mTestData.mVersion     = 1;
         client.mDatabase.mTestData.mIntegerItem = 1;
 
         err = client.mDatabase.Store(dataList);
@@ -791,7 +751,7 @@ public:
 
         for (uint16_t i = 0; i < gCyclingCnt; i++)
         {
-            uint64_t currentVersion = client.mDatabase.mTestData.mVersion;
+            uint64_t currentVersion                 = client.mDatabase.mTestData.mVersion;
             client.mDatabase.mTestData.mIntegerItem = i;
 
             // use path list to extract a data list
@@ -890,7 +850,7 @@ public:
 
             // drive
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -945,7 +905,7 @@ public:
         err = client.CancelSubscriptionRequest(kTestTopic, 1, kDefaultDMResponseTimeout);
         SuccessOrExit(err);
 
-        Done = false;
+        Done           = false;
         gClientCounter = 0;
         DriveTest(Done);
 
@@ -957,7 +917,7 @@ public:
         err = client.CancelSubscriptionRequest(kTestTopic, 1, kDefaultDMResponseTimeout);
         SuccessOrExit(err);
 
-        Done = false;
+        Done           = false;
         gClientCounter = 0;
         DriveTest(Done);
 
@@ -966,7 +926,7 @@ public:
         err = client.SubscribeRequest(DestNodeId, kTestTopic, 1, kDefaultDMResponseTimeout);
         SuccessOrExit(err);
 
-        Done = false;
+        Done           = false;
         gClientCounter = 0;
         DriveTest(Done);
 
@@ -975,7 +935,7 @@ public:
         err = client.CancelSubscriptionRequest(kTestTopic, 1, kDefaultDMResponseTimeout);
         SuccessOrExit(err);
 
-        Done = false;
+        Done           = false;
         gClientCounter = 0;
         DriveTest(Done);
 
@@ -984,7 +944,6 @@ public:
         err = client.CancelTransactionRequest(1, err);
         SuccessOrExit(err);
 
-
         for (uint16_t i = 0; i < gCyclingCnt; i++)
         {
             err = client.SubscribeRequest(kTestTopic, 1, kDefaultDMResponseTimeout);
@@ -992,7 +951,7 @@ public:
 
             // now drive
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -1000,7 +959,7 @@ public:
 
             // now wait for a notification
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -1011,12 +970,11 @@ public:
 
             // drive s'more
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
             assert(!client.HasSubscription(kTestTopic));
-
         }
 
     exit:
@@ -1050,7 +1008,7 @@ public:
             err = client1.SubscribeRequest(kTestTopic, 1, kDefaultDMResponseTimeout);
             SuccessOrExit(err);
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -1059,7 +1017,7 @@ public:
 
             // now drive
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -1068,7 +1026,7 @@ public:
 
             // now wait for a notification
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -1082,7 +1040,7 @@ public:
 
             // drive s'more
 
-            Done = false;
+            Done           = false;
             gClientCounter = 0;
             DriveTest(Done);
 
@@ -1390,7 +1348,7 @@ public:
     uint8_t mTransport;
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     if (argc == 1)
     {
@@ -1413,11 +1371,11 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
-    SecurityMgr.OnSessionError = HandleSecureSessionError;
+    SecurityMgr.OnSessionError       = HandleSecureSessionError;
 
     if (DestAddr == IPAddress::Any)
         DestAddr = FabricState.SelectNodeAddress(DestNodeId);
@@ -1435,7 +1393,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -1453,15 +1411,13 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -1481,7 +1437,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -1491,7 +1447,8 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     con->OnConnectionClosed = HandleConnectionClosed;
 }
 
-void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
+void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                    uint64_t peerNodeId, uint8_t encType)
 {
     char ipAddrStr[64] = "";
 
@@ -1501,7 +1458,8 @@ void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *c
     printf("Secure session established with node 0x%" PRIx64 " (%s)\n", peerNodeId, ipAddrStr);
 }
 
-void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport)
+void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                              uint64_t peerNodeId, StatusReport * statusReport)
 {
     char ipAddrStr[64] = "";
 
@@ -1512,12 +1470,13 @@ void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, vo
     }
 
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
-        printf("FAILED to establish secure session with node 0x%" PRIx64 " (%s): %s\n", peerNodeId, ipAddrStr, nl::StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        printf("FAILED to establish secure session with node 0x%" PRIx64 " (%s): %s\n", peerNodeId, ipAddrStr,
+               nl::StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     else
         printf("FAILED to establish secure session with node 0x%" PRIx64 " (%s): %s\n", peerNodeId, ipAddrStr, ErrorStr(localErr));
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     // Note: by contract con MUST NOT be NULL, so it is used without the check.

@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace UserPincodesSettingsTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe01U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe01U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -100,15 +100,15 @@ struct UserPincode
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsPincodeCredentialEnabledPresent(void);
 #endif
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct UserPincode_array {
+struct UserPincode_array
+{
     uint32_t num;
-    UserPincode *buf;
+    UserPincode * buf;
 };
 
 inline void UserPincode::SetPincodeCredentialEnabledNull(void)
@@ -131,33 +131,40 @@ inline bool UserPincode::IsPincodeCredentialEnabledPresent(void)
 // Commands
 //
 
-enum {
-    kSetUserPincodeRequestId = 0x1,
-    kGetUserPincodeRequestId = 0x2,
+enum
+{
+    kSetUserPincodeRequestId    = 0x1,
+    kGetUserPincodeRequestId    = 0x2,
     kDeleteUserPincodeRequestId = 0x3,
 };
 
-enum SetUserPincodeRequestParameters {
+enum SetUserPincodeRequestParameters
+{
     kSetUserPincodeRequestParameter_UserPincode = 1,
 };
 
-enum GetUserPincodeRequestParameters {
+enum GetUserPincodeRequestParameters
+{
     kGetUserPincodeRequestParameter_UserId = 1,
 };
 
-enum DeleteUserPincodeRequestParameters {
+enum DeleteUserPincodeRequestParameters
+{
     kDeleteUserPincodeRequestParameter_UserId = 1,
 };
 
-enum SetUserPincodeResponseParameters {
+enum SetUserPincodeResponseParameters
+{
     kSetUserPincodeResponseParameter_Status = 1,
 };
 
-enum GetUserPincodeResponseParameters {
+enum GetUserPincodeResponseParameters
+{
     kGetUserPincodeResponseParameter_UserPincode = 1,
 };
 
-enum DeleteUserPincodeResponseParameters {
+enum DeleteUserPincodeResponseParameters
+{
     kDeleteUserPincodeResponseParameter_Status = 1,
 };
 
@@ -165,14 +172,15 @@ enum DeleteUserPincodeResponseParameters {
 // Enums
 //
 
-enum PincodeErrorCodes {
-    PINCODE_ERROR_CODES_DUPLICATE_PINCODE = 1,
-    PINCODE_ERROR_CODES_TOO_MANY_PINCODES = 2,
-    PINCODE_ERROR_CODES_INVALID_PINCODE = 3,
+enum PincodeErrorCodes
+{
+    PINCODE_ERROR_CODES_DUPLICATE_PINCODE       = 1,
+    PINCODE_ERROR_CODES_TOO_MANY_PINCODES       = 2,
+    PINCODE_ERROR_CODES_INVALID_PINCODE         = 3,
     PINCODE_ERROR_CODES_SUCCESS_PINCODE_DELETED = 4,
-    PINCODE_ERROR_CODES_SUCCESS_PINCODE_STATUS = 5,
-    PINCODE_ERROR_CODES_DUPLICATE_NONCE = 6,
-    PINCODE_ERROR_CODES_EXCEEDED_RATE_LIMIT = 7,
+    PINCODE_ERROR_CODES_SUCCESS_PINCODE_STATUS  = 5,
+    PINCODE_ERROR_CODES_DUPLICATE_NONCE         = 6,
+    PINCODE_ERROR_CODES_EXCEEDED_RATE_LIMIT     = 7,
 };
 
 } // namespace UserPincodesSettingsTrait

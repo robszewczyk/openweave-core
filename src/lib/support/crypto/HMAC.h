@@ -37,34 +37,33 @@ namespace nl {
 namespace Weave {
 namespace Crypto {
 
+using nl::Weave::ASN1::OID;
 using nl::Weave::TLV::TLVReader;
 using nl::Weave::TLV::TLVWriter;
-using nl::Weave::ASN1::OID;
 
-template <class H>
-class NL_DLL_EXPORT HMAC
+template <class H> class NL_DLL_EXPORT HMAC
 {
 public:
     enum
     {
-        kDigestLength           = H::kHashLength
+        kDigestLength = H::kHashLength
     };
 
     HMAC(void);
     ~HMAC(void);
 
-    void Begin(const uint8_t *keyData, uint16_t keyLen);
-    void AddData(const uint8_t *msgData, uint16_t dataLen);
+    void Begin(const uint8_t * keyData, uint16_t keyLen);
+    void AddData(const uint8_t * msgData, uint16_t dataLen);
 #if WEAVE_WITH_OPENSSL
-    void AddData(const BIGNUM& num);
+    void AddData(const BIGNUM & num);
 #endif
-    void Finish(uint8_t *hashBuf);
+    void Finish(uint8_t * hashBuf);
     void Reset(void);
 
 private:
     enum
     {
-        kBlockLength            = H::kBlockLength
+        kBlockLength = H::kBlockLength
     };
 
     H mHash;
@@ -76,7 +75,6 @@ typedef HMAC<Platform::Security::SHA1> HMACSHA1;
 
 typedef HMAC<Platform::Security::SHA256> HMACSHA256;
 
-
 class EncodedHMACSignature
 {
 public:
@@ -85,16 +83,16 @@ public:
         kMaxValueLength = HMACSHA256::kDigestLength
     };
 
-    uint8_t *Sig;
+    uint8_t * Sig;
     uint8_t Len;
 
-    bool IsEqual(const EncodedHMACSignature& other) const;
+    bool IsEqual(const EncodedHMACSignature & other) const;
 
-    WEAVE_ERROR ReadSignature(TLVReader& reader);
-    WEAVE_ERROR WriteSignature(TLVWriter& writer, uint64_t tag) const;
+    WEAVE_ERROR ReadSignature(TLVReader & reader);
+    WEAVE_ERROR WriteSignature(TLVWriter & writer, uint64_t tag) const;
 };
 
-inline WEAVE_ERROR EncodedHMACSignature::WriteSignature(TLVWriter& writer, uint64_t tag) const
+inline WEAVE_ERROR EncodedHMACSignature::WriteSignature(TLVWriter & writer, uint64_t tag) const
 {
     return writer.PutBytes(tag, Sig, Len);
 }
@@ -103,14 +101,10 @@ inline WEAVE_ERROR EncodedHMACSignature::WriteSignature(TLVWriter& writer, uint6
 // Primary HMAC utility functions used by Weave security code.
 // =============================================================
 
-extern WEAVE_ERROR GenerateAndEncodeWeaveHMACSignature(OID sigAlgoOID,
-                                                       TLVWriter& writer, uint64_t tag,
-                                                       const uint8_t * data, uint16_t dataLen,
-                                                       const uint8_t * key, uint16_t keyLen);
+extern WEAVE_ERROR GenerateAndEncodeWeaveHMACSignature(OID sigAlgoOID, TLVWriter & writer, uint64_t tag, const uint8_t * data,
+                                                       uint16_t dataLen, const uint8_t * key, uint16_t keyLen);
 
-extern WEAVE_ERROR VerifyHMACSignature(OID sigAlgoOID,
-                                       const uint8_t * data, uint16_t dataLen,
-                                       const EncodedHMACSignature& sig,
+extern WEAVE_ERROR VerifyHMACSignature(OID sigAlgoOID, const uint8_t * data, uint16_t dataLen, const EncodedHMACSignature & sig,
                                        const uint8_t * key, uint16_t keyLen);
 
 } // namespace Crypto

@@ -23,12 +23,11 @@
  *
  */
 
-
 #include <sys/time.h>
 #include <SystemLayer/SystemPacketBuffer.h>
 #include <Weave/Core/WeaveCore.h>
 
-#define NETWORK_SLEEP_TIME_MSECS  (100 * 1000)
+#define NETWORK_SLEEP_TIME_MSECS (100 * 1000)
 
 extern uint64_t gDestNodeId;
 extern nl::Inet::IPAddress gLocalv6Addr;
@@ -49,5 +48,5 @@ inline uint64_t Now(void)
 {
     struct timeval now;
     gettimeofday(&now, NULL);
-    return ((uint64_t)now.tv_sec * 1000000) + (uint64_t)now.tv_usec;
+    return ((uint64_t) now.tv_sec * 1000000) + (uint64_t) now.tv_usec;
 }

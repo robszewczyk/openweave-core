@@ -31,17 +31,12 @@
 
 namespace nl {
 
-template < class TEvent >
-nl::Weave::Profiles::DataManagement::event_id_t LogEvent(TEvent* aEvent)
+template <class TEvent> nl::Weave::Profiles::DataManagement::event_id_t LogEvent(TEvent * aEvent)
 {
-    nl::StructureSchemaPointerPair structureSchemaPair = {
-        (void *)aEvent,
-        &TEvent::FieldSchema
-    };
+    nl::StructureSchemaPointerPair structureSchemaPair = { (void *) aEvent, &TEvent::FieldSchema };
 
-    return nl::Weave::Profiles::DataManagement::LogEvent(TEvent::Schema,
-        nl::SerializedDataToTLVWriterHelper,
-        (void *)&structureSchemaPair);
+    return nl::Weave::Profiles::DataManagement::LogEvent(TEvent::Schema, nl::SerializedDataToTLVWriterHelper,
+                                                         (void *) &structureSchemaPair);
 }
 
 /**
@@ -52,53 +47,36 @@ nl::Weave::Profiles::DataManagement::event_id_t LogEvent(TEvent* aEvent)
  *    It does so by setting the '__nullified_fields' member within the code-generated
  *    structure to 0xFFs (bit set = null, bit cleared = not-null).
  */
-template < class TEvent >
-void NullifyAllEventFields(TEvent *aEvent)
+template <class TEvent> void NullifyAllEventFields(TEvent * aEvent)
 {
     memset(aEvent->__nullified_fields__, 0xff, sizeof(aEvent->__nullified_fields__));
 }
 
-template < class TEvent >
-nl::Weave::Profiles::DataManagement::event_id_t LogEvent(TEvent* aEvent,
-    const nl::Weave::Profiles::DataManagement::EventOptions& aOptions)
+template <class TEvent>
+nl::Weave::Profiles::DataManagement::event_id_t LogEvent(TEvent * aEvent,
+                                                         const nl::Weave::Profiles::DataManagement::EventOptions & aOptions)
 {
-    nl::StructureSchemaPointerPair structureSchemaPair = {
-        (void *)aEvent,
-        &TEvent::FieldSchema
-    };
+    nl::StructureSchemaPointerPair structureSchemaPair = { (void *) aEvent, &TEvent::FieldSchema };
 
-    return nl::Weave::Profiles::DataManagement::LogEvent(TEvent::Schema,
-        nl::SerializedDataToTLVWriterHelper,
-        (void *)&structureSchemaPair,
-        &aOptions);
+    return nl::Weave::Profiles::DataManagement::LogEvent(TEvent::Schema, nl::SerializedDataToTLVWriterHelper,
+                                                         (void *) &structureSchemaPair, &aOptions);
 }
 
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
-template < class TEvent >
-WEAVE_ERROR DeserializeEvent(nl::Weave::TLV::TLVReader &aReader,
-    TEvent *aEvent,
-    nl::SerializationContext *aContext)
+template <class TEvent>
+WEAVE_ERROR DeserializeEvent(nl::Weave::TLV::TLVReader & aReader, TEvent * aEvent, nl::SerializationContext * aContext)
 {
-    nl::StructureSchemaPointerPair structureSchemaPair = {
-        (void *)aEvent,
-        &TEvent::FieldSchema
-    };
+    nl::StructureSchemaPointerPair structureSchemaPair = { (void *) aEvent, &TEvent::FieldSchema };
 
-    return nl::TLVReaderToDeserializedDataHelper(aReader,
-        nl::Weave::Profiles::DataManagement::kTag_EventData,
-        (void *)&structureSchemaPair,
-        aContext);
+    return nl::TLVReaderToDeserializedDataHelper(aReader, nl::Weave::Profiles::DataManagement::kTag_EventData,
+                                                 (void *) &structureSchemaPair, aContext);
 }
 
-template < class TEvent >
-WEAVE_ERROR DeallocateEvent(TEvent *aEvent,
-    nl::SerializationContext *aContext)
+template <class TEvent> WEAVE_ERROR DeallocateEvent(TEvent * aEvent, nl::SerializationContext * aContext)
 {
-    return nl::DeallocateDeserializedStructure(aEvent,
-        &TEvent::FieldSchema,
-        aContext);
+    return nl::DeallocateDeserializedStructure(aEvent, &TEvent::FieldSchema, aContext);
 }
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 
-} // nl
+} // namespace nl
 #endif // TRAITEVENT_UTILS_H

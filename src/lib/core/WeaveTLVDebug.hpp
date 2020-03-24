@@ -48,22 +48,23 @@ namespace TLV {
  */
 namespace Debug {
 
-typedef void (*DumpWriter)(const char *aFormat, ...);
+typedef void (*DumpWriter)(const char * aFormat, ...);
 
-struct DumpContext {
+struct DumpContext
+{
     DumpWriter mWriter;
-    void *     mContext;
+    void * mContext;
 };
 
-extern const char *DecodeType(const TLVType aType);
+extern const char * DecodeType(const TLVType aType);
 
-extern const char *DecodeTagControl(const TLVTagControl aTagControl);
+extern const char * DecodeTagControl(const TLVTagControl aTagControl);
 
-extern WEAVE_ERROR DumpIterator(DumpWriter aWriter, const TLVReader &aReader);
+extern WEAVE_ERROR DumpIterator(DumpWriter aWriter, const TLVReader & aReader);
 
-extern WEAVE_ERROR DumpHandler(const TLVReader &aReader, size_t aDepth, void *aContext);
+extern WEAVE_ERROR DumpHandler(const TLVReader & aReader, size_t aDepth, void * aContext);
 
-extern WEAVE_ERROR Dump(const TLVReader &aReader, DumpWriter aWriter);
+extern WEAVE_ERROR Dump(const TLVReader & aReader, DumpWriter aWriter);
 
 } // namespace Debug
 

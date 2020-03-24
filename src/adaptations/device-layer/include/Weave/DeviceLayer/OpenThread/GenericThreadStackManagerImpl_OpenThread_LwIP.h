@@ -49,18 +49,15 @@ namespace Internal {
  * intended to be inherited, directly or indirectly, by the ThreadStackManagerImpl class, which
  * also appears as the template's ImplClass parameter.
  */
-template<class ImplClass>
-class GenericThreadStackManagerImpl_OpenThread_LwIP :
-    public GenericThreadStackManagerImpl_OpenThread<ImplClass>
+template <class ImplClass>
+class GenericThreadStackManagerImpl_OpenThread_LwIP : public GenericThreadStackManagerImpl_OpenThread<ImplClass>
 {
 public:
-
     // ===== Platform-specific methods directly callable by the application.
 
     struct netif * ThreadNetIf() const;
 
 protected:
-
     // ===== Methods that implement the ThreadStackManager abstract interface.
 
     void _OnPlatformEvent(const WeaveDeviceEvent * event);
@@ -71,7 +68,6 @@ protected:
     void UpdateThreadInterface(bool addrChange);
 
 private:
-
     // ===== Private members for use by this class only.
 
     struct netif * mNetIf;
@@ -85,14 +81,13 @@ private:
 #endif
     static void ReceivePacket(otMessage * pkt, void * context);
 
-    inline ImplClass * Impl() { return static_cast<ImplClass*>(this); }
+    inline ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 };
 
 // Instruct the compiler to instantiate the template only when explicitly told to do so.
 extern template class GenericThreadStackManagerImpl_OpenThread_LwIP<ThreadStackManagerImpl>;
 
-template<class ImplClass>
-inline struct netif * GenericThreadStackManagerImpl_OpenThread_LwIP<ImplClass>::ThreadNetIf() const
+template <class ImplClass> inline struct netif * GenericThreadStackManagerImpl_OpenThread_LwIP<ImplClass>::ThreadNetIf() const
 {
     return mNetIf;
 }

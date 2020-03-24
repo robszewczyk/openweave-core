@@ -26,21 +26,15 @@
 namespace nl {
 namespace Weave {
 
-PersistedCounter::PersistedCounter(void) :
-    MonotonicallyIncreasingCounter(),
-    mStartingCounterValue(0),
-    mEpoch(0)
+PersistedCounter::PersistedCounter(void) : MonotonicallyIncreasingCounter(), mStartingCounterValue(0), mEpoch(0)
 {
     memset(&mId, 0, sizeof(mId));
 }
 
-PersistedCounter::~PersistedCounter(void)
-{
-}
+PersistedCounter::~PersistedCounter(void) { }
 
 WEAVE_ERROR
-PersistedCounter::Init(const nl::Weave::Platform::PersistedStorage::Key aId,
-                       uint32_t aEpoch)
+PersistedCounter::Init(const nl::Weave::Platform::PersistedStorage::Key aId, uint32_t aEpoch)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -83,9 +77,9 @@ PersistedCounter::AdvanceEpochRelative(uint32_t aValue)
 {
     WEAVE_ERROR ret;
 
-    mStartingCounterValue = (aValue / mEpoch) * mEpoch;  // Start of enclosing epoch
-    mCounterValue = mStartingCounterValue + mEpoch - 1;  // Move to end of enclosing epoch
-    ret = IncrementCount(); // Force to next epoch
+    mStartingCounterValue = (aValue / mEpoch) * mEpoch;         // Start of enclosing epoch
+    mCounterValue         = mStartingCounterValue + mEpoch - 1; // Move to end of enclosing epoch
+    ret                   = IncrementCount();                   // Force to next epoch
 #if WEAVE_CONFIG_PERSISTED_COUNTER_DEBUG_LOGGING
     WeaveLogError(EventLogging, "Advanced counter to 0x%x (relative to 0x%x)", mCounterValue, aValue);
 #endif
@@ -93,8 +87,7 @@ PersistedCounter::AdvanceEpochRelative(uint32_t aValue)
     return ret;
 }
 
-bool
-PersistedCounter::GetNextValue(uint32_t &aValue)
+bool PersistedCounter::GetNextValue(uint32_t & aValue)
 {
     bool startNewEpoch = false;
 
@@ -105,7 +98,7 @@ PersistedCounter::GetNextValue(uint32_t &aValue)
     // more, we need to start a new epoch.
     if ((aValue - mStartingCounterValue) >= mEpoch)
     {
-        aValue = mStartingCounterValue + mEpoch;
+        aValue        = mStartingCounterValue + mEpoch;
         startNewEpoch = true;
     }
 
@@ -142,7 +135,7 @@ PersistedCounter::WriteStartValue(uint32_t aStartValue)
 }
 
 WEAVE_ERROR
-PersistedCounter::ReadStartValue(uint32_t &aStartValue)
+PersistedCounter::ReadStartValue(uint32_t & aStartValue)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -168,5 +161,5 @@ exit:
     return err;
 }
 
-} // Weave
-} // nl
+} // namespace Weave
+} // namespace nl

@@ -39,7 +39,7 @@ namespace DeviceEventType {
  */
 enum
 {
-    kESPSystemEvent                     = kRange_PublicPlatformSpecific,
+    kESPSystemEvent = kRange_PublicPlatformSpecific,
 };
 
 } // namespace DeviceEventType
@@ -58,6 +58,5 @@ struct WeaveDevicePlatformEvent final
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_DEVICE_PLATFORM_EVENT_H

@@ -39,30 +39,29 @@ enum
      * simple profile defined below.
      */
 
-    kWeaveProfile_Test               = 0x235A1234,
+    kWeaveProfile_Test = 0x235A1234,
 
-    kTag_IntegerItem                 = 1,
-    kTestTopic                       = 0x235A000000004321ULL,
+    kTag_IntegerItem = 1,
+    kTestTopic       = 0x235A000000004321ULL,
 
     /*
      * there is also a "bogus" profile ID that is used to cue specific
      * failure tests. the various tests are tied to profile instances.
      */
 
-    kWeaveProfile_Fail               = 0x235A1235,
+    kWeaveProfile_Fail = 0x235A1235,
 
     kFailureInstance_CloseConnection = 0x235A123500000001ULL,
     kFailureInstance_NoResponse      = 0x235A123500000002ULL,
 
-    kFailureMode_Invalid             = 0,
-    kFailureMode_CloseConnection     = 1,
-    kFailureMode_NoResponse          = 2,
-
+    kFailureMode_Invalid         = 0,
+    kFailureMode_CloseConnection = 1,
+    kFailureMode_NoResponse      = 2,
 
     // miscellaneous items related to testing
 
-    kTestBufferSize                  = 100,
-    kUpdatePeriod                    = 10,
+    kTestBufferSize = 100,
+    kUpdatePeriod   = 10,
 
     /*
      * we define a response timeout of 2 seconds here. this is fine
@@ -74,7 +73,7 @@ enum
      * tables.
      */
 
-    kDefaultDMResponseTimeout        = 2000 // 2 seconds
+    kDefaultDMResponseTimeout = 2000 // 2 seconds
 };
 
 /*
@@ -83,23 +82,21 @@ enum
  * for by invoking instances of a "bogus" profile on view requests.
  */
 
-uint8_t LookupFailureMode(nl::Weave::Profiles::ReferencedTLVData &aPathList);
+uint8_t LookupFailureMode(nl::Weave::Profiles::ReferencedTLVData & aPathList);
 
-class TestProfileDB :
-public nl::Weave::Profiles::DataManagement::ProfileDatabase
+class TestProfileDB : public nl::Weave::Profiles::DataManagement::ProfileDatabase
 {
 public:
-    class TestData :
-    public nl::Weave::Profiles::DataManagement::ProfileDatabase::ProfileData
+    class TestData : public nl::Weave::Profiles::DataManagement::ProfileDatabase::ProfileData
     {
     public:
         TestData(void);
 
         ~TestData(void);
 
-        WEAVE_ERROR StoreItem(const uint64_t &aTag, nl::Weave::TLV::TLVReader &aDataRdr);
+        WEAVE_ERROR StoreItem(const uint64_t & aTag, nl::Weave::TLV::TLVReader & aDataRdr);
 
-        WEAVE_ERROR Retrieve(nl::Weave::TLV::TLVReader &aPathRdr, nl::Weave::TLV::TLVWriter &aDataWrtr);
+        WEAVE_ERROR Retrieve(nl::Weave::TLV::TLVReader & aPathRdr, nl::Weave::TLV::TLVWriter & aDataWrtr);
 
         /*
          * this is a convenience method that allows the retrieval of the
@@ -107,7 +104,7 @@ public:
          * be re-used to implement the above.
          */
 
-        WEAVE_ERROR Retrieve(nl::Weave::TLV::TLVWriter &aDataWrtr);
+        WEAVE_ERROR Retrieve(nl::Weave::TLV::TLVWriter & aDataWrtr);
 
         // data members
 
@@ -127,9 +124,9 @@ public:
         uint64_t mInstanceId;
     };
 
-    WEAVE_ERROR LookupProfileData(nl::Weave::TLV::TLVReader &aPathReader, ProfileData **aResult);
+    WEAVE_ERROR LookupProfileData(nl::Weave::TLV::TLVReader & aPathReader, ProfileData ** aResult);
 
-    WEAVE_ERROR LookupProfileData(uint32_t aProfileId, nl::Weave::TLV::TLVReader *aPathReader, ProfileData **aResult);
+    WEAVE_ERROR LookupProfileData(uint32_t aProfileId, nl::Weave::TLV::TLVReader * aPathReader, ProfileData ** aResult);
 
     void ChangeProfileData(void);
 

@@ -27,22 +27,16 @@
 #ifndef _WEAVE_TRAIT_LOG__LOGGING_CAPABILITIES_TRAIT_C_H_
 #define _WEAVE_TRAIT_LOG__LOGGING_CAPABILITIES_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // LogTransport
-    typedef enum
-    {
-    LOG_TRANSPORT_BDX = 1,
-    LOG_TRANSPORT_HTTP = 2,
+// LogTransport
+typedef enum
+{
+    LOG_TRANSPORT_BDX   = 1,
+    LOG_TRANSPORT_HTTP  = 2,
     LOG_TRANSPORT_HTTPS = 3,
-    } schema_weave_log_logging_capabilities_trait_log_transport_t;
-
-
-
+} schema_weave_log_logging_capabilities_trait_log_transport_t;
 
 #endif // _WEAVE_TRAIT_LOG__LOGGING_CAPABILITIES_TRAIT_C_H_

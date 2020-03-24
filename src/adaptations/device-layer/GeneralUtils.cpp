@@ -32,7 +32,7 @@ WEAVE_ERROR ParseCompilerDateStr(const char * dateStr, uint16_t & year, uint8_t 
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     char monthStr[4];
     const char * p;
-    char* endptr;
+    char * endptr;
 
     static const char months[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
@@ -84,24 +84,18 @@ const char * CharacterizeIPv6Address(const IPAddress & ipAddr)
     }
     else if (ipAddr.IsIPv6ULA())
     {
-        if (FabricState.FabricId != kFabricIdNotSpecified && ipAddr.GlobalId() == nl::Weave::WeaveFabricIdToIPv6GlobalId(FabricState.FabricId))
+        if (FabricState.FabricId != kFabricIdNotSpecified &&
+            ipAddr.GlobalId() == nl::Weave::WeaveFabricIdToIPv6GlobalId(FabricState.FabricId))
         {
             switch (ipAddr.Subnet())
             {
-            case kWeaveSubnetId_PrimaryWiFi:
-                return "Weave WiFi subnet address";
-            case kWeaveSubnetId_Service:
-                return "Weave Service subnet address";
-            case kWeaveSubnetId_ThreadMesh:
-                return "Weave Thread subnet address";
-            case kWeaveSubnetId_ThreadAlarm:
-                return "Weave Thread Alarm subnet address";
-            case kWeaveSubnetId_WiFiAP:
-                return "Weave WiFi AP subnet address";
-            case kWeaveSubnetId_MobileDevice:
-                return "Weave Mobile subnet address";
-            default:
-                return "Weave IPv6 address";
+            case kWeaveSubnetId_PrimaryWiFi: return "Weave WiFi subnet address";
+            case kWeaveSubnetId_Service: return "Weave Service subnet address";
+            case kWeaveSubnetId_ThreadMesh: return "Weave Thread subnet address";
+            case kWeaveSubnetId_ThreadAlarm: return "Weave Thread Alarm subnet address";
+            case kWeaveSubnetId_WiFiAP: return "Weave WiFi AP subnet address";
+            case kWeaveSubnetId_MobileDevice: return "Weave Mobile subnet address";
+            default: return "Weave IPv6 address";
             }
         }
         else
@@ -131,20 +125,13 @@ const char * CharacterizeIPv6Prefix(const Inet::IPPrefix & inPrefix)
             {
                 switch (inPrefix.IPAddr.Subnet())
                 {
-                case kWeaveSubnetId_PrimaryWiFi:
-                    return "Weave WiFi prefix";
-                case kWeaveSubnetId_Service:
-                    return "Weave Service prefix";
-                case kWeaveSubnetId_ThreadMesh:
-                    return "Weave Thread prefix";
-                case kWeaveSubnetId_ThreadAlarm:
-                    return "Weave Thread Alarm prefix";
-                case kWeaveSubnetId_WiFiAP:
-                    return "Weave WiFi AP prefix";
-                case kWeaveSubnetId_MobileDevice:
-                    return "Weave Mobile prefix";
-                default:
-                    return "Weave IPv6 prefix";
+                case kWeaveSubnetId_PrimaryWiFi: return "Weave WiFi prefix";
+                case kWeaveSubnetId_Service: return "Weave Service prefix";
+                case kWeaveSubnetId_ThreadMesh: return "Weave Thread prefix";
+                case kWeaveSubnetId_ThreadAlarm: return "Weave Thread Alarm prefix";
+                case kWeaveSubnetId_WiFiAP: return "Weave WiFi AP prefix";
+                case kWeaveSubnetId_MobileDevice: return "Weave Mobile prefix";
+                default: return "Weave IPv6 prefix";
                 }
             }
         }
@@ -157,11 +144,7 @@ const char * CharacterizeIPv6Prefix(const Inet::IPPrefix & inPrefix)
  */
 void RegisterDeviceLayerErrorFormatter(void)
 {
-    static ErrorFormatter sDeviceLayerErrorFormatter =
-    {
-        FormatDeviceLayerError,
-        NULL
-    };
+    static ErrorFormatter sDeviceLayerErrorFormatter = { FormatDeviceLayerError, NULL };
 
     RegisterErrorFormatter(&sDeviceLayerErrorFormatter);
 }
@@ -190,8 +173,8 @@ bool FormatDeviceLayerError(char * buf, uint16_t bufSize, int32_t err)
 #if !WEAVE_CONFIG_SHORT_ERROR_STR
     switch (err)
     {
-    case WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND        : desc = "Config not found"; break;
-    case WEAVE_DEVICE_ERROR_NOT_SERVICE_PROVISIONED : desc = "Not service provisioned"; break;
+    case WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND: desc = "Config not found"; break;
+    case WEAVE_DEVICE_ERROR_NOT_SERVICE_PROVISIONED: desc = "Not service provisioned"; break;
     }
 #endif // !WEAVE_CONFIG_SHORT_ERROR_STR
 

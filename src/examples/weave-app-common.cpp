@@ -75,17 +75,17 @@ void InitializeWeave(bool listenTCP)
 
     // Set the fabric information from the local weave address.
 
-    FabricState.FabricId = gLocalv6Addr.GlobalId();
-    FabricState.LocalNodeId = IPv6InterfaceIdToWeaveNodeId(gLocalv6Addr.InterfaceId());
+    FabricState.FabricId      = gLocalv6Addr.GlobalId();
+    FabricState.LocalNodeId   = IPv6InterfaceIdToWeaveNodeId(gLocalv6Addr.InterfaceId());
     FabricState.DefaultSubnet = gLocalv6Addr.Subnet();
 
     // Initialize the WeaveMessageLayer object.
 
     initContext.systemLayer = &SystemLayer;
-    initContext.inet = &Inet;
+    initContext.inet        = &Inet;
     initContext.fabricState = &FabricState;
-    initContext.listenTCP = listenTCP;
-    initContext.listenUDP = false;
+    initContext.listenTCP   = listenTCP;
+    initContext.listenUDP   = false;
 
     err = MessageLayer.Init(&initContext);
     if (err != WEAVE_NO_ERROR)
@@ -128,7 +128,7 @@ void DriveIO(void)
     int selectRes;
 
     // Use a sleep value of 100 milliseconds
-    sleepTime.tv_sec = 0;
+    sleepTime.tv_sec  = 0;
     sleepTime.tv_usec = NETWORK_SLEEP_TIME_MSECS;
 
     FD_ZERO(&readFDs);
@@ -166,17 +166,17 @@ namespace Weave {
 namespace Platform {
 namespace PersistedStorage {
 
-WEAVE_ERROR Read(const char *aKey, uint32_t &aValue)
+WEAVE_ERROR Read(const char * aKey, uint32_t & aValue)
 {
     return WEAVE_ERROR_PERSISTED_STORAGE_VALUE_NOT_FOUND;
 }
 
-WEAVE_ERROR Write(const char *aKey, uint32_t aValue)
+WEAVE_ERROR Write(const char * aKey, uint32_t aValue)
 {
     return WEAVE_NO_ERROR;
 }
 
-} // PersistentStorage
-} // Platform
-} // Weave
-} // nl
+} // namespace PersistedStorage
+} // namespace Platform
+} // namespace Weave
+} // namespace nl

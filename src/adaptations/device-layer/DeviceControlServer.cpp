@@ -74,9 +74,9 @@ WEAVE_ERROR DeviceControlServer::OnResetConfig(uint16_t resetFlags)
         // service provisioning data, if present.
         if (((resetFlags & kResetConfigFlag_ServiceConfig) != 0)
 #if WEAVE_DEVICE_CONFIG_ENABLE_JUST_IN_TIME_PROVISIONING
-          // Always reset service provisioning data, when requested to reset operational
-          // device credentials.
-          || ((resetFlags & kResetConfigFlag_OperationalCredentials) != 0)
+            // Always reset service provisioning data, when requested to reset operational
+            // device credentials.
+            || ((resetFlags & kResetConfigFlag_OperationalCredentials) != 0)
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_JUST_IN_TIME_PROVISIONING
         )
         {
@@ -126,7 +126,8 @@ WEAVE_ERROR DeviceControlServer::OnResetConfig(uint16_t resetFlags)
             tmpErr = ConfigurationMgr().ClearOperationalDeviceCredentials();
             if (tmpErr != WEAVE_NO_ERROR)
             {
-                WeaveLogProgress(DeviceLayer, "ConfigurationMgr().ClearOperationalDeviceCredentials() failed: %s", ErrorStr(tmpErr));
+                WeaveLogProgress(DeviceLayer, "ConfigurationMgr().ClearOperationalDeviceCredentials() failed: %s",
+                                 ErrorStr(tmpErr));
                 err = (err == WEAVE_NO_ERROR) ? tmpErr : err;
             }
         }
@@ -158,9 +159,7 @@ exit:
     return err;
 }
 
-void DeviceControlServer::OnConnectionMonitorTimeout(uint64_t peerNodeId, IPAddress peerAddr)
-{
-}
+void DeviceControlServer::OnConnectionMonitorTimeout(uint64_t peerNodeId, IPAddress peerAddr) { }
 
 void DeviceControlServer::OnRemotePassiveRendezvousStarted(void)
 {
@@ -192,9 +191,8 @@ bool DeviceControlServer::IsResetAllowed(uint16_t resetFlags)
         return ConfigurationMgr().CanFactoryReset();
     }
 
-    const uint16_t supportedResetOps =
-            (kResetConfigFlag_NetworkConfig | kResetConfigFlag_FabricConfig |
-             kResetConfigFlag_ServiceConfig | kResetConfigFlag_OperationalCredentials);
+    const uint16_t supportedResetOps = (kResetConfigFlag_NetworkConfig | kResetConfigFlag_FabricConfig |
+                                        kResetConfigFlag_ServiceConfig | kResetConfigFlag_OperationalCredentials);
 
     // Otherwise, verify the requested reset operation is supported.
     return (resetFlags == kResetConfigFlag_All || (resetFlags & ~supportedResetOps) == 0);

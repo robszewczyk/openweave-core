@@ -126,30 +126,27 @@ public:
 class NL_DLL_EXPORT GroupKeyStoreBase
 {
 public:
-
     // Manage application group key material storage.
-    virtual WEAVE_ERROR RetrieveGroupKey(uint32_t keyId, WeaveGroupKey& key) = 0;
-    virtual WEAVE_ERROR StoreGroupKey(const WeaveGroupKey& key) = 0;
-    virtual WEAVE_ERROR DeleteGroupKey(uint32_t keyId) = 0;
-    virtual WEAVE_ERROR DeleteGroupKeysOfAType(uint32_t keyType) = 0;
-    virtual WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t *keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount) = 0;
-    virtual WEAVE_ERROR Clear(void) = 0;
+    virtual WEAVE_ERROR RetrieveGroupKey(uint32_t keyId, WeaveGroupKey & key)                                                = 0;
+    virtual WEAVE_ERROR StoreGroupKey(const WeaveGroupKey & key)                                                             = 0;
+    virtual WEAVE_ERROR DeleteGroupKey(uint32_t keyId)                                                                       = 0;
+    virtual WEAVE_ERROR DeleteGroupKeysOfAType(uint32_t keyType)                                                             = 0;
+    virtual WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t * keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount) = 0;
+    virtual WEAVE_ERROR Clear(void)                                                                                          = 0;
 
     // Get the current time.
-    virtual WEAVE_ERROR GetCurrentUTCTime(uint32_t& utcTime);
+    virtual WEAVE_ERROR GetCurrentUTCTime(uint32_t & utcTime);
 
     // Get current application key Id.
-    WEAVE_ERROR GetCurrentAppKeyId(uint32_t keyId, uint32_t& curKeyId);
+    WEAVE_ERROR GetCurrentAppKeyId(uint32_t keyId, uint32_t & curKeyId);
 
     // Get/Derive group key.
-    WEAVE_ERROR GetGroupKey(uint32_t keyId, WeaveGroupKey& groupKey);
+    WEAVE_ERROR GetGroupKey(uint32_t keyId, WeaveGroupKey & groupKey);
 
     // Derive application key.
-    WEAVE_ERROR DeriveApplicationKey(uint32_t& appKeyId,
-                                     const uint8_t *keySalt, uint8_t saltLen,
-                                     const uint8_t *keyDiversifier, uint8_t diversifierLen,
-                                     uint8_t *appKey, uint8_t keyBufSize, uint8_t keyLen,
-                                     uint32_t& appGroupGlobalId);
+    WEAVE_ERROR DeriveApplicationKey(uint32_t & appKeyId, const uint8_t * keySalt, uint8_t saltLen, const uint8_t * keyDiversifier,
+                                     uint8_t diversifierLen, uint8_t * appKey, uint8_t keyBufSize, uint8_t keyLen,
+                                     uint32_t & appGroupGlobalId);
 
 protected:
     uint32_t LastUsedEpochKeyId;
@@ -160,21 +157,19 @@ protected:
 
     // Retrieve and Store LastUsedEpochKeyId value.
     virtual WEAVE_ERROR RetrieveLastUsedEpochKeyId(void) = 0;
-    virtual WEAVE_ERROR StoreLastUsedEpochKeyId(void) = 0;
+    virtual WEAVE_ERROR StoreLastUsedEpochKeyId(void)    = 0;
 
 private:
     // Derive fabric/client root key.
-    WEAVE_ERROR DeriveFabricOrClientRootKey(uint32_t rootKeyId, WeaveGroupKey& rootKey);
+    WEAVE_ERROR DeriveFabricOrClientRootKey(uint32_t rootKeyId, WeaveGroupKey & rootKey);
 
     // Derive intermediate key.
-    WEAVE_ERROR DeriveIntermediateKey(uint32_t keyId, WeaveGroupKey& intermediateKey);
+    WEAVE_ERROR DeriveIntermediateKey(uint32_t keyId, WeaveGroupKey & intermediateKey);
 };
 
-
-extern WEAVE_ERROR GetAppGroupMasterKeyId(uint32_t groupGlobalId, GroupKeyStoreBase *groupKeyStore, uint32_t& groupMasterKeyId);
+extern WEAVE_ERROR GetAppGroupMasterKeyId(uint32_t groupGlobalId, GroupKeyStoreBase * groupKeyStore, uint32_t & groupMasterKeyId);
 
 extern WEAVE_ERROR LogGroupKeys(GroupKeyStoreBase * groupKeyStore);
-
 
 } // namespace AppKeys
 } // namespace Security

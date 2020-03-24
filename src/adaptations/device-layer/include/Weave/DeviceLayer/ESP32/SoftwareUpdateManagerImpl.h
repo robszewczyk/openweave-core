@@ -32,10 +32,9 @@ namespace DeviceLayer {
  * Concrete implementation of the SoftwareUpdateManager singleton object for the
  * ESP32 platforms.
  */
-class SoftwareUpdateManagerImpl final
-    : public SoftwareUpdateManager,
-      public Internal::GenericSoftwareUpdateManagerImpl<SoftwareUpdateManagerImpl>,
-      public Internal::GenericSoftwareUpdateManagerImpl_BDX<SoftwareUpdateManagerImpl>
+class SoftwareUpdateManagerImpl final : public SoftwareUpdateManager,
+                                        public Internal::GenericSoftwareUpdateManagerImpl<SoftwareUpdateManagerImpl>,
+                                        public Internal::GenericSoftwareUpdateManagerImpl_BDX<SoftwareUpdateManagerImpl>
 {
     // Allow the SoftwareUpdateManager interface class to delegate method calls to
     // the implementation methods provided by this class.
@@ -50,7 +49,6 @@ class SoftwareUpdateManagerImpl final
     friend class Internal::GenericSoftwareUpdateManagerImpl_BDX<SoftwareUpdateManagerImpl>;
 
 public:
-
     // ===== Members for internal use by the following friends.
 
     friend ::nl::Weave::DeviceLayer::SoftwareUpdateManager & SoftwareUpdateMgr(void);
@@ -62,7 +60,6 @@ private:
     // ===== Members that implement the SoftwareUpdateManager abstract interface.
 
     WEAVE_ERROR _Init(void);
-
 };
 
 /**

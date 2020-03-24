@@ -39,20 +39,19 @@ namespace Internal {
  *    Implements a data source for the Weave DeviceIdentityTrait.
  *
  */
-class DeviceIdentityTraitDataSource final
-    : public ::nl::Weave::Profiles::DataManagement_Current::TraitDataSource
+class DeviceIdentityTraitDataSource final : public ::nl::Weave::Profiles::DataManagement_Current::TraitDataSource
 {
 public:
     DeviceIdentityTraitDataSource(void);
 
 private:
     WEAVE_ERROR GetLeafData(::nl::Weave::Profiles::DataManagement_Current::PropertyPathHandle aLeafHandle, uint64_t aTagToWrite,
-                    ::nl::Weave::TLV::TLVWriter & aWriter) override;
+                            ::nl::Weave::TLV::TLVWriter & aWriter) override;
 };
 
-} // Internal
-} // Device
-} // Weave
-} // nl
+} // namespace Internal
+} // namespace DeviceLayer
+} // namespace Weave
+} // namespace nl
 
 #endif // DEVICE_IDENTITY_TRAIT_DATA_SOURCE_H

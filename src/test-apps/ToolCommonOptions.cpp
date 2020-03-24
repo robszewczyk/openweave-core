@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
 #endif
@@ -56,18 +55,17 @@ FaultInjectionOptions gFaultInjectionOptions;
 
 NetworkOptions::NetworkOptions()
 {
-    static OptionDef optionDefs[] =
-    {
-        { "local-addr",     kArgumentRequired, 'a' },
-        { "node-addr",      kArgumentRequired, kToolCommonOpt_NodeAddr }, /* alias for local-addr */
+    static OptionDef optionDefs[] = {
+        { "local-addr", kArgumentRequired, 'a' },
+        { "node-addr", kArgumentRequired, kToolCommonOpt_NodeAddr }, /* alias for local-addr */
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-        { "tap-device",     kArgumentRequired, kToolCommonOpt_TapDevice },
-        { "ipv4-gateway",   kArgumentRequired, kToolCommonOpt_IPv4GatewayAddr },
-        { "ipv6-gateway",   kArgumentRequired, kToolCommonOpt_IPv6GatewayAddr },
-        { "dns-server",     kArgumentRequired, 'X' },
-        { "debug-lwip",     kNoArgument,       kToolCommonOpt_DebugLwIP },
-        { "event-delay",    kArgumentRequired, kToolCommonOpt_EventDelay },
-        { "tap-system-config", kNoArgument,    kToolCommonOpt_TapInterfaceConfig },
+        { "tap-device", kArgumentRequired, kToolCommonOpt_TapDevice },
+        { "ipv4-gateway", kArgumentRequired, kToolCommonOpt_IPv4GatewayAddr },
+        { "ipv6-gateway", kArgumentRequired, kToolCommonOpt_IPv6GatewayAddr },
+        { "dns-server", kArgumentRequired, 'X' },
+        { "debug-lwip", kNoArgument, kToolCommonOpt_DebugLwIP },
+        { "event-delay", kArgumentRequired, kToolCommonOpt_EventDelay },
+        { "tap-system-config", kNoArgument, kToolCommonOpt_TapInterfaceConfig },
 #endif
         { }
     };
@@ -111,15 +109,15 @@ NetworkOptions::NetworkOptions()
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     TapDeviceName.clear();
     LwIPDebugFlags = 0;
-    EventDelay = 0;
+    EventDelay     = 0;
     IPv4GatewayAddr.clear();
     IPv6GatewayAddr.clear();
-    DNSServerAddr = nl::Inet::IPAddress::Any;
+    DNSServerAddr      = nl::Inet::IPAddress::Any;
     TapUseSystemConfig = false;
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 }
 
-bool NetworkOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool NetworkOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     nl::Inet::IPAddress localAddr;
 
@@ -141,7 +139,7 @@ bool NetworkOptions::HandleOption(const char *progName, OptionSet *optSet, int i
         {
             LocalIPv6Addr.push_back(localAddr);
         }
-#else // INET_CONFIG_ENABLE_IPV4
+#else  // INET_CONFIG_ENABLE_IPV4
         LocalIPv6Addr.push_back(localAddr);
 #endif // INET_CONFIG_ENABLE_IPV4
         break;
@@ -154,35 +152,33 @@ bool NetworkOptions::HandleOption(const char *progName, OptionSet *optSet, int i
             return false;
         }
         break;
-    case kToolCommonOpt_TapDevice:
-        TapDeviceName.push_back(arg);
-        break;
+    case kToolCommonOpt_TapDevice: TapDeviceName.push_back(arg); break;
 
     case kToolCommonOpt_IPv4GatewayAddr:
+    {
+        if (!ParseIPAddress(arg, localAddr) || !localAddr.IsIPv4())
         {
-            if (!ParseIPAddress(arg, localAddr) || !localAddr.IsIPv4())
-            {
-                PrintArgError("%s: Invalid value specified for IPv4 gateway address: %s\n", progName, arg);
-                return false;
-            }
-            IPv4GatewayAddr.push_back(localAddr);
+            PrintArgError("%s: Invalid value specified for IPv4 gateway address: %s\n", progName, arg);
+            return false;
         }
-        break;
+        IPv4GatewayAddr.push_back(localAddr);
+    }
+    break;
 
     case kToolCommonOpt_IPv6GatewayAddr:
+    {
+        if (!ParseIPAddress(arg, localAddr))
         {
-            if (!ParseIPAddress(arg, localAddr))
-            {
-                PrintArgError("%s: Invalid value specified for IPv6 gateway address: %s\n", progName, arg);
-                return false;
-            }
-            IPv6GatewayAddr.push_back(localAddr);
+            PrintArgError("%s: Invalid value specified for IPv6 gateway address: %s\n", progName, arg);
+            return false;
         }
-        break;
+        IPv6GatewayAddr.push_back(localAddr);
+    }
+    break;
 
     case kToolCommonOpt_DebugLwIP:
 #if defined(LWIP_DEBUG)
-        gLwIP_DebugFlags = (LWIP_DBG_ON|LWIP_DBG_TRACE|LWIP_DBG_STATE|LWIP_DBG_FRESH|LWIP_DBG_HALT);
+        gLwIP_DebugFlags = (LWIP_DBG_ON | LWIP_DBG_TRACE | LWIP_DBG_STATE | LWIP_DBG_FRESH | LWIP_DBG_HALT);
 #endif
         break;
     case kToolCommonOpt_EventDelay:
@@ -193,14 +189,10 @@ bool NetworkOptions::HandleOption(const char *progName, OptionSet *optSet, int i
         }
         break;
 
-      case kToolCommonOpt_TapInterfaceConfig:
-        TapUseSystemConfig = true;
-        break;
+    case kToolCommonOpt_TapInterfaceConfig: TapUseSystemConfig = true; break;
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -208,15 +200,14 @@ bool NetworkOptions::HandleOption(const char *progName, OptionSet *optSet, int i
 
 WeaveNodeOptions::WeaveNodeOptions()
 {
-    static OptionDef optionDefs[] =
-    {
-        { "fabric-id",              kArgumentRequired, 'f'                                },
-        { "node-id",                kArgumentRequired, 'n'                                },
-        { "subnet",                 kArgumentRequired, 'N'                                },
-        { "pairing-code",           kArgumentRequired, kToolCommonOpt_PairingCode         },
-        { "persistent-cntr-file",   kArgumentRequired, kToolCommonOpt_PersistentCntrFile  },
+    static OptionDef optionDefs[] = {
+        { "fabric-id", kArgumentRequired, 'f' },
+        { "node-id", kArgumentRequired, 'n' },
+        { "subnet", kArgumentRequired, 'N' },
+        { "pairing-code", kArgumentRequired, kToolCommonOpt_PairingCode },
+        { "persistent-cntr-file", kArgumentRequired, kToolCommonOpt_PersistentCntrFile },
 #if WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
-        { "use-ephemeral-udp-port", kNoArgument,       kToolCommonOpt_UseEphemeralUDPPort },
+        { "use-ephemeral-udp-port", kNoArgument, kToolCommonOpt_UseEphemeralUDPPort },
 #endif // WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
         { }
     };
@@ -256,13 +247,13 @@ WeaveNodeOptions::WeaveNodeOptions()
         ;
 
     // Defaults.
-    FabricId = nl::Weave::kFabricIdDefaultForTest;
-    LocalNodeId = 1;
-    SubnetId = 1;
-    FabricIdSet = false;
-    LocalNodeIdSet = false;
-    SubnetIdSet = false;
-    PairingCode = "TEST";
+    FabricId            = nl::Weave::kFabricIdDefaultForTest;
+    LocalNodeId         = 1;
+    SubnetId            = 1;
+    FabricIdSet         = false;
+    LocalNodeIdSet      = false;
+    SubnetIdSet         = false;
+    PairingCode         = "TEST";
     UseEphemeralUDPPort = false;
 }
 
@@ -272,7 +263,7 @@ WeaveNodeOptions::~WeaveNodeOptions()
         fclose(sPersistentStoreFile);
 }
 
-bool WeaveNodeOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool WeaveNodeOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -300,9 +291,7 @@ bool WeaveNodeOptions::HandleOption(const char *progName, OptionSet *optSet, int
         }
         SubnetIdSet = true;
         break;
-    case kToolCommonOpt_PairingCode:
-        PairingCode = arg;
-        break;
+    case kToolCommonOpt_PairingCode: PairingCode = arg; break;
     case kToolCommonOpt_PersistentCntrFile:
         // If file already exists then open it for write/update.
         if ((sPersistentStoreFile = fopen(arg, "r")) == NULL)
@@ -322,12 +311,8 @@ bool WeaveNodeOptions::HandleOption(const char *progName, OptionSet *optSet, int
             return false;
         }
         break;
-    case kToolCommonOpt_UseEphemeralUDPPort:
-        UseEphemeralUDPPort = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case kToolCommonOpt_UseEphemeralUDPPort: UseEphemeralUDPPort = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -335,98 +320,78 @@ bool WeaveNodeOptions::HandleOption(const char *progName, OptionSet *optSet, int
 
 WeaveSecurityMode::WeaveSecurityMode()
 {
-    static OptionDef optionDefs[] =
-    {
-        { "no-security",   kNoArgument,       kToolCommonOpt_SecurityNone       },
-        { "case",          kNoArgument,       kToolCommonOpt_SecurityCASE       },
-        { "case-shared",   kNoArgument,       kToolCommonOpt_SecurityCASEShared },
-        { "pase",          kNoArgument,       kToolCommonOpt_SecurityPASE       },
-        { "group-enc",     kNoArgument,       kToolCommonOpt_SecurityGroupEnc   },
-        { "take",          kNoArgument,       kToolCommonOpt_SecurityTAKE       },
-        { }
-    };
+    static OptionDef optionDefs[] = { { "no-security", kNoArgument, kToolCommonOpt_SecurityNone },
+                                      { "case", kNoArgument, kToolCommonOpt_SecurityCASE },
+                                      { "case-shared", kNoArgument, kToolCommonOpt_SecurityCASEShared },
+                                      { "pase", kNoArgument, kToolCommonOpt_SecurityPASE },
+                                      { "group-enc", kNoArgument, kToolCommonOpt_SecurityGroupEnc },
+                                      { "take", kNoArgument, kToolCommonOpt_SecurityTAKE },
+                                      { } };
 
     OptionDefs = optionDefs;
 
     HelpGroupName = "WEAVE SECURITY OPTIONS";
 
     OptionHelp =
-            "  --no-security\n"
-            "       Use no security session\n"
-            "\n"
-            "  --pase\n"
-            "       Use PASE to create an authenticated session and encrypt messages using\n"
-            "       the negotiated session key.\n"
-            "\n"
-            "  --case\n"
-            "       Use CASE to create an authenticated session and encrypt messages using\n"
-            "       the negotiated session key.\n"
-            "\n"
-            "  --case-shared\n"
-            "       Use CASE to create an authenticated shared session to the Nest Core router\n"
-            "       and encrypt messages using the negotiated session key.\n"
-            "\n"
-            "  --take\n"
-            "       Use TAKE to create an authenticated session and encrypt messages using\n"
-            "       the negotiated session key.\n"
-            "\n"
+        "  --no-security\n"
+        "       Use no security session\n"
+        "\n"
+        "  --pase\n"
+        "       Use PASE to create an authenticated session and encrypt messages using\n"
+        "       the negotiated session key.\n"
+        "\n"
+        "  --case\n"
+        "       Use CASE to create an authenticated session and encrypt messages using\n"
+        "       the negotiated session key.\n"
+        "\n"
+        "  --case-shared\n"
+        "       Use CASE to create an authenticated shared session to the Nest Core router\n"
+        "       and encrypt messages using the negotiated session key.\n"
+        "\n"
+        "  --take\n"
+        "       Use TAKE to create an authenticated session and encrypt messages using\n"
+        "       the negotiated session key.\n"
+        "\n"
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-            "  --group-enc\n"
-            "       Use a group key to encrypt messages.\n"
-            "       When group key encryption option is chosen the key id should be also specified.\n"
-            "       Below are two examples how group key id can be specified:\n"
-            "          --group-enc-key-id 0x00005536\n"
-            "          --group-enc-key-type r --group-enc-root-key c --group-enc-epoch-key-num 2 --group-enc-app-key-num 54\n"
-            "       Note that both examples describe the same rotating group key derived from client\n"
-            "       root key, epoch key number 4 and app group master key number 54 (0x36).\n"
-            "\n"
+        "  --group-enc\n"
+        "       Use a group key to encrypt messages.\n"
+        "       When group key encryption option is chosen the key id should be also specified.\n"
+        "       Below are two examples how group key id can be specified:\n"
+        "          --group-enc-key-id 0x00005536\n"
+        "          --group-enc-key-type r --group-enc-root-key c --group-enc-epoch-key-num 2 --group-enc-app-key-num 54\n"
+        "       Note that both examples describe the same rotating group key derived from client\n"
+        "       root key, epoch key number 4 and app group master key number 54 (0x36).\n"
+        "\n"
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-            ;
+        ;
 
     // Defaults.
     SecurityMode = kNone;
-
 }
 
-bool WeaveSecurityMode::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool WeaveSecurityMode::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-        case kToolCommonOpt_SecurityNone:
-            SecurityMode = kNone;
-            break;
-        case kToolCommonOpt_SecurityCASE:
-            SecurityMode = kCASE;
-            break;
-        case kToolCommonOpt_SecurityCASEShared:
-            SecurityMode = kCASEShared;
-            break;
-        case kToolCommonOpt_SecurityPASE:
-            SecurityMode = kPASE;
-            break;
-        case kToolCommonOpt_SecurityGroupEnc:
-            SecurityMode = kGroupEnc;
-            break;
-        case kToolCommonOpt_SecurityTAKE:
-            SecurityMode = kTAKE;
-            break;
-        default:
-            PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-            return false;
+    case kToolCommonOpt_SecurityNone: SecurityMode = kNone; break;
+    case kToolCommonOpt_SecurityCASE: SecurityMode = kCASE; break;
+    case kToolCommonOpt_SecurityCASEShared: SecurityMode = kCASEShared; break;
+    case kToolCommonOpt_SecurityPASE: SecurityMode = kPASE; break;
+    case kToolCommonOpt_SecurityGroupEnc: SecurityMode = kGroupEnc; break;
+    case kToolCommonOpt_SecurityTAKE: SecurityMode = kTAKE; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-
 WRMPOptions::WRMPOptions()
 {
-    static OptionDef optionDefs[] =
-    {
+    static OptionDef optionDefs[] = {
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-        { "wrmp-ack-delay",        kArgumentRequired, kToolCommonOpt_WRMPACKDelay        },
+        { "wrmp-ack-delay", kArgumentRequired, kToolCommonOpt_WRMPACKDelay },
         { "wrmp-retrans-interval", kArgumentRequired, kToolCommonOpt_WRMPRetransInterval },
-        { "wrmp-retrans-count",    kArgumentRequired, kToolCommonOpt_WRMPRetransCount    },
+        { "wrmp-retrans-count", kArgumentRequired, kToolCommonOpt_WRMPRetransCount },
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
         { }
     };
@@ -449,9 +414,9 @@ WRMPOptions::WRMPOptions()
         "";
 
     // Defaults.
-    ACKDelay = WEAVE_CONFIG_WRMP_DEFAULT_ACK_TIMEOUT;
+    ACKDelay        = WEAVE_CONFIG_WRMP_DEFAULT_ACK_TIMEOUT;
     RetransInterval = WEAVE_CONFIG_WRMP_DEFAULT_ACTIVE_RETRANS_TIMEOUT;
-    RetransCount = WEAVE_CONFIG_WRMP_DEFAULT_MAX_RETRANS;
+    RetransCount    = WEAVE_CONFIG_WRMP_DEFAULT_MAX_RETRANS;
 }
 
 nl::Weave::WRMPConfig WRMPOptions::GetWRMPConfig() const
@@ -459,13 +424,13 @@ nl::Weave::WRMPConfig WRMPOptions::GetWRMPConfig() const
     nl::Weave::WRMPConfig wrmpConfig;
     memset(&wrmpConfig, 0, sizeof(wrmpConfig));
     wrmpConfig.mInitialRetransTimeout = RetransInterval;
-    wrmpConfig.mActiveRetransTimeout = RetransInterval;
-    wrmpConfig.mAckPiggybackTimeout = ACKDelay;
-    wrmpConfig.mMaxRetrans = RetransCount;
+    wrmpConfig.mActiveRetransTimeout  = RetransInterval;
+    wrmpConfig.mAckPiggybackTimeout   = ACKDelay;
+    wrmpConfig.mMaxRetrans            = RetransCount;
     return wrmpConfig;
 }
 
-bool WRMPOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool WRMPOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -492,9 +457,7 @@ bool WRMPOptions::HandleOption(const char *progName, OptionSet *optSet, int id, 
         }
         break;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -502,14 +465,13 @@ bool WRMPOptions::HandleOption(const char *progName, OptionSet *optSet, int id, 
 
 GroupKeyEncOptions::GroupKeyEncOptions()
 {
-    static OptionDef optionDefs[] =
-    {
+    static OptionDef optionDefs[] = {
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-        { "group-enc-key-id",           kArgumentRequired, kToolCommonOpt_GroupEncKeyId                },
-        { "group-enc-key-type",         kArgumentRequired, kToolCommonOpt_GroupEncKeyType              },
-        { "group-enc-root-key",         kArgumentRequired, kToolCommonOpt_GroupEncRootKey              },
-        { "group-enc-epoch-key-num",    kArgumentRequired, kToolCommonOpt_GroupEncEpochKeyNum          },
-        { "group-enc-app-key-num",      kArgumentRequired, kToolCommonOpt_GroupEncAppGroupMasterKeyNum },
+        { "group-enc-key-id", kArgumentRequired, kToolCommonOpt_GroupEncKeyId },
+        { "group-enc-key-type", kArgumentRequired, kToolCommonOpt_GroupEncKeyType },
+        { "group-enc-root-key", kArgumentRequired, kToolCommonOpt_GroupEncRootKey },
+        { "group-enc-epoch-key-num", kArgumentRequired, kToolCommonOpt_GroupEncEpochKeyNum },
+        { "group-enc-app-key-num", kArgumentRequired, kToolCommonOpt_GroupEncAppGroupMasterKeyNum },
 #endif
         { }
     };
@@ -548,10 +510,10 @@ GroupKeyEncOptions::GroupKeyEncOptions()
         "";
 
     // Defaults.
-    EncKeyId = WeaveKeyId::kNone;
-    EncKeyType = WeaveKeyId::kType_None;
-    RootKeyId = WeaveKeyId::kNone;
-    EpochKeyId = WeaveKeyId::kNone;
+    EncKeyId            = WeaveKeyId::kNone;
+    EncKeyType          = WeaveKeyId::kType_None;
+    RootKeyId           = WeaveKeyId::kNone;
+    EpochKeyId          = WeaveKeyId::kNone;
     AppGroupMasterKeyId = WeaveKeyId::kNone;
 }
 
@@ -563,13 +525,12 @@ uint32_t GroupKeyEncOptions::GetEncKeyId() const
         return WeaveKeyId::kNone;
     if (RootKeyId == WeaveKeyId::kNone || AppGroupMasterKeyId == WeaveKeyId::kNone)
         return WeaveKeyId::kNone;
-    return WeaveKeyId::MakeAppKeyId(EncKeyType, RootKeyId,
-                (EncKeyType == WeaveKeyId::kType_AppRotatingKey) ? EpochKeyId : WeaveKeyId::kNone,
-                AppGroupMasterKeyId,
-                (EncKeyType == WeaveKeyId::kType_AppRotatingKey && EpochKeyId == WeaveKeyId::kNone));
+    return WeaveKeyId::MakeAppKeyId(
+        EncKeyType, RootKeyId, (EncKeyType == WeaveKeyId::kType_AppRotatingKey) ? EpochKeyId : WeaveKeyId::kNone,
+        AppGroupMasterKeyId, (EncKeyType == WeaveKeyId::kType_AppRotatingKey && EpochKeyId == WeaveKeyId::kNone));
 }
 
-bool GroupKeyEncOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool GroupKeyEncOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -664,9 +625,7 @@ bool GroupKeyEncOptions::HandleOption(const char *progName, OptionSet *optSet, i
         break;
     }
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -674,11 +633,10 @@ bool GroupKeyEncOptions::HandleOption(const char *progName, OptionSet *optSet, i
 
 GeneralSecurityOptions::GeneralSecurityOptions()
 {
-    static OptionDef optionDefs[] =
-    {
+    static OptionDef optionDefs[] = {
 #if WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-        { "idle-session-timeout",           kArgumentRequired, kToolCommonOpt_GeneralSecurityIdleSessionTimeout                },
-        { "session-establishment-timeout",  kArgumentRequired, kToolCommonOpt_GeneralSecuritySessionEstablishmentTimeout       },
+        { "idle-session-timeout", kArgumentRequired, kToolCommonOpt_GeneralSecurityIdleSessionTimeout },
+        { "session-establishment-timeout", kArgumentRequired, kToolCommonOpt_GeneralSecuritySessionEstablishmentTimeout },
 #endif
         { }
     };
@@ -696,7 +654,7 @@ GeneralSecurityOptions::GeneralSecurityOptions()
         "";
 
     // Defaults.
-    IdleSessionTimeout = WEAVE_CONFIG_DEFAULT_SECURITY_SESSION_IDLE_TIMEOUT;
+    IdleSessionTimeout          = WEAVE_CONFIG_DEFAULT_SECURITY_SESSION_IDLE_TIMEOUT;
     SessionEstablishmentTimeout = WEAVE_CONFIG_DEFAULT_SECURITY_SESSION_ESTABLISHMENT_TIMEOUT;
 }
 
@@ -710,7 +668,7 @@ uint32_t GeneralSecurityOptions::GetSessionEstablishmentTimeout() const
     return SessionEstablishmentTimeout;
 }
 
-bool GeneralSecurityOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool GeneralSecurityOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -728,9 +686,7 @@ bool GeneralSecurityOptions::HandleOption(const char *progName, OptionSet *optSe
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -738,13 +694,12 @@ bool GeneralSecurityOptions::HandleOption(const char *progName, OptionSet *optSe
 
 ServiceDirClientOptions::ServiceDirClientOptions()
 {
-    static OptionDef optionDefs[] =
-    {
+    static OptionDef optionDefs[] = {
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-        { "service-dir-server",             kArgumentRequired, kToolCommonOpt_ServiceDirServer },
-        { "service-dir-url",                kArgumentRequired, kToolCommonOpt_ServiceDirServer }, // deprecated alias for service-dir-server
+        { "service-dir-server", kArgumentRequired, kToolCommonOpt_ServiceDirServer },
+        { "service-dir-url", kArgumentRequired, kToolCommonOpt_ServiceDirServer }, // deprecated alias for service-dir-server
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
-        { "service-dir-dns-options",        kArgumentRequired, kToolCommonOpt_ServiceDirDNSOptions },
+        { "service-dir-dns-options", kArgumentRequired, kToolCommonOpt_ServiceDirDNSOptions },
         { "service-dir-target-dns-options", kArgumentRequired, kToolCommonOpt_ServiceDirTargetDNSOptions },
 #endif // WEAVE_CONFIG_ENABLE_DNS_RESOLVER
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
@@ -792,14 +747,14 @@ ServiceDirClientOptions::ServiceDirClientOptions()
     ServerPort = WEAVE_PORT;
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
     DNSOptions_ServiceDirEndpoint = kDNSOption_AddrFamily_Any;
-    DNSOptions_TargetEndpoint = kDNSOption_AddrFamily_Any;
+    DNSOptions_TargetEndpoint     = kDNSOption_AddrFamily_Any;
 #endif
 }
 
-bool ServiceDirClientOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool ServiceDirClientOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     WEAVE_ERROR err;
-    const char *host;
+    const char * host;
     uint16_t hostLen;
 
     switch (id)
@@ -831,37 +786,36 @@ bool ServiceDirClientOptions::HandleOption(const char *progName, OptionSet *optS
         break;
 #endif // WEAVE_CONFIG_ENABLE_DNS_RESOLVER
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-WEAVE_ERROR ServiceDirClientOptions::GetRootDirectoryEntry(uint8_t *buf, uint16_t bufSize)
+WEAVE_ERROR ServiceDirClientOptions::GetRootDirectoryEntry(uint8_t * buf, uint16_t bufSize)
 {
     using namespace nl::Weave::Encoding;
     using namespace nl::Weave::Profiles::ServiceDirectory;
 
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t serverHostLen = (uint8_t)strlen(ServerHost);
+    WEAVE_ERROR err            = WEAVE_NO_ERROR;
+    uint8_t serverHostLen      = (uint8_t) strlen(ServerHost);
     uint8_t hostPortListLength = 1;
 
     VerifyOrExit(bufSize >= (1 + 8 + 1 + 1 + serverHostLen + 2), err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
-    Write8(buf,  kDirectoryEntryType_HostPortList | (hostPortListLength & kMask_HostPortListLen));
-    LittleEndian::Write64(buf, kServiceEndpoint_Directory);  // Service Endpoint Id = Directory Service
-    Write8(buf, kHostIdType_FullyQualified |  kMask_PortIdPresent);
+    Write8(buf, kDirectoryEntryType_HostPortList | (hostPortListLength & kMask_HostPortListLen));
+    LittleEndian::Write64(buf, kServiceEndpoint_Directory); // Service Endpoint Id = Directory Service
+    Write8(buf, kHostIdType_FullyQualified | kMask_PortIdPresent);
     Write8(buf, serverHostLen);
-    memcpy(buf, ServerHost, serverHostLen); buf += serverHostLen;
+    memcpy(buf, ServerHost, serverHostLen);
+    buf += serverHostLen;
     LittleEndian::Write16(buf, ServerPort);
 
 exit:
     return err;
 }
 
-WEAVE_ERROR GetRootServiceDirectoryEntry(uint8_t *buf, uint16_t bufSize)
+WEAVE_ERROR GetRootServiceDirectoryEntry(uint8_t * buf, uint16_t bufSize)
 {
     return gServiceDirClientOptions.GetRootDirectoryEntry(buf, bufSize);
 }
@@ -900,14 +854,13 @@ void OverrideServiceConnectArguments(::nl::Weave::Profiles::ServiceDirectory::Se
 
 FaultInjectionOptions::FaultInjectionOptions()
 {
-    static OptionDef optionDefs[] =
-    {
+    static OptionDef optionDefs[] = {
 #if WEAVE_CONFIG_TEST || WEAVE_SYSTEM_CONFIG_TEST || INET_CONFIG_TEST
-        { "faults",                kArgumentRequired, kToolCommonOpt_FaultInjection      },
-        { "iterations",            kArgumentRequired, kToolCommonOpt_FaultTestIterations },
-        { "debug-resource-usage",  kNoArgument,       kToolCommonOpt_DebugResourceUsage  },
-        { "print-fault-counters",  kNoArgument,       kToolCommonOpt_PrintFaultCounters  },
-        { "extra-cleanup-time",    kArgumentRequired, kToolCommonOpt_ExtraCleanupTime },
+        { "faults", kArgumentRequired, kToolCommonOpt_FaultInjection },
+        { "iterations", kArgumentRequired, kToolCommonOpt_FaultTestIterations },
+        { "debug-resource-usage", kNoArgument, kToolCommonOpt_DebugResourceUsage },
+        { "print-fault-counters", kNoArgument, kToolCommonOpt_PrintFaultCounters },
+        { "extra-cleanup-time", kArgumentRequired, kToolCommonOpt_ExtraCleanupTime },
 #endif
         { }
     };
@@ -940,31 +893,27 @@ FaultInjectionOptions::FaultInjectionOptions()
         "";
 
     // Defaults
-    TestIterations = 1;
-    DebugResourceUsage = false;
-    PrintFaultCounters = false;
+    TestIterations       = 1;
+    DebugResourceUsage   = false;
+    PrintFaultCounters   = false;
     ExtraCleanupTimeMsec = 0;
 }
 
-bool FaultInjectionOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool FaultInjectionOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     using namespace nl::FaultInjection;
 
-    GetManagerFn faultMgrFnTable[] =
-    {
-        nl::Weave::FaultInjection::GetManager,
-        nl::Inet::FaultInjection::GetManager,
-        nl::Weave::System::FaultInjection::GetManager
-    };
-    size_t faultMgrFnTableLen = sizeof(faultMgrFnTable) / sizeof(faultMgrFnTable[0]);
+    GetManagerFn faultMgrFnTable[] = { nl::Weave::FaultInjection::GetManager, nl::Inet::FaultInjection::GetManager,
+                                       nl::Weave::System::FaultInjection::GetManager };
+    size_t faultMgrFnTableLen      = sizeof(faultMgrFnTable) / sizeof(faultMgrFnTable[0]);
 
     switch (id)
     {
 #if WEAVE_CONFIG_TEST || WEAVE_SYSTEM_CONFIG_TEST || INET_CONFIG_TEST
     case kToolCommonOpt_FaultInjection:
     {
-        char *mutableArg = strdup(arg);
-        bool parseRes = ParseFaultInjectionStr(mutableArg, faultMgrFnTable, faultMgrFnTableLen);
+        char * mutableArg = strdup(arg);
+        bool parseRes     = ParseFaultInjectionStr(mutableArg, faultMgrFnTable, faultMgrFnTableLen);
         free(mutableArg);
         if (!parseRes)
         {
@@ -980,12 +929,8 @@ bool FaultInjectionOptions::HandleOption(const char *progName, OptionSet *optSet
             return false;
         }
         break;
-    case kToolCommonOpt_DebugResourceUsage:
-        DebugResourceUsage = true;
-        break;
-    case kToolCommonOpt_PrintFaultCounters:
-        PrintFaultCounters = true;
-        break;
+    case kToolCommonOpt_DebugResourceUsage: DebugResourceUsage = true; break;
+    case kToolCommonOpt_PrintFaultCounters: PrintFaultCounters = true; break;
     case kToolCommonOpt_ExtraCleanupTime:
         if ((!ParseInt(arg, ExtraCleanupTimeMsec)) || (ExtraCleanupTimeMsec == 0))
         {
@@ -994,18 +939,15 @@ bool FaultInjectionOptions::HandleOption(const char *progName, OptionSet *optSet
         }
         break;
 #endif // WEAVE_CONFIG_TEST || WEAVE_SYSTEM_CONFIG_TEST || INET_CONFIG_TEST
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
 
-static bool GetToken(const char * & inStr, const char * & token, size_t & tokenLen, const char * sepChars)
+static bool GetToken(const char *& inStr, const char *& token, size_t & tokenLen, const char * sepChars)
 {
     token = inStr;
 
@@ -1026,7 +968,7 @@ static bool GetToken(const char * & inStr, const char * & token, size_t & tokenL
     if (tokenEnd != NULL)
     {
         tokenLen = tokenEnd - inStr;
-        inStr = tokenEnd + 1;
+        inStr    = tokenEnd + 1;
     }
     else
     {
@@ -1051,7 +993,7 @@ static bool MatchToken(const char * token, size_t tokenLen, const char * expecte
 /**
  * Parse a string representation of the nl::Inet::DNSOptions enumeration.
  */
-bool ParseDNSOptions(const char * progName, const char *argName, const char * arg, uint8_t & dnsOptions)
+bool ParseDNSOptions(const char * progName, const char * argName, const char * arg, uint8_t & dnsOptions)
 {
     const char * token;
     size_t tokenLen;
@@ -1100,7 +1042,7 @@ bool ParseDNSOptions(const char * progName, const char *argName, const char * ar
     return true;
 }
 
-bool ResolveWeaveNetworkOptions(const char *progName, WeaveNodeOptions &weaveOptions, NetworkOptions &networkOptions)
+bool ResolveWeaveNetworkOptions(const char * progName, WeaveNodeOptions & weaveOptions, NetworkOptions & networkOptions)
 {
     if (!networkOptions.LocalIPv6Addr.empty())
     {

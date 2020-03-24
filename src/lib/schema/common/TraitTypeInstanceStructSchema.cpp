@@ -30,27 +30,18 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
+const nl::FieldDescriptor TraitTypeInstanceFieldDescriptors[] = {
+    { NULL, offsetof(TraitTypeInstance, traitTypeId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 
-const nl::FieldDescriptor TraitTypeInstanceFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(TraitTypeInstance, traitTypeId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
-
-    {
-        NULL, offsetof(TraitTypeInstance, instanceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 2
-    },
+    { NULL, offsetof(TraitTypeInstance, instanceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor TraitTypeInstance::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(TraitTypeInstanceFieldDescriptors)/sizeof(TraitTypeInstanceFieldDescriptors[0]),
-    .mFields = TraitTypeInstanceFieldDescriptors,
-    .mSize = sizeof(TraitTypeInstance)
+const nl::SchemaFieldDescriptor TraitTypeInstance::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(TraitTypeInstanceFieldDescriptors) / sizeof(TraitTypeInstanceFieldDescriptors[0]),
+    .mFields                     = TraitTypeInstanceFieldDescriptors,
+    .mSize                       = sizeof(TraitTypeInstance)
 };
-
-
 
 } // namespace Common
 } // namespace Weave

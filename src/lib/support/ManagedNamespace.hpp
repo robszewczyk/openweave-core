@@ -237,7 +237,8 @@
  *    #include <Weave/Support/ManagedNamespace.hpp>
 
  *    #if defined(WEAVE_CONFIG_MERCURY_NAMESPACE) && WEAVE_CONFIG_MERCURY_NAMESPACE != kWeaveManagedNamespace_Current
- *    #error Compiling Weave Mercury current-designation managed namespace file with WEAVE_CONFIG_MERCURY_NAMESPACE defined != kWeaveManagedNamespace_Current
+ *    #error Compiling Weave Mercury current-designation managed namespace file with WEAVE_CONFIG_MERCURY_NAMESPACE defined !=
+ kWeaveManagedNamespace_Current
  *    #endif
  *
  *    #ifndef WEAVE_CONFIG_MERCURY_NAMESPACE
@@ -320,7 +321,8 @@
  *    #if defined(WEAVE_CONFIG_MERCURY_NAMESPACE)                             \
  *      && (WEAVE_CONFIG_MERCURY_NAMESPACE != kWeaveManagedNamespace_Current) \
  *      && (WEAVE_CONFIG_MERCURY_NAMESPACE != kWeaveManagedNamespace_Development)
- *    #error "WEAVE_CONFIG_MERCURY_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Current or kWeaveManagedNamespace_Development"
+ *    #error "WEAVE_CONFIG_MERCURY_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Current or
+ kWeaveManagedNamespace_Development"
  *    #endif
  *
  *    #if !defined(WEAVE_CONFIG_MERCURY_NAMESPACE)
@@ -366,7 +368,8 @@
  *    #include <Weave/Support/ManagedNamespace.hpp>
 
  *    #if defined(WEAVE_CONFIG_MERCURY_NAMESPACE) && WEAVE_CONFIG_MERCURY_NAMESPACE != kWeaveManagedNamespace_Development
- *    #error Compiling Weave Mercury development-designated managed namespace file with WEAVE_CONFIG_MERCURY_NAMESPACE defined != kWeaveManagedNamespace_Development
+ *    #error Compiling Weave Mercury development-designated managed namespace file with WEAVE_CONFIG_MERCURY_NAMESPACE defined !=
+ kWeaveManagedNamespace_Development
  *    #endif
  *
  *    #ifndef WEAVE_CONFIG_MERCURY_NAMESPACE
@@ -478,7 +481,7 @@
  *  @sa #WeaveMakeManagedNamespaceIdentifier
  *
  */
-#define kWeaveManagedNamespaceDesignation_Legacy      Legacy
+#define kWeaveManagedNamespaceDesignation_Legacy Legacy
 
 /**
  *  @def kWeaveManagedNamespaceDesignation_Current
@@ -491,7 +494,7 @@
  *  @sa #WeaveMakeManagedNamespaceIdentifier
  *
  */
-#define kWeaveManagedNamespaceDesignation_Current     Current
+#define kWeaveManagedNamespaceDesignation_Current Current
 
 /**
  *  @def kWeaveManagedNamespaceDesignation_Next
@@ -503,7 +506,7 @@
  *  @sa #WeaveMakeManagedNamespaceIdentifier
  *
  */
-#define kWeaveManagedNamespaceDesignation_Next        Next
+#define kWeaveManagedNamespaceDesignation_Next Next
 
 /**
  *  @def kWeaveManagedNamespaceDesignation_Development
@@ -542,9 +545,11 @@
  *  @sa #kWeaveManagedNamespaceDesignation_Legacy
  *
  */
-#define WeaveMakeManagedNamespaceIdentifier(aIdentifier, aDesignation) _WeaveMakeManagedNamespaceIdentifier(aIdentifier, aDesignation)
+#define WeaveMakeManagedNamespaceIdentifier(aIdentifier, aDesignation)                                                             \
+    _WeaveMakeManagedNamespaceIdentifier(aIdentifier, aDesignation)
 
-#define WeaveMakeManagedNamespace(aIdentifier, aDesignation) namespace _WeaveMakeManagedNamespaceIdentifier(aIdentifier, aDesignation)
+#define WeaveMakeManagedNamespace(aIdentifier, aDesignation)                                                                       \
+    namespace _WeaveMakeManagedNamespaceIdentifier(aIdentifier, aDesignation)
 /**
  *  @def kWeaveManagedNamespace_Legacy
  *
@@ -559,7 +564,7 @@
  *  @sa #kWeaveManagedNamespace_Development
  *
  */
-#define kWeaveManagedNamespace_Legacy      (0xFFFFFFFF)
+#define kWeaveManagedNamespace_Legacy (0xFFFFFFFF)
 
 /**
  *  @def kWeaveManagedNamespace_Current
@@ -574,7 +579,7 @@
  *  @sa #kWeaveManagedNamespace_Next
  *  @sa #kWeaveManagedNamespace_Development
  */
-#define kWeaveManagedNamespace_Current     (0x00000000)
+#define kWeaveManagedNamespace_Current (0x00000000)
 
 /**
  *  @def kWeaveManagedNamespace_Next
@@ -589,7 +594,7 @@
  *  @sa #kWeaveManagedNamespace_Current
  *  @sa #kWeaveManagedNamespace_Development
  */
-#define kWeaveManagedNamespace_Next        (0x00000001)
+#define kWeaveManagedNamespace_Next (0x00000001)
 
 /**
  *  @def kWeaveManagedNamespace_Development

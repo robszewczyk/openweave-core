@@ -23,7 +23,6 @@
  *
  */
 
-
 #include "ToolCommon.h"
 #include <Weave/Support/CodeUtils.h>
 #include <Weave/Profiles/WeaveProfiles.h>
@@ -37,16 +36,13 @@ DeviceDescOptions gDeviceDescOptions;
 
 DeviceDescOptions::DeviceDescOptions()
 {
-    static OptionDef optionDefs[] =
-    {
-        { "serial-num",       kArgumentRequired, kToolCommonOpt_DeviceSerialNum        },
-        { "vendor-id",        kArgumentRequired, kToolCommonOpt_DeviceVendorId         },
-        { "product-id",       kArgumentRequired, kToolCommonOpt_DeviceProductId        },
-        { "product-rev",      kArgumentRequired, kToolCommonOpt_DeviceProductRevision  },
-        { "software-version", kArgumentRequired, kToolCommonOpt_DeviceSoftwareVersion  },
-        { }
-    };
-    OptionDefs = optionDefs;
+    static OptionDef optionDefs[] = { { "serial-num", kArgumentRequired, kToolCommonOpt_DeviceSerialNum },
+                                      { "vendor-id", kArgumentRequired, kToolCommonOpt_DeviceVendorId },
+                                      { "product-id", kArgumentRequired, kToolCommonOpt_DeviceProductId },
+                                      { "product-rev", kArgumentRequired, kToolCommonOpt_DeviceProductRevision },
+                                      { "software-version", kArgumentRequired, kToolCommonOpt_DeviceSoftwareVersion },
+                                      { } };
+    OptionDefs                    = optionDefs;
 
     HelpGroupName = "DEVICE DESCRIPTION OPTIONS";
 
@@ -69,37 +65,36 @@ DeviceDescOptions::DeviceDescOptions()
 
     // Setup Defaults.
     BaseDeviceDesc.Clear();
-    BaseDeviceDesc.VendorId = kWeaveVendor_NestLabs;
-    BaseDeviceDesc.ProductId = nl::Weave::Profiles::Vendor::Nestlabs::DeviceDescription::kNestWeaveProduct_Topaz;
-    BaseDeviceDesc.ProductRevision = 1;
-    BaseDeviceDesc.ManufacturingDate.Year = 2013;
+    BaseDeviceDesc.VendorId                = kWeaveVendor_NestLabs;
+    BaseDeviceDesc.ProductId               = nl::Weave::Profiles::Vendor::Nestlabs::DeviceDescription::kNestWeaveProduct_Topaz;
+    BaseDeviceDesc.ProductRevision         = 1;
+    BaseDeviceDesc.ManufacturingDate.Year  = 2013;
     BaseDeviceDesc.ManufacturingDate.Month = 1;
-    BaseDeviceDesc.ManufacturingDate.Day = 1;
+    BaseDeviceDesc.ManufacturingDate.Day   = 1;
     memset(BaseDeviceDesc.Primary802154MACAddress, 0x11, sizeof(BaseDeviceDesc.Primary802154MACAddress));
     memset(BaseDeviceDesc.PrimaryWiFiMACAddress, 0x22, sizeof(BaseDeviceDesc.PrimaryWiFiMACAddress));
     strcpy(BaseDeviceDesc.RendezvousWiFiESSID, "MOCK-1111");
     strcpy(BaseDeviceDesc.SerialNumber, "mock-device");
     strcpy(BaseDeviceDesc.SoftwareVersion, "mock-device/1.0");
     BaseDeviceDesc.DeviceFeatures =
-        WeaveDeviceDescriptor::kFeature_HomeAlarmLinkCapable |
-        WeaveDeviceDescriptor::kFeature_LinePowered;
+        WeaveDeviceDescriptor::kFeature_HomeAlarmLinkCapable | WeaveDeviceDescriptor::kFeature_LinePowered;
     // NOTE: For security reasons, pairing codes should only ever appear in device descriptors that are
     // encoded into QR codes. options.BaseDeviceDesc contains the device descriptor fields that get sent over the
     // network (e.g. in an IdentifyDevice exchange).  Therefore the PairingCode field should never be
     // set here.
 }
 
-void DeviceDescOptions::GetDeviceDesc(WeaveDeviceDescriptor& deviceDesc)
+void DeviceDescOptions::GetDeviceDesc(WeaveDeviceDescriptor & deviceDesc)
 {
-    deviceDesc = BaseDeviceDesc;
+    deviceDesc          = BaseDeviceDesc;
     deviceDesc.DeviceId = FabricState.LocalNodeId;
     deviceDesc.FabricId = FabricState.FabricId;
     memset(deviceDesc.PairingCode, 0, sizeof(deviceDesc.PairingCode));
 }
 
-bool DeviceDescOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool DeviceDescOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
-    DeviceDescOptions& options = *static_cast<DeviceDescOptions *>(optSet);
+    DeviceDescOptions & options = *static_cast<DeviceDescOptions *>(optSet);
 
     switch (id)
     {
@@ -112,14 +107,16 @@ bool DeviceDescOptions::HandleOption(const char *progName, OptionSet *optSet, in
         strncpy(options.BaseDeviceDesc.SerialNumber, arg, sizeof(options.BaseDeviceDesc.SerialNumber));
         break;
     case kToolCommonOpt_DeviceVendorId:
-        if (!ParseInt(arg, options.BaseDeviceDesc.VendorId) || options.BaseDeviceDesc.VendorId == 0 || options.BaseDeviceDesc.VendorId >= 0xFFF0)
+        if (!ParseInt(arg, options.BaseDeviceDesc.VendorId) || options.BaseDeviceDesc.VendorId == 0 ||
+            options.BaseDeviceDesc.VendorId >= 0xFFF0)
         {
             PrintArgError("%s: Invalid value specified for device vendor ID: %s\n", progName, arg);
             return false;
         }
         break;
     case kToolCommonOpt_DeviceProductId:
-        if (!ParseInt(arg, options.BaseDeviceDesc.ProductId) || options.BaseDeviceDesc.ProductId == 0 || options.BaseDeviceDesc.ProductId == 0xFFFF)
+        if (!ParseInt(arg, options.BaseDeviceDesc.ProductId) || options.BaseDeviceDesc.ProductId == 0 ||
+            options.BaseDeviceDesc.ProductId == 0xFFFF)
         {
             PrintArgError("%s: Invalid value specified for device product ID: %s\n", progName, arg);
             return false;
@@ -140,9 +137,7 @@ bool DeviceDescOptions::HandleOption(const char *progName, OptionSet *optSet, in
         }
         strncpy(options.BaseDeviceDesc.SoftwareVersion, arg, sizeof(options.BaseDeviceDesc.SoftwareVersion));
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

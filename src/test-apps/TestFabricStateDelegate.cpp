@@ -42,39 +42,34 @@ const uint64_t kTestNodeId = 0x18B43000002DCF71ULL;
 
 static WeaveFabricState sFabricState;
 
-class TestDelegate
-        : public FabricStateDelegate
+class TestDelegate : public FabricStateDelegate
 {
 public:
-    TestDelegate()
-    {
-        ClearState();
-    }
+    TestDelegate() { ClearState(); }
 
-    virtual void DidJoinFabric(WeaveFabricState *fabricState, uint64_t newFabricId)
+    virtual void DidJoinFabric(WeaveFabricState * fabricState, uint64_t newFabricId)
     {
         mDidJoinFabricCalled = true;
-        mNewFabricId = newFabricId;
-
+        mNewFabricId         = newFabricId;
     }
-    virtual void DidLeaveFabric(WeaveFabricState *fabricState, uint64_t oldFabricId)
+    virtual void DidLeaveFabric(WeaveFabricState * fabricState, uint64_t oldFabricId)
     {
         mDidLeaveFabricCalled = true;
-        mOldFabricId = oldFabricId;
+        mOldFabricId          = oldFabricId;
     }
 
     void ClearState(void)
     {
-        mDidJoinFabricCalled = false;
+        mDidJoinFabricCalled  = false;
         mDidLeaveFabricCalled = false;
-        mOldFabricId = 0;
-        mNewFabricId = 0;
+        mOldFabricId          = 0;
+        mNewFabricId          = 0;
     }
 
     bool CheckStateIsClear(void)
     {
         // Neither callback is invoked
-        return (!mDidJoinFabricCalled  && !mDidLeaveFabricCalled);
+        return (!mDidJoinFabricCalled && !mDidLeaveFabricCalled);
     }
 
     // Indicate which callback was invoked
@@ -84,11 +79,10 @@ public:
     uint64_t mNewFabricId;
 };
 
-
-static void Setup(nlTestSuite *inSuite, void *inContext)
+static void Setup(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
-    static nlDEFINE_ALIGNED_VAR(sTestGroupKeyStore, sizeof(TestGroupKeyStore), void*);
+    static nlDEFINE_ALIGNED_VAR(sTestGroupKeyStore, sizeof(TestGroupKeyStore), void *);
 
     err = sFabricState.Init(new (&sTestGroupKeyStore) TestGroupKeyStore());
 
@@ -97,7 +91,7 @@ static void Setup(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-static void CheckDelegateCallbacks(nlTestSuite *inSuite, void *inContext)
+static void CheckDelegateCallbacks(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     TestDelegate delegate;
@@ -160,23 +154,16 @@ static void CheckDelegateCallbacks(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, delegate.mDidLeaveFabricCalled == false);
     NL_TEST_ASSERT(inSuite, delegate.mDidJoinFabricCalled == true);
     NL_TEST_ASSERT(inSuite, delegate.mNewFabricId == fabricId);
-
 }
 
-static const nlTest sTests[] = {
-    NL_TEST_DEF("Setup",                     Setup),
-    NL_TEST_DEF("DelegateCallback",          CheckDelegateCallbacks),
-    NL_TEST_SENTINEL()
-};
+static const nlTest sTests[] = { NL_TEST_DEF("Setup", Setup), NL_TEST_DEF("DelegateCallback", CheckDelegateCallbacks),
+                                 NL_TEST_SENTINEL() };
 
 int main(void)
 {
     WEAVE_ERROR err;
 
-    nlTestSuite theSuite = {
-        "FabricStateDelegate",
-        &sTests[0]
-    };
+    nlTestSuite theSuite = { "FabricStateDelegate", &sTests[0] };
 
     err = nl::Weave::Platform::Security::InitSecureRandomDataSource(NULL, 64, NULL, 0);
     FAIL_ERROR(err, "InitSecureRandomDataSource() failed");

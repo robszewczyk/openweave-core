@@ -131,7 +131,7 @@ public:
     WEAVE_ERROR DeleteKey(TraitDataSource * aDataSource, PropertyPathHandle aPropertyHandle);
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-    WEAVE_ERROR SendSubscriptionlessNotification(Binding * const apBinding, TraitPath *aPathList, uint16_t aPathListSize);
+    WEAVE_ERROR SendSubscriptionlessNotification(Binding * const apBinding, TraitPath * aPathList, uint16_t aPathListSize);
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
 
     enum NotifyRequestBuilderState
@@ -403,7 +403,7 @@ private:
     static void Run(System::Layer * aSystemLayer, void * aAppState, System::Error);
 
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-    WEAVE_ERROR BuildSubscriptionlessNotification(PacketBuffer *msgBuf, uint32_t maxPayloadSize, TraitPath *aPathList,
+    WEAVE_ERROR BuildSubscriptionlessNotification(PacketBuffer * msgBuf, uint32_t maxPayloadSize, TraitPath * aPathList,
                                                   uint16_t aPathListSize);
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
     uint32_t mCurSubscriptionHandlerIdx;

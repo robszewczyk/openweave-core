@@ -42,7 +42,8 @@
 #include "WeaveCrypto.h"
 
 #if WEAVE_CONFIG_AES_IMPLEMENTATION_OPENSSL && !WEAVE_WITH_OPENSSL
-#error "INVALID WEAVE CONFIG: OpenSSL AES implementation enabled but OpenSSL not available (WEAVE_CONFIG_AES_IMPLEMENTATION_OPENSSL == 1 && WEAVE_WITH_OPENSSL == 0)."
+#error                                                                                                                             \
+    "INVALID WEAVE CONFIG: OpenSSL AES implementation enabled but OpenSSL not available (WEAVE_CONFIG_AES_IMPLEMENTATION_OPENSSL == 1 && WEAVE_WITH_OPENSSL == 0)."
 #endif
 
 #if WEAVE_CONFIG_AES_IMPLEMENTATION_OPENSSL
@@ -61,8 +62,6 @@
 #include WEAVE_AES_BLOCK_CIPHER_PLATFORM_INCLUDE
 #endif
 
-
-
 namespace nl {
 namespace Weave {
 namespace Platform {
@@ -73,10 +72,10 @@ class AES128BlockCipher
 public:
     enum
     {
-        kKeyLength      = 16,
-        kKeyLengthBits  = kKeyLength * CHAR_BIT,
-        kBlockLength    = 16,
-        kRoundCount     = 10
+        kKeyLength     = 16,
+        kKeyLengthBits = kKeyLength * CHAR_BIT,
+        kBlockLength   = 16,
+        kRoundCount    = 10
     };
 
     void Reset(void);
@@ -103,15 +102,15 @@ protected:
 class NL_DLL_EXPORT AES128BlockCipherEnc : public AES128BlockCipher
 {
 public:
-    void SetKey(const uint8_t *key);
-    void EncryptBlock(const uint8_t *inBlock, uint8_t *outBlock);
+    void SetKey(const uint8_t * key);
+    void EncryptBlock(const uint8_t * inBlock, uint8_t * outBlock);
 };
 
 class NL_DLL_EXPORT AES128BlockCipherDec : public AES128BlockCipher
 {
 public:
-    void SetKey(const uint8_t *key);
-    void DecryptBlock(const uint8_t *inBlock, uint8_t *outBlock);
+    void SetKey(const uint8_t * key);
+    void DecryptBlock(const uint8_t * inBlock, uint8_t * outBlock);
 };
 
 class AES256BlockCipher
@@ -119,10 +118,10 @@ class AES256BlockCipher
 public:
     enum
     {
-        kKeyLength      = 32,
-        kKeyLengthBits  = kKeyLength * CHAR_BIT,
-        kBlockLength    = 16,
-        kRoundCount     = 14
+        kKeyLength     = 32,
+        kKeyLengthBits = kKeyLength * CHAR_BIT,
+        kBlockLength   = 16,
+        kRoundCount    = 14
     };
 
     void Reset(void);
@@ -149,15 +148,15 @@ protected:
 class NL_DLL_EXPORT AES256BlockCipherEnc : public AES256BlockCipher
 {
 public:
-    void SetKey(const uint8_t *key);
-    void EncryptBlock(const uint8_t *inBlock, uint8_t *outBlock);
+    void SetKey(const uint8_t * key);
+    void EncryptBlock(const uint8_t * inBlock, uint8_t * outBlock);
 };
 
 class NL_DLL_EXPORT AES256BlockCipherDec : public AES256BlockCipher
 {
 public:
-    void SetKey(const uint8_t *key);
-    void DecryptBlock(const uint8_t *inBlock, uint8_t *outBlock);
+    void SetKey(const uint8_t * key);
+    void DecryptBlock(const uint8_t * inBlock, uint8_t * outBlock);
 };
 
 } // namespace Security

@@ -45,40 +45,40 @@ using namespace nl::Weave::Profiles::Security;
 
 #define TOOL_NAME "weave-heartbeat"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void HandleHeartbeatReceived(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState, WEAVE_ERROR err);
-static bool ParseDestAddress(const char *progName, const char *arg);
-static void HeartbeatSenderEventHandler(void *appState, WeaveHeartbeatSender::EventType eventType, const WeaveHeartbeatSender::InEventParam& inParam, WeaveHeartbeatSender::OutEventParam& outParam);
-static void BindingEventHandler(void *appState, Binding::EventType eventType, const Binding::InEventParam& inParam, Binding::OutEventParam& outParam);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void HandleHeartbeatReceived(const WeaveMessageInfo * aMsgInfo, uint8_t nodeState, WEAVE_ERROR err);
+static bool ParseDestAddress(const char * progName, const char * arg);
+static void HeartbeatSenderEventHandler(void * appState, WeaveHeartbeatSender::EventType eventType,
+                                        const WeaveHeartbeatSender::InEventParam & inParam,
+                                        WeaveHeartbeatSender::OutEventParam & outParam);
+static void BindingEventHandler(void * appState, Binding::EventType eventType, const Binding::InEventParam & inParam,
+                                Binding::OutEventParam & outParam);
 
-bool Listening = false;
+bool Listening             = false;
 uint32_t MaxHeartbeatCount = UINT32_MAX;
 uint32_t HeartbeatInterval = 1000; // 1 second
-uint32_t HeartbeatWindow = 0;
-bool Debug = false;
+uint32_t HeartbeatWindow   = 0;
+bool Debug                 = false;
 uint64_t DestNodeId;
-const char *DestAddr = NULL;
+const char * DestAddr = NULL;
 IPAddress DestIPAddr;
 uint16_t DestPort;
-InterfaceId DestIntf = INET_NULL_INTERFACEID;
+InterfaceId DestIntf    = INET_NULL_INTERFACEID;
 uint32_t HeartbeatCount = 0;
 WeaveHeartbeatSender HeartbeatSender;
 WeaveHeartbeatReceiver HeartbeatReceiver;
 bool RequestAck = false;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "listen",       kNoArgument,       'L' },
-    { "dest-addr",    kArgumentRequired, 'D' },
-    { "count",        kArgumentRequired, 'c' },
-    { "interval",     kArgumentRequired, 'i' },
-    { "window",       kArgumentRequired, 'W' },
-    { "request-ack",  kNoArgument,       'r' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "listen", kNoArgument, 'L' },
+                                       { "dest-addr", kArgumentRequired, 'D' },
+                                       { "count", kArgumentRequired, 'c' },
+                                       { "interval", kArgumentRequired, 'i' },
+                                       { "window", kArgumentRequired, 'W' },
+                                       { "request-ack", kNoArgument, 'r' },
+                                       { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -D, --dest-addr <host>[:<port>][%<interface>]\n"
     "       Send Heartbeats to a specific address rather than one\n"
     "       derived from the destination node id. <host> can be a hostname,\n"
@@ -106,33 +106,19 @@ static const char *const gToolOptionHelp =
     "       Use Weave Reliable Messaging when sending heartbeats over UDP.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%%<interface>]]\n"
-    "       " TOOL_NAME " [<options...>] --listen\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%%<interface>]]\n"
+                                "       " TOOL_NAME " [<options...>] --listen\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWRMPOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions, &gNetworkOptions,        &gWeaveNodeOptions,
+                                         &gWRMPOptions, &gFaultInjectionOptions, &gHelpOptions,
+                                         NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -143,7 +129,7 @@ int main(int argc, char *argv[])
     // Use a smaller default WRMP retransmission interval and count so that the total retry time
     // does not exceed the default heartbeat interval of 1 second.
     gWRMPOptions.RetransInterval = 200;
-    gWRMPOptions.RetransCount = 2;
+    gWRMPOptions.RetransCount    = 2;
 
     if (argc == 1)
     {
@@ -167,7 +153,7 @@ int main(int argc, char *argv[])
     if (!Listening) // heartbeat sender
     {
         // Create a binding for the HeartbeatSender.
-        Binding *binding = ExchangeMgr.NewBinding(BindingEventHandler, NULL);
+        Binding * binding = ExchangeMgr.NewBinding(BindingEventHandler, NULL);
 
         // Initialize the HeartbeatSender object.
         err = HeartbeatSender.Init(&ExchangeMgr, binding, HeartbeatSenderEventHandler, NULL);
@@ -228,7 +214,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -247,13 +233,11 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'L':
-        Listening = true;
-        break;
+    case 'L': Listening = true; break;
     case 'c':
         if (!ParseInt(arg, MaxHeartbeatCount))
         {
@@ -275,9 +259,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'D':
-        return ParseDestAddress(progName, arg);
-        break;
+    case 'D': return ParseDestAddress(progName, arg); break;
     case 'r':
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
         RequestAck = true;
@@ -286,17 +268,15 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         PrintArgError("%s: WRMP not supported: %s\n", progName, name);
         return false;
 #endif
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
-    const char *destAddr = NULL;
+    const char * destAddr = NULL;
 
     if (argc > 0)
     {
@@ -312,12 +292,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
             return false;
         }
 
-        const char *nodeId = argv[0];
-        char *p = (char *)strchr(nodeId, '@');
+        const char * nodeId = argv[0];
+        char * p            = (char *) strchr(nodeId, '@');
         if (p != NULL)
         {
-            *p = 0;
-            destAddr = p+1;
+            *p       = 0;
+            destAddr = p + 1;
         }
 
         if (!ParseNodeId(nodeId, DestNodeId))
@@ -352,7 +332,7 @@ void HandleHeartbeatSent(uint64_t destId, IPAddress destAddr, uint8_t state, WEA
     HeartbeatCount++;
 }
 
-void HandleHeartbeatReceived(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState, WEAVE_ERROR err)
+void HandleHeartbeatReceived(const WeaveMessageInfo * aMsgInfo, uint8_t nodeState, WEAVE_ERROR err)
 {
     char ipAddrStr[64];
     aMsgInfo->InPacketInfo->SrcAddress.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -362,12 +342,12 @@ void HandleHeartbeatReceived(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState
     HeartbeatCount++;
 }
 
-bool ParseDestAddress(const char *progName, const char *arg)
+bool ParseDestAddress(const char * progName, const char * arg)
 {
     WEAVE_ERROR err;
-    const char *addr;
+    const char * addr;
     uint16_t addrLen;
-    const char *intfName;
+    const char * intfName;
     uint16_t intfNameLen;
 
     err = ParseHostPortAndInterface(arg, strlen(arg), addr, addrLen, DestPort, intfName, intfNameLen);
@@ -398,41 +378,39 @@ bool ParseDestAddress(const char *progName, const char *arg)
     return true;
 }
 
-void HeartbeatSenderEventHandler(void *appState, WeaveHeartbeatSender::EventType eventType, const WeaveHeartbeatSender::InEventParam& inParam, WeaveHeartbeatSender::OutEventParam& outParam)
+void HeartbeatSenderEventHandler(void * appState, WeaveHeartbeatSender::EventType eventType,
+                                 const WeaveHeartbeatSender::InEventParam & inParam, WeaveHeartbeatSender::OutEventParam & outParam)
 {
-    WeaveHeartbeatSender *sender = inParam.Source;
-    Binding *binding = sender->GetBinding();
+    WeaveHeartbeatSender * sender = inParam.Source;
+    Binding * binding             = sender->GetBinding();
 
     switch (eventType)
     {
     case WeaveHeartbeatSender::kEvent_HeartbeatSent:
-        printf("Heartbeat sent to node %" PRIX64 ": state=%u\n",
-               binding->GetPeerNodeId(), sender->GetSubscriptionState());
+        printf("Heartbeat sent to node %" PRIX64 ": state=%u\n", binding->GetPeerNodeId(), sender->GetSubscriptionState());
         HeartbeatCount++;
         break;
     case WeaveHeartbeatSender::kEvent_HeartbeatFailed:
-        printf("Heartbeat FAILED to node %" PRIX64 ": state=%u, err=%s\n",
-               binding->GetPeerNodeId(), sender->GetSubscriptionState(),
+        printf("Heartbeat FAILED to node %" PRIX64 ": state=%u, err=%s\n", binding->GetPeerNodeId(), sender->GetSubscriptionState(),
                ErrorStr(inParam.HeartbeatFailed.Reason));
         HeartbeatCount++;
         break;
-    default:
-        WeaveHeartbeatSender::DefaultEventHandler(appState, eventType, inParam, outParam);
-        break;
+    default: WeaveHeartbeatSender::DefaultEventHandler(appState, eventType, inParam, outParam); break;
     }
 }
 
-void BindingEventHandler(void *appState, Binding::EventType eventType, const Binding::InEventParam& inParam, Binding::OutEventParam& outParam)
+void BindingEventHandler(void * appState, Binding::EventType eventType, const Binding::InEventParam & inParam,
+                         Binding::OutEventParam & outParam)
 {
     switch (eventType)
     {
     case Binding::kEvent_PrepareRequested:
     {
         Binding::Configuration bindingConfig = inParam.Source->BeginConfiguration()
-            .Target_NodeId(DestNodeId)
-            .Transport_UDP()
-            .Transport_DefaultWRMPConfig(gWRMPOptions.GetWRMPConfig())
-            .Security_None();
+                                                   .Target_NodeId(DestNodeId)
+                                                   .Transport_UDP()
+                                                   .Transport_DefaultWRMPConfig(gWRMPOptions.GetWRMPConfig())
+                                                   .Security_None();
         if (DestAddr != NULL)
         {
             bindingConfig.TargetAddress_IP(DestIPAddr, DestPort, DestIntf);
@@ -440,8 +418,6 @@ void BindingEventHandler(void *appState, Binding::EventType eventType, const Bin
         outParam.PrepareRequested.PrepareError = bindingConfig.PrepareBinding();
         break;
     }
-    default:
-        Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
-        break;
+    default: Binding::DefaultEventHandler(appState, eventType, inParam, outParam); break;
     }
 }

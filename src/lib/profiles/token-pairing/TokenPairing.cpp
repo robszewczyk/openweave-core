@@ -38,10 +38,7 @@ namespace TokenPairing {
 
 using namespace nl::Weave::Encoding;
 
-TokenPairingServer::TokenPairingServer() :
-    mCurClientOp(NULL),
-    mDelegate(NULL),
-    mCertificateSent(false)
+TokenPairingServer::TokenPairingServer() : mCurClientOp(NULL), mDelegate(NULL), mCertificateSent(false)
 {
     FabricState = NULL;
     ExchangeMgr = NULL;
@@ -59,21 +56,23 @@ TokenPairingServer::TokenPairingServer() :
  *                                                              handlers are registered.
  * @retval #WEAVE_NO_ERROR                                      On success.
  */
-WEAVE_ERROR TokenPairingServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR TokenPairingServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
+    ExchangeMgr  = exchangeMgr;
+    FabricState  = exchangeMgr->FabricState;
     mCurClientOp = NULL;
 
     // Register to receive unsolicited Token Pairing messages from the exchange manager.
-    err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TokenPairing, kMsgType_PairTokenRequest, HandleClientRequest, this);
+    err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TokenPairing, kMsgType_PairTokenRequest, HandleClientRequest,
+                                                         this);
     SuccessOrExit(err);
-    err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TokenPairing, kMsgType_UnpairTokenRequest, HandleClientRequest, this);
+    err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TokenPairing, kMsgType_UnpairTokenRequest,
+                                                         HandleClientRequest, this);
 
 exit:
     return err;
@@ -104,7 +103,7 @@ WEAVE_ERROR TokenPairingServer::Shutdown()
  *
  * @param[in]   delegate    A pointer to the Device Control Delegate.
  */
-void TokenPairingServer::SetDelegate(TokenPairingDelegate *delegate)
+void TokenPairingServer::SetDelegate(TokenPairingDelegate * delegate)
 {
     mDelegate = delegate;
 }
@@ -133,7 +132,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TokenPairingServer::SendTokenCertificateResponse(PacketBuffer *certificateBuf)
+WEAVE_ERROR TokenPairingServer::SendTokenCertificateResponse(PacketBuffer * certificateBuf)
 {
     WEAVE_ERROR err;
 
@@ -143,8 +142,8 @@ WEAVE_ERROR TokenPairingServer::SendTokenCertificateResponse(PacketBuffer *certi
     // The optional TokenCertificateResponse may only be sent once.
     VerifyOrExit(mCertificateSent == false, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    err = mCurClientOp->SendMessage(kWeaveProfile_TokenPairing, kMsgType_TokenCertificateResponse, certificateBuf, 0);
-    certificateBuf = NULL;
+    err              = mCurClientOp->SendMessage(kWeaveProfile_TokenPairing, kMsgType_TokenCertificateResponse, certificateBuf, 0);
+    certificateBuf   = NULL;
     mCertificateSent = true;
 
 exit:
@@ -155,14 +154,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TokenPairingServer::SendTokenPairedResponse(PacketBuffer *tokenBundleBuf)
+WEAVE_ERROR TokenPairingServer::SendTokenPairedResponse(PacketBuffer * tokenBundleBuf)
 {
     WEAVE_ERROR err;
 
     WeaveLogError(TokenPairing, "SendTokenPairedResponse");
     VerifyOrExit(mCurClientOp != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    err = mCurClientOp->SendMessage(kWeaveProfile_TokenPairing, kMsgType_TokenPairedResponse, tokenBundleBuf, 0);
+    err            = mCurClientOp->SendMessage(kWeaveProfile_TokenPairing, kMsgType_TokenPairedResponse, tokenBundleBuf, 0);
     tokenBundleBuf = NULL;
 
 exit:
@@ -184,11 +183,11 @@ void TokenPairingServer::CloseClientOp()
     mCertificateSent = false;
 }
 
-void TokenPairingServer::HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf)
+void TokenPairingServer::HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                             uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    TokenPairingServer *server = (TokenPairingServer *) ec->AppState;
+    WEAVE_ERROR err             = WEAVE_NO_ERROR;
+    TokenPairingServer * server = (TokenPairingServer *) ec->AppState;
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_TokenPairing)
@@ -216,32 +215,32 @@ void TokenPairingServer::HandleClientRequest(ExchangeContext *ec, const IPPacket
     }
 
     // Record that we have a request in process.
-    server->mCurClientOp = ec;
+    server->mCurClientOp     = ec;
     server->mCertificateSent = false;
 
     // Decode and dispatch the message.
     switch (msgType)
     {
-        case kMsgType_PairTokenRequest:
-            if (server->mDelegate != NULL)
-            {
-                err = server->mDelegate->OnPairTokenRequest((TokenPairingServer *)ec->AppState, msgBuf->Start(), msgBuf->DataLength());
-            }
-            SuccessOrExit(err);
-            break;
+    case kMsgType_PairTokenRequest:
+        if (server->mDelegate != NULL)
+        {
+            err = server->mDelegate->OnPairTokenRequest((TokenPairingServer *) ec->AppState, msgBuf->Start(), msgBuf->DataLength());
+        }
+        SuccessOrExit(err);
+        break;
 
-        case kMsgType_UnpairTokenRequest:
-            if (server->mDelegate != NULL)
-            {
-                err = server->mDelegate->OnUnpairTokenRequest((TokenPairingServer *)ec->AppState);
-            }
-            SuccessOrExit(err);
-            break;
+    case kMsgType_UnpairTokenRequest:
+        if (server->mDelegate != NULL)
+        {
+            err = server->mDelegate->OnUnpairTokenRequest((TokenPairingServer *) ec->AppState);
+        }
+        SuccessOrExit(err);
+        break;
 
-        default:
-            err = server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest);
-            ExitNow();
-            break;
+    default:
+        err = server->SendStatusReport(kWeaveProfile_Common, Common::kStatus_BadRequest);
+        ExitNow();
+        break;
     }
 
 exit:
@@ -255,8 +254,8 @@ exit:
     }
 }
 
-void TokenPairingDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void TokenPairingDelegate::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     // If the result has not already been determined by a subclass...
     if (result == kAccessControlResult_NotDetermined)
@@ -270,7 +269,7 @@ void TokenPairingDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t ms
             {
                 result = kAccessControlResult_Accepted;
             }
-#else // WEAVE_CONFIG_REQUIRE_AUTH_DEVICE_CONTROL
+#else  // WEAVE_CONFIG_REQUIRE_AUTH_DEVICE_CONTROL
             result = kAccessControlResult_Accepted;
 #endif // WEAVE_CONFIG_REQUIRE_AUTH_DEVICE_CONTROL
             break;

@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,8 +38,9 @@ namespace TimesyncTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1104U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1104U
 };
 
 //
@@ -63,22 +62,24 @@ struct TimeSyncEvent
     bool IsServerAddressPresent(void);
 #endif
     bool slew;
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x1104U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x1104U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TimeSyncEvent_array {
+struct TimeSyncEvent_array
+{
     uint32_t num;
-    TimeSyncEvent *buf;
+    TimeSyncEvent * buf;
 };
 
 inline void TimeSyncEvent::SetServerIdNull(void)

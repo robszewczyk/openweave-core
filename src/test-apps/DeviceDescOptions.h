@@ -41,11 +41,11 @@ public:
     // that change dynamically (e.g. FabricId).
     WeaveDeviceDescriptor BaseDeviceDesc;
 
-    void GetDeviceDesc(WeaveDeviceDescriptor& deviceDesc);
+    void GetDeviceDesc(WeaveDeviceDescriptor & deviceDesc);
 
     bool ParseOption(int optId);
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern DeviceDescOptions gDeviceDescOptions;

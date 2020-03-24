@@ -41,15 +41,14 @@ class MockServiceDirServer
 public:
     MockServiceDirServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR TearDown(void);
 
 private:
-    WeaveExchangeManager *mExchangeMgr;
+    WeaveExchangeManager * mExchangeMgr;
 
-    static void HandleServiceDirRequest(ExchangeContext *ec, const IPPacketInfo *addrInfo,
-                                        const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                        uint8_t msgType, PacketBuffer *payload);
+    static void HandleServiceDirRequest(ExchangeContext * ec, const IPPacketInfo * addrInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 };
 
 #endif // MOCKSERVICEDIRECTORY_H_

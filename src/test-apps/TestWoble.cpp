@@ -40,7 +40,7 @@ using namespace nl::Ble;
 
 static nl::Ble::WoBle woble;
 
-static void HandleCharacteristicReceivedOnePacket(nlTestSuite *inSuite, void *inContext)
+static void HandleCharacteristicReceivedOnePacket(nlTestSuite * inSuite, void * inContext)
 {
     PacketBuffer * first_packet;
     SequenceNumber_t rcvd_ack;
@@ -67,7 +67,7 @@ static void HandleCharacteristicReceivedOnePacket(nlTestSuite *inSuite, void *in
     data[3] = 0;
     data[4] = 0xff; // payload
 
-    err = woble.HandleCharacteristicReceived(first_packet, rcvd_ack, did_rcv_ack);
+    err          = woble.HandleCharacteristicReceived(first_packet, rcvd_ack, did_rcv_ack);
     first_packet = NULL;
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -80,7 +80,7 @@ static void HandleCharacteristicReceivedOnePacket(nlTestSuite *inSuite, void *in
     woble.LogState();
 }
 
-static void HandleCharacteristicReceivedTwoPacket(nlTestSuite *inSuite, void *inContext)
+static void HandleCharacteristicReceivedTwoPacket(nlTestSuite * inSuite, void * inContext)
 {
     PacketBuffer * first_packet;
     PacketBuffer * second_packet;
@@ -106,7 +106,7 @@ static void HandleCharacteristicReceivedTwoPacket(nlTestSuite *inSuite, void *in
     data[3] = 0;
     data[4] = 0xfe; // payload
 
-    err = woble.HandleCharacteristicReceived(first_packet, rcvd_ack, did_rcv_ack);
+    err          = woble.HandleCharacteristicReceived(first_packet, rcvd_ack, did_rcv_ack);
     first_packet = NULL;
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -121,7 +121,7 @@ static void HandleCharacteristicReceivedTwoPacket(nlTestSuite *inSuite, void *in
     data[1] = 2;
     data[2] = 0xff; // payload
 
-    err = woble.HandleCharacteristicReceived(second_packet, rcvd_ack, did_rcv_ack);
+    err           = woble.HandleCharacteristicReceived(second_packet, rcvd_ack, did_rcv_ack);
     second_packet = NULL;
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -134,7 +134,7 @@ static void HandleCharacteristicReceivedTwoPacket(nlTestSuite *inSuite, void *in
     woble.LogState();
 }
 
-static void HandleCharacteristicReceivedThreePacket(nlTestSuite *inSuite, void *inContext)
+static void HandleCharacteristicReceivedThreePacket(nlTestSuite * inSuite, void * inContext)
 {
     PacketBuffer * first_packet;
     PacketBuffer * second_packet;
@@ -160,7 +160,7 @@ static void HandleCharacteristicReceivedThreePacket(nlTestSuite *inSuite, void *
     data[3] = 0;
     data[4] = 0xfd; // payload
 
-    err = woble.HandleCharacteristicReceived(first_packet, rcvd_ack, did_rcv_ack);
+    err          = woble.HandleCharacteristicReceived(first_packet, rcvd_ack, did_rcv_ack);
     first_packet = NULL;
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -175,7 +175,7 @@ static void HandleCharacteristicReceivedThreePacket(nlTestSuite *inSuite, void *
     data[1] = 2;
     data[4] = 0xfe; // payload
 
-    err = woble.HandleCharacteristicReceived(second_packet, rcvd_ack, did_rcv_ack);
+    err           = woble.HandleCharacteristicReceived(second_packet, rcvd_ack, did_rcv_ack);
     second_packet = NULL;
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -190,7 +190,7 @@ static void HandleCharacteristicReceivedThreePacket(nlTestSuite *inSuite, void *
     data[1] = 3;
     data[4] = 0xff; // payload
 
-    err = woble.HandleCharacteristicReceived(last_packet, rcvd_ack, did_rcv_ack);
+    err         = woble.HandleCharacteristicReceived(last_packet, rcvd_ack, did_rcv_ack);
     last_packet = NULL;
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -203,7 +203,7 @@ static void HandleCharacteristicReceivedThreePacket(nlTestSuite *inSuite, void *
     woble.LogState();
 }
 
-static void HandleCharacteristicSendOnePacket(nlTestSuite *inSuite, void *inContext)
+static void HandleCharacteristicSendOnePacket(nlTestSuite * inSuite, void * inContext)
 {
     PacketBuffer * first_packet;
     bool rc = false;
@@ -239,11 +239,11 @@ static void HandleCharacteristicSendOnePacket(nlTestSuite *inSuite, void *inCont
     woble.LogState();
 }
 
-static void HandleCharacteristicSendTwoPacket(nlTestSuite *inSuite, void *inContext)
+static void HandleCharacteristicSendTwoPacket(nlTestSuite * inSuite, void * inContext)
 {
     PacketBuffer * first_packet;
     uint8_t * data = NULL;
-    bool rc = false;
+    bool rc        = false;
 
     woble.Init(NULL, false);
     WeaveLogDetail(Ble, "Start HandleCharacteristicSendTwoPacket Woble State:");
@@ -285,10 +285,10 @@ static void HandleCharacteristicSendTwoPacket(nlTestSuite *inSuite, void *inCont
 // First packet: 4 byte header + 16 byte payload
 // Second packet: 2 byte header + 18 byte payload
 // Third packet: 2 byte header + 6 byte payload
-static void HandleCharacteristicSendThreePacket(nlTestSuite *inSuite, void *inContext)
+static void HandleCharacteristicSendThreePacket(nlTestSuite * inSuite, void * inContext)
 {
     PacketBuffer * first_packet;
-    bool rc = false;
+    bool rc        = false;
     uint8_t * data = NULL;
 
     woble.Init(NULL, false);
@@ -336,18 +336,16 @@ static void HandleCharacteristicSendThreePacket(nlTestSuite *inSuite, void *inCo
     woble.LogState();
 }
 
-
-
 /**
  *   Test Suite. It lists all the test functions.
  */
 static const nlTest sTests[] = {
-    NL_TEST_DEF("Weave Over BLE HandleCharacteristicReceivedOnePacket",             HandleCharacteristicReceivedOnePacket),
-    NL_TEST_DEF("Weave Over BLE HandleCharacteristicReceivedTwoPacket",             HandleCharacteristicReceivedTwoPacket),
-    NL_TEST_DEF("Weave Over BLE HandleCharacteristicReceivedThreePacket",           HandleCharacteristicReceivedThreePacket),
-    NL_TEST_DEF("Weave Over BLE HandleCharacteristicSendOnePacket",                 HandleCharacteristicSendOnePacket),
-    NL_TEST_DEF("Weave Over BLE HandleCharacteristicSendTwoPacket",                 HandleCharacteristicSendTwoPacket),
-    NL_TEST_DEF("Weave Over BLE HandleCharacteristicSendThreePacket",               HandleCharacteristicSendThreePacket),
+    NL_TEST_DEF("Weave Over BLE HandleCharacteristicReceivedOnePacket", HandleCharacteristicReceivedOnePacket),
+    NL_TEST_DEF("Weave Over BLE HandleCharacteristicReceivedTwoPacket", HandleCharacteristicReceivedTwoPacket),
+    NL_TEST_DEF("Weave Over BLE HandleCharacteristicReceivedThreePacket", HandleCharacteristicReceivedThreePacket),
+    NL_TEST_DEF("Weave Over BLE HandleCharacteristicSendOnePacket", HandleCharacteristicSendOnePacket),
+    NL_TEST_DEF("Weave Over BLE HandleCharacteristicSendTwoPacket", HandleCharacteristicSendTwoPacket),
+    NL_TEST_DEF("Weave Over BLE HandleCharacteristicSendThreePacket", HandleCharacteristicSendThreePacket),
     NL_TEST_SENTINEL()
 };
 
@@ -356,7 +354,7 @@ static const nlTest sTests[] = {
  *  This is a work-around to initiate InetBuffer protected class instance's
  *  data and set it to a known state, before an instance is created.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     return (SUCCESS);
 }
@@ -365,19 +363,14 @@ static int TestSetup(void *inContext)
  *  Tear down the test suite.
  *  Free memory reserved at TestSetup.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     return (SUCCESS);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-    nlTestSuite theSuite = {
-        "WeaveOverBle",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "WeaveOverBle", &sTests[0], TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);

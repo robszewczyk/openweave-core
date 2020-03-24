@@ -42,26 +42,24 @@ static WeaveEchoServer gEchoServer;
 static bool TestDone = false;
 
 // Callback handler when a Weave EchoRequest is received.
-static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
+static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
 
 // Callback handler when a TCP connection request is received.
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 
 // Callback handler when the TCP connection is closed by the peer.
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
-
-void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     char msgNodeAddrStr[WEAVE_MAX_MESSAGE_SOURCE_STR_LENGTH];
 
     WeaveNodeAddrToStr(msgNodeAddrStr, sizeof(msgNodeAddrStr) - 1, nodeId, &nodeAddr, 0, NULL);
 
-    printf("Echo Request from node %s, len=%u ... sending response.\n", msgNodeAddrStr,
-            payload->DataLength());
+    printf("Echo Request from node %s, len=%u ... sending response.\n", msgNodeAddrStr, payload->DataLength());
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char msgNodeAddrStr[WEAVE_MAX_MESSAGE_SOURCE_STR_LENGTH];
 
@@ -72,7 +70,7 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     con->OnConnectionClosed = HandleConnectionClosed;
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char msgNodeAddrStr[WEAVE_MAX_MESSAGE_SOURCE_STR_LENGTH];
 
@@ -86,7 +84,7 @@ void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
     con->Close();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 

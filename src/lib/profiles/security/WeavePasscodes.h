@@ -108,30 +108,28 @@ enum
 };
 // clang-format on
 
-
 // Encrypt Weave passcode.
-extern WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t *passcode, size_t passcodeLen,
-                                   uint8_t *encPasscode, size_t encPasscodeBufSize, size_t& encPasscodeLen,
-                                   GroupKeyStoreBase *groupKeyStore);
-extern WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t *passcode, size_t passcodeLen,
-                                   const uint8_t *encKey, const uint8_t *authKey, const uint8_t *fingerprintKey,
-                                   uint8_t *encPasscode, size_t encPasscodeBufSize, size_t& encPasscodeLen);
+extern WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t * passcode, size_t passcodeLen,
+                                   uint8_t * encPasscode, size_t encPasscodeBufSize, size_t & encPasscodeLen,
+                                   GroupKeyStoreBase * groupKeyStore);
+extern WEAVE_ERROR EncryptPasscode(uint8_t config, uint32_t keyId, uint32_t nonce, const uint8_t * passcode, size_t passcodeLen,
+                                   const uint8_t * encKey, const uint8_t * authKey, const uint8_t * fingerprintKey,
+                                   uint8_t * encPasscode, size_t encPasscodeBufSize, size_t & encPasscodeLen);
 
 // Decrypt Weave passcode.
-extern WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
-                                   uint8_t *passcodeBuf, size_t passcodeBufSize, size_t& passcodeLen,
-                                   GroupKeyStoreBase *groupKeyStore);
-extern WEAVE_ERROR DecryptPasscode(const uint8_t *encPasscode, size_t encPasscodeLen,
-                                   const uint8_t *encKey, const uint8_t *authKey, const uint8_t *fingerprintKey,
-                                   uint8_t *passcodeBuf, size_t passcodeBufSize, size_t& passcodeLen);
+extern WEAVE_ERROR DecryptPasscode(const uint8_t * encPasscode, size_t encPasscodeLen, uint8_t * passcodeBuf,
+                                   size_t passcodeBufSize, size_t & passcodeLen, GroupKeyStoreBase * groupKeyStore);
+extern WEAVE_ERROR DecryptPasscode(const uint8_t * encPasscode, size_t encPasscodeLen, const uint8_t * encKey,
+                                   const uint8_t * authKey, const uint8_t * fingerprintKey, uint8_t * passcodeBuf,
+                                   size_t passcodeBufSize, size_t & passcodeLen);
 
 // Utility functions for interacting with encrypted passcodes.
-extern WEAVE_ERROR GetEncryptedPasscodeConfig(const uint8_t *encPasscode, size_t encPasscodeLen, uint8_t& config);
-extern WEAVE_ERROR GetEncryptedPasscodeKeyId(const uint8_t *encPasscode, size_t encPasscodeLen, uint32_t& keyId);
-extern WEAVE_ERROR GetEncryptedPasscodeNonce(const uint8_t *encPasscode, size_t encPasscodeLen, uint32_t& nonce);
-extern WEAVE_ERROR GetEncryptedPasscodeFingerprint(const uint8_t *encPasscode, size_t encPasscodeLen, uint8_t *fingerprintBuf, size_t fingerprintBufSize, size_t& fingerprintLen);
+extern WEAVE_ERROR GetEncryptedPasscodeConfig(const uint8_t * encPasscode, size_t encPasscodeLen, uint8_t & config);
+extern WEAVE_ERROR GetEncryptedPasscodeKeyId(const uint8_t * encPasscode, size_t encPasscodeLen, uint32_t & keyId);
+extern WEAVE_ERROR GetEncryptedPasscodeNonce(const uint8_t * encPasscode, size_t encPasscodeLen, uint32_t & nonce);
+extern WEAVE_ERROR GetEncryptedPasscodeFingerprint(const uint8_t * encPasscode, size_t encPasscodeLen, uint8_t * fingerprintBuf,
+                                                   size_t fingerprintBufSize, size_t & fingerprintLen);
 extern bool IsSupportedPasscodeEncryptionConfig(uint8_t config);
-
 
 } // namespace Passcodes
 } // namespace Security

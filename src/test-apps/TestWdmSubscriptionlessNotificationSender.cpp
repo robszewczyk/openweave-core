@@ -56,32 +56,29 @@ using nl::Weave::System::PacketBuffer;
 
 static TestWdmSubscriptionlessNotificationSender gTestWdmSubscriptionlessNotificationSender;
 
- TestWdmSubscriptionlessNotificationSender * TestWdmSubscriptionlessNotificationSender::GetInstance ()
+TestWdmSubscriptionlessNotificationSender * TestWdmSubscriptionlessNotificationSender::GetInstance()
 {
     return &gTestWdmSubscriptionlessNotificationSender;
 }
 
 TestWdmSubscriptionlessNotificationSender::TestWdmSubscriptionlessNotificationSender() :
-    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, sizeof(mSourceCatalogStore) / sizeof(mSourceCatalogStore[0]))
-{
-}
+    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore,
+                   sizeof(mSourceCatalogStore) / sizeof(mSourceCatalogStore[0]))
+{ }
 
-void TestWdmSubscriptionlessNotificationSender::BindingEventCallback (void * const apAppState,
-                                                       const Binding::EventType aEvent,
-                                                       const Binding::InEventParam & aInParam,
-                                                       Binding::OutEventParam & aOutParam)
+void TestWdmSubscriptionlessNotificationSender::BindingEventCallback(void * const apAppState, const Binding::EventType aEvent,
+                                                                     const Binding::InEventParam & aInParam,
+                                                                     Binding::OutEventParam & aOutParam)
 {
     switch (aEvent)
     {
 
-    default:
-        Binding::DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
+    default: Binding::DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
     }
 }
 
-WEAVE_ERROR TestWdmSubscriptionlessNotificationSender::Init (nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                                                             const uint16_t destSubnetId,
-                                                             const uint64_t destNodeId)
+WEAVE_ERROR TestWdmSubscriptionlessNotificationSender::Init(nl::Weave::WeaveExchangeManager * aExchangeMgr,
+                                                            const uint16_t destSubnetId, const uint64_t destNodeId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -93,7 +90,7 @@ WEAVE_ERROR TestWdmSubscriptionlessNotificationSender::Init (nl::Weave::WeaveExc
     mSourceCatalog.Add(TEST_TRAIT_INSTANCE_ID, &mTestATraitDataSource1, mTraitPaths[kTestATraitSource1Index].mTraitDataHandle);
     mSourceCatalog.Add(TEST_TRAIT_INSTANCE_ID, &mTestATraitDataSource2, mTraitPaths[kTestATraitSource2Index].mTraitDataHandle);
 
-    mNumPaths = 3;
+    mNumPaths    = 3;
     mExchangeMgr = aExchangeMgr;
 
     err = SubscriptionEngine::GetInstance()->Init(mExchangeMgr, this, EngineEventCallback);
@@ -106,11 +103,11 @@ WEAVE_ERROR TestWdmSubscriptionlessNotificationSender::Init (nl::Weave::WeaveExc
     VerifyOrExit(NULL != mBinding, err = WEAVE_ERROR_NO_MEMORY);
 
     err = mBinding->BeginConfiguration()
-               .Transport_UDP()
-               .Target_NodeId(destNodeId)
-               .Security_None()
-               .TargetAddress_WeaveFabric(destSubnetId)
-               .PrepareBinding();
+              .Transport_UDP()
+              .Target_NodeId(destNodeId)
+              .Security_None()
+              .TargetAddress_WeaveFabric(destSubnetId)
+              .PrepareBinding();
     SuccessOrExit(err);
 
 exit:
@@ -136,15 +133,13 @@ WEAVE_ERROR TestWdmSubscriptionlessNotificationSender::Shutdown(void)
     return err;
 }
 
-void TestWdmSubscriptionlessNotificationSender::EngineEventCallback (void * const aAppState,
-    SubscriptionEngine::EventID aEvent,
-    const SubscriptionEngine::InEventParam & aInParam, SubscriptionEngine::OutEventParam & aOutParam)
+void TestWdmSubscriptionlessNotificationSender::EngineEventCallback(void * const aAppState, SubscriptionEngine::EventID aEvent,
+                                                                    const SubscriptionEngine::InEventParam & aInParam,
+                                                                    SubscriptionEngine::OutEventParam & aOutParam)
 {
     switch (aEvent)
     {
-    default:
-        SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 }
 

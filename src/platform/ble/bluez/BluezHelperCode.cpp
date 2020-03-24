@@ -33,8 +33,8 @@ namespace BlueZ {
 
 static void WeaveRegisterSetup(DBusMessageIter * iter, void * bluezData);
 static void WeaveRegisterReply(DBusMessage * message, void * bluezData);
-static void WeaveUnregisterSetup(DBusMessageIter *iter, void *bluezData);
-static void WeaveUnregisterReply(DBusMessage *message, void *bluezData);
+static void WeaveUnregisterSetup(DBusMessageIter * iter, void * bluezData);
+static void WeaveUnregisterReply(DBusMessage * message, void * bluezData);
 static gboolean WeaveAdvertisingGetType(const GDBusPropertyTable * property, DBusMessageIter * iter, void * bluezData);
 static gboolean GetWeaveUUIDs(const GDBusPropertyTable * property, DBusMessageIter * iter, void * bluezData);
 static gboolean WeaveServiceDataCheck(const GDBusPropertyTable * property, void * bluezData);
@@ -77,17 +77,17 @@ static gboolean CheckDeviceIsChild(GDBusProxy * childProxy, GDBusProxy * parentP
 static void WeaveAdapterAdded(GDBusProxy * proxy);
 static void WeaveProfileAdded(GDBusProxy * proxy);
 static void WeaveAdvertisingAdded(GDBusProxy * proxy);
-static void WeaveDeviceAdded(GDBusProxy *proxy);
+static void WeaveDeviceAdded(GDBusProxy * proxy);
 static void WeaveProxyAdded(GDBusProxy * proxy, void * bluezData);
 static void WeaveProxyDeleted(GDBusProxy * proxy, void * bluezData);
 static void WeaveDisconnReply(DBusMessage * dbusMsg, void * bluezData);
 static void WeaveDeviceDisconnect(GDBusProxy * proxy);
-static void WeavePropertyChange(GDBusProxy *proxy, const char *name, DBusMessageIter *iter, void *bluezData);
+static void WeavePropertyChange(GDBusProxy * proxy, const char * name, DBusMessageIter * iter, void * bluezData);
 static void PowerCb(const DBusError * error, void * bluezData);
 static void WeaveClientReady(GDBusClient * weaveClient, void * bluezData);
 
-BluezServerEndpoint * gBluezServerEndpoint = NULL;
-BluezBlePlatformDelegate * gBluezBlePlatformDelegate = NULL;
+BluezServerEndpoint * gBluezServerEndpoint                 = NULL;
+BluezBlePlatformDelegate * gBluezBlePlatformDelegate       = NULL;
 BluezBleApplicationDelegate * gBluezBleApplicationDelegate = NULL;
 static GMainLoop * gBluezMainLoop;
 static DBusConnection * gBluezDbusConn;
@@ -100,7 +100,7 @@ static const GDBusMethodTable weaveAdvertisingMethods[] = {
 static const GDBusPropertyTable weaveAdvertisingProperties[] = { { "Type", "s", WeaveAdvertisingGetType },
                                                                  { "ServiceUUIDs", "as", GetWeaveUUIDs, NULL, NULL },
                                                                  { "LocalName", "s", WeaveGetName, NULL, WeaveNameCheck },
-                                                                 { "ServiceData", "a{sv}", GetWeaveServiceData, NULL,
+                                                                 { "ServiceData", "a {sv}", GetWeaveServiceData, NULL,
                                                                    WeaveServiceDataCheck },
                                                                  { } };
 
@@ -126,13 +126,13 @@ static const GDBusPropertyTable WeaveCharacteristicProperties[] = {
 };
 
 static const GDBusMethodTable weaveCharacteristicMethods[] = {
-    { "ReadValue", CharacteristicRead, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "options", "a{sv}" }),
+    { "ReadValue", CharacteristicRead, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "options", "a {sv}" }),
       GDBUS_ARGS( { "value", "ay" }) },
 #if BLE_CONFIG_BLUEZ_MTU_FEATURE
-    { "AcquireWrite", CharacteristicAcquireWrite, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "options", "a{sv}" }), NULL },
-    { "AcquireNotify", CharacteristicAcquireNotify, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "options", "a{sv}" }), NULL },
+    { "AcquireWrite", CharacteristicAcquireWrite, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "options", "a {sv}" }), NULL },
+    { "AcquireNotify", CharacteristicAcquireNotify, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "options", "a {sv}" }), NULL },
 #endif // BLE_CONFIG_BLUEZ_MTU_FEATURE
-    { "WriteValue", CharacteristicWrite, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "value", "ay" }, { "options", "a{sv}" }), NULL },
+    { "WriteValue", CharacteristicWrite, G_DBUS_METHOD_FLAG_ASYNC, 0, GDBUS_ARGS( { "value", "ay" }, { "options", "a {sv}" }), NULL },
     { "StartNotify", CharacteristicStartNotify, G_DBUS_METHOD_FLAG_ASYNC, 0, NULL, NULL },
     { "StopNotify", CharacteristicStopNotify, G_DBUS_METHOD_FLAG_ASYNC, 0, NULL, NULL },
     { "Confirm", CharacteristicIndicationConf, G_DBUS_METHOD_FLAG_ASYNC, 0, NULL, NULL },
@@ -188,11 +188,11 @@ static void WeaveRegisterReply(DBusMessage * message, void * bluezData)
     }
 }
 
-static void WeaveUnregisterSetup(DBusMessageIter *iter, void *bluezData)
+static void WeaveUnregisterSetup(DBusMessageIter * iter, void * bluezData)
 {
-    const char *path = ADVERTISING_PATH;
-    gboolean success = FALSE;
-    const char *msg = NULL;
+    const char * path = ADVERTISING_PATH;
+    gboolean success  = FALSE;
+    const char * msg  = NULL;
 
     success = dbus_message_iter_append_basic(iter, DBUS_TYPE_OBJECT_PATH, &path);
     VerifyOrExit(success == TRUE, msg = "Fail to append basic in WeaveUnregisterSetup");
@@ -205,7 +205,7 @@ exit:
     }
 }
 
-static void WeaveUnregisterReply(DBusMessage *message, void *bluezData)
+static void WeaveUnregisterReply(DBusMessage * message, void * bluezData)
 {
     DBusError error;
 
@@ -413,10 +413,12 @@ static DBusMessage * WeaveDestroyAdvertising(DBusConnection * dbusConn, DBusMess
 
 gboolean SetAlias(void)
 {
-    gboolean success = g_dbus_proxy_set_property_basic(gDefaultAdapter->adapterProxy, "Alias", DBUS_TYPE_STRING, &(gBluezServerEndpoint->adapterName), NULL, NULL, NULL);
+    gboolean success = g_dbus_proxy_set_property_basic(gDefaultAdapter->adapterProxy, "Alias", DBUS_TYPE_STRING,
+                                                       &(gBluezServerEndpoint->adapterName), NULL, NULL, NULL);
     if (FALSE == success)
     {
-        WeaveLogError(Ble, "Fail to set controller alias for adapter %p(%s)", gDefaultAdapter->adapterProxy, gBluezServerEndpoint->adapterName);
+        WeaveLogError(Ble, "Fail to set controller alias for adapter %p(%s)", gDefaultAdapter->adapterProxy,
+                      gBluezServerEndpoint->adapterName);
     }
 
     return success;
@@ -424,9 +426,10 @@ gboolean SetAlias(void)
 
 gboolean EnableDiscoverable(void)
 {
-    gboolean success = FALSE;
+    gboolean success         = FALSE;
     dbus_bool_t discoverable = TRUE;
-    success = g_dbus_proxy_set_property_basic(gDefaultAdapter->adapterProxy, "Discoverable", DBUS_TYPE_BOOLEAN, &discoverable, NULL, NULL, NULL);
+    success = g_dbus_proxy_set_property_basic(gDefaultAdapter->adapterProxy, "Discoverable", DBUS_TYPE_BOOLEAN, &discoverable, NULL,
+                                              NULL, NULL);
     if (FALSE == success)
     {
         WeaveLogError(Ble, "Fail to set Discoverable property for adapter %p", gDefaultAdapter->adapterProxy);
@@ -1292,8 +1295,8 @@ static gboolean CheckDeviceIsChild(GDBusProxy * childProxy, GDBusProxy * parentP
     DBusMessageIter iter;
     const char * adapterPath1 = NULL;
     const char * adapterPath2 = NULL;
-    const char * msg = NULL;
-    bool success = false;
+    const char * msg          = NULL;
+    bool success              = false;
 
     VerifyOrExit(NULL != parentProxy, msg = "parentProxy is NULL");
     VerifyOrExit(NULL != childProxy, msg = "childProxy is NULL");
@@ -1322,8 +1325,8 @@ exit:
 static void WeaveAdapterAdded(GDBusProxy * proxy)
 {
     DBusMessageIter iter;
-    const char * addr = NULL;
-    bool proxyAdded = false;
+    const char * addr   = NULL;
+    bool proxyAdded     = false;
     dbus_bool_t powered = TRUE;
 
     if (g_dbus_proxy_get_property(proxy, "Address", &iter))
@@ -1333,9 +1336,9 @@ static void WeaveAdapterAdded(GDBusProxy * proxy)
         {
             if (gDefaultAdapter)
             {
-                gDefaultAdapter->adapterProxy = proxy;
+                gDefaultAdapter->adapterProxy     = proxy;
                 gDefaultAdapter->advertisingProxy = NULL;
-                gDefaultAdapter->profileProxy = NULL;
+                gDefaultAdapter->profileProxy     = NULL;
                 gDefaultAdapter->deviceProxies.clear();
                 proxyAdded = true;
 
@@ -1379,7 +1382,7 @@ static void WeaveAdvertisingAdded(GDBusProxy * proxy)
     }
 }
 
-static void WeaveDeviceAdded(GDBusProxy *proxy)
+static void WeaveDeviceAdded(GDBusProxy * proxy)
 {
     const char * devAddr = NULL;
     DBusMessageIter iter;
@@ -1398,7 +1401,7 @@ static void WeaveDeviceAdded(GDBusProxy *proxy)
 
 static void WeaveProxyAdded(GDBusProxy * proxy, void * bluezData)
 {
-    const char *interface = NULL;
+    const char * interface = NULL;
 
     interface = g_dbus_proxy_get_interface(proxy);
 
@@ -1422,8 +1425,8 @@ static void WeaveProxyAdded(GDBusProxy * proxy, void * bluezData)
 
 static void WeaveProxyDeleted(GDBusProxy * proxy, void * bluezData)
 {
-    const char *interface = NULL;
-    interface = g_dbus_proxy_get_interface(proxy);
+    const char * interface = NULL;
+    interface              = g_dbus_proxy_get_interface(proxy);
 
     if (!strcmp(interface, ADAPTER_INTERFACE))
     {
@@ -1490,16 +1493,18 @@ static void WeaveDeviceDisconnect(GDBusProxy * proxy)
     }
 }
 
-static void WeavePropertyChange(GDBusProxy *proxy, const char *name, DBusMessageIter *iter, void *bluezData)
+static void WeavePropertyChange(GDBusProxy * proxy, const char * name, DBusMessageIter * iter, void * bluezData)
 {
-    const char *interface = NULL;
+    const char * interface = NULL;
     dbus_bool_t connected;
     const char * devAddr = NULL;
     DBusMessageIter addrIter;
 
     interface = g_dbus_proxy_get_interface(proxy);
-    if (!strcmp(interface, DEVICE_INTERFACE)) {
-        if (CheckDeviceIsChild(proxy, gDefaultAdapter->adapterProxy)) {
+    if (!strcmp(interface, DEVICE_INTERFACE))
+    {
+        if (CheckDeviceIsChild(proxy, gDefaultAdapter->adapterProxy))
+        {
             if (strcmp(name, "Connected") == 0)
             {
                 dbus_message_iter_get_basic(iter, &connected);
@@ -1507,7 +1512,7 @@ static void WeavePropertyChange(GDBusProxy *proxy, const char *name, DBusMessage
                 if (g_dbus_proxy_get_property(proxy, "Address", &addrIter))
                 {
                     dbus_message_iter_get_basic(&addrIter, &devAddr);
-                    WeaveLogRetain(Ble, "%s device %p(%s)", connected?"Connected to":"Disconnected with", proxy, devAddr);
+                    WeaveLogRetain(Ble, "%s device %p(%s)", connected ? "Connected to" : "Disconnected with", proxy, devAddr);
                 }
 
                 if (connected)
@@ -1584,8 +1589,7 @@ void CloseBleconnection()
     if (gDefaultAdapter && !(gDefaultAdapter->deviceProxies.empty()))
     {
         // Check for connected device & close the connection
-        for (auto iter = gDefaultAdapter->deviceProxies.begin();
-                iter != gDefaultAdapter->deviceProxies.end(); iter++)
+        for (auto iter = gDefaultAdapter->deviceProxies.begin(); iter != gDefaultAdapter->deviceProxies.end(); iter++)
         {
             WeaveDeviceDisconnect(*iter);
         }
@@ -1597,7 +1601,7 @@ void CloseBleconnection()
 #if BLE_CONFIG_BLUEZ_MTU_FEATURE
     PipeIODestroy(gBluezServerEndpoint->weaveC2->indicatePipeIO, gBluezServerEndpoint->weaveC2);
     PipeIODestroy(gBluezServerEndpoint->weaveC1->writePipeIO, gBluezServerEndpoint->weaveC1);
-#endif //BLE_CONFIG_BLUEZ_MTU_FEATURE
+#endif // BLE_CONFIG_BLUEZ_MTU_FEATURE
 }
 
 void ExitBluezIOThread(void)
@@ -1712,21 +1716,18 @@ exit:
     {
         WeaveLogProgress(Ble, "Unregistering weave advertisement");
 
-        if (FALSE == g_dbus_proxy_method_call(gDefaultAdapter->advertisingProxy,
-                                              "UnregisterAdvertisement",
-                                              WeaveUnregisterSetup, WeaveUnregisterReply,
-                                              gBluezDbusConn, NULL))
+        if (FALSE ==
+            g_dbus_proxy_method_call(gDefaultAdapter->advertisingProxy, "UnregisterAdvertisement", WeaveUnregisterSetup,
+                                     WeaveUnregisterReply, gBluezDbusConn, NULL))
         {
             WeaveLogError(Ble, "Fail to call UnregisterAdvertisement method");
         }
 
-        if (FALSE == g_dbus_unregister_interface(gBluezDbusConn, ADVERTISING_PATH,
-                                                 ADVERTISING_INTERFACE))
+        if (FALSE == g_dbus_unregister_interface(gBluezDbusConn, ADVERTISING_PATH, ADVERTISING_INTERFACE))
         {
             WeaveLogError(Ble, "Fail to unregister weave advertisement object");
         }
     }
-
 
     if (NULL != gBluezServerEndpoint)
     {
@@ -1785,7 +1786,7 @@ exit:
         gBluezMainLoop = NULL;
     }
 
-    gBluezBlePlatformDelegate = NULL;
+    gBluezBlePlatformDelegate    = NULL;
     gBluezBleApplicationDelegate = NULL;
     return success;
 }

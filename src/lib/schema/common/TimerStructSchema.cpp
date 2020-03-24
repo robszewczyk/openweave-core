@@ -30,27 +30,17 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
+const nl::FieldDescriptor TimerFieldDescriptors[] = {
+    { NULL, offsetof(Timer, time), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 1 },
 
-const nl::FieldDescriptor TimerFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(Timer, time), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 1
-    },
-
-    {
-        NULL, offsetof(Timer, timeBasis), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 2
-    },
+    { NULL, offsetof(Timer, timeBasis), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor Timer::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(TimerFieldDescriptors)/sizeof(TimerFieldDescriptors[0]),
-    .mFields = TimerFieldDescriptors,
-    .mSize = sizeof(Timer)
-};
-
-
+const nl::SchemaFieldDescriptor Timer::FieldSchema = { .mNumFieldDescriptorElements =
+                                                           sizeof(TimerFieldDescriptors) / sizeof(TimerFieldDescriptors[0]),
+                                                       .mFields = TimerFieldDescriptors,
+                                                       .mSize   = sizeof(Timer) };
 
 } // namespace Common
 } // namespace Weave

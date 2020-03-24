@@ -57,37 +57,35 @@ using ::nl::Weave::Platform::Security::MemoryFree;
 class CASEAuthDelegate : public WeaveCASEAuthDelegate
 {
 public:
-    enum {
-        kMaxValidationCerts = 7,            // Maximum number of certificates that can be present during certificate validation.
-        kCertDecodeBufferSize = 1024        // Size of temporary buffer used during certificate decoding and signature validation.
+    enum
+    {
+        kMaxValidationCerts   = 7,   // Maximum number of certificates that can be present during certificate validation.
+        kCertDecodeBufferSize = 1024 // Size of temporary buffer used during certificate decoding and signature validation.
     };
 
-    CASEAuthDelegate()
-    : mPrivKeyBuf(NULL), mServiceConfigBuf(NULL)
-    {
-    }
+    CASEAuthDelegate() : mPrivKeyBuf(NULL), mServiceConfigBuf(NULL) { }
 
-    virtual WEAVE_ERROR GetNodeCertInfo(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen);
+    virtual WEAVE_ERROR GetNodeCertInfo(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen);
     virtual WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen);
-    virtual WEAVE_ERROR ReleaseNodePrivateKey(const uint8_t *weavePrivKey);
-    virtual WEAVE_ERROR GetNodePayload(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& payloadLen);
-    virtual WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext);
-    virtual WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WEAVE_ERROR& validRes, WeaveCertificateData *peerCert,
-            uint64_t peerNodeId, WeaveCertificateSet& certSet, ValidationContext& validContext);
-    virtual WEAVE_ERROR EndCertValidation(WeaveCertificateSet& certSet, ValidationContext& validContext);
+    virtual WEAVE_ERROR ReleaseNodePrivateKey(const uint8_t * weavePrivKey);
+    virtual WEAVE_ERROR GetNodePayload(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & payloadLen);
+    virtual WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext);
+    virtual WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WEAVE_ERROR & validRes, WeaveCertificateData * peerCert,
+                                                   uint64_t peerNodeId, WeaveCertificateSet & certSet,
+                                                   ValidationContext & validContext);
+    virtual WEAVE_ERROR EndCertValidation(WeaveCertificateSet & certSet, ValidationContext & validContext);
 
 private:
-    uint8_t *mPrivKeyBuf;
-    uint8_t *mServiceConfigBuf;
+    uint8_t * mPrivKeyBuf;
+    uint8_t * mServiceConfigBuf;
 };
 
 CASEAuthDelegate gCASEAuthDelegate;
 
-WEAVE_ERROR AddCertToContainer(TLVWriter& writer, uint64_t tag, const uint8_t *cert, uint16_t certLen);
-WEAVE_ERROR MakeCertInfo(uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen,
-        const uint8_t *entityCert, uint16_t entityCertLen,
-        const uint8_t *intermediateCert, uint16_t intermediateCertLen);
-WEAVE_ERROR LoadCertsFromServiceConfig(const uint8_t *serviceConfig, uint16_t serviceConfigLen, WeaveCertificateSet& certSet);
+WEAVE_ERROR AddCertToContainer(TLVWriter & writer, uint64_t tag, const uint8_t * cert, uint16_t certLen);
+WEAVE_ERROR MakeCertInfo(uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen, const uint8_t * entityCert,
+                         uint16_t entityCertLen, const uint8_t * intermediateCert, uint16_t intermediateCertLen);
+WEAVE_ERROR LoadCertsFromServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen, WeaveCertificateSet & certSet);
 
 } // unnamed namespace
 
@@ -104,21 +102,21 @@ WEAVE_ERROR InitCASEAuthDelegate()
 
 namespace {
 
-WEAVE_ERROR CASEAuthDelegate::GetNodeCertInfo(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen)
+WEAVE_ERROR CASEAuthDelegate::GetNodeCertInfo(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen)
 {
     WEAVE_ERROR err;
     uint8_t * certBuf = NULL;
     size_t certLen;
 
     // Determine the length of the device certificate.
-    err = ConfigurationMgr().GetDeviceCertificate((uint8_t *)NULL, 0, certLen);
+    err = ConfigurationMgr().GetDeviceCertificate((uint8_t *) NULL, 0, certLen);
     SuccessOrExit(err);
 
     // Fail if no certificate has been configured.
     VerifyOrExit(certLen != 0, err = WEAVE_ERROR_CERT_NOT_FOUND);
 
     // Create a temporary buffer to hold the certificate.
-    certBuf = (uint8_t *)MemoryAlloc(certLen);
+    certBuf = (uint8_t *) MemoryAlloc(certLen);
     VerifyOrExit(certBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Read the certificate
@@ -143,21 +141,21 @@ WEAVE_ERROR CASEAuthDelegate::GetNodePrivateKey(bool isInitiator, const uint8_t 
     size_t privKeyLen;
 
     // Determine the length of the private key.
-    err = ConfigurationMgr().GetDevicePrivateKey((uint8_t *)NULL, 0, privKeyLen);
+    err = ConfigurationMgr().GetDevicePrivateKey((uint8_t *) NULL, 0, privKeyLen);
     SuccessOrExit(err);
 
     // Fail if no private key has been configured.
     VerifyOrExit(privKeyLen != 0, err = WEAVE_ERROR_KEY_NOT_FOUND);
 
     // Create a temporary buffer to hold the private key.
-    mPrivKeyBuf = (uint8_t *)MemoryAlloc(privKeyLen);
+    mPrivKeyBuf = (uint8_t *) MemoryAlloc(privKeyLen);
     VerifyOrExit(mPrivKeyBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Read the private key.
     err = ConfigurationMgr().GetDevicePrivateKey(mPrivKeyBuf, privKeyLen, privKeyLen);
     SuccessOrExit(err);
 
-    weavePrivKey = mPrivKeyBuf;
+    weavePrivKey    = mPrivKeyBuf;
     weavePrivKeyLen = privKeyLen;
 
 exit:
@@ -169,7 +167,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR CASEAuthDelegate::ReleaseNodePrivateKey(const uint8_t *weavePrivKey)
+WEAVE_ERROR CASEAuthDelegate::ReleaseNodePrivateKey(const uint8_t * weavePrivKey)
 {
     if (mPrivKeyBuf != NULL)
     {
@@ -179,12 +177,12 @@ WEAVE_ERROR CASEAuthDelegate::ReleaseNodePrivateKey(const uint8_t *weavePrivKey)
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR CASEAuthDelegate::GetNodePayload(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& payloadLen)
+WEAVE_ERROR CASEAuthDelegate::GetNodePayload(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & payloadLen)
 {
     WEAVE_ERROR err;
     size_t deviceDescLen;
 
-    err = ConfigurationMgr().GetDeviceDescriptorTLV(buf, (size_t)bufSize, deviceDescLen);
+    err = ConfigurationMgr().GetDeviceDescriptorTLV(buf, (size_t) bufSize, deviceDescLen);
     SuccessOrExit(err);
 
     payloadLen = deviceDescLen;
@@ -193,11 +191,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext)
 {
     WEAVE_ERROR err;
     nl::Weave::ASN1::ASN1UniversalTime validTime;
-    WeaveCertificateData *cert;
+    WeaveCertificateData * cert;
     size_t serviceConfigLen;
     uint64_t nowMS;
 
@@ -217,7 +215,7 @@ WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertifi
     if (err != WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND)
     {
         // Allocate a buffer to hold the service config data.
-        mServiceConfigBuf = (uint8_t *)MemoryAlloc(serviceConfigLen);
+        mServiceConfigBuf = (uint8_t *) MemoryAlloc(serviceConfigLen);
         VerifyOrExit(mServiceConfigBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
         // Read the service config data.
@@ -234,8 +232,7 @@ WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertifi
         for (uint8_t i = 0; i < certSet.CertCount; i++)
         {
             cert = &certSet.Certs[i];
-            if ((cert->CertFlags & kCertFlag_IsTrusted) != 0 &&
-                cert->CertType == kCertType_General &&
+            if ((cert->CertFlags & kCertFlag_IsTrusted) != 0 && cert->CertType == kCertType_General &&
                 cert->SubjectDN.AttrOID == ASN1::kOID_AttributeType_CommonName)
             {
                 cert->CertType = kCertType_AccessToken;
@@ -259,10 +256,12 @@ WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertifi
         SuccessOrExit(err);
         cert->CertFlags |= kCertFlag_IsTrusted;
 
-        err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+        err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength,
+                               kDecodeFlag_GenerateTBSHash, cert);
         SuccessOrExit(err);
 
-        err = certSet.LoadCert(nl::NestCerts::Production::DeviceCA::Cert, nl::NestCerts::Production::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+        err = certSet.LoadCert(nl::NestCerts::Production::DeviceCA::Cert, nl::NestCerts::Production::DeviceCA::CertLength,
+                               kDecodeFlag_GenerateTBSHash, cert);
         SuccessOrExit(err);
 
 #else
@@ -284,13 +283,13 @@ WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertifi
     err = System::Layer::GetClock_RealTimeMS(nowMS);
     if (err == WEAVE_NO_ERROR)
     {
-        SecondsSinceEpochToCalendarTime((uint32_t)(nowMS / 1000), validTime.Year, validTime.Month, validTime.Day,
-                validTime.Hour, validTime.Minute, validTime.Second);
+        SecondsSinceEpochToCalendarTime((uint32_t)(nowMS / 1000), validTime.Year, validTime.Month, validTime.Day, validTime.Hour,
+                                        validTime.Minute, validTime.Second);
     }
     else if (err == WEAVE_SYSTEM_ERROR_REAL_TIME_NOT_SYNCED)
     {
-        err = ConfigurationMgr().GetFirmwareBuildTime(validTime.Year, validTime.Month, validTime.Day,
-                validTime.Hour, validTime.Minute, validTime.Second);
+        err = ConfigurationMgr().GetFirmwareBuildTime(validTime.Year, validTime.Month, validTime.Day, validTime.Hour,
+                                                      validTime.Minute, validTime.Second);
         SuccessOrExit(err);
         validContext.ValidateFlags |= kValidateFlag_IgnoreNotBefore;
         WeaveLogProgress(DeviceLayer, "Real time clock not synchronized; Using build time for cert validation");
@@ -305,7 +304,7 @@ WEAVE_ERROR CASEAuthDelegate::BeginCertValidation(bool isInitiator, WeaveCertifi
 
     // Set the appropriate required key usages and purposes for the peer's certificates based
     // on whether we're initiating or responding.
-    validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+    validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
     validContext.RequiredKeyPurposes = (isInitiator) ? kKeyPurposeFlag_ServerAuth : kKeyPurposeFlag_ClientAuth;
 
 exit:
@@ -317,8 +316,9 @@ exit:
     return err;
 }
 
-WEAVE_ERROR CASEAuthDelegate::HandleCertValidationResult(bool isInitiator, WEAVE_ERROR& validRes, WeaveCertificateData *peerCert,
-        uint64_t peerNodeId, WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR CASEAuthDelegate::HandleCertValidationResult(bool isInitiator, WEAVE_ERROR & validRes, WeaveCertificateData * peerCert,
+                                                         uint64_t peerNodeId, WeaveCertificateSet & certSet,
+                                                         ValidationContext & validContext)
 {
     // If the peer's certificate is otherwise valid...
     if (validRes == WEAVE_NO_ERROR)
@@ -378,7 +378,7 @@ WEAVE_ERROR CASEAuthDelegate::HandleCertValidationResult(bool isInitiator, WEAVE
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR CASEAuthDelegate::EndCertValidation(WeaveCertificateSet& certSet, ValidationContext& validContext)
+WEAVE_ERROR CASEAuthDelegate::EndCertValidation(WeaveCertificateSet & certSet, ValidationContext & validContext)
 {
     if (mServiceConfigBuf != NULL)
     {
@@ -388,7 +388,7 @@ WEAVE_ERROR CASEAuthDelegate::EndCertValidation(WeaveCertificateSet& certSet, Va
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR AddCertToContainer(TLVWriter& writer, uint64_t tag, const uint8_t *cert, uint16_t certLen)
+WEAVE_ERROR AddCertToContainer(TLVWriter & writer, uint64_t tag, const uint8_t * cert, uint16_t certLen)
 {
     WEAVE_ERROR err;
     TLVReader reader;
@@ -405,9 +405,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MakeCertInfo(uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen,
-                         const uint8_t *entityCert, uint16_t entityCertLen,
-                         const uint8_t *intermediateCert, uint16_t intermediateCertLen)
+WEAVE_ERROR MakeCertInfo(uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen, const uint8_t * entityCert,
+                         uint16_t entityCertLen, const uint8_t * intermediateCert, uint16_t intermediateCertLen)
 {
     WEAVE_ERROR err;
     TLVWriter writer;
@@ -416,7 +415,8 @@ WEAVE_ERROR MakeCertInfo(uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen,
     writer.Init(buf, bufSize);
     writer.ImplicitProfileId = kWeaveProfile_Security;
 
-    err = writer.StartContainer(ProfileTag(kWeaveProfile_Security, kTag_WeaveCASECertificateInformation), kTLVType_Structure, container);
+    err = writer.StartContainer(ProfileTag(kWeaveProfile_Security, kTag_WeaveCASECertificateInformation), kTLVType_Structure,
+                                container);
     SuccessOrExit(err);
 
     err = AddCertToContainer(writer, ContextTag(kTag_CASECertificateInfo_EntityCertificate), entityCert, entityCertLen);
@@ -429,7 +429,8 @@ WEAVE_ERROR MakeCertInfo(uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen,
         err = writer.StartContainer(ContextTag(kTag_CASECertificateInfo_RelatedCertificates), kTLVType_Path, container2);
         SuccessOrExit(err);
 
-        err = AddCertToContainer(writer, ProfileTag(kWeaveProfile_Security, kTag_WeaveCertificate), intermediateCert, intermediateCertLen);
+        err = AddCertToContainer(writer, ProfileTag(kWeaveProfile_Security, kTag_WeaveCertificate), intermediateCert,
+                                 intermediateCertLen);
         SuccessOrExit(err);
 
         err = writer.EndContainer(container2);
@@ -446,10 +447,9 @@ WEAVE_ERROR MakeCertInfo(uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen,
 
 exit:
     return err;
-
 }
 
-WEAVE_ERROR LoadCertsFromServiceConfig(const uint8_t *serviceConfig, uint16_t serviceConfigLen, WeaveCertificateSet& certSet)
+WEAVE_ERROR LoadCertsFromServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen, WeaveCertificateSet & certSet)
 {
     WEAVE_ERROR err;
     TLVReader reader;

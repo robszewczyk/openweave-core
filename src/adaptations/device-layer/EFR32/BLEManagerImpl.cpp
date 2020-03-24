@@ -42,26 +42,26 @@ namespace Internal {
 
 namespace {
 
-#define WEAVE_ADV_DATA_TYPE_FLAGS 0x01
-#define WEAVE_ADV_DATA_TYPE_UUID 0x03
-#define WEAVE_ADV_DATA_TYPE_NAME 0x09
+#define WEAVE_ADV_DATA_TYPE_FLAGS        0x01
+#define WEAVE_ADV_DATA_TYPE_UUID         0x03
+#define WEAVE_ADV_DATA_TYPE_NAME         0x09
 #define WEAVE_ADV_DATA_TYPE_SERVICE_DATA 0x16
 
-#define WEAVE_ADV_DATA_FLAGS 0x06
+#define WEAVE_ADV_DATA_FLAGS           0x06
 #define WEAVE_ADV_WOBLE_SERVICE_HANDLE 0
 
-#define WEAVE_ADV_DATA 0
+#define WEAVE_ADV_DATA               0
 #define WEAVE_ADV_SCAN_RESPONSE_DATA 1
-#define WEAVE_ADV_SHORT_UUID_LEN 2
+#define WEAVE_ADV_SHORT_UUID_LEN     2
 
 #define MAX_RESPONSE_DATA_LEN 31
-#define MAX_ADV_DATA_LEN 31
+#define MAX_ADV_DATA_LEN      31
 
 // Timer Frequency used.
-#define TIMER_CLK_FREQ ((uint32)32768)
+#define TIMER_CLK_FREQ ((uint32) 32768)
 // Convert msec to timer ticks.
 #define TIMER_MS_2_TIMERTICK(ms) ((TIMER_CLK_FREQ * ms) / 1000)
-#define TIMER_S_2_TIMERTICK(s) (TIMER_CLK_FREQ * s)
+#define TIMER_S_2_TIMERTICK(s)   (TIMER_CLK_FREQ * s)
 
 uint8_t bluetooth_stack_heap[DEFAULT_BLUETOOTH_HEAP(BLE_LAYER_NUM_BLE_ENDPOINTS)];
 
@@ -69,13 +69,14 @@ uint8_t bluetooth_stack_heap[DEFAULT_BLUETOOTH_HEAP(BLE_LAYER_NUM_BLE_ENDPOINTS)
  * details on each parameter) */
 static gecko_configuration_t config;
 
-const uint8_t      UUID_WoBLEService[]      = {0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 0x00, 0x80,
-                                     0x00, 0x10, 0x00, 0x00, 0xAF, 0xFE, 0x00, 0x00};
-const uint8_t      ShortUUID_WoBLEService[] = {0xAF, 0xFE};
-const WeaveBleUUID WeaveUUID_WoBLEChar_RX   = {
-    {0x18, 0xEE, 0x2E, 0xF5, 0x26, 0x3D, 0x45, 0x59, 0x95, 0x9F, 0x4F, 0x9C, 0x42, 0x9F, 0x9D, 0x11}};
-const WeaveBleUUID WeaveUUID_WoBLEChar_TX = {
-    {0x18, 0xEE, 0x2E, 0xF5, 0x26, 0x3D, 0x45, 0x59, 0x95, 0x9F, 0x4F, 0x9C, 0x42, 0x9F, 0x9D, 0x12}};
+const uint8_t UUID_WoBLEService[] = {
+    0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0xAF, 0xFE, 0x00, 0x00
+};
+const uint8_t ShortUUID_WoBLEService[]    = { 0xAF, 0xFE };
+const WeaveBleUUID WeaveUUID_WoBLEChar_RX = { { 0x18, 0xEE, 0x2E, 0xF5, 0x26, 0x3D, 0x45, 0x59, 0x95, 0x9F, 0x4F, 0x9C, 0x42, 0x9F,
+                                                0x9D, 0x11 } };
+const WeaveBleUUID WeaveUUID_WoBLEChar_TX = { { 0x18, 0xEE, 0x2E, 0xF5, 0x26, 0x3D, 0x45, 0x59, 0x95, 0x9F, 0x4F, 0x9C, 0x42, 0x9F,
+                                                0x9D, 0x12 } };
 
 } // namespace
 
@@ -106,9 +107,9 @@ extern "C" errorcode_t initialize_bluetooth()
 static void initBleConfig(void)
 {
     memset(&config, 0, sizeof(gecko_configuration_t));
-    config.config_flags              = GECKO_CONFIG_FLAG_RTOS;      /* Check flag options from UG136 */
-    config.bluetooth.max_connections = BLE_LAYER_NUM_BLE_ENDPOINTS; /* Maximum number of simultaneous connections */
-    config.bluetooth.heap            = bluetooth_stack_heap; /* Bluetooth stack memory for connection management */
+    config.config_flags              = GECKO_CONFIG_FLAG_RTOS;       /* Check flag options from UG136 */
+    config.bluetooth.max_connections = BLE_LAYER_NUM_BLE_ENDPOINTS;  /* Maximum number of simultaneous connections */
+    config.bluetooth.heap            = bluetooth_stack_heap;         /* Bluetooth stack memory for connection management */
     config.bluetooth.heap_size       = sizeof(bluetooth_stack_heap); /* Size of Heap */
     config.gattdb                    = &bg_gattdb_data;              /* Pointer to GATT database */
     config.scheduler_callback        = BluetoothLLCallback;
@@ -142,18 +143,17 @@ WEAVE_ERROR BLEManagerImpl::_Init()
 
     // Start Bluetooth Link Layer and stack tasks
     ret = bluetooth_start(WEAVE_DEVICE_CONFIG_BLE_LL_TASK_PRIORITY, WEAVE_DEVICE_CONFIG_BLE_STACK_TASK_PRIORITY,
-                          initialize_bluetooth); 
+                          initialize_bluetooth);
 
     VerifyOrExit(ret == bg_err_success, err = MapBLEError(ret));
 
     // Create the Bluetooth Application task
-    xTaskCreate(bluetoothStackEventHandler,            /* Function that implements the task. */
-                WEAVE_DEVICE_CONFIG_BLE_APP_TASK_NAME, /* Text name for the task. */
-                WEAVE_DEVICE_CONFIG_BLE_APP_TASK_STACK_SIZE /
-                    sizeof(StackType_t),                   /* Number of indexes in the xStack array. */
-                this,                                      /* Parameter passed into the task. */
-                WEAVE_DEVICE_CONFIG_BLE_APP_TASK_PRIORITY, /* Priority at which the task is created. */
-                NULL);                                     /* Variable to hold the task's data structure. */
+    xTaskCreate(bluetoothStackEventHandler,                                        /* Function that implements the task. */
+                WEAVE_DEVICE_CONFIG_BLE_APP_TASK_NAME,                             /* Text name for the task. */
+                WEAVE_DEVICE_CONFIG_BLE_APP_TASK_STACK_SIZE / sizeof(StackType_t), /* Number of indexes in the xStack array. */
+                this,                                                              /* Parameter passed into the task. */
+                WEAVE_DEVICE_CONFIG_BLE_APP_TASK_PRIORITY,                         /* Priority at which the task is created. */
+                NULL);                                                             /* Variable to hold the task's data structure. */
 
     mFlags = kFlag_AdvertisingEnabled;
     PlatformMgr().ScheduleWork(DriveBLEState, 0);
@@ -176,19 +176,18 @@ uint16_t BLEManagerImpl::_NumConnections(void)
     return numCons;
 }
 
-void BLEManagerImpl::bluetoothStackEventHandler(void *p_arg)
+void BLEManagerImpl::bluetoothStackEventHandler(void * p_arg)
 {
     EventBits_t flags = 0;
 
     while (1)
     {
         // wait for Bluetooth stack events, do not consume set flag
-        flags |=
-            xEventGroupWaitBits(bluetooth_event_flags,            /* The event group being tested. */
-                                BLUETOOTH_EVENT_FLAG_EVT_WAITING, /* The bits within the event group to wait for. */
-                                pdFALSE,                          /* Dont clear flags before returning */
-                                pdFALSE,        /* Any flag will do, dont wait for all flags to be set */
-                                portMAX_DELAY); /* Wait for maximum duration for bit to be set */
+        flags |= xEventGroupWaitBits(bluetooth_event_flags,            /* The event group being tested. */
+                                     BLUETOOTH_EVENT_FLAG_EVT_WAITING, /* The bits within the event group to wait for. */
+                                     pdFALSE,                          /* Dont clear flags before returning */
+                                     pdFALSE,                          /* Any flag will do, dont wait for all flags to be set */
+                                     portMAX_DELAY);                   /* Wait for maximum duration for bit to be set */
 
         if (flags & BLUETOOTH_EVENT_FLAG_EVT_WAITING)
         {
@@ -247,10 +246,8 @@ void BLEManagerImpl::bluetoothStackEventHandler(void *p_arg)
                 {
                     sInstance.HandleTxConfirmationEvent(bluetooth_evt);
                 }
-                else if ((bluetooth_evt->data.evt_gatt_server_characteristic_status.characteristic ==
-                          gattdb_WoBLEChar_Tx) &&
-                         (bluetooth_evt->data.evt_gatt_server_characteristic_status.status_flags ==
-                          gatt_server_client_config))
+                else if ((bluetooth_evt->data.evt_gatt_server_characteristic_status.characteristic == gattdb_WoBLEChar_Tx) &&
+                         (bluetooth_evt->data.evt_gatt_server_characteristic_status.status_flags == gatt_server_client_config))
                 {
                     sInstance.HandleTXCharCCCDWrite(bluetooth_evt);
                 }
@@ -264,9 +261,7 @@ void BLEManagerImpl::bluetoothStackEventHandler(void *p_arg)
             }
             break;
 
-            default:
-                WeaveLogProgress(DeviceLayer, "evt_UNKNOWN id = %08x", BGLIB_MSG_ID(bluetooth_evt->header));
-                break;
+            default: WeaveLogProgress(DeviceLayer, "evt_UNKNOWN id = %08x", BGLIB_MSG_ID(bluetooth_evt->header)); break;
             }
         }
 
@@ -281,8 +276,7 @@ WEAVE_ERROR BLEManagerImpl::_SetWoBLEServiceMode(WoBLEServiceMode val)
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit(val != ConnectivityManager::kWoBLEServiceMode_NotSupported, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(mServiceMode != ConnectivityManager::kWoBLEServiceMode_NotSupported,
-                 err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
+    VerifyOrExit(mServiceMode != ConnectivityManager::kWoBLEServiceMode_NotSupported, err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
 
     if (val != mServiceMode)
     {
@@ -298,8 +292,7 @@ WEAVE_ERROR BLEManagerImpl::_SetAdvertisingEnabled(bool val)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit(mServiceMode != ConnectivityManager::kWoBLEServiceMode_NotSupported,
-                 err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
+    VerifyOrExit(mServiceMode != ConnectivityManager::kWoBLEServiceMode_NotSupported, err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
 
     if (GetFlag(mFlags, kFlag_AdvertisingEnabled) != val)
     {
@@ -315,8 +308,7 @@ WEAVE_ERROR BLEManagerImpl::_SetFastAdvertisingEnabled(bool val)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit(mServiceMode == ConnectivityManager::kWoBLEServiceMode_NotSupported,
-                 err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
+    VerifyOrExit(mServiceMode == ConnectivityManager::kWoBLEServiceMode_NotSupported, err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
 
     if (GetFlag(mFlags, kFlag_FastAdvertisingEnabled) != val)
     {
@@ -328,7 +320,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR BLEManagerImpl::_GetDeviceName(char *buf, size_t bufSize)
+WEAVE_ERROR BLEManagerImpl::_GetDeviceName(char * buf, size_t bufSize)
 {
     if (strlen(mDeviceName) >= bufSize)
     {
@@ -338,7 +330,7 @@ WEAVE_ERROR BLEManagerImpl::_GetDeviceName(char *buf, size_t bufSize)
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR BLEManagerImpl::_SetDeviceName(const char *deviceName)
+WEAVE_ERROR BLEManagerImpl::_SetDeviceName(const char * deviceName)
 {
     if (mServiceMode == ConnectivityManager::kWoBLEServiceMode_NotSupported)
     {
@@ -353,7 +345,7 @@ WEAVE_ERROR BLEManagerImpl::_SetDeviceName(const char *deviceName)
         strcpy(mDeviceName, deviceName);
         SetFlag(mFlags, kFlag_DeviceNameSet, true);
         WeaveLogProgress(DeviceLayer, "Setting device name to : \"%s\"", deviceName);
-        gecko_cmd_gatt_server_write_attribute_value(gattdb_device_name, 0, strlen(deviceName), (uint8_t *)deviceName);
+        gecko_cmd_gatt_server_write_attribute_value(gattdb_device_name, 0, strlen(deviceName), (uint8_t *) deviceName);
     }
     else
     {
@@ -362,7 +354,7 @@ WEAVE_ERROR BLEManagerImpl::_SetDeviceName(const char *deviceName)
     return WEAVE_NO_ERROR;
 }
 
-void BLEManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent *event)
+void BLEManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent * event)
 {
     switch (event->Type)
     {
@@ -406,23 +398,17 @@ void BLEManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent *event)
     }
     break;
 
-    default:
-        WeaveLogProgress(DeviceLayer, "_OnPlatformEvent default:  event->Type = %d", event->Type);
-        break;
+    default: WeaveLogProgress(DeviceLayer, "_OnPlatformEvent default:  event->Type = %d", event->Type); break;
     }
 }
 
-bool BLEManagerImpl::SubscribeCharacteristic(BLE_CONNECTION_OBJECT conId,
-                                             const WeaveBleUUID *  svcId,
-                                             const WeaveBleUUID *  charId)
+bool BLEManagerImpl::SubscribeCharacteristic(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId)
 {
     WeaveLogProgress(DeviceLayer, "BLEManagerImpl::SubscribeCharacteristic() not supported");
     return false;
 }
 
-bool BLEManagerImpl::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId,
-                                               const WeaveBleUUID *  svcId,
-                                               const WeaveBleUUID *  charId)
+bool BLEManagerImpl::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId)
 {
     WeaveLogProgress(DeviceLayer, "BLEManagerImpl::UnsubscribeCharacteristic() not supported");
     return false;
@@ -430,8 +416,8 @@ bool BLEManagerImpl::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId,
 
 bool BLEManagerImpl::CloseConnection(BLE_CONNECTION_OBJECT conId)
 {
-    WEAVE_ERROR                          err = WEAVE_NO_ERROR;
-    gecko_msg_le_connection_close_rsp_t *rsp;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    gecko_msg_le_connection_close_rsp_t * rsp;
 
     WeaveLogProgress(DeviceLayer, "Closing BLE GATT connection (con %u)", conId);
 
@@ -448,20 +434,18 @@ bool BLEManagerImpl::CloseConnection(BLE_CONNECTION_OBJECT conId)
 
 uint16_t BLEManagerImpl::GetMTU(BLE_CONNECTION_OBJECT conId) const
 {
-    WoBLEConState *conState = const_cast<BLEManagerImpl *>(this)->GetConnectionState(conId);
+    WoBLEConState * conState = const_cast<BLEManagerImpl *>(this)->GetConnectionState(conId);
     return (conState != NULL) ? conState->mtu : 0;
 }
 
-bool BLEManagerImpl::SendIndication(BLE_CONNECTION_OBJECT conId,
-                                    const WeaveBleUUID *  svcId,
-                                    const WeaveBleUUID *  charId,
-                                    PacketBuffer *        data)
+bool BLEManagerImpl::SendIndication(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                                    PacketBuffer * data)
 {
-    WEAVE_ERROR                                                   err      = WEAVE_NO_ERROR;
-    WoBLEConState *                                               conState = GetConnectionState(conId);
-    gecko_msg_gatt_server_send_characteristic_notification_rsp_t *rsp;
-    uint16_t cId         = (UUIDsMatch(&WeaveUUID_WoBLEChar_RX, charId) ? gattdb_WoBLEChar_Rx : gattdb_WoBLEChar_Tx);
-    uint8_t  timerHandle = GetTimerHandle(conId, true);
+    WEAVE_ERROR err          = WEAVE_NO_ERROR;
+    WoBLEConState * conState = GetConnectionState(conId);
+    gecko_msg_gatt_server_send_characteristic_notification_rsp_t * rsp;
+    uint16_t cId        = (UUIDsMatch(&WeaveUUID_WoBLEChar_RX, charId) ? gattdb_WoBLEChar_Rx : gattdb_WoBLEChar_Tx);
+    uint8_t timerHandle = GetTimerHandle(conId, true);
 
     VerifyOrExit(((conState != NULL) && (conState->subscribed != 0)), err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(timerHandle != kMaxConnections, err = WEAVE_ERROR_NO_MEMORY);
@@ -483,28 +467,22 @@ exit:
     return true;
 }
 
-bool BLEManagerImpl::SendWriteRequest(BLE_CONNECTION_OBJECT conId,
-                                      const WeaveBleUUID *  svcId,
-                                      const WeaveBleUUID *  charId,
-                                      PacketBuffer *        pBuf)
+bool BLEManagerImpl::SendWriteRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                                      PacketBuffer * pBuf)
 {
     WeaveLogProgress(DeviceLayer, "BLEManagerImpl::SendWriteRequest() not supported");
     return false;
 }
 
-bool BLEManagerImpl::SendReadRequest(BLE_CONNECTION_OBJECT conId,
-                                     const WeaveBleUUID *  svcId,
-                                     const WeaveBleUUID *  charId,
-                                     PacketBuffer *        pBuf)
+bool BLEManagerImpl::SendReadRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                                     PacketBuffer * pBuf)
 {
     WeaveLogProgress(DeviceLayer, "BLEManagerImpl::SendReadRequest() not supported");
     return false;
 }
 
-bool BLEManagerImpl::SendReadResponse(BLE_CONNECTION_OBJECT    conId,
-                                      BLE_READ_REQUEST_CONTEXT requestContext,
-                                      const WeaveBleUUID *     svcId,
-                                      const WeaveBleUUID *     charId)
+bool BLEManagerImpl::SendReadResponse(BLE_CONNECTION_OBJECT conId, BLE_READ_REQUEST_CONTEXT requestContext,
+                                      const WeaveBleUUID * svcId, const WeaveBleUUID * charId)
 {
     WeaveLogProgress(DeviceLayer, "BLEManagerImpl::SendReadResponse() not supported");
     return false;
@@ -518,14 +496,17 @@ void BLEManagerImpl::NotifyWeaveConnectionClosed(BLE_CONNECTION_OBJECT conId)
 WEAVE_ERROR BLEManagerImpl::MapBLEError(int bleErr)
 {
     WEAVE_ERROR err;
-    
-    if (bleErr == bg_err_success) {
-      err = WEAVE_NO_ERROR;
-    } else {
-       err = (WEAVE_ERROR) bleErr + WEAVE_DEVICE_CONFIG_EFR32_BLE_ERROR_MIN;
+
+    if (bleErr == bg_err_success)
+    {
+        err = WEAVE_NO_ERROR;
+    }
+    else
+    {
+        err = (WEAVE_ERROR) bleErr + WEAVE_DEVICE_CONFIG_EFR32_BLE_ERROR_MIN;
     }
 
-    return err; 
+    return err;
 }
 
 void BLEManagerImpl::DriveBLEState(void)
@@ -564,14 +545,14 @@ exit:
 
 WEAVE_ERROR BLEManagerImpl::ConfigureAdvertisingData(void)
 {
-    struct gecko_msg_le_gap_bt5_set_adv_data_rsp_t *setAdvDataRsp;
-    WeaveBLEDeviceIdentificationInfo                mDeviceIdInfo;
-    WEAVE_ERROR                                     err;
-    uint8_t                                         responseData[MAX_RESPONSE_DATA_LEN];
-    uint8_t                                         advData[MAX_ADV_DATA_LEN];
-    uint8_t                                         index               = 0;
-    uint8_t                                         mDeviceNameLength   = 0;
-    uint8_t                                         mDeviceIdInfoLength = 0;
+    struct gecko_msg_le_gap_bt5_set_adv_data_rsp_t * setAdvDataRsp;
+    WeaveBLEDeviceIdentificationInfo mDeviceIdInfo;
+    WEAVE_ERROR err;
+    uint8_t responseData[MAX_RESPONSE_DATA_LEN];
+    uint8_t advData[MAX_ADV_DATA_LEN];
+    uint8_t index               = 0;
+    uint8_t mDeviceNameLength   = 0;
+    uint8_t mDeviceIdInfoLength = 0;
 
     memset(responseData, 0, MAX_RESPONSE_DATA_LEN);
     memset(advData, 0, MAX_ADV_DATA_LEN);
@@ -582,11 +563,11 @@ WEAVE_ERROR BLEManagerImpl::ConfigureAdvertisingData(void)
     if (!GetFlag(mFlags, kFlag_DeviceNameSet))
     {
         snprintf(mDeviceName, sizeof(mDeviceName), "%s%04" PRIX32, WEAVE_DEVICE_CONFIG_BLE_DEVICE_NAME_PREFIX,
-                 (uint32_t)FabricState.LocalNodeId);
+                 (uint32_t) FabricState.LocalNodeId);
 
         mDeviceName[kMaxDeviceNameLength] = 0;
 
-        gecko_cmd_gatt_server_write_attribute_value(gattdb_device_name, 0, strlen(mDeviceName), (uint8_t *)mDeviceName);
+        gecko_cmd_gatt_server_write_attribute_value(gattdb_device_name, 0, strlen(mDeviceName), (uint8_t *) mDeviceName);
     }
 
     mDeviceNameLength   = strlen(mDeviceName);   // Device Name length + length field
@@ -607,8 +588,8 @@ WEAVE_ERROR BLEManagerImpl::ConfigureAdvertisingData(void)
     responseData[index++] = ShortUUID_WoBLEService[0];    // AD value
     responseData[index++] = ShortUUID_WoBLEService[1];
 
-    setAdvDataRsp = gecko_cmd_le_gap_bt5_set_adv_data(WEAVE_ADV_WOBLE_SERVICE_HANDLE, WEAVE_ADV_SCAN_RESPONSE_DATA,
-                                                      index, (uint8_t *)&responseData);
+    setAdvDataRsp = gecko_cmd_le_gap_bt5_set_adv_data(WEAVE_ADV_WOBLE_SERVICE_HANDLE, WEAVE_ADV_SCAN_RESPONSE_DATA, index,
+                                                      (uint8_t *) &responseData);
 
     if (setAdvDataRsp->result != 0)
     {
@@ -623,11 +604,10 @@ WEAVE_ERROR BLEManagerImpl::ConfigureAdvertisingData(void)
     advData[index++] = WEAVE_ADV_DATA_TYPE_SERVICE_DATA;                   // AD type : Service Data
     advData[index++] = ShortUUID_WoBLEService[0];                          // AD value
     advData[index++] = ShortUUID_WoBLEService[1];
-    memcpy(&advData[index], (void *)&mDeviceIdInfo, mDeviceIdInfoLength); // AD value
+    memcpy(&advData[index], (void *) &mDeviceIdInfo, mDeviceIdInfoLength); // AD value
     index += mDeviceIdInfoLength;
 
-    setAdvDataRsp =
-        gecko_cmd_le_gap_bt5_set_adv_data(WEAVE_ADV_WOBLE_SERVICE_HANDLE, WEAVE_ADV_DATA, index, (uint8_t *)&advData);
+    setAdvDataRsp = gecko_cmd_le_gap_bt5_set_adv_data(WEAVE_ADV_WOBLE_SERVICE_HANDLE, WEAVE_ADV_DATA, index, (uint8_t *) &advData);
 
     err = MapBLEError(setAdvDataRsp->result);
 
@@ -637,23 +617,22 @@ exit:
 
 WEAVE_ERROR BLEManagerImpl::StartAdvertising(void)
 {
-    WEAVE_ERROR                                      err;
-    struct gecko_msg_le_gap_start_advertising_rsp_t *startAdvRsp;
-    uint32_t                                         interval_min;
-    uint32_t                                         interval_max;
-    uint16_t                                         numConnectionss = NumConnections();
-    uint8_t                                          connectableAdv =
-        (numConnectionss < kMaxConnections) ? le_gap_connectable_scannable : le_gap_scannable_non_connectable;
+    WEAVE_ERROR err;
+    struct gecko_msg_le_gap_start_advertising_rsp_t * startAdvRsp;
+    uint32_t interval_min;
+    uint32_t interval_max;
+    uint16_t numConnectionss = NumConnections();
+    uint8_t connectableAdv = (numConnectionss < kMaxConnections) ? le_gap_connectable_scannable : le_gap_scannable_non_connectable;
 
     err = ConfigureAdvertisingData();
     SuccessOrExit(err);
 
     ClearFlag(mFlags, kFlag_RestartAdvertising);
 
-    interval_min = interval_max = ((numConnectionss == 0 && !ConfigurationMgr().IsPairedToAccount()) ||
-                                   GetFlag(mFlags, kFlag_FastAdvertisingEnabled))
-                                      ? WEAVE_DEVICE_CONFIG_BLE_FAST_ADVERTISING_INTERVAL
-                                      : WEAVE_DEVICE_CONFIG_BLE_SLOW_ADVERTISING_INTERVAL;
+    interval_min = interval_max =
+        ((numConnectionss == 0 && !ConfigurationMgr().IsPairedToAccount()) || GetFlag(mFlags, kFlag_FastAdvertisingEnabled))
+        ? WEAVE_DEVICE_CONFIG_BLE_FAST_ADVERTISING_INTERVAL
+        : WEAVE_DEVICE_CONFIG_BLE_SLOW_ADVERTISING_INTERVAL;
 
     gecko_cmd_le_gap_set_advertise_timing(WEAVE_ADV_WOBLE_SERVICE_HANDLE, interval_min, interval_max, 0, 0);
 
@@ -667,8 +646,8 @@ exit:
 
 WEAVE_ERROR BLEManagerImpl::StopAdvertising(void)
 {
-    WEAVE_ERROR                              err = WEAVE_NO_ERROR;
-    gecko_msg_le_gap_stop_advertising_rsp_t *rsp;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    gecko_msg_le_gap_stop_advertising_rsp_t * rsp;
 
     if (GetFlag(mFlags, kFlag_Advertising))
     {
@@ -684,10 +663,10 @@ exit:
     return err;
 }
 
-void BLEManagerImpl::UpdateMtu(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::UpdateMtu(volatile struct gecko_cmd_packet * evt)
 {
-    WoBLEConState *bleConnState = GetConnectionState(evt->data.evt_gatt_mtu_exchanged.connection);
-    bleConnState->mtu           = evt->data.evt_gatt_mtu_exchanged.mtu;
+    WoBLEConState * bleConnState = GetConnectionState(evt->data.evt_gatt_mtu_exchanged.connection);
+    bleConnState->mtu            = evt->data.evt_gatt_mtu_exchanged.mtu;
     ;
 }
 
@@ -697,11 +676,11 @@ void BLEManagerImpl::HandleBootEvent(void)
     PlatformMgr().ScheduleWork(DriveBLEState, 0);
 }
 
-void BLEManagerImpl::HandleConnectEvent(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleConnectEvent(volatile struct gecko_cmd_packet * evt)
 {
-    struct gecko_msg_le_connection_opened_evt_t *conn_evt = (struct gecko_msg_le_connection_opened_evt_t *)&(evt->data);
-    uint8_t                                      connHandle    = conn_evt->connection;
-    uint8_t                                      bondingHandle = conn_evt->bonding;
+    struct gecko_msg_le_connection_opened_evt_t * conn_evt = (struct gecko_msg_le_connection_opened_evt_t *) &(evt->data);
+    uint8_t connHandle                                     = conn_evt->connection;
+    uint8_t bondingHandle                                  = conn_evt->bonding;
 
     WeaveLogProgress(DeviceLayer, "Connect Event for handle : %d", connHandle);
 
@@ -711,10 +690,10 @@ void BLEManagerImpl::HandleConnectEvent(volatile struct gecko_cmd_packet *evt)
     PlatformMgr().ScheduleWork(DriveBLEState, 0);
 }
 
-void BLEManagerImpl::HandleConnectionCloseEvent(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleConnectionCloseEvent(volatile struct gecko_cmd_packet * evt)
 {
-    struct gecko_msg_le_connection_closed_evt_t *conn_evt = (struct gecko_msg_le_connection_closed_evt_t *)&(evt->data);
-    uint8_t                                      connHandle = conn_evt->connection;
+    struct gecko_msg_le_connection_closed_evt_t * conn_evt = (struct gecko_msg_le_connection_closed_evt_t *) &(evt->data);
+    uint8_t connHandle                                     = conn_evt->connection;
 
     WeaveLogProgress(DeviceLayer, "Disconnect Event for handle : %d", connHandle);
 
@@ -728,17 +707,13 @@ void BLEManagerImpl::HandleConnectionCloseEvent(volatile struct gecko_cmd_packet
         {
         case bg_err_bt_remote_user_terminated:
         case bg_err_bt_remote_device_terminated_connection_due_to_low_resources:
-        case bg_err_bt_remote_powering_off:
-            event.WoBLEConnectionError.Reason = BLE_ERROR_REMOTE_DEVICE_DISCONNECTED;
-            break;
+        case bg_err_bt_remote_powering_off: event.WoBLEConnectionError.Reason = BLE_ERROR_REMOTE_DEVICE_DISCONNECTED; break;
 
         case bg_err_bt_connection_terminated_by_local_host:
             event.WoBLEConnectionError.Reason = BLE_ERROR_APP_CLOSED_CONNECTION;
             break;
 
-        default:
-            event.WoBLEConnectionError.Reason = BLE_ERROR_WOBLE_PROTOCOL_ABORT;
-            break;
+        default: event.WoBLEConnectionError.Reason = BLE_ERROR_WOBLE_PROTOCOL_ABORT; break;
         }
 
         WeaveLogProgress(DeviceLayer, "BLE GATT connection closed (con %u, reason %u)", connHandle, conn_evt->reason);
@@ -752,9 +727,9 @@ void BLEManagerImpl::HandleConnectionCloseEvent(volatile struct gecko_cmd_packet
     }
 }
 
-void BLEManagerImpl::HandleWriteEvent(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleWriteEvent(volatile struct gecko_cmd_packet * evt)
 {
-    struct gecko_msg_gatt_server_read_attribute_type_rsp_t *rsp;
+    struct gecko_msg_gatt_server_read_attribute_type_rsp_t * rsp;
     uint16_t attribute = evt->data.evt_gatt_server_user_write_request.characteristic;
 
     WeaveLogProgress(DeviceLayer, "Char Write Req, char : %d", attribute);
@@ -765,11 +740,11 @@ void BLEManagerImpl::HandleWriteEvent(volatile struct gecko_cmd_packet *evt)
     }
 }
 
-void BLEManagerImpl::HandleTXCharCCCDWrite(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleTXCharCCCDWrite(volatile struct gecko_cmd_packet * evt)
 {
-    WEAVE_ERROR      err = WEAVE_NO_ERROR;
-    WoBLEConState *  bleConnState;
-    bool             indicationsEnabled;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WoBLEConState * bleConnState;
+    bool indicationsEnabled;
     WeaveDeviceEvent event;
 
     bleConnState = GetConnectionState(evt->data.evt_gatt_server_user_write_request.connection);
@@ -811,12 +786,12 @@ exit:
     }
 }
 
-void BLEManagerImpl::HandleRXCharWrite(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleRXCharWrite(volatile struct gecko_cmd_packet * evt)
 {
-    WEAVE_ERROR   err = WEAVE_NO_ERROR;
-    PacketBuffer *buf;
-    uint16_t      writeLen = evt->data.evt_gatt_server_user_write_request.value.len;
-    uint8_t *     data     = (uint8_t *)evt->data.evt_gatt_server_user_write_request.value.data;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    PacketBuffer * buf;
+    uint16_t writeLen = evt->data.evt_gatt_server_user_write_request.value.len;
+    uint8_t * data    = (uint8_t *) evt->data.evt_gatt_server_user_write_request.value.data;
 
     // Copy the data to a PacketBuffer.
     buf = PacketBuffer::New(0);
@@ -825,8 +800,7 @@ void BLEManagerImpl::HandleRXCharWrite(volatile struct gecko_cmd_packet *evt)
     memcpy(buf->Start(), data, writeLen);
     buf->SetDataLength(writeLen);
 
-    WeaveLogDetail(DeviceLayer,
-                   "Write request/command received for WoBLE RX characteristic (con %" PRIu16 ", len %" PRIu16 ")",
+    WeaveLogDetail(DeviceLayer, "Write request/command received for WoBLE RX characteristic (con %" PRIu16 ", len %" PRIu16 ")",
                    evt->data.evt_gatt_server_user_write_request.connection, buf->DataLength());
 
     // Post an event to the Weave queue to deliver the data into the Weave stack.
@@ -847,10 +821,10 @@ exit:
     PacketBuffer::Free(buf);
 }
 
-void BLEManagerImpl::HandleTxConfirmationEvent(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleTxConfirmationEvent(volatile struct gecko_cmd_packet * evt)
 {
     WeaveDeviceEvent event;
-    uint8_t          timerHandle = sInstance.GetTimerHandle(evt->data.evt_gatt_server_characteristic_status.connection);
+    uint8_t timerHandle = sInstance.GetTimerHandle(evt->data.evt_gatt_server_characteristic_status.connection);
 
     WeaveLogProgress(DeviceLayer, "Tx Confirmation received");
 
@@ -867,7 +841,7 @@ void BLEManagerImpl::HandleTxConfirmationEvent(volatile struct gecko_cmd_packet 
     PlatformMgr().PostEvent(&event);
 }
 
-void BLEManagerImpl::HandleSoftTimerEvent(volatile struct gecko_cmd_packet *evt)
+void BLEManagerImpl::HandleSoftTimerEvent(volatile struct gecko_cmd_packet * evt)
 {
     // BLE Manager starts soft timers with timer handles less than kMaxConnections
     // If we receive a callback for unknown timer handle ignore this.
@@ -875,8 +849,8 @@ void BLEManagerImpl::HandleSoftTimerEvent(volatile struct gecko_cmd_packet *evt)
     {
         WeaveLogProgress(DeviceLayer, "BLEManagerImpl::HandleSoftTimerEvent WOBLE_PROTOCOL_ABORT");
         WeaveDeviceEvent event;
-        event.Type                       = DeviceEventType::kWoBLEConnectionError;
-        event.WoBLEConnectionError.ConId = mIndConfId[evt->data.evt_hardware_soft_timer.handle];
+        event.Type                                                     = DeviceEventType::kWoBLEConnectionError;
+        event.WoBLEConnectionError.ConId                               = mIndConfId[evt->data.evt_hardware_soft_timer.handle];
         sInstance.mIndConfId[evt->data.evt_hardware_soft_timer.handle] = kUnusedIndex;
         event.WoBLEConnectionError.Reason                              = BLE_ERROR_WOBLE_PROTOCOL_ABORT;
         PlatformMgr().PostEvent(&event);
@@ -885,8 +859,8 @@ void BLEManagerImpl::HandleSoftTimerEvent(volatile struct gecko_cmd_packet *evt)
 
 bool BLEManagerImpl::RemoveConnection(uint8_t connectionHandle)
 {
-    WoBLEConState *bleConnState = GetConnectionState(connectionHandle, true);
-    bool           status       = false;
+    WoBLEConState * bleConnState = GetConnectionState(connectionHandle, true);
+    bool status                  = false;
 
     if (bleConnState != NULL)
     {
@@ -899,7 +873,7 @@ bool BLEManagerImpl::RemoveConnection(uint8_t connectionHandle)
 
 void BLEManagerImpl::AddConnection(uint8_t connectionHandle, uint8_t bondingHandle)
 {
-    WoBLEConState *bleConnState = GetConnectionState(connectionHandle, true);
+    WoBLEConState * bleConnState = GetConnectionState(connectionHandle, true);
 
     if (bleConnState != NULL)
     {
@@ -910,7 +884,7 @@ void BLEManagerImpl::AddConnection(uint8_t connectionHandle, uint8_t bondingHand
     }
 }
 
-BLEManagerImpl::WoBLEConState *BLEManagerImpl::GetConnectionState(uint8_t connectionHandle, bool allocate)
+BLEManagerImpl::WoBLEConState * BLEManagerImpl::GetConnectionState(uint8_t connectionHandle, bool allocate)
 {
     uint8_t freeIndex = kMaxConnections;
 

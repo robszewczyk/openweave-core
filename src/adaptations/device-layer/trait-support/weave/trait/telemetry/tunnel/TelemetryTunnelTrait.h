@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -41,8 +39,9 @@ namespace TelemetryTunnelTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1701U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1701U
 };
 
 //
@@ -65,35 +64,38 @@ struct TelemetryTunnelStatsEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x1701U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x1701U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TelemetryTunnelStatsEvent_array {
+struct TelemetryTunnelStatsEvent_array
+{
     uint32_t num;
-    TelemetryTunnelStatsEvent *buf;
+    TelemetryTunnelStatsEvent * buf;
 };
-
 
 //
 // Enums
 //
 
-enum TunnelType {
-    TUNNEL_TYPE_NONE = 1,
-    TUNNEL_TYPE_PRIMARY = 2,
-    TUNNEL_TYPE_BACKUP = 3,
+enum TunnelType
+{
+    TUNNEL_TYPE_NONE     = 1,
+    TUNNEL_TYPE_PRIMARY  = 2,
+    TUNNEL_TYPE_BACKUP   = 3,
     TUNNEL_TYPE_SHORTCUT = 4,
 };
 
-enum TunnelState {
-    TUNNEL_STATE_NO_TUNNEL = 1,
-    TUNNEL_STATE_PRIMARY_ESTABLISHED = 2,
-    TUNNEL_STATE_BACKUP_ONLY_ESTABLISHED = 3,
+enum TunnelState
+{
+    TUNNEL_STATE_NO_TUNNEL                      = 1,
+    TUNNEL_STATE_PRIMARY_ESTABLISHED            = 2,
+    TUNNEL_STATE_BACKUP_ONLY_ESTABLISHED        = 3,
     TUNNEL_STATE_PRIMARY_AND_BACKUP_ESTABLISHED = 4,
 };
 

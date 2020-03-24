@@ -28,11 +28,11 @@
 
 // ==================== Platform Adaptations ====================
 
-#define WARM_CONFIG_SUPPORT_THREAD 0
-#define WARM_CONFIG_SUPPORT_THREAD_ROUTING 0
+#define WARM_CONFIG_SUPPORT_THREAD                0
+#define WARM_CONFIG_SUPPORT_THREAD_ROUTING        0
 #define WARM_CONFIG_SUPPORT_LEGACY6LOWPAN_NETWORK 0
-#define WARM_CONFIG_SUPPORT_WIFI 1
-#define WARM_CONFIG_SUPPORT_CELLULAR 0
+#define WARM_CONFIG_SUPPORT_WIFI                  1
+#define WARM_CONFIG_SUPPORT_CELLULAR              0
 
 // ========== Platform-specific Configuration Overrides =========
 

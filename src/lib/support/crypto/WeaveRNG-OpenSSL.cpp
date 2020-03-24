@@ -38,7 +38,8 @@ namespace Weave {
 namespace Platform {
 namespace Security {
 
-WEAVE_ERROR InitSecureRandomDataSource(nl::Weave::Crypto::EntropyFunct entropyFunct, uint16_t entropyLen, const uint8_t *personalizationData, uint16_t perDataLen)
+WEAVE_ERROR InitSecureRandomDataSource(nl::Weave::Crypto::EntropyFunct entropyFunct, uint16_t entropyLen,
+                                       const uint8_t * personalizationData, uint16_t perDataLen)
 {
     if (perDataLen > 0)
     {
@@ -51,16 +52,16 @@ WEAVE_ERROR InitSecureRandomDataSource(nl::Weave::Crypto::EntropyFunct entropyFu
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR GetSecureRandomData(uint8_t *buf, uint16_t len)
+WEAVE_ERROR GetSecureRandomData(uint8_t * buf, uint16_t len)
 {
-    if (RAND_bytes((unsigned char *)buf, (int)len) != 1)
+    if (RAND_bytes((unsigned char *) buf, (int) len) != 1)
         return WEAVE_ERROR_RANDOM_DATA_UNAVAILABLE;
 
     return WEAVE_NO_ERROR;
 }
 
-} // namespace Platform
 } // namespace Security
+} // namespace Platform
 } // namespace Weave
 } // namespace nl
 

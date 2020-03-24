@@ -272,31 +272,26 @@ enum BlockSetParams
  */
 static const BlockSetParams_t sBlockSetParams[kNumberOfBlockSets] = {
     // Parameters for memory block set #1
-    ((kBlockSet1Size << kBlockSetSizeShift) & kBlockSetSizeMask) | \
-    ((kBlockSet1Count << kBlockSetCountShift) & kBlockSetCountMask) | \
-    ((kBlockSet1BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) | \
-    ((kBlockSet1isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
+    ((kBlockSet1Size << kBlockSetSizeShift) & kBlockSetSizeMask) | ((kBlockSet1Count << kBlockSetCountShift) & kBlockSetCountMask) |
+        ((kBlockSet1BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) |
+        ((kBlockSet1isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
     // Parameters for memory block set #2
-    ((kBlockSet2Size << kBlockSetSizeShift) & kBlockSetSizeMask) | \
-    ((kBlockSet2Count << kBlockSetCountShift) & kBlockSetCountMask) | \
-    ((kBlockSet2BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) | \
-    ((kBlockSet2isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
+    ((kBlockSet2Size << kBlockSetSizeShift) & kBlockSetSizeMask) | ((kBlockSet2Count << kBlockSetCountShift) & kBlockSetCountMask) |
+        ((kBlockSet2BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) |
+        ((kBlockSet2isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
     // Parameters for memory block set #3
-    ((kBlockSet3Size << kBlockSetSizeShift) & kBlockSetSizeMask) | \
-    ((kBlockSet3Count << kBlockSetCountShift) & kBlockSetCountMask) | \
-    ((kBlockSet3BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) | \
-    ((kBlockSet3isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
+    ((kBlockSet3Size << kBlockSetSizeShift) & kBlockSetSizeMask) | ((kBlockSet3Count << kBlockSetCountShift) & kBlockSetCountMask) |
+        ((kBlockSet3BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) |
+        ((kBlockSet3isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
     // Parameters for memory block set #4
-    ((kBlockSet4Size << kBlockSetSizeShift) & kBlockSetSizeMask) | \
-    ((kBlockSet4Count << kBlockSetCountShift) & kBlockSetCountMask) | \
-    ((kBlockSet4BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) | \
-    ((kBlockSet4isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
+    ((kBlockSet4Size << kBlockSetSizeShift) & kBlockSetSizeMask) | ((kBlockSet4Count << kBlockSetCountShift) & kBlockSetCountMask) |
+        ((kBlockSet4BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) |
+        ((kBlockSet4isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
 #if WEAVE_CONFIG_SIMPLE_ALLOCATOR_USE_SMALL_BUFFERS
     // Parameters for memory block set #5
-    ((kBlockSet5Size << kBlockSetSizeShift) & kBlockSetSizeMask) | \
-    ((kBlockSet5Count << kBlockSetCountShift) & kBlockSetCountMask) | \
-    ((kBlockSet5BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) | \
-    ((kBlockSet5isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
+    ((kBlockSet5Size << kBlockSetSizeShift) & kBlockSetSizeMask) | ((kBlockSet5Count << kBlockSetCountShift) & kBlockSetCountMask) |
+        ((kBlockSet5BufferIndex << kBlockSetBufferIndexShift) & kBlockSetBufferIndexMask) |
+        ((kBlockSet5isLongTerm << kBlockSetIsLongTermShift) & kBlockSetIsLongTermMask),
 #endif
 };
 
@@ -322,13 +317,13 @@ static BlockMark_t sMemBlocksAllocated = 0;
  *
  */
 static const BlockMark_t sBufferAllocationMask[kNumberOfNetworkBuffers] = {
-                                                   kNetworkBuffer0BlockAllocationMask,
-                                                   kNetworkBuffer1BlockAllocationMask,
+    kNetworkBuffer0BlockAllocationMask,
+    kNetworkBuffer1BlockAllocationMask,
 #if WEAVE_CONFIG_SIMPLE_ALLOCATOR_USE_SMALL_BUFFERS
-                                                   kNetworkBuffer2BlockAllocationMask,
-                                                   kNetworkBuffer3BlockAllocationMask,
+    kNetworkBuffer2BlockAllocationMask,
+    kNetworkBuffer3BlockAllocationMask,
 #endif
-                                                                                       };
+};
 
 /**
  * A boolean indicating whether (true) or not (false) the network buffers are used by Simple Allocator.
@@ -343,12 +338,12 @@ static bool sNetworkBuffersUsed = true;
  * When dedicated buffer is used sMemBufs[0] points to that buffer and other sMemBufs[] pointers are ignored.
  *
  */
-static void *sMemBufs[kNumberOfNetworkBuffers] = { NULL };
+static void * sMemBufs[kNumberOfNetworkBuffers] = { NULL };
 
-
-static void DecodeBlockSetParams(BlockSetParams_t blockSetParams, uint16_t& blockSize, uint8_t& blockCount, uint8_t& blockBufferIndex, bool& blockIsLongTerm)
+static void DecodeBlockSetParams(BlockSetParams_t blockSetParams, uint16_t & blockSize, uint8_t & blockCount,
+                                 uint8_t & blockBufferIndex, bool & blockIsLongTerm)
 {
-    blockSize = ((blockSetParams & kBlockSetSizeMask) >> kBlockSetSizeShift) << kBlockSetSizeValueShift;
+    blockSize  = ((blockSetParams & kBlockSetSizeMask) >> kBlockSetSizeShift) << kBlockSetSizeValueShift;
     blockCount = (blockSetParams & kBlockSetCountMask) >> kBlockSetCountShift;
     if (sNetworkBuffersUsed)
         blockBufferIndex = (blockSetParams & kBlockSetBufferIndexMask) >> kBlockSetBufferIndexShift;
@@ -357,8 +352,7 @@ static void DecodeBlockSetParams(BlockSetParams_t blockSetParams, uint16_t& bloc
     blockIsLongTerm = (blockSetParams & kBlockSetIsLongTermMask) == kBlockSetIsLongTermMask;
 }
 
-
-WEAVE_ERROR MemoryInit(void *buf, size_t bufSize)
+WEAVE_ERROR MemoryInit(void * buf, size_t bufSize)
 {
     if (buf != NULL)
     {
@@ -369,14 +363,14 @@ WEAVE_ERROR MemoryInit(void *buf, size_t bufSize)
         {
             const uint8_t bufBytePadding = 4 - bufByteOffset;
 
-            buf = (void *)(((uint8_t *)buf) + bufBytePadding);
+            buf = (void *) (((uint8_t *) buf) + bufBytePadding);
             bufSize -= bufBytePadding;
         }
 
         if (bufSize < kTotalMemorySize)
             return WEAVE_ERROR_BUFFER_TOO_SMALL;
 
-        sMemBufs[0] = buf;
+        sMemBufs[0]         = buf;
         sNetworkBuffersUsed = false;
     }
 
@@ -390,7 +384,7 @@ void MemoryShutdown()
         for (uint8_t i = 0; i < kNumberOfNetworkBuffers; i++)
             if (sMemBufs[i] != NULL)
             {
-                PacketBuffer::Free((PacketBuffer *)sMemBufs[i]);
+                PacketBuffer::Free((PacketBuffer *) sMemBufs[i]);
                 sMemBufs[i] = NULL;
             }
     }
@@ -403,20 +397,20 @@ void MemoryShutdown()
     sMemBlocksAllocated = 0;
 }
 
-void *MemoryAlloc(size_t size)
+void * MemoryAlloc(size_t size)
 {
     return MemoryAlloc(size, false);
 }
 
-void *MemoryAlloc(size_t size, bool isLongTermAlloc)
+void * MemoryAlloc(size_t size, bool isLongTermAlloc)
 {
-    BlockMark_t blockIndex = 0x01;
+    BlockMark_t blockIndex                         = 0x01;
     uint16_t bufferOffset[kNumberOfNetworkBuffers] = { 0 };
     uint16_t blockSize;
     uint8_t blockCount;
     uint8_t blockBufferIndex;
     bool blockIsLongTerm;
-    uint8_t *memBufStart;
+    uint8_t * memBufStart;
 
     if (size == 0 || size > kMaxBlockSize)
         return NULL;
@@ -439,11 +433,11 @@ void *MemoryAlloc(size_t size, bool isLongTermAlloc)
                             if (sMemBufs[blockBufferIndex] == NULL)
                                 return NULL;
                         }
-                        memBufStart = ((PacketBuffer *)sMemBufs[blockBufferIndex])->Start();
+                        memBufStart = ((PacketBuffer *) sMemBufs[blockBufferIndex])->Start();
                     }
                     else
                     {
-                        memBufStart = (uint8_t *)sMemBufs[blockBufferIndex];
+                        memBufStart = (uint8_t *) sMemBufs[blockBufferIndex];
                     }
 
                     // Mark memory block as allocated and return pointer to this block
@@ -467,15 +461,15 @@ void *MemoryAlloc(size_t size, bool isLongTermAlloc)
     return NULL;
 }
 
-void MemoryFree(void *p)
+void MemoryFree(void * p)
 {
-    BlockMark_t blockIndex = 0x01;
+    BlockMark_t blockIndex                         = 0x01;
     uint16_t bufferOffset[kNumberOfNetworkBuffers] = { 0 };
     uint16_t blockSize;
     uint8_t blockCount;
     uint8_t blockBufferIndex;
     bool blockIsLongTerm;
-    uint8_t *memBufStart;
+    uint8_t * memBufStart;
     uint8_t i;
 
     for (i = 0; i < kNumberOfBlockSets; i++)
@@ -485,12 +479,12 @@ void MemoryFree(void *p)
         if (sMemBufs[blockBufferIndex] != NULL)
         {
             if (sNetworkBuffersUsed)
-                memBufStart = ((PacketBuffer *)sMemBufs[blockBufferIndex])->Start();
+                memBufStart = ((PacketBuffer *) sMemBufs[blockBufferIndex])->Start();
             else
-                memBufStart = (uint8_t *)sMemBufs[blockBufferIndex];
+                memBufStart = (uint8_t *) sMemBufs[blockBufferIndex];
 
             if (p >= memBufStart + bufferOffset[blockBufferIndex] &&
-                p <  memBufStart + bufferOffset[blockBufferIndex] + blockSize * blockCount)
+                p < memBufStart + bufferOffset[blockBufferIndex] + blockSize * blockCount)
             {
                 for (uint8_t j = 0; j < blockCount; j++)
                 {
@@ -501,7 +495,7 @@ void MemoryFree(void *p)
                         // Release network buffer if all its memory blocks are unallocated
                         if (sNetworkBuffersUsed && !(sMemBlocksAllocated & sBufferAllocationMask[blockBufferIndex]))
                         {
-                            PacketBuffer::Free((PacketBuffer *)sMemBufs[blockBufferIndex]);
+                            PacketBuffer::Free((PacketBuffer *) sMemBufs[blockBufferIndex]);
                             sMemBufs[blockBufferIndex] = NULL;
                         }
                         return;

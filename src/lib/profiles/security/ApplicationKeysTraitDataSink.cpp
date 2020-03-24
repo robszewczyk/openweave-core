@@ -42,8 +42,7 @@ using namespace nl::Weave::Profiles::Security::AppKeys;
 /**
  * The constructor method.
  */
-ApplicationKeysTraitDataSink::ApplicationKeysTraitDataSink(void)
-    : TraitDataSink(&ApplicationKeysTrait::TraitSchema)
+ApplicationKeysTraitDataSink::ApplicationKeysTraitDataSink(void) : TraitDataSink(&ApplicationKeysTrait::TraitSchema)
 {
     GroupKeyStore = NULL;
 }
@@ -56,7 +55,7 @@ ApplicationKeysTraitDataSink::ApplicationKeysTraitDataSink(void)
  * @retval    None.
  *
  */
-void ApplicationKeysTraitDataSink::SetGroupKeyStore(GroupKeyStoreBase *groupKeyStore)
+void ApplicationKeysTraitDataSink::SetGroupKeyStore(GroupKeyStoreBase * groupKeyStore)
 {
     GroupKeyStore = groupKeyStore;
 }
@@ -71,7 +70,7 @@ void ApplicationKeysTraitDataSink::SetGroupKeyStore(GroupKeyStoreBase *groupKeyS
  * @retval    #WEAVE_NO_ERROR
  *
  */
-WEAVE_ERROR ApplicationKeysTraitDataSink::OnEvent(uint16_t aType, void *aInEventParam)
+WEAVE_ERROR ApplicationKeysTraitDataSink::OnEvent(uint16_t aType, void * aInEventParam)
 {
     WeaveLogDetail(DataManagement, "ApplicationKeysTraitDataSink::OnEvent event: %u", aType);
 
@@ -95,7 +94,7 @@ WEAVE_ERROR ApplicationKeysTraitDataSink::OnEvent(uint16_t aType, void *aInEvent
  * @retval    other            Error returned by TLV reader.
  *
  */
-WEAVE_ERROR ApplicationKeysTraitDataSink::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader)
+WEAVE_ERROR ApplicationKeysTraitDataSink::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t keyType;
@@ -105,12 +104,12 @@ WEAVE_ERROR ApplicationKeysTraitDataSink::SetLeafData(PropertyPathHandle aLeafHa
 
     if (ApplicationKeysTrait::kPropertyHandle_EpochKeys == aLeafHandle)
     {
-        keyType = WeaveKeyId::kType_AppEpochKey;
+        keyType     = WeaveKeyId::kType_AppEpochKey;
         maxKeyCount = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS;
     }
     else if (ApplicationKeysTrait::kPropertyHandle_MasterKeys == aLeafHandle)
     {
-        keyType = WeaveKeyId::kType_AppGroupMasterKey;
+        keyType     = WeaveKeyId::kType_AppGroupMasterKey;
         maxKeyCount = WEAVE_CONFIG_MAX_APPLICATION_GROUPS;
     }
     else
@@ -140,8 +139,8 @@ WEAVE_ERROR ApplicationKeysTraitDataSink::SetLeafData(PropertyPathHandle aLeafHa
 
             if (keyCount == maxKeyCount)
             {
-                WeaveLogDetail(DataManagement, "Cannot handle more than %d %s, skip",
-                               maxKeyCount, (keyType == WeaveKeyId::kType_AppEpochKey) ? "epoch keys" : "application groups");
+                WeaveLogDetail(DataManagement, "Cannot handle more than %d %s, skip", maxKeyCount,
+                               (keyType == WeaveKeyId::kType_AppEpochKey) ? "epoch keys" : "application groups");
                 break;
             }
 
@@ -168,8 +167,8 @@ WEAVE_ERROR ApplicationKeysTraitDataSink::SetLeafData(PropertyPathHandle aLeafHa
                 VerifyOrExit(tlvTag == ContextTag(kTag_EpochKey_StartTime), err = WEAVE_ERROR_INVALID_TLV_TAG);
 
                 tlvType = aReader.GetType();
-                VerifyOrExit(tlvType == kTLVType_SignedInteger ||
-                             tlvType == kTLVType_UnsignedInteger, err = WEAVE_ERROR_WRONG_TLV_TYPE);
+                VerifyOrExit(tlvType == kTLVType_SignedInteger || tlvType == kTLVType_UnsignedInteger,
+                             err = WEAVE_ERROR_WRONG_TLV_TYPE);
 
                 err = aReader.Get(startTimeMSec);
                 SuccessOrExit(err);
@@ -228,8 +227,8 @@ exit:
     return err;
 }
 
-} // ApplicationKeysTrait
-} // Auth
-} // Trait
-} // Weave
-} // Schema
+} // namespace ApplicationKeysTrait
+} // namespace Auth
+} // namespace Trait
+} // namespace Weave
+} // namespace Schema

@@ -28,7 +28,6 @@
 
 #include <Weave/Support/ErrorStr.h>
 
-
 namespace nl {
 extern void FormatError(char * buf, uint16_t bufSize, const char * subsys, int32_t err, const char * desc);
 }
@@ -41,11 +40,7 @@ namespace Inet {
  */
 void RegisterInetLayerErrorFormatter(void)
 {
-    static ErrorFormatter sInetLayerErrorFormatter =
-    {
-        FormatInetLayerError,
-        NULL
-    };
+    static ErrorFormatter sInetLayerErrorFormatter = { FormatInetLayerError, NULL };
 
     RegisterErrorFormatter(&sInetLayerErrorFormatter);
 }

@@ -59,10 +59,10 @@ using namespace nl::Weave::Crypto;
  * @retval  1           An error occurred.
  *
  */
-int GetDRBGSeedDevRandom(uint8_t *buf, size_t bufSize)
+int GetDRBGSeedDevRandom(uint8_t * buf, size_t bufSize)
 {
-    int res = 0;
-    int devFD = -1;
+    int res     = 0;
+    int devFD   = -1;
     int readRes = 0;
 
     devFD = ::open(WEAVE_CONFIG_DEV_RANDOM_DEVICE_NAME, O_RDONLY);
@@ -78,13 +78,13 @@ int GetDRBGSeedDevRandom(uint8_t *buf, size_t bufSize)
         WeaveLogError(Crypto, "Error reading %s: %s", WEAVE_CONFIG_DEV_RANDOM_DEVICE_NAME, strerror(errno));
         ExitNow(res = 1);
     }
-    if ((size_t)readRes != bufSize)
+    if ((size_t) readRes != bufSize)
     {
-        WeaveLogError(Crypto, "Unable to read %lu bytes from %s", (uint32_t)bufSize, WEAVE_CONFIG_DEV_RANDOM_DEVICE_NAME);
+        WeaveLogError(Crypto, "Unable to read %lu bytes from %s", (uint32_t) bufSize, WEAVE_CONFIG_DEV_RANDOM_DEVICE_NAME);
         ExitNow(res = 1);
     }
 
-    WeaveLogProgress(Crypto, "Seeding DRBG with %lu bytes from %s", (uint32_t)bufSize, WEAVE_CONFIG_DEV_RANDOM_DEVICE_NAME);
+    WeaveLogProgress(Crypto, "Seeding DRBG with %lu bytes from %s", (uint32_t) bufSize, WEAVE_CONFIG_DEV_RANDOM_DEVICE_NAME);
 
 exit:
     if (devFD >= 0)
@@ -98,7 +98,8 @@ exit:
 
 AES128CTRDRBG CtrDRBG;
 
-WEAVE_ERROR InitSecureRandomDataSource(EntropyFunct entropyFunct, uint16_t entropyLen, const uint8_t *personalizationData, uint16_t perDataLen)
+WEAVE_ERROR InitSecureRandomDataSource(EntropyFunct entropyFunct, uint16_t entropyLen, const uint8_t * personalizationData,
+                                       uint16_t perDataLen)
 {
 #if WEAVE_CONFIG_DEV_RANDOM_DRBG_SEED
     if (entropyFunct == NULL)
@@ -108,14 +109,14 @@ WEAVE_ERROR InitSecureRandomDataSource(EntropyFunct entropyFunct, uint16_t entro
     return CtrDRBG.Instantiate(entropyFunct, entropyLen, personalizationData, perDataLen);
 }
 
-WEAVE_ERROR GetSecureRandomData(uint8_t *buf, uint16_t len)
+WEAVE_ERROR GetSecureRandomData(uint8_t * buf, uint16_t len)
 {
     return CtrDRBG.Generate(buf, len);
 }
 
 #endif // WEAVE_CONFIG_RNG_IMPLEMENTATION_NESTDRBG
 
-} // namespace Platform
 } // namespace Security
+} // namespace Platform
 } // namespace Weave
 } // namespace nl

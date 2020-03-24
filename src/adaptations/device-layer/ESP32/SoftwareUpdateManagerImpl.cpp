@@ -16,7 +16,6 @@
  *    limitations under the License.
  */
 
-
 #include <Weave/DeviceLayer/internal/WeaveDeviceLayerInternal.h>
 
 #if WEAVE_DEVICE_CONFIG_ENABLE_SOFTWARE_UPDATE_MANAGER

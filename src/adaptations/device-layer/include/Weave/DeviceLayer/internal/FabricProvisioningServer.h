@@ -35,14 +35,12 @@ namespace Internal {
 /**
  * Implements the Weave Fabric Provisioning profile for a Weave device.
  */
-class FabricProvisioningServer final
-    : public ::nl::Weave::Profiles::FabricProvisioning::FabricProvisioningServer,
-      public ::nl::Weave::Profiles::FabricProvisioning::FabricProvisioningDelegate
+class FabricProvisioningServer final : public ::nl::Weave::Profiles::FabricProvisioning::FabricProvisioningServer,
+                                       public ::nl::Weave::Profiles::FabricProvisioning::FabricProvisioningDelegate
 {
     using ServerBaseClass = ::nl::Weave::Profiles::FabricProvisioning::FabricProvisioningServer;
 
 public:
-
     // ===== Members for internal use by other Device Layer components.
 
     WEAVE_ERROR Init();
@@ -61,7 +59,6 @@ public:
     bool IsPairedToAccount() const override;
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend FabricProvisioningServer & FabricProvisioningSvr(void);
@@ -69,15 +66,14 @@ private:
     static FabricProvisioningServer sInstance;
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    FabricProvisioningServer() = default;
+    FabricProvisioningServer()  = default;
     ~FabricProvisioningServer() = default;
 
     // No copy, move or assignment.
-    FabricProvisioningServer(const FabricProvisioningServer &) = delete;
+    FabricProvisioningServer(const FabricProvisioningServer &)  = delete;
     FabricProvisioningServer(const FabricProvisioningServer &&) = delete;
-    FabricProvisioningServer & operator=(const FabricProvisioningServer &) = delete;
+    FabricProvisioningServer & operator =(const FabricProvisioningServer &) = delete;
 };
 
 /**
@@ -87,7 +83,6 @@ inline FabricProvisioningServer & FabricProvisioningSvr(void)
 {
     return FabricProvisioningServer::sInstance;
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

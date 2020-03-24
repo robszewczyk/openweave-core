@@ -36,49 +36,49 @@ namespace Profiles {
 namespace DataManagement_Legacy {
 enum
 {
-        /**
-         *  This legacy status code means a subscription was successfully canceled.
-         */
-        kStatus_CancelSuccess                         = 0x0001,
+    /**
+     *  This legacy status code means a subscription was successfully canceled.
+     */
+    kStatus_CancelSuccess = 0x0001,
 
-        /**
-         *  This legacy status code means a path from the path list of a view or
-         *  update request frame did not match the node-resident schema
-         *  of the responder.
-         */
-        kStatus_InvalidPath                           = 0x0013,
+    /**
+     *  This legacy status code means a path from the path list of a view or
+     *  update request frame did not match the node-resident schema
+     *  of the responder.
+     */
+    kStatus_InvalidPath = 0x0013,
 
-        /**
-         *  This legacy status code means the topic identifier given in a cancel
-         *  request or notification did not match any subscription extant
-         *  on the receiving node.
-         */
-        kStatus_UnknownTopic                          = 0x0014,
+    /**
+     *  This legacy status code means the topic identifier given in a cancel
+     *  request or notification did not match any subscription extant
+     *  on the receiving node.
+     */
+    kStatus_UnknownTopic = 0x0014,
 
-        /**
-         *  This legacy status code means the node making a request to read
-         *  a particular data item does not have permission to do so.
-         */
-        kStatus_IllegalReadRequest                    = 0x0015,
+    /**
+     *  This legacy status code means the node making a request to read
+     *  a particular data item does not have permission to do so.
+     */
+    kStatus_IllegalReadRequest = 0x0015,
 
-        /**
-         *  This legacy status code means the node making a request to
-         *  write a particular data item does not have permission to do so.
-         */
-        kStatus_IllegalWriteRequest                   = 0x0016,
+    /**
+     *  This legacy status code means the node making a request to
+     *  write a particular data item does not have permission to do so.
+     */
+    kStatus_IllegalWriteRequest = 0x0016,
 
-        /**
-         *  This legacy status code means the version for data included in an
-         *  update request did not match with the most recent version on the
-         *  publisher and so the update could not be applied.
-         */
-        kStatus_InvalidVersion                        = 0x0017,
+    /**
+     *  This legacy status code means the version for data included in an
+     *  update request did not match with the most recent version on the
+     *  publisher and so the update could not be applied.
+     */
+    kStatus_InvalidVersion = 0x0017,
 
-        /**
-         *  This legacy status code means the requested mode of
-         *  subscription is not supported by the receiving device.
-         */
-        kStatus_UnsupportedSubscriptionMode           = 0x0018,
+    /**
+     *  This legacy status code means the requested mode of
+     *  subscription is not supported by the receiving device.
+     */
+    kStatus_UnsupportedSubscriptionMode = 0x0018,
 
 };
 }
@@ -94,21 +94,21 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
  */
 enum
 {
-    kMsgType_ViewRequest                   = 0x20,
-    kMsgType_ViewResponse                  = 0x21,
-    kMsgType_UpdateRequest                 = 0x22,
-    kMsgType_InProgress                    = 0x23,
-    kMsgType_SubscribeRequest              = 0x24,
-    kMsgType_SubscribeResponse             = 0x25,
-    kMsgType_SubscribeCancelRequest        = 0x26,
-    kMsgType_SubscribeConfirmRequest       = 0x27,
-    kMsgType_NotificationRequest           = 0x28,
-    kMsgType_CustomCommandRequest          = 0x29,
-    kMsgType_CustomCommandResponse         = 0x2A,
-    kMsgType_OneWayCommand                 = 0x2B,
-    kMsgType_PartialUpdateRequest          = 0x2C,
-    kMsgType_UpdateContinue                = 0x2D,
-    kMsgType_SubscriptionlessNotification  = 0x2E,
+    kMsgType_ViewRequest                  = 0x20,
+    kMsgType_ViewResponse                 = 0x21,
+    kMsgType_UpdateRequest                = 0x22,
+    kMsgType_InProgress                   = 0x23,
+    kMsgType_SubscribeRequest             = 0x24,
+    kMsgType_SubscribeResponse            = 0x25,
+    kMsgType_SubscribeCancelRequest       = 0x26,
+    kMsgType_SubscribeConfirmRequest      = 0x27,
+    kMsgType_NotificationRequest          = 0x28,
+    kMsgType_CustomCommandRequest         = 0x29,
+    kMsgType_CustomCommandResponse        = 0x2A,
+    kMsgType_OneWayCommand                = 0x2B,
+    kMsgType_PartialUpdateRequest         = 0x2C,
+    kMsgType_UpdateContinue               = 0x2D,
+    kMsgType_SubscriptionlessNotification = 0x2E,
 };
 
 /**
@@ -116,7 +116,8 @@ enum
  *    WDM-specific status codes.
  *
  */
- enum {
+enum
+{
     kStatus_InvalidValueInNotification    = 0x20,
     kStatus_InvalidPath                   = 0x21,
     kStatus_ExpiryTimeNotSupported        = 0x22,
@@ -143,12 +144,12 @@ typedef uint64_t DataVersion;
  * On the client side, a version received from the service is always
  * the latest one.
  */
-static inline bool IsVersionNewer(const DataVersion &aVersion, const DataVersion &aReference)
+static inline bool IsVersionNewer(const DataVersion & aVersion, const DataVersion & aReference)
 {
     return (aVersion != aReference);
 }
 
-static inline bool IsVersionNewerOrEqual(const DataVersion &aVersion, const DataVersion &aReference)
+static inline bool IsVersionNewerOrEqual(const DataVersion & aVersion, const DataVersion & aReference)
 {
     return true;
 }
@@ -208,8 +209,7 @@ protected:
 
     ParserBase(void);
 
-    template <typename T>
-    WEAVE_ERROR GetUnsignedInteger(const uint8_t aContextTag, T * const apLValue) const;
+    template <typename T> WEAVE_ERROR GetUnsignedInteger(const uint8_t aContextTag, T * const apLValue) const;
 
     template <typename T>
     WEAVE_ERROR GetSimpleValue(const uint8_t aContextTag, const nl::Weave::TLV::TLVType aTLVType, T * const apLValue) const;
@@ -288,9 +288,9 @@ enum
 {
     kCsTag_InstanceLocator = 1,
 
-    kCsTag_ResourceID      = 1,
-    kCsTag_TraitProfileID  = 2,
-    kCsTag_TraitInstanceID = 3,
+    kCsTag_ResourceID       = 1,
+    kCsTag_TraitProfileID   = 2,
+    kCsTag_TraitInstanceID  = 3,
     kCsTag_RequestedVersion = 4,
 };
 
@@ -347,7 +347,7 @@ public:
     WEAVE_ERROR Init(nl::Weave::TLV::TLVWriter * const apWriter, const uint8_t aContextTagToUse);
 
     Path::Builder & ResourceID(const uint64_t aResourceID);
-    Path::Builder & ResourceID(const ResourceIdentifier& aResourceID);
+    Path::Builder & ResourceID(const ResourceIdentifier & aResourceID);
     Path::Builder & InstanceID(const uint64_t aInstanceID);
     Path::Builder & ProfileID(const uint32_t aProfileID);
     Path::Builder & ProfileID(const uint32_t aProfileID, const SchemaVersionRange & aSchemaVersionRange);
@@ -369,15 +369,15 @@ private:
  *
  */
 namespace StatusElement {
-    enum
-    {
-        kCsTag_ProfileID         = 1,
-        kCsTag_Status          = 2,
-    };
+enum
+{
+    kCsTag_ProfileID = 1,
+    kCsTag_Status    = 2,
+};
 
-    class Parser;
-    class Builder;
-}; // namespace DataElement
+class Parser;
+class Builder;
+}; // namespace StatusElement
 
 /**
  *  @brief
@@ -423,7 +423,6 @@ public:
 private:
     bool mDeprecatedFormat;
 };
-
 
 /**
  *  @brief
@@ -733,8 +732,8 @@ public:
 };
 
 namespace StatusList {
-    class Parser;
-    class Builder;
+class Parser;
+class Builder;
 }; // namespace StatusList
 
 /**
@@ -744,7 +743,6 @@ namespace StatusList {
 class StatusList::Builder : public ListBuilderBase
 {
 public:
-
     /**
      * Write the list as an array of structures, instead of an array of arrays.
      */
@@ -753,9 +751,9 @@ public:
     StatusList::Builder & AddStatus(uint32_t aProfileID, uint16_t aStatusCode);
 
     StatusList::Builder & EndOfStatusList(void);
+
 private:
     bool mDeprecatedFormat;
-
 };
 
 class StatusList::Parser : public ListParserBase
@@ -1158,12 +1156,12 @@ namespace CustomCommand {
 /// @brief Context-Specific tags used in this message
 enum
 {
-    kCsTag_Path            = 1,
-    kCsTag_CommandType     = 2,
-    kCsTag_ExpiryTime      = 3,
-    kCsTag_MustBeVersion   = 4,
-    kCsTag_InitiationTime  = 5,
-    kCsTag_ActionTime      = 6,
+    kCsTag_Path           = 1,
+    kCsTag_CommandType    = 2,
+    kCsTag_ExpiryTime     = 3,
+    kCsTag_MustBeVersion  = 4,
+    kCsTag_InitiationTime = 5,
+    kCsTag_ActionTime     = 6,
 
     /* 5-19 are reserved */
     kCsTag_Argument = 20,
@@ -1485,17 +1483,17 @@ public:
  */
 namespace UpdateRequest {
 /// @brief Context-Specific tags used in this message
-    enum
-    {
-        kCsTag_ExpiryTime                   = 1,
-        /* 2-9 are reserved */
-        kCsTag_Argument                     = 10,
-        /* 11-19 are reserved */
-        kCsTag_DataList                     = 20,
-        kCsTag_UpdateRequestIndex           = 21,
-    };
+enum
+{
+    kCsTag_ExpiryTime = 1,
+    /* 2-9 are reserved */
+    kCsTag_Argument = 10,
+    /* 11-19 are reserved */
+    kCsTag_DataList           = 20,
+    kCsTag_UpdateRequestIndex = 21,
+};
 
-    class Parser;
+class Parser;
 }; // namespace UpdateRequest
 
 /**
@@ -1549,7 +1547,7 @@ public:
     WEAVE_ERROR GetReaderOnArgument(nl::Weave::TLV::TLVReader * const apReader) const;
 
     // Get a TLVReader for the Paths. Next() must be called before accessing them.
-    WEAVE_ERROR GetDataList (DataList::Parser * const apDataList) const;
+    WEAVE_ERROR GetDataList(DataList::Parser * const apDataList) const;
 
     /**
      *  @brief Get the UpdateRequestIndex of this request.
@@ -1565,14 +1563,15 @@ public:
 };
 
 namespace UpdateResponse {
-    enum {
-        kCsTag_VersionList = 1,
-        kCsTag_StatusList = 2,
-    };
-
-    class Parser;
-    class Builder;
+enum
+{
+    kCsTag_VersionList = 1,
+    kCsTag_StatusList  = 2,
 };
+
+class Parser;
+class Builder;
+}; // namespace UpdateResponse
 
 /**
  *  @brief

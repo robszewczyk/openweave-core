@@ -35,9 +35,9 @@ namespace nl {
 namespace Weave {
 namespace Stats {
 
-void UpdateSnapshot(nl::Weave::System::Stats::Snapshot &aSnapshot);
+void UpdateSnapshot(nl::Weave::System::Stats::Snapshot & aSnapshot);
 
-void SetObjects(WeaveMessageLayer *aMessageLayer);
+void SetObjects(WeaveMessageLayer * aMessageLayer);
 
 } // namespace Stats
 } // namespace Weave

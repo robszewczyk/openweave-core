@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace PowerSourceCapabilitiesTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x18U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x18U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -100,11 +100,13 @@ enum {
 // Enums
 //
 
-enum PowerSourceType {
+enum PowerSourceType
+{
     POWER_SOURCE_TYPE_BATTERY = 1,
 };
 
-enum PowerSourceCurrentType {
+enum PowerSourceCurrentType
+{
     POWER_SOURCE_CURRENT_TYPE_DC = 1,
     POWER_SOURCE_CURRENT_TYPE_AC = 2,
 };

@@ -37,11 +37,12 @@ namespace Internal {
 
 namespace {
 
-int GetEntropy_ESP32(uint8_t *buf, size_t bufSize)
+int GetEntropy_ESP32(uint8_t * buf, size_t bufSize)
 {
     while (bufSize > 0)
     {
-        union {
+        union
+        {
             uint32_t asInt;
             uint8_t asBytes[sizeof(asInt)];
         } rnd;
@@ -71,7 +72,7 @@ WEAVE_ERROR InitEntropy()
     SuccessOrExit(err);
 
     // Seed the standard rand() pseudo-random generator with data from the secure random source.
-    err = ::nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *)&seed, sizeof(seed));
+    err = ::nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *) &seed, sizeof(seed));
     SuccessOrExit(err);
     srand(seed);
     ESP_LOGI(TAG, "srand seed set: %u", seed);

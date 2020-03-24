@@ -51,23 +51,23 @@ void AES128BlockCipher::Reset()
     mbedtls_aes_init(&mCtx);
 }
 
-void AES128BlockCipherEnc::SetKey(const uint8_t *key)
+void AES128BlockCipherEnc::SetKey(const uint8_t * key)
 {
     mbedtls_aes_setkey_enc(&mCtx, key, kKeyLengthBits);
 }
 
-void AES128BlockCipherEnc::EncryptBlock(const uint8_t *inBlock, uint8_t *outBlock)
+void AES128BlockCipherEnc::EncryptBlock(const uint8_t * inBlock, uint8_t * outBlock)
 {
     int res = mbedtls_aes_crypt_ecb(&mCtx, MBEDTLS_AES_ENCRYPT, inBlock, outBlock);
     VerifyOrDie(res == 0);
 }
 
-void AES128BlockCipherDec::SetKey(const uint8_t *key)
+void AES128BlockCipherDec::SetKey(const uint8_t * key)
 {
     mbedtls_aes_setkey_dec(&mCtx, key, kKeyLengthBits);
 }
 
-void AES128BlockCipherDec::DecryptBlock(const uint8_t *inBlock, uint8_t *outBlock)
+void AES128BlockCipherDec::DecryptBlock(const uint8_t * inBlock, uint8_t * outBlock)
 {
     int res = mbedtls_aes_crypt_ecb(&mCtx, MBEDTLS_AES_DECRYPT, inBlock, outBlock);
     VerifyOrDie(res == 0);
@@ -88,23 +88,23 @@ void AES256BlockCipher::Reset()
     mbedtls_aes_init(&mCtx);
 }
 
-void AES256BlockCipherEnc::SetKey(const uint8_t *key)
+void AES256BlockCipherEnc::SetKey(const uint8_t * key)
 {
     mbedtls_aes_setkey_enc(&mCtx, key, kKeyLengthBits);
 }
 
-void AES256BlockCipherEnc::EncryptBlock(const uint8_t *inBlock, uint8_t *outBlock)
+void AES256BlockCipherEnc::EncryptBlock(const uint8_t * inBlock, uint8_t * outBlock)
 {
     int res = mbedtls_aes_crypt_ecb(&mCtx, MBEDTLS_AES_ENCRYPT, inBlock, outBlock);
     VerifyOrDie(res == 0);
 }
 
-void AES256BlockCipherDec::SetKey(const uint8_t *key)
+void AES256BlockCipherDec::SetKey(const uint8_t * key)
 {
     mbedtls_aes_setkey_dec(&mCtx, key, kKeyLengthBits);
 }
 
-void AES256BlockCipherDec::DecryptBlock(const uint8_t *inBlock, uint8_t *outBlock)
+void AES256BlockCipherDec::DecryptBlock(const uint8_t * inBlock, uint8_t * outBlock)
 {
     int res = mbedtls_aes_crypt_ecb(&mCtx, MBEDTLS_AES_DECRYPT, inBlock, outBlock);
     VerifyOrDie(res == 0);

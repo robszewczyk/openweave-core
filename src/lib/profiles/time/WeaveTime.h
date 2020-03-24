@@ -82,16 +82,16 @@ typedef int64_t timesync_t;
 enum
 {
     kTimeMessageType_TimeSyncTimeChangeNotification = 0,
-    kTimeMessageType_TimeSyncRequest = 1,
-    kTimeMessageType_TimeSyncResponse = 2,
+    kTimeMessageType_TimeSyncRequest                = 1,
+    kTimeMessageType_TimeSyncResponse               = 2,
 };
 
 /// Profile-specific tags used in WDM queries for timezone information
 enum
 {
-    kWdmTagTime_Zone_Name = 0x00,      ///< The IANA Timezone name in UTF8-String format
-    kWdmTagTime_Zone_POSIX_TZ = 0x01,  ///< The POSIX TZ environment variable in UTF8-String format
-    kWdmTagTime_Zone_UTC_Offset = 0x02 ///< The UTC offsets for this timezone, in packed binary format
+    kWdmTagTime_Zone_Name       = 0x00, ///< The IANA Timezone name in UTF8-String format
+    kWdmTagTime_Zone_POSIX_TZ   = 0x01, ///< The POSIX TZ environment variable in UTF8-String format
+    kWdmTagTime_Zone_UTC_Offset = 0x02  ///< The UTC offsets for this timezone, in packed binary format
 };
 
 /// Roles a protocol engine can play.
@@ -99,23 +99,22 @@ enum
 /// likewise, a TimeSyncClient could be playing a Client or just part of a Coordinator.
 enum TimeSyncRole
 {
-    kTimeSyncRole_Unknown = 0,
-    kTimeSyncRole_Server = 1,
+    kTimeSyncRole_Unknown     = 0,
+    kTimeSyncRole_Server      = 1,
     kTimeSyncRole_Coordinator = 2,
-    kTimeSyncRole_Client = 3,
+    kTimeSyncRole_Client      = 3,
 };
 
 /// Codec for UTC offset of a timezone
 class NL_DLL_EXPORT TimeZoneUtcOffset
 {
 public:
-
     /// conversion information
     struct UtcOffsetRecord
     {
-        timesync_t mBeginAt_usec;    ///< UTC time, in usec since standard epoch,
-                                     ///< of the beginning of this conversion period
-        int32_t mUtcOffset_sec;      ///< Offset, in seconds, from UTC to local time
+        timesync_t mBeginAt_usec; ///< UTC time, in usec since standard epoch,
+                                  ///< of the beginning of this conversion period
+        int32_t mUtcOffset_sec;   ///< Offset, in seconds, from UTC to local time
     };
 
     /// number of valid entries in mUtcOffsetRecord
@@ -124,10 +123,7 @@ public:
     /// entries of UTC offsets
     UtcOffsetRecord mUtcOffsetRecord[WEAVE_CONFIG_TIME_NUM_UTC_OFFSET_RECORD];
 
-    TimeZoneUtcOffset() :
-        mSize(0)
-    {
-    }
+    TimeZoneUtcOffset() : mSize(0) { }
 
     /**
      * convert UTC time to local time, using the UTC offsets stored.
@@ -185,7 +181,7 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR Encode(PacketBuffer* const aMsg);
+    WEAVE_ERROR Encode(PacketBuffer * const aMsg);
 
     /**
      * decode time change notification from an PacketBuffer.
@@ -196,14 +192,13 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    static WEAVE_ERROR Decode(TimeChangeNotification * const aObject, PacketBuffer* const aMsg);
+    static WEAVE_ERROR Decode(TimeChangeNotification * const aObject, PacketBuffer * const aMsg);
 };
 
 // codec for Time Sync Request message
 class NL_DLL_EXPORT TimeSyncRequest
 {
 public:
-
     /// default constructor shall be used with Decode, as all members will be initialized through decoding
     TimeSyncRequest(void);
 
@@ -225,7 +220,7 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR Encode(PacketBuffer* const aMsg);
+    WEAVE_ERROR Encode(PacketBuffer * const aMsg);
 
     /**
      * decode time sync request from an PacketBuffer.
@@ -236,7 +231,7 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    static WEAVE_ERROR Decode(TimeSyncRequest * const aObject, PacketBuffer* const aMsg);
+    static WEAVE_ERROR Decode(TimeSyncRequest * const aObject, PacketBuffer * const aMsg);
 
     /// minimum and maxiumum settings for the intended likelihood of response
     /// for this time sync request.
@@ -284,7 +279,7 @@ public:
      *
      */
     void Init(const TimeSyncRole aRole, const timesync_t aTimeOfRequest, const timesync_t aTimeOfResponse,
-        const uint8_t aNumContributorInLastLocalSync, const uint16_t aTimeSinceLastSyncWithServer_min);
+              const uint8_t aNumContributorInLastLocalSync, const uint16_t aTimeSinceLastSyncWithServer_min);
 
     /// maximum number of contributors in the last successful time sync operation on local fabric
     enum
@@ -296,7 +291,7 @@ public:
     /// kTimeSinceLastSyncWithServer_Invalid means this happened too long ago to be relevant, if ever
     enum
     {
-        kTimeSinceLastSyncWithServer_Max = 4094,
+        kTimeSinceLastSyncWithServer_Max     = 4094,
         kTimeSinceLastSyncWithServer_Invalid = 4095,
     };
 
@@ -307,7 +302,7 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR Encode(PacketBuffer* const aMsg);
+    WEAVE_ERROR Encode(PacketBuffer * const aMsg);
 
     /**
      * decode time sync response from an PacketBuffer.
@@ -318,7 +313,7 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    static WEAVE_ERROR Decode(TimeSyncResponse * const aObject, PacketBuffer* const aMsg);
+    static WEAVE_ERROR Decode(TimeSyncResponse * const aObject, PacketBuffer * const aMsg);
 
     /// true if this response is constructed by a coordinator;
     /// false implies this response is constructed by a server.
@@ -342,23 +337,16 @@ class _TimeSyncNodeBase
 protected:
     _TimeSyncNodeBase(void);
 
-    void Init(WeaveFabricState * const aFabricState,
-        WeaveExchangeManager * const aExchangeMgr);
+    void Init(WeaveFabricState * const aFabricState, WeaveExchangeManager * const aExchangeMgr);
 
 public:
-    WeaveFabricState * GetFabricState(void) const
-    {
-        return FabricState;
-    }
+    WeaveFabricState * GetFabricState(void) const { return FabricState; }
 
-    WeaveExchangeManager * GetExchangeMgr(void) const
-    {
-        return ExchangeMgr;
-    }
+    WeaveExchangeManager * GetExchangeMgr(void) const { return ExchangeMgr; }
 
 protected:
     WeaveFabricState * FabricState;
-    WeaveExchangeManager *ExchangeMgr;
+    WeaveExchangeManager * ExchangeMgr;
 
     static timesync_t GetClock_Monotonic(void);
     static timesync_t GetClock_MonotonicHiRes(void);
@@ -431,11 +419,9 @@ struct NL_DLL_EXPORT ServingNode
     IPAddress mNodeAddr;
 };
 
-class NL_DLL_EXPORT TimeSyncNode:
-    public _TimeSyncNodeBase
+class NL_DLL_EXPORT TimeSyncNode : public _TimeSyncNodeBase
 {
 public:
-
     /// current state of this Time Sync Server
     enum ServerState
     {
@@ -505,7 +491,6 @@ public:
         kResponseStatus_UnusableResponse,
     };
 
-
     TimeSyncNode(void);
 
     /**
@@ -536,16 +521,16 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR InitCoordinator(nl::Weave::WeaveExchangeManager *aExchangeMgr, const uint8_t aEncryptionType =
-        nl::Weave::kWeaveEncryptionType_None,
-        const uint16_t aKeyId = nl::Weave::WeaveKeyId::kNone,
-        const int32_t aSyncPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_SYNC_PERIOD_MSEC
+    WEAVE_ERROR InitCoordinator(nl::Weave::WeaveExchangeManager * aExchangeMgr,
+                                const uint8_t aEncryptionType  = nl::Weave::kWeaveEncryptionType_None,
+                                const uint16_t aKeyId          = nl::Weave::WeaveKeyId::kNone,
+                                const int32_t aSyncPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_SYNC_PERIOD_MSEC
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        ,
-        const int32_t aNominalDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_NOMINAL_DISCOVERY_PERIOD_MSEC,
-        const int32_t aShortestDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_MINIMUM_DISCOVERY_PERIOD_MSEC
+                                ,
+                                const int32_t aNominalDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_NOMINAL_DISCOVERY_PERIOD_MSEC,
+                                const int32_t aShortestDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_MINIMUM_DISCOVERY_PERIOD_MSEC
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
 
 #endif // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
 
@@ -566,9 +551,7 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR InitServer(void * const aApp, WeaveExchangeManager * const aExchangeMgr,
-        const bool aIsAlwaysFresh = true);
-
+    WEAVE_ERROR InitServer(void * const aApp, WeaveExchangeManager * const aExchangeMgr, const bool aIsAlwaysFresh = true);
 
     /**
      * callback to indicate we just received a time sync request.
@@ -584,9 +567,8 @@ public:
      *
      * @return false and the engine shall ignore this request
      */
-    typedef bool (*OnSyncRequestReceivedHandler)(void * const aApp, const WeaveMessageInfo *aMsgInfo,
-        const uint8_t aLikelyhood,
-        const bool aIsTimeCoordinator);
+    typedef bool (*OnSyncRequestReceivedHandler)(void * const aApp, const WeaveMessageInfo * aMsgInfo, const uint8_t aLikelyhood,
+                                                 const bool aIsTimeCoordinator);
 
     /// if not set, the default implementation always returns true
     OnSyncRequestReceivedHandler OnSyncRequestReceived;
@@ -640,14 +622,13 @@ public:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR InitClient(void * const aApp, WeaveExchangeManager *aExchangeMgr,
-        const uint8_t aEncryptionType = kWeaveEncryptionType_None,
-        const uint16_t aKeyId = WeaveKeyId::kNone
+    WEAVE_ERROR InitClient(void * const aApp, WeaveExchangeManager * aExchangeMgr,
+                           const uint8_t aEncryptionType = kWeaveEncryptionType_None, const uint16_t aKeyId = WeaveKeyId::kNone
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        ,
-        const int8_t aInitialLikelyhood = TimeSyncRequest::kLikelihoodForResponse_Min
+                           ,
+                           const int8_t aInitialLikelyhood = TimeSyncRequest::kLikelihoodForResponse_Min
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
 
     /**
      * callback to indicate we just received a Time Change Notification.
@@ -666,8 +647,7 @@ public:
      * @param[in] aNodeAddr           requesting node address
      *
      */
-    typedef void (*TimeChangeNotificationHandler)(void * const aApp, const uint64_t aNodeId,
-        const IPAddress & aNodeAddr);
+    typedef void (*TimeChangeNotificationHandler)(void * const aApp, const uint64_t aNodeId, const IPAddress & aNodeAddr);
     TimeChangeNotificationHandler OnTimeChangeNotificationReceived;
 
     /**
@@ -710,7 +690,7 @@ public:
      *
      */
     typedef bool (*SyncSucceededHandler)(void * const aApp, const timesync_t aOffsetUsec, const bool aIsReliable,
-        const bool aIsServer, const uint8_t aNumContributor);
+                                         const bool aIsServer, const uint8_t aNumContributor);
 
     /// if not set, the default behavior is taking all results, except for very small server corrections
     SyncSucceededHandler OnSyncSucceeded;
@@ -760,14 +740,13 @@ public:
      * @return                                  WEAVE_NO_ERROR on success
      *
      */
-    WEAVE_ERROR EnableAutoSync(
-        const int32_t aSyncPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_SYNC_PERIOD_MSEC
+    WEAVE_ERROR EnableAutoSync(const int32_t aSyncPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_SYNC_PERIOD_MSEC
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        ,
-        const int32_t aNominalDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_NOMINAL_DISCOVERY_PERIOD_MSEC,
-        const int32_t aShortestDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_MINIMUM_DISCOVERY_PERIOD_MSEC
+                               ,
+                               const int32_t aNominalDiscoveryPeriod_msec  = WEAVE_CONFIG_TIME_CLIENT_NOMINAL_DISCOVERY_PERIOD_MSEC,
+                               const int32_t aShortestDiscoveryPeriod_msec = WEAVE_CONFIG_TIME_CLIENT_MINIMUM_DISCOVERY_PERIOD_MSEC
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
 
     /// disable auto sync.
     /// only available in idle state.
@@ -791,7 +770,7 @@ public:
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
         const bool aForceDiscoverAgain = false
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
 
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
     /**
@@ -846,7 +825,6 @@ public:
 #endif // WEAVE_CONFIG_TIME_ENABLE_CLIENT
 
 protected:
-
     /// pointer to higher layer data
     void * mApp;
 
@@ -856,9 +834,7 @@ protected:
     /// true if we're in a callback to higher layer
     bool mIsInCallback;
 
-
-    WEAVE_ERROR InitState(const TimeSyncRole aRole,
-        void * const aApp, WeaveExchangeManager * const aExchangeMgr);
+    WEAVE_ERROR InitState(const TimeSyncRole aRole, void * const aApp, WeaveExchangeManager * const aExchangeMgr);
 
     void ClearState(void);
 
@@ -872,9 +848,8 @@ protected:
      */
     WEAVE_ERROR _ShutdownCoordinator(void);
 
-    static bool _OnSyncSucceeded(void * const aApp, const nl::Weave::Profiles::Time::timesync_t aOffsetUsec,
-        const bool aIsReliable,
-        const bool aIsServer, const uint8_t aNumContributor);
+    static bool _OnSyncSucceeded(void * const aApp, const nl::Weave::Profiles::Time::timesync_t aOffsetUsec, const bool aIsReliable,
+                                 const bool aIsServer, const uint8_t aNumContributor);
 #endif // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
 
 #if WEAVE_CONFIG_TIME_ENABLE_SERVER
@@ -903,7 +878,6 @@ protected:
      */
     WEAVE_ERROR _InitServer(const bool aIsAlwaysFresh);
 
-
     /**
      * stop the server
      * not available in callbacks.
@@ -913,14 +887,13 @@ protected:
     WEAVE_ERROR _ShutdownServer(void);
 
     /// callback from Weave Exchange when a time sync request arrives
-    static void HandleSyncRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleSyncRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                  uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
     /// callback from Weave Timer when we passed the unreliable after boot barrier
-    static void HandleUnreliableAfterBootTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void HandleUnreliableAfterBootTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 
 #endif // WEAVE_CONFIG_TIME_ENABLE_SERVER
-
 
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
 
@@ -952,7 +925,7 @@ protected:
 
     //@{
     /// communication context.
-    //CommToken mCommToken[WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_EXCHANGE_CONTEXTS];
+    // CommToken mCommToken[WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_EXCHANGE_CONTEXTS];
     Contact * mActiveContact;
     ExchangeContext * mExchangeContext;
     timesync_t mUnadjTimestampLastSent_usec;
@@ -976,15 +949,12 @@ protected:
      *
      * @return WEAVE_NO_ERROR on success
      */
-    WEAVE_ERROR _InitClient(
-        const uint8_t aEncryptionType,
-        const uint16_t aKeyId
+    WEAVE_ERROR _InitClient(const uint8_t aEncryptionType, const uint16_t aKeyId
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        ,
-        const int8_t aInitialLikelyhood
+                            ,
+                            const int8_t aInitialLikelyhood
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
-
+    );
 
     /**
      * stop the client
@@ -1022,12 +992,10 @@ protected:
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
     /// return a slot to store contact information
-    Contact * FindReplaceableContact(const uint64_t aNodeId, const IPAddress & aNodeAddr,
-        bool aIsTimeChangeNotification = false);
+    Contact * FindReplaceableContact(const uint64_t aNodeId, const IPAddress & aNodeAddr, bool aIsTimeChangeNotification = false);
 
     /// process a response coming back from a multicast request
-    void UpdateMulticastSyncResponse(const uint64_t aNodeId,
-        const IPAddress & aNodeAddr, const TimeSyncResponse & aResponse);
+    void UpdateMulticastSyncResponse(const uint64_t aNodeId, const IPAddress & aNodeAddr, const TimeSyncResponse & aResponse);
 
     /// store the contact information of a node who just sent us a time change notification
     void StoreNotifyingContact(const uint64_t aNodeId, const IPAddress & aNodeAddr);
@@ -1046,9 +1014,9 @@ protected:
 
     /// induce callback to the application layer.
     /// set aIsSuccessful to false to induce the error callback
-    WEAVE_ERROR CallbackForSyncCompletion(const bool aIsSuccessful, bool aShouldUpdate,
-        const bool aIsCorrectionReliable, const bool aIsFromServer, const uint8_t aNumContributor,
-        const timesync_t aSystemTimestamp_usec, const timesync_t aDiffTime_usec);
+    WEAVE_ERROR CallbackForSyncCompletion(const bool aIsSuccessful, bool aShouldUpdate, const bool aIsCorrectionReliable,
+                                          const bool aIsFromServer, const uint8_t aNumContributor,
+                                          const timesync_t aSystemTimestamp_usec, const timesync_t aDiffTime_usec);
 
     /// internal abort if aCode is not WEAVE_NO_ERROR
     void AbortOnError(const WEAVE_ERROR aCode);
@@ -1092,21 +1060,21 @@ protected:
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
     //@}
 
-    static void HandleTimeChangeNotification(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleUnicastSyncResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleTimeChangeNotification(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                             uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleUnicastSyncResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                          uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    static void HandleMulticastResponseTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-    static void HandleMulticastSyncResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleAutoDiscoveryTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void HandleMulticastResponseTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+    static void HandleMulticastSyncResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                            uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleAutoDiscoveryTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
     static void HandleUnicastResponseTimeout(ExchangeContext * const ec);
 
-    static void HandleAutoSyncTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void HandleAutoSyncTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 
     /**
      * @brief
@@ -1121,7 +1089,10 @@ protected:
      * @return true if the state falls after the initialization has completed
      *         and before the shutdown has started, false otherwise.
      */
-    static inline bool IsOperationalState(ClientState aState) { return ((kClientState_BeginNormal < aState) && (aState < kClientState_EndNormal)); }
+    static inline bool IsOperationalState(ClientState aState)
+    {
+        return ((kClientState_BeginNormal < aState) && (aState < kClientState_EndNormal));
+    }
 
 #endif // WEAVE_CONFIG_TIME_ENABLE_CLIENT
 };
@@ -1129,13 +1100,12 @@ protected:
 class NL_DLL_EXPORT SingleSourceTimeSyncClient
 {
 public:
-
     /// current state of this Time Sync Client
     enum ClientState
     {
-        kClientState_Idle,      ///< Initialized, waiting for Time Change Notification, but no actual time sync operation is happening
-        kClientState_Sync_1,    ///< Working on the first time sync attempt
-        kClientState_Sync_2,    ///< Working on the second time sync attempt
+        kClientState_Idle,   ///< Initialized, waiting for Time Change Notification, but no actual time sync operation is happening
+        kClientState_Sync_1, ///< Working on the first time sync attempt
+        kClientState_Sync_2, ///< Working on the second time sync attempt
     };
 
     /**
@@ -1153,7 +1123,8 @@ public:
      *
      *  @param[in] aApp             A pointer to higher layer data, used in callbacks to higher layer.
      *
-     *  @param[in] aExchangeMgr     A pointer to Exchange Manager, which would be used in registering for Time Change Notification message handler
+     *  @param[in] aExchangeMgr     A pointer to Exchange Manager, which would be used in registering for Time Change Notification
+     * message handler
      *
      *  @return WEAVE_NO_ERROR on success
      */
@@ -1209,7 +1180,6 @@ public:
     WEAVE_ERROR Sync(Binding * const aBinding, SyncCompletionHandler OnSyncCompleted);
 
 protected:
-
     enum
     {
         kFlightTimeMinimum = 0,
@@ -1238,7 +1208,8 @@ protected:
 
     SyncCompletionHandler mOnSyncCompleted;
 
-    void RegisterSyncResultIfNewOrBetter(const timesync_t aNow_usec, const timesync_t aRemoteTimestamp_usec, const int32_t aFlightTime_usec);
+    void RegisterSyncResultIfNewOrBetter(const timesync_t aNow_usec, const timesync_t aRemoteTimestamp_usec,
+                                         const int32_t aFlightTime_usec);
 
     void _AbortWithCallback(const WEAVE_ERROR aErrorCode);
 
@@ -1247,15 +1218,16 @@ protected:
     void SetClientState(const ClientState state);
     const char * GetClientStateName(void) const;
 
-    static void HandleTimeChangeNotification(ExchangeContext *aEC, const IPPacketInfo *aPktInfo,
-        const WeaveMessageInfo *aMsgInfo, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aPayload);
+    static void HandleTimeChangeNotification(ExchangeContext * aEC, const IPPacketInfo * aPktInfo,
+                                             const WeaveMessageInfo * aMsgInfo, uint32_t aProfileId, uint8_t aMsgType,
+                                             PacketBuffer * aPayload);
 
-    static void HandleSyncResponse(ExchangeContext *aEC, const IPPacketInfo *aPktInfo,
-        const WeaveMessageInfo *aMsgInfo, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aPayload);
+    static void HandleSyncResponse(ExchangeContext * aEC, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aMsgInfo,
+                                   uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aPayload);
 
-    void OnSyncResponse(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aPayload);
+    void OnSyncResponse(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aPayload);
 
-    static void HandleResponseTimeout(ExchangeContext *aEC);
+    static void HandleResponseTimeout(ExchangeContext * aEC);
     void OnResponseTimeout(void);
 
     /// Invalidate the registered information for time correction

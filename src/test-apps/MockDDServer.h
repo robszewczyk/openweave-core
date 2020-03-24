@@ -40,11 +40,12 @@ class MockDeviceDescriptionServer : public DeviceDescriptionServer
 public:
     MockDeviceDescriptionServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
 private:
-    static void HandleIdentifyRequest(void *appState, uint64_t nodeId, const IPAddress& nodeAddr, const IdentifyRequestMessage& reqMsg, bool& sendResp, IdentifyResponseMessage& respMsg);
+    static void HandleIdentifyRequest(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                      const IdentifyRequestMessage & reqMsg, bool & sendResp, IdentifyResponseMessage & respMsg);
 };
 
 #endif /* MOCKDSERVER_H_ */

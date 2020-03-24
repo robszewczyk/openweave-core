@@ -37,15 +37,18 @@ namespace Weave {
 namespace Profiles {
 namespace Security {
 
-extern WEAVE_ERROR LoadAccessTokenCerts(const uint8_t *accessToken, uint32_t accessTokenLen, WeaveCertificateSet& certSet, uint16_t decodeFlags, WeaveCertificateData *& accessTokenCert);
-extern WEAVE_ERROR LoadAccessTokenCerts(TLVReader& reader, WeaveCertificateSet& certSet, uint16_t decodeFlags, WeaveCertificateData *& accessTokenCert);
+extern WEAVE_ERROR LoadAccessTokenCerts(const uint8_t * accessToken, uint32_t accessTokenLen, WeaveCertificateSet & certSet,
+                                        uint16_t decodeFlags, WeaveCertificateData *& accessTokenCert);
+extern WEAVE_ERROR LoadAccessTokenCerts(TLVReader & reader, WeaveCertificateSet & certSet, uint16_t decodeFlags,
+                                        WeaveCertificateData *& accessTokenCert);
 
-extern WEAVE_ERROR CASECertInfoFromAccessToken(const uint8_t *accessToken, uint32_t accessTokenLen, uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen);
-extern WEAVE_ERROR CASECertInfoFromAccessToken(TLVReader& reader, TLVWriter& writer);
+extern WEAVE_ERROR CASECertInfoFromAccessToken(const uint8_t * accessToken, uint32_t accessTokenLen, uint8_t * buf,
+                                               uint16_t bufSize, uint16_t & certInfoLen);
+extern WEAVE_ERROR CASECertInfoFromAccessToken(TLVReader & reader, TLVWriter & writer);
 
-extern WEAVE_ERROR ExtractPrivateKeyFromAccessToken(const uint8_t *accessToken, uint32_t accessTokenLen, uint8_t *privKeyBuf, uint16_t privKeyBufSize, uint16_t& privKeyLen);
-extern WEAVE_ERROR ExtractPrivateKeyFromAccessToken(TLVReader& reader, TLVWriter& writer);
-
+extern WEAVE_ERROR ExtractPrivateKeyFromAccessToken(const uint8_t * accessToken, uint32_t accessTokenLen, uint8_t * privKeyBuf,
+                                                    uint16_t privKeyBufSize, uint16_t & privKeyLen);
+extern WEAVE_ERROR ExtractPrivateKeyFromAccessToken(TLVReader & reader, TLVWriter & writer);
 
 } // namespace Security
 } // namespace Profiles

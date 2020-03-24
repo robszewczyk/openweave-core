@@ -41,7 +41,9 @@ namespace Inet {
 typedef Weave::System::PacketBuffer InetBuffer;
 
 #if !WEAVE_SYSTEM_CONFIG_USE_LWIP
-struct pbuf : public Weave::System::pbuf { };
+struct pbuf : public Weave::System::pbuf
+{
+};
 #endif // !WEAVE_SYSTEM_CONFIG_USE_LWIP
 
 } // namespace Inet

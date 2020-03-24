@@ -55,15 +55,16 @@
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
 
 using namespace nl::Weave::Profiles::Time;
-using nl::Weave::ExchangeContext;
 using nl::Weave::Binding;
+using nl::Weave::ExchangeContext;
 
-WEAVE_ERROR TimeSyncNode::InitClient(void * const aApp, WeaveExchangeManager *aExchangeMgr,
-    const uint8_t aEncryptionType, const uint16_t aKeyId
+WEAVE_ERROR TimeSyncNode::InitClient(void * const aApp, WeaveExchangeManager * aExchangeMgr, const uint8_t aEncryptionType,
+                                     const uint16_t aKeyId
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    , const int8_t aInitialLikelyhood
+                                     ,
+                                     const int8_t aInitialLikelyhood
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    )
+)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -74,9 +75,10 @@ WEAVE_ERROR TimeSyncNode::InitClient(void * const aApp, WeaveExchangeManager *aE
     // initialize Client-specific data
     err = _InitClient(aEncryptionType, aKeyId
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        , aInitialLikelyhood
+                      ,
+                      aInitialLikelyhood
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        );
+    );
     SuccessOrExit(err);
 
 exit:
@@ -85,23 +87,23 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TimeSyncNode::_InitClient(const uint8_t aEncryptionType,
-    const uint16_t aKeyId
+WEAVE_ERROR TimeSyncNode::_InitClient(const uint8_t aEncryptionType, const uint16_t aKeyId
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    , const int8_t aInitialLikelyhood
+                                      ,
+                                      const int8_t aInitialLikelyhood
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    )
+)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     InvalidateAllContacts();
 
     mEncryptionType = aEncryptionType;
-    mKeyId = aKeyId;
+    mKeyId          = aKeyId;
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    if ((aInitialLikelyhood < TimeSyncRequest::kLikelihoodForResponse_Min)
-        || (aInitialLikelyhood > TimeSyncRequest::kLikelihoodForResponse_Max))
+    if ((aInitialLikelyhood < TimeSyncRequest::kLikelihoodForResponse_Min) ||
+        (aInitialLikelyhood > TimeSyncRequest::kLikelihoodForResponse_Max))
     {
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
@@ -112,13 +114,12 @@ WEAVE_ERROR TimeSyncNode::_InitClient(const uint8_t aEncryptionType,
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
     // Register to receive unsolicited time sync request advisory messages from the exchange manager.
-    err = GetExchangeMgr()->RegisterUnsolicitedMessageHandler(kWeaveProfile_Time,
-        kTimeMessageType_TimeSyncTimeChangeNotification,
-        HandleTimeChangeNotification, this);
+    err = GetExchangeMgr()->RegisterUnsolicitedMessageHandler(kWeaveProfile_Time, kTimeMessageType_TimeSyncTimeChangeNotification,
+                                                              HandleTimeChangeNotification, this);
     SuccessOrExit(err);
 
-    mActiveContact = NULL;
-    mExchangeContext = NULL;
+    mActiveContact               = NULL;
+    mExchangeContext             = NULL;
     mUnadjTimestampLastSent_usec = 0;
 
 exit:
@@ -139,11 +140,11 @@ WEAVE_ERROR TimeSyncNode::_ShutdownClient()
 
     DisableAutoSync();
 
-    (void)Abort();
+    (void) Abort();
 
     // unregister message handler
-    err = GetExchangeMgr()->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Time,
-        kTimeMessageType_TimeSyncTimeChangeNotification);
+    err =
+        GetExchangeMgr()->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Time, kTimeMessageType_TimeSyncTimeChangeNotification);
 
 exit:
     WeaveLogFunctError(err);
@@ -185,54 +186,26 @@ const char * const TimeSyncNode::GetClientStateName() const
 
     switch (mClientState)
     {
-    case kClientState_Uninitialized:
-        stateName = "Uninitialized";
-        break;
-    case kClientState_ContructionFailed:
-        stateName = "ContructionFailed";
-        break;
-    case kClientState_Constructed:
-        stateName = "Constructed";
-        break;
-    case kClientState_InitializationFailed:
-        stateName = "InitializationFailed";
-        break;
-    case kClientState_Idle:
-        stateName = "Idle";
-        break;
+    case kClientState_Uninitialized: stateName = "Uninitialized"; break;
+    case kClientState_ContructionFailed: stateName = "ContructionFailed"; break;
+    case kClientState_Constructed: stateName = "Constructed"; break;
+    case kClientState_InitializationFailed: stateName = "InitializationFailed"; break;
+    case kClientState_Idle: stateName = "Idle"; break;
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    case kClientState_Sync_Discovery:
-        stateName = "Sync_Discovery";
-        break;
+    case kClientState_Sync_Discovery: stateName = "Sync_Discovery"; break;
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    case kClientState_Sync_1:
-        stateName = "Sync_1";
-        break;
-    case kClientState_Sync_2:
-        stateName = "Sync_2";
-        break;
+    case kClientState_Sync_1: stateName = "Sync_1"; break;
+    case kClientState_Sync_2: stateName = "Sync_2"; break;
 
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
-    case kClientState_ServiceSync_1:
-        stateName = "ServiceSync_1";
-        break;
-    case kClientState_ServiceSync_2:
-        stateName = "ServiceSync_2";
-        break;
+    case kClientState_ServiceSync_1: stateName = "ServiceSync_1"; break;
+    case kClientState_ServiceSync_2: stateName = "ServiceSync_2"; break;
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
 
-    case kClientState_ShutdownNeeded:
-        stateName = "ShutdownNeeded";
-        break;
-    case kClientState_ShutdownCompleted:
-        stateName = "ShutdownCompleted";
-        break;
-    case kClientState_ShutdownFailed:
-        stateName = "ShutdownFailed";
-        break;
-    default:
-        stateName = "unnamed";
-        break;
+    case kClientState_ShutdownNeeded: stateName = "ShutdownNeeded"; break;
+    case kClientState_ShutdownCompleted: stateName = "ShutdownCompleted"; break;
+    case kClientState_ShutdownFailed: stateName = "ShutdownFailed"; break;
+    default: stateName = "unnamed"; break;
     }
 
     return stateName;
@@ -242,8 +215,7 @@ void TimeSyncNode::SetClientState(const TimeSyncNode::ClientState state)
 {
     mClientState = state;
 
-    WeaveLogDetail(TimeService, "Client entering state %d (%s)", mClientState,
-        GetClientStateName());
+    WeaveLogDetail(TimeService, "Client entering state %d (%s)", mClientState, GetClientStateName());
 }
 
 TimeSyncNode::ClientState TimeSyncNode::GetClientState(void) const
@@ -259,9 +231,9 @@ int TimeSyncNode::GetCapacityOfContactList(void) const
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
 void TimeSyncNode::InvalidateServiceContact(void)
 {
-    mServiceContact.mCommState = uint8_t(kCommState_Invalid);
+    mServiceContact.mCommState      = uint8_t(kCommState_Invalid);
     mServiceContact.mResponseStatus = uint8_t(kResponseStatus_Invalid);
-    mConnectionToService = NULL;
+    mConnectionToService            = NULL;
 }
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
 
@@ -269,7 +241,7 @@ void TimeSyncNode::InvalidateAllContacts(void)
 {
     for (int i = 0; i < WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS; ++i)
     {
-        mContacts[i].mCommState = uint8_t(kCommState_Invalid);
+        mContacts[i].mCommState      = uint8_t(kCommState_Invalid);
         mContacts[i].mResponseStatus = uint8_t(kResponseStatus_Invalid);
     }
 
@@ -286,7 +258,7 @@ int16_t TimeSyncNode::SetAllValidContactsToIdleAndInvalidateResponse(void)
     {
         if (uint8_t(kCommState_Invalid) != mContacts[i].mCommState)
         {
-            mContacts[i].mCommState = uint8_t(kCommState_Idle);
+            mContacts[i].mCommState      = uint8_t(kCommState_Idle);
             mContacts[i].mResponseStatus = uint8_t(kResponseStatus_Invalid);
             ++rCountIdleContact;
         }
@@ -318,8 +290,7 @@ int16_t TimeSyncNode::GetNumNotYetCompletedContacts(void)
     // count the number of invalid or completed contacts
     for (int i = 0; i < WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS; ++i)
     {
-        if ((uint8_t(kCommState_Completed) == mContacts[i].mCommState)
-            || (uint8_t(kCommState_Invalid) == mContacts[i].mCommState))
+        if ((uint8_t(kCommState_Completed) == mContacts[i].mCommState) || (uint8_t(kCommState_Invalid) == mContacts[i].mCommState))
         {
             ++rCountCompletedOrInvalidContact;
         }
@@ -336,8 +307,8 @@ int16_t TimeSyncNode::GetNumReliableResponses(void)
     // count the number of invalid or completed contacts
     for (int i = 0; i < WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS; ++i)
     {
-        if ((uint8_t(kCommState_Invalid) == mContacts[i].mCommState)
-            && (uint8_t(kResponseStatus_ReliableResponse) == mContacts[i].mResponseStatus))
+        if ((uint8_t(kCommState_Invalid) == mContacts[i].mCommState) &&
+            (uint8_t(kResponseStatus_ReliableResponse) == mContacts[i].mResponseStatus))
         {
             ++rCountReliableResponses;
         }
@@ -379,8 +350,7 @@ WEAVE_ERROR TimeSyncNode::SetupUnicastCommContext(Contact * const aContact)
         {
             char buffer[128] = { 0 };
             aContact->mNodeAddr.ToString(buffer, sizeof(buffer));
-            WeaveLogDetail(TimeService, "Preparing exchange context for %" PRIX64 " at %s",
-                aContact->mNodeId, buffer);
+            WeaveLogDetail(TimeService, "Preparing exchange context for %" PRIX64 " at %s", aContact->mNodeId, buffer);
         }
 #endif // WEAVE_DETAIL_LOGGING
 
@@ -396,7 +366,7 @@ WEAVE_ERROR TimeSyncNode::SetupUnicastCommContext(Contact * const aContact)
 
             // Configure the encryption and key used to send the request
             mExchangeContext->EncryptionType = mEncryptionType;
-            mExchangeContext->KeyId = mKeyId;
+            mExchangeContext->KeyId          = mKeyId;
         }
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
         else
@@ -411,7 +381,7 @@ WEAVE_ERROR TimeSyncNode::SetupUnicastCommContext(Contact * const aContact)
 
         mExchangeContext->OnMessageReceived = HandleUnicastSyncResponse;
 
-        mExchangeContext->ResponseTimeout = WEAVE_CONFIG_TIME_CLIENT_TIMER_UNICAST_MSEC;
+        mExchangeContext->ResponseTimeout   = WEAVE_CONFIG_TIME_CLIENT_TIMER_UNICAST_MSEC;
         mExchangeContext->OnResponseTimeout = HandleUnicastResponseTimeout;
 
         mActiveContact = aContact;
@@ -439,9 +409,9 @@ bool TimeSyncNode::DestroyCommContext(void)
     {
         mExchangeContext->Close();
         mExchangeContext = NULL;
-        HaveToClose = true;
+        HaveToClose      = true;
     }
-    mActiveContact = NULL;
+    mActiveContact               = NULL;
     mUnadjTimestampLastSent_usec = TIMESYNC_INVALID;
 
     return HaveToClose;
@@ -474,8 +444,8 @@ WEAVE_ERROR TimeSyncNode::SyncWithNodes(const int16_t aNumNode, const ServingNod
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
         mContacts[i].mIsTimeChangeNotification = false;
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-        mContacts[i].mNodeId = aNodes[i].mNodeId;
-        mContacts[i].mNodeAddr = aNodes[i].mNodeAddr;
+        mContacts[i].mNodeId         = aNodes[i].mNodeId;
+        mContacts[i].mNodeAddr       = aNodes[i].mNodeAddr;
         mContacts[i].mCountCommError = 0;
     }
 
@@ -491,7 +461,7 @@ WEAVE_ERROR TimeSyncNode::Sync(
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
     const bool aForceDiscoverAgain
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    )
+)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -584,12 +554,12 @@ void TimeSyncNode::StoreNotifyingContact(const uint64_t aNodeId, const IPAddress
     VerifyOrExit(contact != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // initialize the contact as if this is a unicast case
-    contact->mCommState = uint8_t(kCommState_Idle);
+    contact->mCommState                = uint8_t(kCommState_Idle);
     contact->mIsTimeChangeNotification = true;
-    contact->mCountCommError = 0;
-    contact->mNodeId = aNodeId;
-    contact->mNodeAddr = aNodeAddr;
-    contact->mResponseStatus = uint8_t(kResponseStatus_Invalid);
+    contact->mCountCommError           = 0;
+    contact->mNodeId                   = aNodeId;
+    contact->mNodeAddr                 = aNodeAddr;
+    contact->mResponseStatus           = uint8_t(kResponseStatus_Invalid);
 
 exit:
     WeaveLogFunctError(err);
@@ -610,8 +580,7 @@ void TimeSyncNode::RegisterCommError(Contact * const aContact)
             ++aContact->mCountCommError;
         }
 
-        WeaveLogDetail(TimeService, "Node %" PRIX64 ": communication error count %d",
-            aContact->mNodeId, aContact->mCountCommError);
+        WeaveLogDetail(TimeService, "Node %" PRIX64 ": communication error count %d", aContact->mNodeId, aContact->mCountCommError);
 
         aContact->mCommState = uint8_t(kCommState_Completed);
     }
@@ -631,7 +600,7 @@ void TimeSyncNode::RegisterCommError(Contact * const aContact)
         {
             // schedule discovery to happen at urgent rate
             err = GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(mShortestDiscoveryPeriod_msec, HandleAutoDiscoveryTimeout,
-                this);
+                                                                          this);
             SuccessOrExit(err);
 
             // calculate timestamp for the next discovery
@@ -653,9 +622,9 @@ exit:
 
 WEAVE_ERROR TimeSyncNode::SendSyncRequest(bool * const rIsMessageSent, Contact * const aContact)
 {
-    WEAVE_ERROR     err         = WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
     TimeSyncRequest request;
-    PacketBuffer*   msgBuf      = NULL;
+    PacketBuffer * msgBuf = NULL;
 
     *rIsMessageSent = false;
 
@@ -677,8 +646,8 @@ WEAVE_ERROR TimeSyncNode::SendSyncRequest(bool * const rIsMessageSent, Contact *
     SuccessOrExit(err);
 
     // send out the request
-    err = mExchangeContext->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest, msgBuf,
-        ExchangeContext::kSendFlag_ExpectResponse);
+    err    = mExchangeContext->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest, msgBuf,
+                                        ExchangeContext::kSendFlag_ExpectResponse);
     msgBuf = NULL;
     if (WEAVE_NO_ERROR == err)
     {
@@ -721,7 +690,7 @@ void TimeSyncNode::EnterState_Sync_1(void)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Contact * contact = NULL;
+    Contact * contact  = NULL;
     bool isMessageSent = false;
 
     switch (GetClientState())
@@ -736,8 +705,7 @@ void TimeSyncNode::EnterState_Sync_1(void)
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
         SetClientState(kClientState_Sync_1);
         break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
     }
 
     do
@@ -751,11 +719,10 @@ void TimeSyncNode::EnterState_Sync_1(void)
             break;
         }
 
-        err = SendSyncRequest(&isMessageSent, contact);
+        err     = SendSyncRequest(&isMessageSent, contact);
         contact = NULL;
         SuccessOrExit(err);
-    }
-    while (!isMessageSent);
+    } while (!isMessageSent);
 
 exit:
     WeaveLogFunctError(err);
@@ -768,7 +735,7 @@ void TimeSyncNode::EnterState_Sync_2(void)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    Contact * contact = NULL;
+    Contact * contact  = NULL;
     bool isMessageSent = false;
 
     switch (GetClientState())
@@ -783,8 +750,7 @@ void TimeSyncNode::EnterState_Sync_2(void)
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
         SetClientState(kClientState_Sync_2);
         break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
     }
 
     do
@@ -798,7 +764,7 @@ void TimeSyncNode::EnterState_Sync_2(void)
             break;
         }
 
-        err = SendSyncRequest(&isMessageSent, contact);
+        err     = SendSyncRequest(&isMessageSent, contact);
         contact = NULL;
         SuccessOrExit(err);
 
@@ -820,11 +786,8 @@ void TimeSyncNode::EnterState_ServiceSync_1(void)
 
     switch (GetClientState())
     {
-    case kClientState_Idle:
-        SetClientState(kClientState_ServiceSync_1);
-        break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
+    case kClientState_Idle: SetClientState(kClientState_ServiceSync_1); break;
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
     }
 
     if (uint8_t(kCommState_Idle) != mServiceContact.mCommState)
@@ -858,11 +821,8 @@ void TimeSyncNode::EnterState_ServiceSync_2(void)
 
     switch (GetClientState())
     {
-    case kClientState_ServiceSync_1:
-        SetClientState(kClientState_ServiceSync_2);
-        break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
+    case kClientState_ServiceSync_1: SetClientState(kClientState_ServiceSync_2); break;
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
     }
 
     if (uint8_t(kCommState_Idle) != mServiceContact.mCommState)
@@ -885,8 +845,8 @@ exit:
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 void TimeSyncNode::EnterState_Discover(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
     TimeSyncRequest request;
 
     switch (GetClientState())
@@ -896,11 +856,8 @@ void TimeSyncNode::EnterState_Discover(void)
         break;
     case kClientState_Idle:
         // fall through
-    case kClientState_Sync_1:
-        SetClientState(kClientState_Sync_Discovery);
-        break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
+    case kClientState_Sync_1: SetClientState(kClientState_Sync_Discovery); break;
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
     }
 
     // every time we enter this state, all contacts are flushed
@@ -921,7 +878,7 @@ void TimeSyncNode::EnterState_Discover(void)
     // note that we cannot rely on the response timer used for unicasts, as multicasts could generate
     // multiple responses
     err = GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(WEAVE_CONFIG_TIME_CLIENT_TIMER_MULTICAST_MSEC,
-        HandleMulticastResponseTimeout, this);
+                                                                  HandleMulticastResponseTimeout, this);
     SuccessOrExit(err);
 
     // Create a new exchange context, targeting all nodes
@@ -930,7 +887,7 @@ void TimeSyncNode::EnterState_Discover(void)
 
     // Configure the encryption and key used to send the request
     mExchangeContext->EncryptionType = mEncryptionType;
-    mExchangeContext->KeyId = mKeyId;
+    mExchangeContext->KeyId          = mKeyId;
 
     mExchangeContext->OnMessageReceived = HandleMulticastSyncResponse;
 
@@ -949,10 +906,10 @@ void TimeSyncNode::EnterState_Discover(void)
     SuccessOrExit(err);
 
     WEAVE_TIME_PROGRESS_LOG(TimeService, "Sending out multicast request with likelihood %d / %d", mLastLikelihoodSent,
-        TimeSyncRequest::kLikelihoodForResponse_Max);
+                            TimeSyncRequest::kLikelihoodForResponse_Max);
 
     // send out the request
-    err = mExchangeContext->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest, msgBuf);
+    err    = mExchangeContext->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest, msgBuf);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1002,8 +959,8 @@ WEAVE_ERROR TimeSyncNode::SyncWithService(WeaveConnection * const aConnection)
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
     mServiceContact.mCountCommError = 0;
-    mServiceContact.mNodeId = aConnection->PeerNodeId;
-    mServiceContact.mNodeAddr = aConnection->PeerAddr;
+    mServiceContact.mNodeId         = aConnection->PeerNodeId;
+    mServiceContact.mNodeAddr       = aConnection->PeerAddr;
     mServiceContact.mResponseStatus = uint8_t(kResponseStatus_Invalid);
 
     mConnectionToService = aConnection;
@@ -1019,8 +976,7 @@ exit:
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-Contact * TimeSyncNode::FindReplaceableContact(const uint64_t aNodeId,
-    const IPAddress & aNodeAddr, bool aIsTimeChangeNotification)
+Contact * TimeSyncNode::FindReplaceableContact(const uint64_t aNodeId, const IPAddress & aNodeAddr, bool aIsTimeChangeNotification)
 {
     Contact * contact = NULL;
 
@@ -1031,8 +987,7 @@ Contact * TimeSyncNode::FindReplaceableContact(const uint64_t aNodeId,
         {
             if (mContacts[i].mIsTimeChangeNotification)
             {
-                WeaveLogDetail(TimeService, "Node %" PRIX64 " is taking space from a prior notification",
-                    aNodeId);
+                WeaveLogDetail(TimeService, "Node %" PRIX64 " is taking space from a prior notification", aNodeId);
                 contact = &mContacts[i];
 
                 ExitNow();
@@ -1046,8 +1001,7 @@ Contact * TimeSyncNode::FindReplaceableContact(const uint64_t aNodeId,
     // as we're overwriting the information, anyway
     for (int i = 0; i < WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS; ++i)
     {
-        if ((aNodeId == mContacts[i].mNodeId)
-            && (aNodeAddr == mContacts[i].mNodeAddr))
+        if ((aNodeId == mContacts[i].mNodeId) && (aNodeAddr == mContacts[i].mNodeAddr))
         {
             WeaveLogDetail(TimeService, "Node %" PRIX64 " is already known to us", aNodeId);
             contact = &mContacts[i];
@@ -1089,12 +1043,12 @@ Contact * TimeSyncNode::FindReplaceableContact(const uint64_t aNodeId,
     // we want stable consensus across the fabric, instead of fragmented timing groups
     {
         timesync_t earliest_timestamp = TIMESYNC_MAX;
-        int oldest_response = -1;
+        int oldest_response           = -1;
         for (int i = 0; i < WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS; ++i)
         {
             if (mContacts[i].mUnadjTimestampLastContact_usec < earliest_timestamp)
             {
-                oldest_response = i;
+                oldest_response    = i;
                 earliest_timestamp = mContacts[i].mUnadjTimestampLastContact_usec;
             }
         }
@@ -1117,8 +1071,8 @@ exit:
     return contact;
 }
 
-void TimeSyncNode::UpdateMulticastSyncResponse(const uint64_t aNodeId,
-    const IPAddress & aNodeAddr, const TimeSyncResponse & aResponse)
+void TimeSyncNode::UpdateMulticastSyncResponse(const uint64_t aNodeId, const IPAddress & aNodeAddr,
+                                               const TimeSyncResponse & aResponse)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1127,12 +1081,12 @@ void TimeSyncNode::UpdateMulticastSyncResponse(const uint64_t aNodeId,
     VerifyOrExit(mActiveContact != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // initialize the contact as if this is a unicast case
-    mActiveContact->mCommState = uint8_t(kCommState_Active);
+    mActiveContact->mCommState                = uint8_t(kCommState_Active);
     mActiveContact->mIsTimeChangeNotification = false;
-    mActiveContact->mCountCommError = 0;
-    mActiveContact->mNodeId = aNodeId;
-    mActiveContact->mNodeAddr = aNodeAddr;
-    mActiveContact->mResponseStatus = uint8_t(kResponseStatus_Invalid);
+    mActiveContact->mCountCommError           = 0;
+    mActiveContact->mNodeId                   = aNodeId;
+    mActiveContact->mNodeAddr                 = aNodeAddr;
+    mActiveContact->mResponseStatus           = uint8_t(kResponseStatus_Invalid);
     // update the contact with response, reusing the unicast code
     UpdateUnicastSyncResponse(aResponse);
 
@@ -1184,8 +1138,7 @@ void TimeSyncNode::UpdateUnicastSyncResponse(const TimeSyncResponse & aResponse)
         // this is the first response we receive from this node
         // Preserve all data, but mark response status to reflect the qualification
 
-        if ((rtt_usec > WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC)
-            || ((rtt_usec / 2) > aResponse.mTimeOfResponse))
+        if ((rtt_usec > WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC) || ((rtt_usec / 2) > aResponse.mTimeOfResponse))
         {
             // the response comes back after WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC, which is just too long
             // or
@@ -1193,8 +1146,7 @@ void TimeSyncNode::UpdateUnicastSyncResponse(const TimeSyncResponse & aResponse)
             // this is not right, as the epoch is 1970/1/1, and no one should have that low timestamp
             mActiveContact->mResponseStatus = uint8_t(kResponseStatus_UnusableResponse);
         }
-        else if (aResponse.mTimeSinceLastSyncWithServer_min
-            > WEAVE_CONFIG_TIME_CLIENT_REASONABLE_TIME_SINCE_LAST_SYNC_MIN)
+        else if (aResponse.mTimeSinceLastSyncWithServer_min > WEAVE_CONFIG_TIME_CLIENT_REASONABLE_TIME_SINCE_LAST_SYNC_MIN)
         {
             mActiveContact->mResponseStatus = uint8_t(kResponseStatus_LessReliableResponse);
         }
@@ -1205,29 +1157,27 @@ void TimeSyncNode::UpdateUnicastSyncResponse(const TimeSyncResponse & aResponse)
 
         mActiveContact->mRemoteTimestamp_usec = aResponse.mTimeOfResponse;
         mActiveContact->mRole = uint8_t((aResponse.mIsTimeCoordinator) ? kTimeSyncRole_Coordinator : kTimeSyncRole_Server);
-        mActiveContact->mFlightTime_usec = rtt_usec / 2;
+        mActiveContact->mFlightTime_usec                    = rtt_usec / 2;
         mActiveContact->mNumberOfContactUsedInLastLocalSync = aResponse.mNumContributorInLastLocalSync;
-        mActiveContact->mTimeSinceLastSuccessfulSync_min = aResponse.mTimeSinceLastSyncWithServer_min;
-        mActiveContact->mUnadjTimestampLastContact_usec = timestamp_now_usec;
+        mActiveContact->mTimeSinceLastSuccessfulSync_min    = aResponse.mTimeSinceLastSyncWithServer_min;
+        mActiveContact->mUnadjTimestampLastContact_usec     = timestamp_now_usec;
 
         // state moved to completed
         mActiveContact->mCommState = uint8_t(kCommState_Completed);
 
-        WeaveLogDetail(TimeService,
-            "Received 1st response from node %" PRIX64 ", with RTT/2 %d usec",
-            mActiveContact->mNodeId, mActiveContact->mFlightTime_usec);
+        WeaveLogDetail(TimeService, "Received 1st response from node %" PRIX64 ", with RTT/2 %d usec", mActiveContact->mNodeId,
+                       mActiveContact->mFlightTime_usec);
 
         WeaveLogDetail(TimeService, "Role:%d, #Error:%d, #Contributor:%d, LastSync:%d", mActiveContact->mRole,
-            mActiveContact->mCountCommError, mActiveContact->mNumberOfContactUsedInLastLocalSync,
-            mActiveContact->mTimeSinceLastSuccessfulSync_min);
+                       mActiveContact->mCountCommError, mActiveContact->mNumberOfContactUsedInLastLocalSync,
+                       mActiveContact->mTimeSinceLastSuccessfulSync_min);
     }
     else
     {
         // this is a second, or even more, response from the same node
         // we only keep the fastest response
 
-        if ((rtt_usec > WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC)
-            || ((rtt_usec / 2) > aResponse.mTimeOfResponse))
+        if ((rtt_usec > WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC) || ((rtt_usec / 2) > aResponse.mTimeOfResponse))
         {
             // the response comes back after WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC, which is just too long
             // or
@@ -1236,8 +1186,8 @@ void TimeSyncNode::UpdateUnicastSyncResponse(const TimeSyncResponse & aResponse)
 
             // do nothing, keep the previous result
         }
-        else if ((aResponse.mTimeSinceLastSyncWithServer_min >= mActiveContact->mTimeSinceLastSuccessfulSync_min)
-            && ((rtt_usec / 2) > mActiveContact->mFlightTime_usec))
+        else if ((aResponse.mTimeSinceLastSyncWithServer_min >= mActiveContact->mTimeSinceLastSuccessfulSync_min) &&
+                 ((rtt_usec / 2) > mActiveContact->mFlightTime_usec))
         {
             // the second response is not based on some newer sync, and the flight time is longer
             // note we probably should use 'age' respective to each response here, but the 2 responses
@@ -1248,8 +1198,7 @@ void TimeSyncNode::UpdateUnicastSyncResponse(const TimeSyncResponse & aResponse)
         }
         else
         {
-            if (aResponse.mTimeSinceLastSyncWithServer_min
-                > WEAVE_CONFIG_TIME_CLIENT_REASONABLE_TIME_SINCE_LAST_SYNC_MIN)
+            if (aResponse.mTimeSinceLastSyncWithServer_min > WEAVE_CONFIG_TIME_CLIENT_REASONABLE_TIME_SINCE_LAST_SYNC_MIN)
             {
                 mActiveContact->mResponseStatus = uint8_t(kResponseStatus_LessReliableResponse);
             }
@@ -1263,22 +1212,21 @@ void TimeSyncNode::UpdateUnicastSyncResponse(const TimeSyncResponse & aResponse)
 
             mActiveContact->mRemoteTimestamp_usec = aResponse.mTimeOfResponse;
             mActiveContact->mRole = uint8_t((aResponse.mIsTimeCoordinator) ? kTimeSyncRole_Coordinator : kTimeSyncRole_Server);
-            mActiveContact->mFlightTime_usec = rtt_usec / 2;
+            mActiveContact->mFlightTime_usec                    = rtt_usec / 2;
             mActiveContact->mNumberOfContactUsedInLastLocalSync = aResponse.mNumContributorInLastLocalSync;
-            mActiveContact->mTimeSinceLastSuccessfulSync_min = aResponse.mTimeSinceLastSyncWithServer_min;
-            mActiveContact->mUnadjTimestampLastContact_usec = timestamp_now_usec;
+            mActiveContact->mTimeSinceLastSuccessfulSync_min    = aResponse.mTimeSinceLastSyncWithServer_min;
+            mActiveContact->mUnadjTimestampLastContact_usec     = timestamp_now_usec;
         }
 
         // state moved to completed
         mActiveContact->mCommState = uint8_t(kCommState_Completed);
 
-        WeaveLogDetail(TimeService,
-            "Received 2nd round from node %" PRIX64 ", with RTT/2 %d usec",
-            mActiveContact->mNodeId, mActiveContact->mFlightTime_usec);
+        WeaveLogDetail(TimeService, "Received 2nd round from node %" PRIX64 ", with RTT/2 %d usec", mActiveContact->mNodeId,
+                       mActiveContact->mFlightTime_usec);
 
         WeaveLogDetail(TimeService, "Role:%d, #Error:%d, #Contributor:%d, LastSync:%d", mActiveContact->mRole,
-            mActiveContact->mCountCommError, mActiveContact->mNumberOfContactUsedInLastLocalSync,
-            mActiveContact->mTimeSinceLastSuccessfulSync_min);
+                       mActiveContact->mCountCommError, mActiveContact->mNumberOfContactUsedInLastLocalSync,
+                       mActiveContact->mTimeSinceLastSuccessfulSync_min);
     }
 
 exit:
@@ -1287,9 +1235,9 @@ exit:
     return;
 }
 
-WEAVE_ERROR TimeSyncNode::CallbackForSyncCompletion(const bool aIsSuccessful, bool aShouldUpdate,
-    const bool aIsCorrectionReliable, const bool aIsFromServer, const uint8_t aNumContributor,
-    const timesync_t aSystemTimestamp_usec, const timesync_t aDiffTime_usec)
+WEAVE_ERROR TimeSyncNode::CallbackForSyncCompletion(const bool aIsSuccessful, bool aShouldUpdate, const bool aIsCorrectionReliable,
+                                                    const bool aIsFromServer, const uint8_t aNumContributor,
+                                                    const timesync_t aSystemTimestamp_usec, const timesync_t aDiffTime_usec)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1311,8 +1259,7 @@ WEAVE_ERROR TimeSyncNode::CallbackForSyncCompletion(const bool aIsSuccessful, bo
         if (NULL != OnSyncSucceeded)
         {
             mIsInCallback = true;
-            aShouldUpdate = OnSyncSucceeded(mApp, aDiffTime_usec, aIsCorrectionReliable, aIsFromServer,
-                aNumContributor);
+            aShouldUpdate = OnSyncSucceeded(mApp, aDiffTime_usec, aIsCorrectionReliable, aIsFromServer, aNumContributor);
 
             // if this is just a notification for 'no result'
             // ignore the return value of the callback
@@ -1341,7 +1288,7 @@ WEAVE_ERROR TimeSyncNode::CallbackForSyncCompletion(const bool aIsSuccessful, bo
         else
         {
             // ignore update
-             WeaveLogDetail(TimeService, "Time sync correction has been rejected");
+            WeaveLogDetail(TimeService, "Time sync correction has been rejected");
         }
     }
 
@@ -1382,41 +1329,39 @@ void TimeSyncNode::EndServiceSyncAndTryCalculateTimeFix(void)
         ExitNow();
     }
 
-    if ((uint8_t(kCommState_Completed) == mServiceContact.mCommState)
-        && ((uint8_t(kResponseStatus_ReliableResponse) == mServiceContact.mResponseStatus)
-            || (uint8_t(kResponseStatus_LessReliableResponse) == mServiceContact.mResponseStatus)))
+    if ((uint8_t(kCommState_Completed) == mServiceContact.mCommState) &&
+        ((uint8_t(kResponseStatus_ReliableResponse) == mServiceContact.mResponseStatus) ||
+         (uint8_t(kResponseStatus_LessReliableResponse) == mServiceContact.mResponseStatus)))
     {
-        const timesync_t correctedRemoteSystemTime_usec = (mServiceContact.mRemoteTimestamp_usec
-            + mServiceContact.mFlightTime_usec)
-            + (unadjTimestamp_usec - mServiceContact.mUnadjTimestampLastContact_usec);
+        const timesync_t correctedRemoteSystemTime_usec =
+            (mServiceContact.mRemoteTimestamp_usec + mServiceContact.mFlightTime_usec) +
+            (unadjTimestamp_usec - mServiceContact.mUnadjTimestampLastContact_usec);
 
         const timesync_t DiffTime_usec = correctedRemoteSystemTime_usec - systemTimestamp_usec;
-        bool reliable = (uint8_t(kResponseStatus_ReliableResponse) == mServiceContact.mResponseStatus);
+        bool reliable                  = (uint8_t(kResponseStatus_ReliableResponse) == mServiceContact.mResponseStatus);
 
         WeaveLogDetail(TimeService, "Update from service");
 
-        err = CallbackForSyncCompletion(
-            true, // is sync successful,
-            true, // if we should update,
-            reliable, // is the correction from reliable sources
-            true, // is the correction from server nodes
-            1, // number of contributors
-            systemTimestamp_usec, // current system time
-            DiffTime_usec /* correction for the system time */);
+        err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                        true,                 // if we should update,
+                                        reliable,             // is the correction from reliable sources
+                                        true,                 // is the correction from server nodes
+                                        1,                    // number of contributors
+                                        systemTimestamp_usec, // current system time
+                                        DiffTime_usec /* correction for the system time */);
     }
     else
     {
         // sync failed
         WeaveLogDetail(TimeService, "Sync with service failed");
 
-        err = CallbackForSyncCompletion(
-            false, // is sync successful,
-            false, // if we should update,
-            false, // is the correction from reliable sources
-            false, // is the correction from server nodes
-            0, // number of contributors
-            systemTimestamp_usec, // current system time
-            0 /* correction for the system time */);
+        err = CallbackForSyncCompletion(false,                // is sync successful,
+                                        false,                // if we should update,
+                                        false,                // is the correction from reliable sources
+                                        false,                // is the correction from server nodes
+                                        0,                    // number of contributors
+                                        systemTimestamp_usec, // current system time
+                                        0 /* correction for the system time */);
     }
 
 exit:
@@ -1448,13 +1393,13 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
     timesync_t sumAdvisorTimestamp_usec = 0;
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
-    uint8_t numCoordinator = 0;
+    uint8_t numCoordinator                  = 0;
     timesync_t sumCoordinatorTimestamp_usec = 0;
 
-    uint8_t numServer = 0;
+    uint8_t numServer                  = 0;
     timesync_t sumServerTimestamp_usec = 0;
 
-    uint8_t numUnreliableResponses = 0;
+    uint8_t numUnreliableResponses         = 0;
     timesync_t sumUnreliableTimestamp_usec = 0;
 
     if (kClientState_Sync_2 != GetClientState())
@@ -1475,13 +1420,12 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
 
     for (int i = 0; i < WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS; ++i)
     {
-        if ((uint8_t(kCommState_Completed) == mContacts[i].mCommState)
-            && ((uint8_t(kResponseStatus_ReliableResponse) == mContacts[i].mResponseStatus)
-                || (uint8_t(kResponseStatus_LessReliableResponse) == mContacts[i].mResponseStatus)))
+        if ((uint8_t(kCommState_Completed) == mContacts[i].mCommState) &&
+            ((uint8_t(kResponseStatus_ReliableResponse) == mContacts[i].mResponseStatus) ||
+             (uint8_t(kResponseStatus_LessReliableResponse) == mContacts[i].mResponseStatus)))
         {
-            const timesync_t correctedRemoteSystemTime_usec = (mContacts[i].mRemoteTimestamp_usec
-                + mContacts[i].mFlightTime_usec)
-                + (unadjTimestamp_usec - mContacts[i].mUnadjTimestampLastContact_usec);
+            const timesync_t correctedRemoteSystemTime_usec = (mContacts[i].mRemoteTimestamp_usec + mContacts[i].mFlightTime_usec) +
+                (unadjTimestamp_usec - mContacts[i].mUnadjTimestampLastContact_usec);
 
             if (uint8_t(kResponseStatus_ReliableResponse) == mContacts[i].mResponseStatus)
             {
@@ -1493,7 +1437,7 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
                 }
                 else
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-                if (uint8_t(kTimeSyncRole_Coordinator) == mContacts[i].mRole)
+                    if (uint8_t(kTimeSyncRole_Coordinator) == mContacts[i].mRole)
                 {
                     ++numCoordinator;
                     sumCoordinatorTimestamp_usec += correctedRemoteSystemTime_usec;
@@ -1521,10 +1465,8 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
         }
     }
 
-    WeaveLogDetail(TimeService,
-        "Number of responses: A:%d C:%d S:%d U:%d",
-        numAdvisor, numCoordinator, numServer,
-        numUnreliableResponses);
+    WeaveLogDetail(TimeService, "Number of responses: A:%d C:%d S:%d U:%d", numAdvisor, numCoordinator, numServer,
+                   numUnreliableResponses);
 
     // acquire Real Time
     err = GetClock_RealTime(systemTimestamp_usec);
@@ -1550,14 +1492,13 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
 
         WeaveLogDetail(TimeService, "Update from %d advisor(s)", numAdvisor);
 
-        err = CallbackForSyncCompletion(
-            true, // is sync successful,
-            true, // if we should update,
-            true, // is the correction from reliable sources
-            false, // is the correction from server nodes
-            numAdvisor, // number of contributors
-            systemTimestamp_usec, // current system time
-            DiffTime_usec /* correction for the system time */);
+        err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                        true,                 // if we should update,
+                                        true,                 // is the correction from reliable sources
+                                        false,                // is the correction from server nodes
+                                        numAdvisor,           // number of contributors
+                                        systemTimestamp_usec, // current system time
+                                        DiffTime_usec /* correction for the system time */);
 
         ExitNow();
     }
@@ -1572,20 +1513,19 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
         DiffTime_usec = Platform::Divide(sumServerTimestamp_usec, numServer) - systemTimestamp_usec;
 #endif // WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS == 1
 
-        if ((WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC < DiffTime_usec)
-            || (-WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC > DiffTime_usec))
+        if ((WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC < DiffTime_usec) ||
+            (-WEAVE_CONFIG_TIME_CLIENT_MIN_OFFSET_FROM_SERVER_USEC > DiffTime_usec))
         {
             // offset from server is too big and we cannot ignore
             WeaveLogDetail(TimeService, "Update from %d server(s)", numServer);
 
-            err = CallbackForSyncCompletion(
-                true, // is sync successful,
-                true, // if we should update,
-                true, // is the correction from reliable sources
-                true, // is the correction from server nodes
-                numServer, // number of contributors
-                systemTimestamp_usec, // current system time
-                DiffTime_usec /* correction for the system time */);
+            err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                            true,                 // if we should update,
+                                            true,                 // is the correction from reliable sources
+                                            true,                 // is the correction from server nodes
+                                            numServer,            // number of contributors
+                                            systemTimestamp_usec, // current system time
+                                            DiffTime_usec /* correction for the system time */);
 
             ExitNow();
         }
@@ -1597,30 +1537,27 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
                 // correction is reliable, but we don't want to apply it
                 WeaveLogDetail(TimeService, "Update from %d server(s) too small, rejection suggested", numServer);
 
-                err = CallbackForSyncCompletion(
-                    true, // is sync successful,
-                    false, // if we should update,
-                    true, // is the correction from reliable sources
-                    true, // is the correction from server nodes
-                    numServer, // number of contributors
-                    systemTimestamp_usec, // current system time
-                    DiffTime_usec /* correction for the system time */);
+                err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                                false,                // if we should update,
+                                                true,                 // is the correction from reliable sources
+                                                true,                 // is the correction from server nodes
+                                                numServer,            // number of contributors
+                                                systemTimestamp_usec, // current system time
+                                                DiffTime_usec /* correction for the system time */);
 
                 ExitNow();
             }
             else
             {
-                WeaveLogDetail(TimeService,
-                    "Update from %d server(s) and coordinator(s) too small, skip", numServer);
+                WeaveLogDetail(TimeService, "Update from %d server(s) and coordinator(s) too small, skip", numServer);
 
-                err = CallbackForSyncCompletion(
-                    true, // is sync successful,
-                    false, // if we should update,
-                    true, // is the correction from reliable sources
-                    false, // is the correction from server nodes
-                    numServer, // number of contributors
-                    systemTimestamp_usec, // current system time
-                    DiffTime_usec /* correction for the system time */);
+                err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                                false,                // if we should update,
+                                                true,                 // is the correction from reliable sources
+                                                false,                // is the correction from server nodes
+                                                numServer,            // number of contributors
+                                                systemTimestamp_usec, // current system time
+                                                DiffTime_usec /* correction for the system time */);
 
                 ExitNow();
             }
@@ -1635,11 +1572,10 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
         {
 #if WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS == 1
             // We take the average of two timestamps.
-            DiffTime_usec = ((sumCoordinatorTimestamp_usec + systemTimestamp_usec) >> 1)
-                            - systemTimestamp_usec;
+            DiffTime_usec = ((sumCoordinatorTimestamp_usec + systemTimestamp_usec) >> 1) - systemTimestamp_usec;
 #else
-            DiffTime_usec = Platform::Divide(sumCoordinatorTimestamp_usec + systemTimestamp_usec, numCoordinator + 1)
-                - systemTimestamp_usec;
+            DiffTime_usec =
+                Platform::Divide(sumCoordinatorTimestamp_usec + systemTimestamp_usec, numCoordinator + 1) - systemTimestamp_usec;
 #endif // WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS == 1
         }
         else
@@ -1653,14 +1589,13 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
         }
         WeaveLogDetail(TimeService, "Update from %d coordinator(s)", numCoordinator);
 
-        err = CallbackForSyncCompletion(
-            true, // is sync successful,
-            true, // if we should update,
-            true, // is the correction from reliable sources
-            false, // is the correction from server nodes
-            numCoordinator, // number of contributors
-            systemTimestamp_usec, // current system time
-            DiffTime_usec /* correction for the system time */);
+        err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                        true,                 // if we should update,
+                                        true,                 // is the correction from reliable sources
+                                        false,                // is the correction from server nodes
+                                        numCoordinator,       // number of contributors
+                                        systemTimestamp_usec, // current system time
+                                        DiffTime_usec /* correction for the system time */);
 
         ExitNow();
     }
@@ -1672,11 +1607,10 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
         if (kTimeSyncRole_Coordinator == mRole)
         {
 #if WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS == 1
-            DiffTime_usec = ((sumUnreliableTimestamp_usec + systemTimestamp_usec) >> 1)
-                            - systemTimestamp_usec;
+            DiffTime_usec = ((sumUnreliableTimestamp_usec + systemTimestamp_usec) >> 1) - systemTimestamp_usec;
 #else
-            DiffTime_usec = Platform::Divide(sumUnreliableTimestamp_usec + systemTimestamp_usec, numUnreliableResponses + 1)
-                - systemTimestamp_usec;
+            DiffTime_usec = Platform::Divide(sumUnreliableTimestamp_usec + systemTimestamp_usec, numUnreliableResponses + 1) -
+                systemTimestamp_usec;
 #endif // WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS == 1
         }
         else
@@ -1691,26 +1625,24 @@ void TimeSyncNode::EndLocalSyncAndTryCalculateTimeFix(void)
 
         WeaveLogDetail(TimeService, "Update from %d unreliable source(s)", numUnreliableResponses);
 
-        err = CallbackForSyncCompletion(
-            true, // is sync successful,
-            true, // if we should update,
-            false, // is the correction from reliable sources
-            false, // is the correction from server nodes
-            numUnreliableResponses, // number of contributors
-            systemTimestamp_usec, // current system time
-            DiffTime_usec /* correction for the system time */);
+        err = CallbackForSyncCompletion(true,                   // is sync successful,
+                                        true,                   // if we should update,
+                                        false,                  // is the correction from reliable sources
+                                        false,                  // is the correction from server nodes
+                                        numUnreliableResponses, // number of contributors
+                                        systemTimestamp_usec,   // current system time
+                                        DiffTime_usec /* correction for the system time */);
 
         ExitNow();
     }
 
-    err = CallbackForSyncCompletion(
-        true, // is sync successful,
-        false, // if we should update,
-        false, // is the correction from reliable sources
-        false, // is the correction from server nodes
-        0, // number of contributors
-        systemTimestamp_usec, // current system time
-        0 /* correction for the system time */);
+    err = CallbackForSyncCompletion(true,                 // is sync successful,
+                                    false,                // if we should update,
+                                    false,                // is the correction from reliable sources
+                                    false,                // is the correction from server nodes
+                                    0,                    // number of contributors
+                                    systemTimestamp_usec, // current system time
+                                    0 /* correction for the system time */);
 
 exit:
     WeaveLogFunctError(err);
@@ -1722,9 +1654,8 @@ exit:
     return;
 }
 
-void TimeSyncNode::HandleUnicastSyncResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-    const WeaveMessageInfo *msgInfo,
-    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void TimeSyncNode::HandleUnicastSyncResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                             uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1796,8 +1727,8 @@ void TimeSyncNode::HandleUnicastSyncResponse(ExchangeContext *ec, const IPPacket
         // Verify the response was received via an authenticated session
         // note that under this error, we just throw the whole message away, so communication with
         // this node will be treated as timeout
-        if ((ec->KeyId != client->mConnectionToService->DefaultKeyId)
-            || (ec->EncryptionType != client->mConnectionToService->DefaultEncryptionType))
+        if ((ec->KeyId != client->mConnectionToService->DefaultKeyId) ||
+            (ec->EncryptionType != client->mConnectionToService->DefaultEncryptionType))
         {
             ExitNow(err = WEAVE_ERROR_UNSUPPORTED_AUTH_MODE);
         }
@@ -1844,9 +1775,8 @@ exit:
 }
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-void TimeSyncNode::HandleMulticastSyncResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-    const WeaveMessageInfo *msgInfo,
-    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void TimeSyncNode::HandleMulticastSyncResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1910,11 +1840,11 @@ exit:
 }
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
 
-void TimeSyncNode::HandleTimeChangeNotification(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-    const WeaveMessageInfo *msgInfo,
-    uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void TimeSyncNode::HandleTimeChangeNotification(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
     bool ShouldHandle = false;
 
     TimeSyncNode * const client = reinterpret_cast<TimeSyncNode *>(ec->AppState);
@@ -1922,13 +1852,13 @@ void TimeSyncNode::HandleTimeChangeNotification(ExchangeContext *ec, const IPPac
     // TODO: Note that authentication for Time Change Notification is not available yet
 
     WeaveLogDetail(TimeService, "Time Change Notification: local node ID: %" PRIX64 ", peer node ID: %" PRIX64,
-      client->GetFabricState()->LocalNodeId, ec->PeerNodeId);
+                   client->GetFabricState()->LocalNodeId, ec->PeerNodeId);
 
     // ignore notifications coming from our own node ID
     // this is because some network stacks would be looped back multicasts
     if (client->GetFabricState()->LocalNodeId == ec->PeerNodeId)
     {
-      // ignore notification
+        // ignore notification
     }
     else
     {
@@ -1997,8 +1927,7 @@ exit:
             // the reason is to enable calling Sync family functions
             // within this callback from the app layer, which might be
             // easier for the application layer to use
-            client->OnTimeChangeNotificationReceived(
-                client->mApp, nodeId, peerAddr);
+            client->OnTimeChangeNotificationReceived(client->mApp, nodeId, peerAddr);
         }
         else
         {
@@ -2018,14 +1947,14 @@ exit:
 }
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-void TimeSyncNode::HandleMulticastResponseTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void TimeSyncNode::HandleMulticastResponseTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     TimeSyncNode * const client = reinterpret_cast<TimeSyncNode *>(aAppState);
 
     WeaveLogDetail(TimeService, "Multicast just timed out at client state: %d (%s)", client->GetClientState(),
-        client->GetClientStateName());
+                   client->GetClientStateName());
 
     if (kClientState_Sync_Discovery != client->GetClientState())
     {
@@ -2034,8 +1963,8 @@ void TimeSyncNode::HandleMulticastResponseTimeout(System::Layer* aSystemLayer, v
 
     client->DestroyCommContext();
 
-    if ((TimeSyncRequest::kLikelihoodForResponse_Max > client->mLastLikelihoodSent)
-        && (WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS > client->GetNumReliableResponses()))
+    if ((TimeSyncRequest::kLikelihoodForResponse_Max > client->mLastLikelihoodSent) &&
+        (WEAVE_CONFIG_TIME_CLIENT_MAX_NUM_CONTACTS > client->GetNumReliableResponses()))
     {
         client->mLastLikelihoodSent += 8;
         if (client->mLastLikelihoodSent > TimeSyncRequest::kLikelihoodForResponse_Max)
@@ -2078,12 +2007,12 @@ void TimeSyncNode::HandleUnicastResponseTimeout(ExchangeContext * const ec)
 
     // make a copy of the client and contact pointer, as the context will be closed later
     TimeSyncNode * const client = reinterpret_cast<TimeSyncNode *>(ec->AppState);
-    Contact * contact = client->mActiveContact;
+    Contact * contact           = client->mActiveContact;
 
     const TimeSyncNode::ClientState ClientStateAtEntry(client->GetClientState());
 
     WeaveLogDetail(TimeService, "Unicast just timed out at client state: %d (%s)", client->GetClientState(),
-        client->GetClientStateName());
+                   client->GetClientStateName());
 
     // close this context as timeout
     client->DestroyCommContext();
@@ -2160,11 +2089,10 @@ void TimeSyncNode::DisableAutoSync(void)
 
 WEAVE_ERROR TimeSyncNode::EnableAutoSync(const int32_t aSyncPeriod_msec
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    ,
-    const int32_t aNominalDiscoveryPeriod_msec,
-    const int32_t aShortestDiscoveryPeriod_msec
+                                         ,
+                                         const int32_t aNominalDiscoveryPeriod_msec, const int32_t aShortestDiscoveryPeriod_msec
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    )
+)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2179,11 +2107,11 @@ WEAVE_ERROR TimeSyncNode::EnableAutoSync(const int32_t aSyncPeriod_msec
     }
 
     mIsAutoSyncEnabled = true;
-    mSyncPeriod_msec = aSyncPeriod_msec;
+    mSyncPeriod_msec   = aSyncPeriod_msec;
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-    mIsUrgentDiscoveryPending = false;
-    mNominalDiscoveryPeriod_msec = aNominalDiscoveryPeriod_msec;
+    mIsUrgentDiscoveryPending     = false;
+    mNominalDiscoveryPeriod_msec  = aNominalDiscoveryPeriod_msec;
     mShortestDiscoveryPeriod_msec = aShortestDiscoveryPeriod_msec;
 
     // schedule discovery immediately
@@ -2238,25 +2166,25 @@ exit:
     AbortOnError(err);
 }
 
-void TimeSyncNode::HandleAutoSyncTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void TimeSyncNode::HandleAutoSyncTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     TimeSyncNode * const client = reinterpret_cast<TimeSyncNode *>(aAppState);
 
     WEAVE_TIME_PROGRESS_LOG(TimeService, "Auto Sync timer just fired at client state: %d (%s)", client->GetClientState(),
-        client->GetClientStateName());
+                            client->GetClientStateName());
 
     client->AutoSyncNow();
 }
 
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-void TimeSyncNode::HandleAutoDiscoveryTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void TimeSyncNode::HandleAutoDiscoveryTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     TimeSyncNode * const client = reinterpret_cast<TimeSyncNode *>(aAppState);
 
     WEAVE_TIME_PROGRESS_LOG(TimeService, "Auto Discovery timer just fired at client state: %d (%s)", client->GetClientState(),
-        client->GetClientStateName());
+                            client->GetClientStateName());
 
     client->mIsUrgentDiscoveryPending = false;
 
@@ -2269,13 +2197,13 @@ void TimeSyncNode::HandleAutoDiscoveryTimeout(System::Layer* aSystemLayer, void*
         }
 
         // reset the sync timer to be aligned with this discovery
-        err = client->GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(client->mSyncPeriod_msec,
-            HandleAutoSyncTimeout, client);
+        err = client->GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(client->mSyncPeriod_msec, HandleAutoSyncTimeout,
+                                                                              client);
         SuccessOrExit(err);
 
         // schedule discovery to happen at nominal rate
         err = client->GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(client->mNominalDiscoveryPeriod_msec,
-            HandleAutoDiscoveryTimeout, client);
+                                                                              HandleAutoDiscoveryTimeout, client);
         SuccessOrExit(err);
 
         // calculate the timestamp for the next discovery
@@ -2302,30 +2230,28 @@ void SingleSourceTimeSyncClient::SetClientState(const SingleSourceTimeSyncClient
 {
     mClientState = state;
 
-    WeaveLogDetail(TimeService, "Client entering state %d (%s)", mClientState,
-        GetClientStateName());
+    WeaveLogDetail(TimeService, "Client entering state %d (%s)", mClientState, GetClientStateName());
 }
 
 WEAVE_ERROR SingleSourceTimeSyncClient::Init(void * const aApp, WeaveExchangeManager * const aExchangeMgr)
 {
-    mApp = aApp;
+    mApp         = aApp;
     mExchangeMgr = aExchangeMgr;
-    mBinding = NULL;
+    mBinding     = NULL;
     SetClientState(kClientState_Idle);
-    mIsInCallback = false;
-    mExchangeContext = NULL;
-    mFlightTime_usec = kFlightTimeInvalid;
+    mIsInCallback                = false;
+    mExchangeContext             = NULL;
+    mFlightTime_usec             = kFlightTimeInvalid;
     mUnadjTimestampLastSent_usec = TIMESYNC_INVALID;
-    mRemoteTimestamp_usec = TIMESYNC_INVALID;
-    mRegisterSyncResult_usec = TIMESYNC_INVALID;
+    mRemoteTimestamp_usec        = TIMESYNC_INVALID;
+    mRegisterSyncResult_usec     = TIMESYNC_INVALID;
 
     OnTimeChangeNotificationReceived = NULL;
-    mOnSyncCompleted = NULL;
+    mOnSyncCompleted                 = NULL;
 
     // Register to receive unsolicited time sync request advisory messages from the exchange manager.
-    WEAVE_ERROR err = mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Time,
-        kTimeMessageType_TimeSyncTimeChangeNotification,
-        HandleTimeChangeNotification, this);
+    WEAVE_ERROR err = mExchangeMgr->RegisterUnsolicitedMessageHandler(
+        kWeaveProfile_Time, kTimeMessageType_TimeSyncTimeChangeNotification, HandleTimeChangeNotification, this);
 
     return err;
 }
@@ -2388,7 +2314,7 @@ WEAVE_ERROR SingleSourceTimeSyncClient::SendSyncRequest(void)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TimeSyncRequest request;
-    PacketBuffer* msgBuf = NULL;
+    PacketBuffer * msgBuf = NULL;
 
     // allocate buffer and then encode the response into it
     msgBuf = PacketBuffer::NewWithAvailableSize(TimeSyncRequest::kPayloadLen);
@@ -2416,14 +2342,14 @@ WEAVE_ERROR SingleSourceTimeSyncClient::SendSyncRequest(void)
     }
     mExchangeContext->OnResponseTimeout = HandleResponseTimeout;
     mExchangeContext->OnMessageReceived = HandleSyncResponse;
-    mExchangeContext->AppState = this;
+    mExchangeContext->AppState          = this;
 
     // acquire unadjusted timestamp
-    mUnadjTimestampLastSent_usec = (timesync_t)System::Layer::GetClock_MonotonicHiRes();
+    mUnadjTimestampLastSent_usec = (timesync_t) System::Layer::GetClock_MonotonicHiRes();
 
     // send out the request
-    err = mExchangeContext->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest, msgBuf,
-        ExchangeContext::kSendFlag_ExpectResponse);
+    err    = mExchangeContext->SendMessage(kWeaveProfile_Time, kTimeMessageType_TimeSyncRequest, msgBuf,
+                                        ExchangeContext::kSendFlag_ExpectResponse);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -2442,17 +2368,19 @@ exit:
     return err;
 }
 
-void SingleSourceTimeSyncClient::HandleSyncResponse(ExchangeContext *aEC, const IPPacketInfo *aPktInfo,
-    const WeaveMessageInfo *aMsgInfo, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aPayload)
+void SingleSourceTimeSyncClient::HandleSyncResponse(ExchangeContext * aEC, const IPPacketInfo * aPktInfo,
+                                                    const WeaveMessageInfo * aMsgInfo, uint32_t aProfileId, uint8_t aMsgType,
+                                                    PacketBuffer * aPayload)
 {
     SingleSourceTimeSyncClient * const client = reinterpret_cast<SingleSourceTimeSyncClient *>(aEC->AppState);
     client->OnSyncResponse(aProfileId, aMsgType, aPayload);
 }
 
-void SingleSourceTimeSyncClient::RegisterSyncResultIfNewOrBetter(const timesync_t aNow_usec, const timesync_t aRemoteTimestamp_usec, const int32_t aFlightTime_usec)
+void SingleSourceTimeSyncClient::RegisterSyncResultIfNewOrBetter(const timesync_t aNow_usec, const timesync_t aRemoteTimestamp_usec,
+                                                                 const int32_t aFlightTime_usec)
 {
-    WeaveLogDetail(TimeService, "[%4.4s] Flight time: %" PRId32 ", server utc time: %" PRId64,
-            GetClientStateName(), aFlightTime_usec, mRemoteTimestamp_usec);
+    WeaveLogDetail(TimeService, "[%4.4s] Flight time: %" PRId32 ", server utc time: %" PRId64, GetClientStateName(),
+                   aFlightTime_usec, mRemoteTimestamp_usec);
 
     if ((!IsRegisteredResultValid()) || (aFlightTime_usec < mFlightTime_usec))
     {
@@ -2465,8 +2393,8 @@ void SingleSourceTimeSyncClient::RegisterSyncResultIfNewOrBetter(const timesync_
             WeaveLogDetail(TimeService, "[%4.4s] Replacing with better result", GetClientStateName());
         }
 
-        mRemoteTimestamp_usec = aRemoteTimestamp_usec;
-        mFlightTime_usec = aFlightTime_usec;
+        mRemoteTimestamp_usec    = aRemoteTimestamp_usec;
+        mFlightTime_usec         = aFlightTime_usec;
         mRegisterSyncResult_usec = aNow_usec;
     }
 }
@@ -2484,7 +2412,7 @@ void SingleSourceTimeSyncClient::FinalProcessing()
     {
         timesync_t correctedSystemTime_usec;
 
-        now_usec = (timesync_t)System::Layer::GetClock_MonotonicHiRes();
+        now_usec = (timesync_t) System::Layer::GetClock_MonotonicHiRes();
 
         WeaveLogDetail(TimeService, "Now (monotonic raw): %" PRId64 " usec", now_usec);
 
@@ -2522,7 +2450,7 @@ void SingleSourceTimeSyncClient::EnterSync2()
     }
 }
 
-void SingleSourceTimeSyncClient::OnSyncResponse(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aPayload)
+void SingleSourceTimeSyncClient::OnSyncResponse(uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aPayload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TimeSyncResponse response;
@@ -2533,18 +2461,17 @@ void SingleSourceTimeSyncClient::OnSyncResponse(uint32_t aProfileId, uint8_t aMs
     int32_t sumFlightTime32_usec;
     int32_t averageFlightTime_usec;
 
-    now_usec = (timesync_t)System::Layer::GetClock_MonotonicHiRes();
+    now_usec = (timesync_t) System::Layer::GetClock_MonotonicHiRes();
 
-    VerifyOrExit((kWeaveProfile_Time == aProfileId)
-            && (kTimeMessageType_TimeSyncResponse == aMsgType),
-            err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
+    VerifyOrExit((kWeaveProfile_Time == aProfileId) && (kTimeMessageType_TimeSyncResponse == aMsgType),
+                 err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
     err = TimeSyncResponse::Decode(&response, aPayload);
     SuccessOrExit(err);
 
     serverProcessingTime_usec = response.mTimeOfResponse - response.mTimeOfRequest;
-    roundTripTime_usec = now_usec - mUnadjTimestampLastSent_usec;
-    sumFlightTime64_usec = roundTripTime_usec - serverProcessingTime_usec;
+    roundTripTime_usec        = now_usec - mUnadjTimestampLastSent_usec;
+    sumFlightTime64_usec      = roundTripTime_usec - serverProcessingTime_usec;
 
     WeaveLogDetail(TimeService, "Now (monotonic raw): %" PRId64 " usec", now_usec);
     WeaveLogDetail(TimeService, "Time of request:  %" PRId64 " usec", response.mTimeOfRequest);
@@ -2553,15 +2480,13 @@ void SingleSourceTimeSyncClient::OnSyncResponse(uint32_t aProfileId, uint8_t aMs
     WeaveLogDetail(TimeService, "Round trip time: %" PRId64 " usec", roundTripTime_usec);
     WeaveLogDetail(TimeService, "Sum flight time: %" PRId64 " usec", sumFlightTime64_usec);
 
-    VerifyOrExit((serverProcessingTime_usec >= 0)
-            && (roundTripTime_usec >= 0)
-            && (roundTripTime_usec <= WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC)
-            && (sumFlightTime64_usec >= 0)
-            && (sumFlightTime64_usec <= INT32_MAX),
-            err = WEAVE_ERROR_INVALID_TIME);
+    VerifyOrExit((serverProcessingTime_usec >= 0) && (roundTripTime_usec >= 0) &&
+                     (roundTripTime_usec <= WEAVE_CONFIG_TIME_CLIENT_MAX_RTT_USEC) && (sumFlightTime64_usec >= 0) &&
+                     (sumFlightTime64_usec <= INT32_MAX),
+                 err = WEAVE_ERROR_INVALID_TIME);
 
     // note that these values shall never be negative
-    sumFlightTime32_usec = static_cast<int32_t>(sumFlightTime64_usec);
+    sumFlightTime32_usec   = static_cast<int32_t>(sumFlightTime64_usec);
     averageFlightTime_usec = sumFlightTime32_usec / 2;
 
     WeaveLogDetail(TimeService, "Average flight time: %" PRId32 " usec", averageFlightTime_usec);
@@ -2591,8 +2516,7 @@ exit:
 
 void SingleSourceTimeSyncClient::OnResponseTimeout(void)
 {
-    WeaveLogDetail(TimeService, "Timed out at client state: %d (%s)", GetClientState(),
-        GetClientStateName());
+    WeaveLogDetail(TimeService, "Timed out at client state: %d (%s)", GetClientState(), GetClientStateName());
 
     if (NULL != mExchangeContext)
     {
@@ -2622,7 +2546,7 @@ void SingleSourceTimeSyncClient::ProceedToNextState(void)
     }
 }
 
-void SingleSourceTimeSyncClient::HandleResponseTimeout(ExchangeContext *aEC)
+void SingleSourceTimeSyncClient::HandleResponseTimeout(ExchangeContext * aEC)
 {
     // assume aEC == mExchangeContext
     SingleSourceTimeSyncClient * const client = reinterpret_cast<SingleSourceTimeSyncClient *>(aEC->AppState);
@@ -2631,8 +2555,7 @@ void SingleSourceTimeSyncClient::HandleResponseTimeout(ExchangeContext *aEC)
 
 void SingleSourceTimeSyncClient::_AbortWithCallback(const WEAVE_ERROR aErrorCode)
 {
-    WeaveLogDetail(TimeService, "Abort at client state: %d (%s)", GetClientState(),
-        GetClientStateName());
+    WeaveLogDetail(TimeService, "Abort at client state: %d (%s)", GetClientState(), GetClientStateName());
 
     if (NULL != mOnSyncCompleted)
     {
@@ -2644,9 +2567,9 @@ void SingleSourceTimeSyncClient::_AbortWithCallback(const WEAVE_ERROR aErrorCode
     Abort();
 }
 
-void SingleSourceTimeSyncClient::HandleTimeChangeNotification(ExchangeContext *aEC, const IPPacketInfo *aPktInfo,
-    const WeaveMessageInfo *aMsgInfo,
-    uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aPayload)
+void SingleSourceTimeSyncClient::HandleTimeChangeNotification(ExchangeContext * aEC, const IPPacketInfo * aPktInfo,
+                                                              const WeaveMessageInfo * aMsgInfo, uint32_t aProfileId,
+                                                              uint8_t aMsgType, PacketBuffer * aPayload)
 {
     SingleSourceTimeSyncClient * const client = reinterpret_cast<SingleSourceTimeSyncClient *>(aEC->AppState);
 
@@ -2675,18 +2598,10 @@ const char * SingleSourceTimeSyncClient::GetClientStateName(void) const
 
     switch (mClientState)
     {
-    case kClientState_Idle:
-        stateName = "Idle";
-        break;
-    case kClientState_Sync_1:
-        stateName = "Syn1";
-        break;
-    case kClientState_Sync_2:
-        stateName = "Syn2";
-        break;
-    default:
-        stateName = "N/A";
-        break;
+    case kClientState_Idle: stateName = "Idle"; break;
+    case kClientState_Sync_1: stateName = "Syn1"; break;
+    case kClientState_Sync_2: stateName = "Syn2"; break;
+    default: stateName = "N/A"; break;
     }
 
     return stateName;

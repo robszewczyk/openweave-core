@@ -36,7 +36,7 @@ extern WeaveMessageLayer MessageLayer;
 extern WeaveExchangeManager ExchangeMgr;
 extern WeaveSecurityManager SecurityMgr;
 
-} // namespace nl
 } // namespace Weave
+} // namespace nl
 
 #endif /* WEAVE_GLOBALS_H_ */

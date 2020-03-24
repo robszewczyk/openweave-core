@@ -60,15 +60,15 @@ NL_DLL_EXPORT void Object::Release(void)
     }
 }
 
-NL_DLL_EXPORT bool Object::TryCreate(Layer& aLayer, size_t aOctets)
+NL_DLL_EXPORT bool Object::TryCreate(Layer & aLayer, size_t aOctets)
 {
     bool lReturn = false;
 
     if (__sync_bool_compare_and_swap(&this->mSystemLayer, NULL, &aLayer))
     {
         this->mRefCount = 0;
-        this->AppState = NULL;
-        memset(reinterpret_cast<char*>(this) + sizeof(*this), 0, aOctets - sizeof(*this));
+        this->AppState  = NULL;
+        memset(reinterpret_cast<char *>(this) + sizeof(*this), 0, aOctets - sizeof(*this));
 
         this->Retain();
         lReturn = true;
@@ -80,23 +80,20 @@ NL_DLL_EXPORT bool Object::TryCreate(Layer& aLayer, size_t aOctets)
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
 void Object::DeferredRelease(Object::ReleaseDeferralErrorTactic aTactic)
 {
-    Layer& lSystemLayer = *this->mSystemLayer;
-    Error lError = lSystemLayer.PostEvent(*this, Weave::System::kEvent_ReleaseObj, 0);
+    Layer & lSystemLayer = *this->mSystemLayer;
+    Error lError         = lSystemLayer.PostEvent(*this, Weave::System::kEvent_ReleaseObj, 0);
 
     if (lError != WEAVE_SYSTEM_NO_ERROR)
     {
         switch (aTactic)
         {
-        case kReleaseDeferralErrorTactic_Ignore:
-            break;
+        case kReleaseDeferralErrorTactic_Ignore: break;
 
-        case kReleaseDeferralErrorTactic_Release:
-            this->Release();
-            break;
+        case kReleaseDeferralErrorTactic_Release: this->Release(); break;
 
         case kReleaseDeferralErrorTactic_Die:
             VerifyOrDieWithMsg(false, WeaveSystemLayer, "Object::DeferredRelease %p->PostEvent failed err(%d)", &lSystemLayer,
-                static_cast<int>(lError));
+                               static_cast<int>(lError));
             break;
         }
     }

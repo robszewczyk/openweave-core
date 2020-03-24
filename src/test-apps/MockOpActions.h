@@ -36,18 +36,17 @@ public:
     MockOpActions();
     ~MockOpActions();
 
-    bool SetDelay(const char *opName, uint32_t delay);
-    uint32_t GetDelay(const char *opName);
+    bool SetDelay(const char * opName, uint32_t delay);
+    uint32_t GetDelay(const char * opName);
 
-    bool SetAbort(const char *opName, bool abort);
-    bool GetAbort(const char *opName);
+    bool SetAbort(const char * opName, bool abort);
+    bool GetAbort(const char * opName);
 
 private:
-
     class Op
     {
     public:
-        const char *OpName;
+        const char * OpName;
         uint32_t Delay;
         bool Abort;
     };
@@ -60,9 +59,8 @@ private:
     Op mOps[kMaxOps];
     uint32_t mOpCount;
 
-    Op *FindOp(const char *opName, bool add = false);
-    static const char *NormalizeOpName(const char *opName);
+    Op * FindOp(const char * opName, bool add = false);
+    static const char * NormalizeOpName(const char * opName);
 };
-
 
 #endif /* MOCKOPACTIONS_H_ */

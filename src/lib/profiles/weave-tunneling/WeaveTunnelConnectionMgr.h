@@ -38,9 +38,9 @@
 
 #if WEAVE_CONFIG_ENABLE_TUNNELING
 
-#define SERVICE_CONN_INTF_NAME_MAX_LEN                 (16)
+#define SERVICE_CONN_INTF_NAME_MAX_LEN (16)
 
-#define CONNECT_NO_DELAY                               (0)
+#define CONNECT_NO_DELAY (0)
 
 namespace nl {
 namespace Weave {
@@ -55,11 +55,9 @@ class WeaveTunnelAgent;
  */
 class ReconnectParam
 {
-  public:
-    void PopulateReconnectParam(WEAVE_ERROR mLastConnectError = WEAVE_NO_ERROR,
-                                uint32_t mStatusProfileId = kWeaveProfile_Common,
-                                uint16_t mStatusCode = Common::kStatus_Success,
-                                uint32_t mMinDelayToConnectSecs = 0);
+public:
+    void PopulateReconnectParam(WEAVE_ERROR mLastConnectError = WEAVE_NO_ERROR, uint32_t mStatusProfileId = kWeaveProfile_Common,
+                                uint16_t mStatusCode = Common::kStatus_Success, uint32_t mMinDelayToConnectSecs = 0);
     WEAVE_ERROR mLastConnectError;
     uint32_t mMinDelayToConnectSecs;
     uint32_t mStatusProfileId;
@@ -124,148 +122,140 @@ public:
 
     WeaveTunnelConnectionMgr(void);
 
-/**
- * Initialize the WeaveTunnelConnectionMgr.
- */
-    WEAVE_ERROR Init(WeaveTunnelAgent *tunAgent, TunnelType tunType, SrcInterfaceType srcIntfType,
-                     const char *connIntfName = NULL);
+    /**
+     * Initialize the WeaveTunnelConnectionMgr.
+     */
+    WEAVE_ERROR Init(WeaveTunnelAgent * tunAgent, TunnelType tunType, SrcInterfaceType srcIntfType,
+                     const char * connIntfName = NULL);
 
-/**
- * Shutdown the WeaveTunnelConnectionMgr.
- *
- */
+    /**
+     * Shutdown the WeaveTunnelConnectionMgr.
+     *
+     */
     void Shutdown(void);
 
 #if WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
-/**
- * Configure the TCP user timeout.
- */
+    /**
+     * Configure the TCP user timeout.
+     */
     WEAVE_ERROR ConfigureConnTimeout(uint16_t maxTimeoutSecs);
 #endif // WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
 
 #if WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
-/**
- * Configure the TCP keepalive parameters.
- */
+    /**
+     * Configure the TCP keepalive parameters.
+     */
     WEAVE_ERROR ConfigureAndEnableTCPKeepAlive(uint16_t intervalSecs, uint16_t maxNumProbes);
 #endif // WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-/**
- * Configure the Tunnel Liveness interval.
- */
+    /**
+     * Configure the Tunnel Liveness interval.
+     */
     void ConfigureTunnelLivenessInterval(uint16_t livenessIntervalSecs);
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
 
-/**
- * Set InterfaceName for Tunnel connection.
- */
-    void SetInterfaceName(const char *intfName);
+    /**
+     * Set InterfaceName for Tunnel connection.
+     */
+    void SetInterfaceName(const char * intfName);
 
-/**
- * Set SrcInterfaceType for Tunnel connection.
- */
+    /**
+     * Set SrcInterfaceType for Tunnel connection.
+     */
     void SetInterfaceType(const SrcInterfaceType srcIntfType);
 
-/**
- * Handler invoked if the Service Manager failed to establish the TCP connection to the Service.
- */
-    static void ServiceMgrStatusHandler(void* appState, WEAVE_ERROR err, StatusReport *report);
+    /**
+     * Handler invoked if the Service Manager failed to establish the TCP connection to the Service.
+     */
+    static void ServiceMgrStatusHandler(void * appState, WEAVE_ERROR err, StatusReport * report);
 
-/**
- * Handler invoked when Service TCP connection is completed. The device proceeds to initiate Tunnel control
- * commands to the Service from this function.
- */
-    static void HandleServiceConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
+    /**
+     * Handler invoked when Service TCP connection is completed. The device proceeds to initiate Tunnel control
+     * commands to the Service from this function.
+     */
+    static void HandleServiceConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_TCP_IDLE_CALLBACK
-/**
- * Handler invoked when the Idle state of the underlying TCP connection's send channel changes.
- */
-    static void HandleTCPSendIdleChanged(TCPEndPoint *tcpEndPoint, bool isIdle);
+    /**
+     * Handler invoked when the Idle state of the underlying TCP connection's send channel changes.
+     */
+    static void HandleTCPSendIdleChanged(TCPEndPoint * tcpEndPoint, bool isIdle);
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_TCP_IDLE_CALLBACK
 
-/**
- * Handler invoked when Service TCP connection is closed. The device tries to re-establish the connection to
- * the Service if the mServiceConKeepAlive is set to true.
- */
-    static void HandleServiceConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+    /**
+     * Handler invoked when Service TCP connection is closed. The device tries to re-establish the connection to
+     * the Service if the mServiceConKeepAlive is set to true.
+     */
+    static void HandleServiceConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
-/**
- * Handler to receive tunneled IPv6 packets from the Service TCP connection and forward to the Tunnel
- * EndPoint interface after decapsulating the raw IPv6 packet from inside the tunnel header.
- */
-    static void RecvdFromService(WeaveConnection *con, const WeaveMessageInfo *msgInfo,
-                                 PacketBuffer *message);
+    /**
+     * Handler to receive tunneled IPv6 packets from the Service TCP connection and forward to the Tunnel
+     * EndPoint interface after decapsulating the raw IPv6 packet from inside the tunnel header.
+     */
+    static void RecvdFromService(WeaveConnection * con, const WeaveMessageInfo * msgInfo, PacketBuffer * message);
 
-/**
- * @brief Callback to fetch the interval of time to wait before the next
- * tunnel reconnect.
- *
- * @param[in] appState          App state pointer set during initialization of
- *                              the SubscriptionClient.
- * @param[in] reconnectParam    Structure with parameters that influence the calculation of the
- *                              reconnection delay.
- *
- * @param[out] delayMsec        Time in milliseconds to wait before next
- *                              reconnect attempt.
- */
-    typedef void (*ConnectPolicyCallback) (void * const appState,
-                                           ReconnectParam & reconnectParam,
-                                           uint32_t & delayMsec);
+    /**
+     * @brief Callback to fetch the interval of time to wait before the next
+     * tunnel reconnect.
+     *
+     * @param[in] appState          App state pointer set during initialization of
+     *                              the SubscriptionClient.
+     * @param[in] reconnectParam    Structure with parameters that influence the calculation of the
+     *                              reconnection delay.
+     *
+     * @param[out] delayMsec        Time in milliseconds to wait before next
+     *                              reconnect attempt.
+     */
+    typedef void (*ConnectPolicyCallback)(void * const appState, ReconnectParam & reconnectParam, uint32_t & delayMsec);
 
     ConnectPolicyCallback mServiceConnDelayPolicyCallback;
 
-    static void DefaultReconnectPolicyCallback(void * const appstate,
-                                               ReconnectParam & reconnectParam,
-                                               uint32_t & delayMsec);
+    static void DefaultReconnectPolicyCallback(void * const appstate, ReconnectParam & reconnectParam, uint32_t & delayMsec);
 
-/**
- * Attempt to establish a connection to the Service.
- */
+    /**
+     * Attempt to establish a connection to the Service.
+     */
     WEAVE_ERROR TryConnectingNow(void);
 
-/**
- * Close the Service tunnel.
- */
+    /**
+     * Close the Service tunnel.
+     */
     void ServiceTunnelClose(WEAVE_ERROR err);
 
-/**
- * Stop Service tunnel connection and attempt to reconnect again.
- */
+    /**
+     * Stop Service tunnel connection and attempt to reconnect again.
+     */
     void StopAndReconnectTunnelConn(ReconnectParam & reconnParam);
 
-  private:
-
-    WEAVE_ERROR StartServiceTunnelConn(uint64_t destNodeId, IPAddress destIPAddr,
-                                       uint16_t destPort,
-                                       WeaveAuthMode authMode,
+private:
+    WEAVE_ERROR StartServiceTunnelConn(uint64_t destNodeId, IPAddress destIPAddr, uint16_t destPort, WeaveAuthMode authMode,
                                        InterfaceId connIntfId);
     void StopServiceTunnelConn(WEAVE_ERROR err);
-    void AttemptReconnect(ReconnectParam &reconnParam);
-    void DecideOnReconnect(ReconnectParam &reconnParam);
+    void AttemptReconnect(ReconnectParam & reconnParam);
+    void DecideOnReconnect(ReconnectParam & reconnParam);
     void ResetCacheAndScheduleConnect(uint32_t delay);
     void ScheduleConnect(uint32_t delay);
     void CancelDelayedReconnect(void);
     void ReleaseResourcesAndStopTunnelConn(WEAVE_ERROR err);
     WEAVE_ERROR ResetReconnectBackoff(bool reconnectImmediately);
-    static void ServiceConnectTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void ServiceConnectTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
     void StartLivenessTimer(void);
     void StopLivenessTimer(void);
     void RestartLivenessTimer(void);
-    static void TunnelLivenessTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void TunnelLivenessTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
 
     void SetOnlineCheckIntervalFast(bool aProbeFast);
     void StartOnlineCheck(void);
     void StopOnlineCheck(void);
     void ReStartOnlineCheck(void);
-    static void OnlineCheckTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void OnlineCheckTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
     void HandleOnlineCheckResult(bool isOnline);
     // Pointer to a Weave Tunnel Agent object.
 
-    WeaveTunnelAgent *mTunAgent;
+    WeaveTunnelAgent * mTunAgent;
 
     // Tunnel control object
 
@@ -304,7 +294,7 @@ public:
 
     // Handle to the Weave connection object.
 
-    WeaveConnection *mServiceCon;
+    WeaveConnection * mServiceCon;
 
 #if WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
     // TCP connection keepalive interval (in secs)
@@ -345,4 +335,4 @@ public:
 } // namespace nl
 
 #endif // WEAVE_CONFIG_ENABLE_TUNNELING
-#endif//_WEAVE_TUNNEL_CONNECTION_MGR_H_
+#endif //_WEAVE_TUNNEL_CONNECTION_MGR_H_

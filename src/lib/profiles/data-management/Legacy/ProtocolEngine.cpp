@@ -49,9 +49,9 @@ using namespace ::nl::Weave::Profiles::ServiceDirectory;
 
 using namespace ::nl::Weave::Profiles::StatusReporting;
 
-using nl::Weave::WeaveConnection;
 using nl::Weave::ExchangeContext;
 using nl::Weave::ExchangeMgr;
+using nl::Weave::WeaveConnection;
 using nl::Weave::WeaveMessageInfo;
 
 namespace nl {
@@ -59,29 +59,25 @@ namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Legacy) {
 
-static void TxnResponseHandler(ExchangeContext *anExchangeCtx,
-                               const IPPacketInfo *anAddrInfo,
-                               const WeaveMessageInfo *aMsgInfo,
-                               uint32_t aProfileId,
-                               uint8_t aMsgType,
-                               PacketBuffer *aMsg)
+static void TxnResponseHandler(ExchangeContext * anExchangeCtx, const IPPacketInfo * anAddrInfo, const WeaveMessageInfo * aMsgInfo,
+                               uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
-    ProtocolEngine::DMTransaction *txn = static_cast<ProtocolEngine::DMTransaction *>(anExchangeCtx->AppState);
+    ProtocolEngine::DMTransaction * txn = static_cast<ProtocolEngine::DMTransaction *>(anExchangeCtx->AppState);
 
     txn->OnMsgReceived(aMsgInfo->SourceNodeId, aProfileId, aMsgType, aMsg);
 }
 
-static void TxnTimeoutHandler(ExchangeContext *anExchangeCtx)
+static void TxnTimeoutHandler(ExchangeContext * anExchangeCtx)
 {
-    ProtocolEngine::DMTransaction *txn = static_cast<ProtocolEngine::DMTransaction *>(anExchangeCtx->AppState);
+    ProtocolEngine::DMTransaction * txn = static_cast<ProtocolEngine::DMTransaction *>(anExchangeCtx->AppState);
 
     txn->OnResponseTimeout(anExchangeCtx->PeerNodeId);
 }
 
-WEAVE_ERROR SendStatusReport(ExchangeContext *aExchangeCtx, StatusReport &aStatus)
+WEAVE_ERROR SendStatusReport(ExchangeContext * aExchangeCtx, StatusReport & aStatus)
 {
     WEAVE_ERROR err;
-    PacketBuffer *buf = PacketBuffer::New();
+    PacketBuffer * buf = PacketBuffer::New();
     uint16_t sendFlags = 0;
 
     VerifyOrExit(buf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -96,8 +92,7 @@ WEAVE_ERROR SendStatusReport(ExchangeContext *aExchangeCtx, StatusReport &aStatu
     }
 #endif
 
-    err = aExchangeCtx->SendMessage(kWeaveProfile_Common, kMsgType_StatusReport,
-                                    buf, sendFlags);
+    err = aExchangeCtx->SendMessage(kWeaveProfile_Common, kMsgType_StatusReport, buf, sendFlags);
     buf = NULL;
     SuccessOrExit(err);
 
@@ -111,15 +106,14 @@ exit:
     return err;
 }
 
-void ProtocolEngine::DMTransaction::OnMsgReceived(const uint64_t &aResponderId,
-                                                  uint32_t aProfileId,
-                                                  uint8_t aMsgType,
-                                                  PacketBuffer *aMsg)
+void ProtocolEngine::DMTransaction::OnMsgReceived(const uint64_t & aResponderId, uint32_t aProfileId, uint8_t aMsgType,
+                                                  PacketBuffer * aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
 
-    if (aProfileId == kWeaveProfile_StatusReport_Deprecated || (aProfileId == kWeaveProfile_Common && aMsgType == kMsgType_StatusReport))
+    if (aProfileId == kWeaveProfile_StatusReport_Deprecated ||
+        (aProfileId == kWeaveProfile_Common && aMsgType == kMsgType_StatusReport))
     {
         err = StatusReport::parse(aMsg, report);
         SuccessOrExit(err);
@@ -135,7 +129,7 @@ void ProtocolEngine::DMTransaction::OnMsgReceived(const uint64_t &aResponderId,
              * comes next.
              */
 
-            Binding *svcBinding = mEngine->GetBinding(kServiceEndpoint_Data_Management);
+            Binding * svcBinding = mEngine->GetBinding(kServiceEndpoint_Data_Management);
 
             VerifyOrExit(svcBinding && svcBinding->mServiceMgr, err = WEAVE_ERROR_INCORRECT_STATE);
 
@@ -170,23 +164,22 @@ exit:
  * overridden elsewhere.
  */
 
-WEAVE_ERROR ProtocolEngine::DMTransaction::OnResponseReceived(const uint64_t &aResponderId, uint8_t aMsgType, PacketBuffer *aMsg)
+WEAVE_ERROR ProtocolEngine::DMTransaction::OnResponseReceived(const uint64_t & aResponderId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
     OnError(aResponderId, WEAVE_ERROR_INVALID_MESSAGE_TYPE);
 
     return WEAVE_ERROR_INVALID_MESSAGE_TYPE;
 }
 
-void ProtocolEngine::DMTransaction::OnResponseTimeout(const uint64_t &aResponderId)
+void ProtocolEngine::DMTransaction::OnResponseTimeout(const uint64_t & aResponderId)
 {
-   OnError(aResponderId, WEAVE_ERROR_TIMEOUT);
+    OnError(aResponderId, WEAVE_ERROR_TIMEOUT);
 }
 
-
-WEAVE_ERROR ProtocolEngine::DMTransaction::Init(ProtocolEngine *aEngine, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR ProtocolEngine::DMTransaction::Init(ProtocolEngine * aEngine, uint16_t aTxnId, uint32_t aTimeout)
 {
-    mEngine = aEngine;
-    mTxnId = aTxnId;
+    mEngine  = aEngine;
+    mTxnId   = aTxnId;
     mTimeout = aTimeout;
 
     mExchangeCtx = NULL;
@@ -202,9 +195,9 @@ WEAVE_ERROR ProtocolEngine::DMTransaction::Init(ProtocolEngine *aEngine, uint16_
 
 void ProtocolEngine::DMTransaction::Free(void)
 {
-    mEngine = NULL;
-    mTxnId = kTransactionIdNotSpecified;
-    mTimeout = kResponseTimeoutNotSpecified;
+    mEngine      = NULL;
+    mTxnId       = kTransactionIdNotSpecified;
+    mTimeout     = kResponseTimeoutNotSpecified;
     mExchangeCtx = NULL;
 
 #if WEAVE_CONFIG_WDM_ALLOW_CLIENT_LEGACY_MESSAGE_TYPES
@@ -221,14 +214,14 @@ bool ProtocolEngine::DMTransaction::IsFree(void)
 
 WEAVE_ERROR ProtocolEngine::DMTransaction::Start(uint8_t aTransport)
 {
-    WEAVE_ERROR     err = WEAVE_NO_ERROR;
-    PacketBuffer*   buf = PacketBuffer::New();
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    PacketBuffer * buf = PacketBuffer::New();
 
     uint16_t flags = ExchangeContext::kSendFlag_ExpectResponse;
 
     VerifyOrExit(buf, err = WEAVE_ERROR_NO_MEMORY);
 
-    mExchangeCtx->ResponseTimeout = mTimeout;
+    mExchangeCtx->ResponseTimeout   = mTimeout;
     mExchangeCtx->OnMessageReceived = TxnResponseHandler;
     mExchangeCtx->OnResponseTimeout = TxnTimeoutHandler;
 
@@ -268,7 +261,7 @@ WEAVE_ERROR ProtocolEngine::DMTransaction::Finalize(void)
     return WEAVE_NO_ERROR;
 }
 
-void ProtocolEngine::DMTransaction::OnError(const uint64_t &aResponderId, WEAVE_ERROR aError)
+void ProtocolEngine::DMTransaction::OnError(const uint64_t & aResponderId, WEAVE_ERROR aError)
 {
     StatusReport report;
     report.init(aError);
@@ -286,18 +279,18 @@ ProtocolEngine::~ProtocolEngine(void)
     Finalize();
 }
 
-WEAVE_ERROR ProtocolEngine::Init(WeaveExchangeManager *aExchangeMgr)
+WEAVE_ERROR ProtocolEngine::Init(WeaveExchangeManager * aExchangeMgr)
 {
     return Init(aExchangeMgr, kResponseTimeoutNotSpecified);
 }
 
-WEAVE_ERROR ProtocolEngine::Init(WeaveExchangeManager *aExchangeMgr, uint32_t aResponseTimeout)
+WEAVE_ERROR ProtocolEngine::Init(WeaveExchangeManager * aExchangeMgr, uint32_t aResponseTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (mExchangeMgr != NULL)
     {
-        err =  WEAVE_ERROR_INCORRECT_STATE;
+        err = WEAVE_ERROR_INCORRECT_STATE;
     }
 
     else if (aExchangeMgr == NULL)
@@ -307,7 +300,7 @@ WEAVE_ERROR ProtocolEngine::Init(WeaveExchangeManager *aExchangeMgr, uint32_t aR
 
     else
     {
-        mExchangeMgr = aExchangeMgr;
+        mExchangeMgr     = aExchangeMgr;
         mResponseTimeout = aResponseTimeout;
     }
 
@@ -325,7 +318,7 @@ void ProtocolEngine::Finalize(void)
 
 void ProtocolEngine::Clear(void)
 {
-    mExchangeMgr = NULL;
+    mExchangeMgr     = NULL;
     mResponseTimeout = kResponseTimeoutNotSpecified;
 
     ClearBindingTable();
@@ -356,10 +349,10 @@ void ProtocolEngine::Clear(void)
  *  reflecting a failure to initialize the binding.
  */
 
-WEAVE_ERROR ProtocolEngine::BindRequest(const uint64_t &aPeerNodeId, uint8_t aTransport)
+WEAVE_ERROR ProtocolEngine::BindRequest(const uint64_t & aPeerNodeId, uint8_t aTransport)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
-    Binding *b;
+    Binding * b;
 
     /*
      * if a binding is already there then re-use it. it is, i think,
@@ -408,10 +401,10 @@ WEAVE_ERROR ProtocolEngine::BindRequest(const uint64_t &aPeerNodeId, uint8_t aTr
  *  reflecting a failure to initialize the binding.
  */
 
-WEAVE_ERROR ProtocolEngine::BindRequest(WeaveServiceManager *aServiceMgr, WeaveAuthMode aAuthMode)
+WEAVE_ERROR ProtocolEngine::BindRequest(WeaveServiceManager * aServiceMgr, WeaveAuthMode aAuthMode)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
-    Binding *b;
+    Binding * b;
 
     /*
      * if a binding is already there then re-use it.
@@ -450,10 +443,10 @@ WEAVE_ERROR ProtocolEngine::BindRequest(WeaveServiceManager *aServiceMgr, WeaveA
  *  failure to inititialize the binding.
  */
 
-WEAVE_ERROR ProtocolEngine::BindRequest(WeaveConnection *aConnection)
+WEAVE_ERROR ProtocolEngine::BindRequest(WeaveConnection * aConnection)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
-    Binding *b;
+    Binding * b;
 
     /*
      * if a binding is already there then re-use it.
@@ -490,17 +483,17 @@ WEAVE_ERROR ProtocolEngine::BindRequest(WeaveConnection *aConnection)
  *  #WEAVE_ERROR reflecting an inability to start a transaction.
  */
 
-WEAVE_ERROR ProtocolEngine::BindConfirm(Binding *aBinding)
+WEAVE_ERROR ProtocolEngine::BindConfirm(Binding * aBinding)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    TransactionTableEntry *item;
-    DMTransaction *txn;
-    ExchangeContext *ctx = NULL;
+    TransactionTableEntry * item;
+    DMTransaction * txn;
+    ExchangeContext * ctx = NULL;
 
     for (int i = 0; i < kTransactionTableSize; i++)
     {
         item = &(mTransactionTable[i]);
-        txn = item->mTransaction;
+        txn  = item->mTransaction;
 
         if (txn && item->mBinding == aBinding)
         {
@@ -551,7 +544,7 @@ exit:
  *  @return #WEAVE_NO_ERROR.
  */
 
-WEAVE_ERROR ProtocolEngine::BindConfirm(Binding *aBinding, StatusReport &aReport)
+WEAVE_ERROR ProtocolEngine::BindConfirm(Binding * aBinding, StatusReport & aReport)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -578,11 +571,11 @@ WEAVE_ERROR ProtocolEngine::BindConfirm(Binding *aBinding, StatusReport &aReport
  *  @sa UnbindRequest(const uint64_t)
  */
 
-void ProtocolEngine::UnbindRequest(const uint64_t &aPeerNodeId, WEAVE_ERROR aErr)
+void ProtocolEngine::UnbindRequest(const uint64_t & aPeerNodeId, WEAVE_ERROR aErr)
 {
     for (int i = 0; i < kBindingTableSize; i++)
     {
-        Binding &b = mBindingTable[i];
+        Binding & b = mBindingTable[i];
 
         if (b.mPeerNodeId == aPeerNodeId)
         {
@@ -610,7 +603,7 @@ void ProtocolEngine::UnbindRequest(const uint64_t &aPeerNodeId, WEAVE_ERROR aErr
  *  @sa UnbindRequest(const uint64_t, WEAVE_ERROR)
  */
 
-void ProtocolEngine::UnbindRequest(const uint64_t &aPeerNodeId)
+void ProtocolEngine::UnbindRequest(const uint64_t & aPeerNodeId)
 {
     UnbindRequest(aPeerNodeId, WEAVE_NO_ERROR);
 }
@@ -633,7 +626,7 @@ void ProtocolEngine::UnbindRequest(const uint64_t &aPeerNodeId)
  *                                  failure.
  */
 
-void ProtocolEngine::IncompleteIndication(Binding *aBinding, StatusReport &aReport)
+void ProtocolEngine::IncompleteIndication(Binding * aBinding, StatusReport & aReport)
 {
     bool indicated = FailTransactions(aBinding, aReport);
 
@@ -641,11 +634,11 @@ void ProtocolEngine::IncompleteIndication(Binding *aBinding, StatusReport &aRepo
         IncompleteIndication(aBinding->mPeerNodeId, aReport);
 }
 
-Binding *ProtocolEngine::FromExchangeCtx(ExchangeContext *aExchangeCtx)
+Binding * ProtocolEngine::FromExchangeCtx(ExchangeContext * aExchangeCtx)
 {
-    WeaveConnection *con = aExchangeCtx->Con;
-    uint64_t peerId = aExchangeCtx->PeerNodeId;
-    Binding *binding = GetBinding(peerId);
+    WeaveConnection * con = aExchangeCtx->Con;
+    uint64_t peerId       = aExchangeCtx->PeerNodeId;
+    Binding * binding     = GetBinding(peerId);
 
     if (!binding)
     {
@@ -682,15 +675,15 @@ Binding *ProtocolEngine::FromExchangeCtx(ExchangeContext *aExchangeCtx)
     return binding;
 }
 
-Binding *ProtocolEngine::GetBinding(const uint64_t &aPeerNodeId)
+Binding * ProtocolEngine::GetBinding(const uint64_t & aPeerNodeId)
 {
-    Binding *retVal = NULL;
+    Binding * retVal = NULL;
 
     if (aPeerNodeId != kNodeIdNotSpecified)
     {
         for (int i = 0; i < kBindingTableSize; i++)
         {
-            Binding &b = mBindingTable[i];
+            Binding & b = mBindingTable[i];
 
             if (b.mPeerNodeId == aPeerNodeId)
             {
@@ -704,13 +697,13 @@ Binding *ProtocolEngine::GetBinding(const uint64_t &aPeerNodeId)
     return retVal;
 }
 
-Binding *ProtocolEngine::NewBinding(void)
+Binding * ProtocolEngine::NewBinding(void)
 {
-    Binding *retVal = NULL;
+    Binding * retVal = NULL;
 
     for (int i = 0; i < kBindingTableSize; i++)
     {
-        Binding &b = mBindingTable[i];
+        Binding & b = mBindingTable[i];
 
         if (b.IsFree())
         {
@@ -737,7 +730,7 @@ void ProtocolEngine::FinalizeBindingTable(void)
 {
     for (int i = 0; i < kBindingTableSize; i++)
     {
-        Binding &binding = mBindingTable[i];
+        Binding & binding = mBindingTable[i];
 
         binding.Finalize();
     }
@@ -745,10 +738,10 @@ void ProtocolEngine::FinalizeBindingTable(void)
     SYSTEM_STATS_RESET(nl::Weave::System::Stats::kWDMLegacy_NumBindings);
 }
 
-WEAVE_ERROR ProtocolEngine::StartTransaction(DMTransaction *aTransaction, Binding *aBinding)
+WEAVE_ERROR ProtocolEngine::StartTransaction(DMTransaction * aTransaction, Binding * aBinding)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ExchangeContext *ctx = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    ExchangeContext * ctx = NULL;
 
     VerifyOrExit(!aBinding->IsFree(), err = WEAVE_ERROR_INCORRECT_STATE);
 
@@ -790,13 +783,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ProtocolEngine::EnqueueTransaction(DMTransaction *aTxn, Binding *aBinding)
+WEAVE_ERROR ProtocolEngine::EnqueueTransaction(DMTransaction * aTxn, Binding * aBinding)
 {
     WEAVE_ERROR err = WEAVE_ERROR_NO_MEMORY;
 
     for (int i = 0; i < kTransactionTableSize; i++)
     {
-        TransactionTableEntry &entry = mTransactionTable[i];
+        TransactionTableEntry & entry = mTransactionTable[i];
 
         if (entry.IsFree())
         {
@@ -813,11 +806,11 @@ WEAVE_ERROR ProtocolEngine::EnqueueTransaction(DMTransaction *aTxn, Binding *aBi
     return err;
 }
 
-void ProtocolEngine::DequeueTransaction(DMTransaction *aTransaction)
+void ProtocolEngine::DequeueTransaction(DMTransaction * aTransaction)
 {
     for (int i = 0; i < kTransactionTableSize; i++)
     {
-        TransactionTableEntry &entry = mTransactionTable[i];
+        TransactionTableEntry & entry = mTransactionTable[i];
 
         if (entry.mTransaction == aTransaction)
         {
@@ -828,24 +821,24 @@ void ProtocolEngine::DequeueTransaction(DMTransaction *aTransaction)
     }
 }
 
-void ProtocolEngine::FinalizeTransactions(Binding *aBinding)
+void ProtocolEngine::FinalizeTransactions(Binding * aBinding)
 {
     for (int i = 0; i < kTransactionTableSize; i++)
     {
-        TransactionTableEntry &entry = mTransactionTable[i];
+        TransactionTableEntry & entry = mTransactionTable[i];
 
         if (entry.mBinding == aBinding)
             entry.Finalize();
     }
 }
 
-bool ProtocolEngine::FailTransactions(Binding *aBinding, StatusReport &aReport)
+bool ProtocolEngine::FailTransactions(Binding * aBinding, StatusReport & aReport)
 {
     bool indicated = false;
 
     for (int i = 0; i < kTransactionTableSize; i++)
     {
-        TransactionTableEntry &entry = mTransactionTable[i];
+        TransactionTableEntry & entry = mTransactionTable[i];
 
         if (!entry.IsFree() && entry.mBinding == aBinding)
         {
@@ -871,11 +864,11 @@ void ProtocolEngine::FinalizeTransactionTable(void)
 {
     for (int i = 0; i < kTransactionTableSize; i++)
     {
-        TransactionTableEntry &entry = mTransactionTable[i];
+        TransactionTableEntry & entry = mTransactionTable[i];
 
         if (!entry.IsFree())
         {
-            Binding *binding = entry.mBinding;
+            Binding * binding = entry.mBinding;
 
             entry.Finalize();
 
@@ -906,9 +899,9 @@ void ProtocolEngine::TransactionTableEntry::Finalize(void)
     }
 }
 
-void ProtocolEngine::TransactionTableEntry::Fail(const uint64_t &aPeerId, StatusReport &aReport)
+void ProtocolEngine::TransactionTableEntry::Fail(const uint64_t & aPeerId, StatusReport & aReport)
 {
-    DMTransaction *txn = mTransaction;
+    DMTransaction * txn = mTransaction;
 
     if (!IsFree())
     {

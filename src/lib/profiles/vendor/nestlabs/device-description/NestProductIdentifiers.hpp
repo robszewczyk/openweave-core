@@ -46,32 +46,34 @@ namespace DeviceDescription {
 
 enum NestWeaveProductId
 {
-    kNestWeaveProduct_Diamond                    = 0x0001,
-    kNestWeaveProduct_DiamondBackplate           = 0x0002,
-    kNestWeaveProduct_Diamond2                   = 0x0003,
-    kNestWeaveProduct_Diamond2Backplate          = 0x0004,
-    kNestWeaveProduct_Topaz                      = 0x0005,  // DEPRECATED -- Use kNestWeaveProduct_Topaz1LinePowered or kNestWeaveProduct_Topaz1BatteryPowered
-    kNestWeaveProduct_AmberBackplate             = 0x0006,
-    kNestWeaveProduct_Amber                      = 0x0007,  // DEPRECATED -- Use kNestWeaveProduct_AmberHeatLink
-    kNestWeaveProduct_AmberHeatLink              = 0x0007,
-    kNestWeaveProduct_Topaz2                     = 0x0009,  // DEPRECATED -- Use kNestWeaveProduct_Topaz2LinePowered or kNestWeaveProduct_Topaz2BatteryPowered
-    kNestWeaveProduct_Diamond3                   = 0x000A,
-    kNestWeaveProduct_Diamond3Backplate          = 0x000B,
-    kNestWeaveProduct_Quartz                     = 0x000D,
-    kNestWeaveProduct_Amber2HeatLink             = 0x000F,
-    kNestWeaveProduct_SmokyQuartz                = 0x0010,
-    kNestWeaveProduct_Quartz2                    = 0x0011,
-    kNestWeaveProduct_BlackQuartz                = 0x0012,
-    kNestWeaveProduct_Onyx                       = 0x0014,
-    kNestWeaveProduct_OnyxBackplate              = 0x0015,
-    kNestWeaveProduct_Topaz1LinePowered          = 0x001E,
-    kNestWeaveProduct_Topaz1BatteryPowered       = 0x001F,
-    kNestWeaveProduct_Topaz2LinePowered          = 0x0020,
-    kNestWeaveProduct_Topaz2BatteryPowered       = 0x0021,
-    kNestWeaveProduct_SDKSampleBorderRouter      = 0xFE05,
-    kNestWeaveProduct_SDKSampleLightActuator     = 0xFE06,
-    kNestWeaveProduct_SDKSampleButtonSensor      = 0xFE07,
-    kNestWeaveProduct_SDKSampleMotionSensor      = 0xFE08,
+    kNestWeaveProduct_Diamond           = 0x0001,
+    kNestWeaveProduct_DiamondBackplate  = 0x0002,
+    kNestWeaveProduct_Diamond2          = 0x0003,
+    kNestWeaveProduct_Diamond2Backplate = 0x0004,
+    kNestWeaveProduct_Topaz =
+        0x0005, // DEPRECATED -- Use kNestWeaveProduct_Topaz1LinePowered or kNestWeaveProduct_Topaz1BatteryPowered
+    kNestWeaveProduct_AmberBackplate = 0x0006,
+    kNestWeaveProduct_Amber          = 0x0007, // DEPRECATED -- Use kNestWeaveProduct_AmberHeatLink
+    kNestWeaveProduct_AmberHeatLink  = 0x0007,
+    kNestWeaveProduct_Topaz2 =
+        0x0009, // DEPRECATED -- Use kNestWeaveProduct_Topaz2LinePowered or kNestWeaveProduct_Topaz2BatteryPowered
+    kNestWeaveProduct_Diamond3               = 0x000A,
+    kNestWeaveProduct_Diamond3Backplate      = 0x000B,
+    kNestWeaveProduct_Quartz                 = 0x000D,
+    kNestWeaveProduct_Amber2HeatLink         = 0x000F,
+    kNestWeaveProduct_SmokyQuartz            = 0x0010,
+    kNestWeaveProduct_Quartz2                = 0x0011,
+    kNestWeaveProduct_BlackQuartz            = 0x0012,
+    kNestWeaveProduct_Onyx                   = 0x0014,
+    kNestWeaveProduct_OnyxBackplate          = 0x0015,
+    kNestWeaveProduct_Topaz1LinePowered      = 0x001E,
+    kNestWeaveProduct_Topaz1BatteryPowered   = 0x001F,
+    kNestWeaveProduct_Topaz2LinePowered      = 0x0020,
+    kNestWeaveProduct_Topaz2BatteryPowered   = 0x0021,
+    kNestWeaveProduct_SDKSampleBorderRouter  = 0xFE05,
+    kNestWeaveProduct_SDKSampleLightActuator = 0xFE06,
+    kNestWeaveProduct_SDKSampleButtonSensor  = 0xFE07,
+    kNestWeaveProduct_SDKSampleMotionSensor  = 0xFE08,
 };
 
 }; // namespace DeviceDescription
@@ -80,7 +82,7 @@ enum NestWeaveProductId
 
 }; // namespace Vendor
 
-}; // namesapce Profiles
+}; // namespace Profiles
 
 }; // namespace Weave
 

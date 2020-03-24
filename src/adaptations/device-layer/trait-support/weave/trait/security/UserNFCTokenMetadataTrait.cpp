@@ -40,7 +40,7 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // metadata
+    { kPropertyHandle_Root, 1 },     // metadata
     { kPropertyHandle_Metadata, 1 }, // serial_number
     { kPropertyHandle_Metadata, 2 }, // tag_number
 };
@@ -49,51 +49,42 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        2,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    2,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor MetadataFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(Metadata, serialNumber), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1
-    },
+const nl::FieldDescriptor MetadataFieldDescriptors[] = {
+    { NULL, offsetof(Metadata, serialNumber), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1 },
 
-    {
-        NULL, offsetof(Metadata, tagNumber), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 2
-    },
+    { NULL, offsetof(Metadata, tagNumber), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor Metadata::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(MetadataFieldDescriptors)/sizeof(MetadataFieldDescriptors[0]),
-    .mFields = MetadataFieldDescriptors,
-    .mSize = sizeof(Metadata)
-};
+const nl::SchemaFieldDescriptor Metadata::FieldSchema = { .mNumFieldDescriptorElements = sizeof(MetadataFieldDescriptors) /
+                                                              sizeof(MetadataFieldDescriptors[0]),
+                                                          .mFields = MetadataFieldDescriptors,
+                                                          .mSize   = sizeof(Metadata) };
 
 } // namespace UserNFCTokenMetadataTrait
 } // namespace Security

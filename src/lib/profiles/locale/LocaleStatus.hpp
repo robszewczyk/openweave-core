@@ -36,7 +36,8 @@ namespace Locale {
 // Locale Status Codes
 //
 
-enum {
+enum
+{
 
     kStatus_LocaleNotSupportedOrUnknown = 0x0001, // The requested locale is not supported or is unknown to the device.
     kStatus_LocaleImproperlyFormatted   = 0x0002  // The requested locale is not a properly IETF BCP 47-formatted locale.

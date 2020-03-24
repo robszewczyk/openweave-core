@@ -33,11 +33,11 @@ namespace DeviceEventType {
 
 enum
 {
-    kFlag_IsPublic                      = 0x8000,
-    kFlag_IsPlatformSpecific            = 0x4000,
-    kFlag_Reserved1                     = 0x2000,
-    kFlag_Reserved2                     = 0x1000,
-    kMaxEventNum                        = 0x0FFF,
+    kFlag_IsPublic           = 0x8000,
+    kFlag_IsPlatformSpecific = 0x4000,
+    kFlag_Reserved1          = 0x2000,
+    kFlag_Reserved2          = 0x1000,
+    kMaxEventNum             = 0x0FFF,
 };
 
 /**
@@ -54,14 +54,14 @@ enum EventTypeRanges
      * Denotes a range of event types that are publicly visible to applications.  Events in this
      * range a generic to all platforms.
      */
-    kRange_Public                       = kFlag_IsPublic,
+    kRange_Public = kFlag_IsPublic,
 
     /**
      * Public, Platform-specific Event Range
      *
      * Denotes a range of platform-specific event types that are publicly visible to applications.
      */
-    kRange_PublicPlatformSpecific       = kFlag_IsPublic | kFlag_IsPlatformSpecific,
+    kRange_PublicPlatformSpecific = kFlag_IsPublic | kFlag_IsPlatformSpecific,
 
     /**
      * Internal Event Range
@@ -69,20 +69,32 @@ enum EventTypeRanges
      * Denotes a range of event types that are internal to the Weave Device Layer.  Events in this
      * range a generic to all platforms.
      */
-    kRange_Internal                     = 0,
+    kRange_Internal = 0,
 
     /**
      * Internal, Platform-specific Event Range
      *
      * Denotes a range of platform-specific event types that are internal to the Weave Device Layer.
      */
-    kRange_InternalPlatformSpecific     = kFlag_IsPlatformSpecific,
+    kRange_InternalPlatformSpecific = kFlag_IsPlatformSpecific,
 };
 
-inline bool IsPublic(uint16_t eventType) { return (eventType & kFlag_IsPublic) != 0; }
-inline bool IsInternal(uint16_t eventType) { return (eventType & kFlag_IsPublic) == 0; }
-inline bool IsPlatformSpecific(uint16_t eventType) { return (eventType & kFlag_IsPlatformSpecific) != 0; }
-inline bool IsPlatformGeneric(uint16_t eventType) { return (eventType & kFlag_IsPlatformSpecific) == 0; }
+inline bool IsPublic(uint16_t eventType)
+{
+    return (eventType & kFlag_IsPublic) != 0;
+}
+inline bool IsInternal(uint16_t eventType)
+{
+    return (eventType & kFlag_IsPublic) == 0;
+}
+inline bool IsPlatformSpecific(uint16_t eventType)
+{
+    return (eventType & kFlag_IsPlatformSpecific) != 0;
+}
+inline bool IsPlatformGeneric(uint16_t eventType)
+{
+    return (eventType & kFlag_IsPlatformSpecific) == 0;
+}
 
 /**
  * Public Event Types
@@ -97,7 +109,7 @@ enum PublicEventTypes
      *
      * Signals a change in connectivity of the device's WiFi station interface.
      */
-    kWiFiConnectivityChange             = kRange_Public,
+    kWiFiConnectivityChange = kRange_Public,
 
     /**
      * Thread Connectivity Change
@@ -206,7 +218,7 @@ enum PublicEventTypes
  */
 enum InternalEventTypes
 {
-    kEventTypeNotSet                    = kRange_Internal,
+    kEventTypeNotSet = kRange_Internal,
     kNoOp,
     kCallWorkFunct,
     kWeaveSystemLayerEvent,
@@ -228,9 +240,9 @@ static_assert(kEventTypeNotSet == 0, "kEventTypeNotSet must be defined as 0");
  */
 enum ConnectivityChange
 {
-    kConnectivity_NoChange      = 0,
-    kConnectivity_Established   = 1,
-    kConnectivity_Lost          = -1
+    kConnectivity_NoChange    = 0,
+    kConnectivity_Established = 1,
+    kConnectivity_Lost        = -1
 };
 
 /**
@@ -240,9 +252,9 @@ enum ConnectivityChange
  */
 enum ActivityChange
 {
-    kActivity_NoChange          = 0,
-    kActivity_Started           = 1,
-    kActivity_Stopped           = -1,
+    kActivity_NoChange = 0,
+    kActivity_Started  = 1,
+    kActivity_Stopped  = -1,
 };
 
 inline ConnectivityChange GetConnectivityChange(bool prevState, bool newState)

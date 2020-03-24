@@ -20,10 +20,11 @@
 
 #include <Weave/Support/ManagedNamespace.hpp>
 
-#if defined(WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE)                               \
-    && (WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE != kWeaveManagedNamespace_Current) \
-    && (WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE != kWeaveManagedNamespace_Legacy)
-#error "WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Current nor kWeaveManagedNamespace_Legacy"
+#if defined(WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE) &&                                                                             \
+    (WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE != kWeaveManagedNamespace_Current) &&                                                  \
+    (WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE != kWeaveManagedNamespace_Legacy)
+#error                                                                                                                             \
+    "WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE defined, but not as namespace kWeaveManagedNamespace_Current nor kWeaveManagedNamespace_Legacy"
 #endif
 
 #ifndef WEAVE_CONFIG_DATA_MANAGEMENT_NAMESPACE

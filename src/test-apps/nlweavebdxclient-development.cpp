@@ -29,28 +29,26 @@
 #include "ToolCommon.h"
 #include "nlweavebdxclient.h"
 
-
 namespace nl {
 namespace Weave {
 namespace Profiles {
 namespace BulkDataTransfer {
 
-
 BulkDataTransferClient::BulkDataTransferClient()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState   = NULL;
+    ExchangeMgr   = NULL;
     mBlockCounter = 0;
 }
 
 BulkDataTransferClient::~BulkDataTransferClient()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState   = NULL;
+    ExchangeMgr   = NULL;
     mBlockCounter = 0;
 }
 
-WEAVE_ERROR BulkDataTransferClient::Init(WeaveExchangeManager *aExchangeMgr)
+WEAVE_ERROR BulkDataTransferClient::Init(WeaveExchangeManager * aExchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
@@ -58,8 +56,8 @@ WEAVE_ERROR BulkDataTransferClient::Init(WeaveExchangeManager *aExchangeMgr)
         return WEAVE_ERROR_INCORRECT_STATE;
     }
 
-    ExchangeMgr = aExchangeMgr;
-    FabricState = aExchangeMgr->FabricState;
+    ExchangeMgr   = aExchangeMgr;
+    FabricState   = aExchangeMgr->FabricState;
     mBlockCounter = 0;
 
     mDestFile = NULL;
@@ -67,15 +65,15 @@ WEAVE_ERROR BulkDataTransferClient::Init(WeaveExchangeManager *aExchangeMgr)
     return WEAVE_NO_ERROR;
 }
 
-void BulkDataTransferClient::setCon(WeaveConnection *aCon)
+void BulkDataTransferClient::setCon(WeaveConnection * aCon)
 {
     mCon = aCon;
 }
 
 WEAVE_ERROR BulkDataTransferClient::Shutdown()
 {
-    ExchangeMgr = NULL;
-    FabricState = NULL;
+    ExchangeMgr   = NULL;
+    FabricState   = NULL;
     mBlockCounter = 0;
 
     return WEAVE_NO_ERROR;
@@ -85,7 +83,7 @@ WEAVE_ERROR BulkDataTransferClient::Shutdown()
  * Public file upload/download API
  */
 
-WEAVE_ERROR BulkDataTransferClient::SendFile(const char *DestFileName, WeaveConnection *aCon)
+WEAVE_ERROR BulkDataTransferClient::SendFile(const char * DestFileName, WeaveConnection * aCon)
 {
     printf("Sending file %s\n", DestFileName);
 
@@ -96,7 +94,7 @@ WEAVE_ERROR BulkDataTransferClient::SendFile(const char *DestFileName, WeaveConn
     return SendSendInitRequest(aCon);
 }
 
-WEAVE_ERROR BulkDataTransferClient::SendFile(const char *DestFileName, uint64_t nodeId, IPAddress nodeAddr)
+WEAVE_ERROR BulkDataTransferClient::SendFile(const char * DestFileName, uint64_t nodeId, IPAddress nodeAddr)
 {
     printf("Sending file %s\n", DestFileName);
 
@@ -107,7 +105,7 @@ WEAVE_ERROR BulkDataTransferClient::SendFile(const char *DestFileName, uint64_t 
     return SendSendInitRequest(nodeId, nodeAddr);
 }
 
-WEAVE_ERROR BulkDataTransferClient::ReceiveFile(const char *DestFileName, WeaveConnection *aCon)
+WEAVE_ERROR BulkDataTransferClient::ReceiveFile(const char * DestFileName, WeaveConnection * aCon)
 {
     printf("Receiving file %s\n", DestFileName);
 
@@ -118,7 +116,7 @@ WEAVE_ERROR BulkDataTransferClient::ReceiveFile(const char *DestFileName, WeaveC
     return SendSendInitRequest(aCon);
 }
 
-WEAVE_ERROR BulkDataTransferClient::ReceiveFile(const char *DestFileName, uint64_t nodeId, IPAddress nodeAddr)
+WEAVE_ERROR BulkDataTransferClient::ReceiveFile(const char * DestFileName, uint64_t nodeId, IPAddress nodeAddr)
 {
     printf("Receiving file %s\n", DestFileName);
 
@@ -133,7 +131,7 @@ WEAVE_ERROR BulkDataTransferClient::ReceiveFile(const char *DestFileName, uint64
  * SendInit request
  */
 
-WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest(WeaveConnection *aCon)
+WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest(WeaveConnection * aCon)
 {
     // Discard any existing exchange context.
     // Effectively we can only have one BDX exchange with a single node at any one time.
@@ -178,7 +176,7 @@ WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest(uint64_t nodeId, IPAddre
 }
 
 #define BDX_MAX_BLOCK_SIZE 256
-#define BDX_START_OFFSET 0
+#define BDX_START_OFFSET   0
 
 WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest()
 {
@@ -189,7 +187,7 @@ WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest()
 
     // Configure the encryption and signature types to be used to send the request.
     mExchangeCtx->EncryptionType = EncryptionType;
-    mExchangeCtx->KeyId = KeyId;
+    mExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     mExchangeCtx->OnMessageReceived = HandleSendInitResponse;
@@ -199,17 +197,17 @@ WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest()
      */
 
     ReferencedString aFileDesignator;
-    //NOTE: normally this URI would have been agreed upon with the SWU protocol
+    // NOTE: normally this URI would have been agreed upon with the SWU protocol
     //      Ex.: the SWU server returned "bdx://nestlabs/share/heatlink/data/firmware/production/heatlink.elf",
     //      so the file name is extracted and is sent to the BDX server.
-    char aFileDesignatorStr[] = "file:///var/log/heatlink.elf"; //FIXME: temporary hack for the purpose of testing
-    aFileDesignator.init((uint16_t)(sizeof(aFileDesignatorStr)-1), aFileDesignatorStr);
+    char aFileDesignatorStr[] = "file:///var/log/heatlink.elf"; // FIXME: temporary hack for the purpose of testing
+    aFileDesignator.init((uint16_t)(sizeof(aFileDesignatorStr) - 1), aFileDesignatorStr);
 
     SendInit sendInit;
     bool asyncMode = false, senderDriven = true;
-    sendInit.init(senderDriven, false /*ReceiverDrive*/, asyncMode, BDX_MAX_BLOCK_SIZE,
-                        (uint32_t)BDX_START_OFFSET, (uint32_t)0 /*Length (zero means undefined length)*/, aFileDesignator, NULL /*MetaData*/);
-    PacketBuffer* sendInitPayload = PacketBuffer::New();
+    sendInit.init(senderDriven, false /*ReceiverDrive*/, asyncMode, BDX_MAX_BLOCK_SIZE, (uint32_t) BDX_START_OFFSET,
+                  (uint32_t) 0 /*Length (zero means undefined length)*/, aFileDesignator, NULL /*MetaData*/);
+    PacketBuffer * sendInitPayload = PacketBuffer::New();
     sendInit.pack(sendInitPayload);
 
     // Send a SendInit request message. Discard the exchange context if the send fails.
@@ -229,12 +227,14 @@ WEAVE_ERROR BulkDataTransferClient::SendSendInitRequest()
     return err;
 }
 
-void BulkDataTransferClient::HandleSendInitResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferClient::HandleSendInitResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                    const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                    PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     printf("0 HandleSendInitResponse entering\n");
 
-    BulkDataTransferClient *bdxApp = (BulkDataTransferClient *)ec->AppState;
+    BulkDataTransferClient * bdxApp = (BulkDataTransferClient *) ec->AppState;
 
     // Verify that the message is a SendInit Response.
     if (profileId != kWeaveProfile_BDX || (msgType != kMsgType_SendAccept && msgType != kMsgType_SendReject))
@@ -263,7 +263,7 @@ void BulkDataTransferClient::HandleSendInitResponse(ExchangeContext *ec, const I
         VerifyOrExit(err == WEAVE_NO_ERROR, printf("Error parsing SendAccept payload!"));
 
         bdxApp->mTransferMode = sendAccept.mTransferMode;
-        //TODO: validate the transfer mode, possibly looking back at what we requested?
+        // TODO: validate the transfer mode, possibly looking back at what we requested?
         if (bdxApp->IsSenderDriveMode())
         {
             ec->OnMessageReceived = HandleBlockAck;
@@ -300,7 +300,8 @@ exit:
     return err;
 }
 
-void BulkDataTransferClient::HandleBlockAck(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferClient::HandleBlockAck(ExchangeContext * ec, const IPPacketInfo * packetInfo, const WeaveMessageInfo * msgInfo,
+                                            uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
     BlockAck ack;
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -327,7 +328,9 @@ exit:
     return;
 }
 
-void BulkDataTransferClient::HandleBlockEOFAck(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferClient::HandleBlockEOFAck(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                               const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                               PacketBuffer * payload)
 {
     VerifyOrExit(msgType == kMsgType_BlocEOFkAck,
                  err = WEAVE_ERROR_INVALID_MESSAGE_TYPE; printf("Expected BlockEOFAck but got %d\n", msgType);
@@ -350,7 +353,7 @@ exit:
  * ReceiveInit request
  */
 
-WEAVE_ERROR BulkDataTransferClient::SendReceiveInitRequest(WeaveConnection *con)
+WEAVE_ERROR BulkDataTransferClient::SendReceiveInitRequest(WeaveConnection * con)
 {
     // Discard any existing exchange context.
     // Effectively we can only have one BDX exchange with a single node at any one time.
@@ -403,7 +406,7 @@ WEAVE_ERROR BulkDataTransferClient::SendReceiveInitRequest()
 
     // Configure the encryption and signature types to be used to send the request.
     mExchangeCtx->EncryptionType = EncryptionType;
-    mExchangeCtx->KeyId = KeyId;
+    mExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     mExchangeCtx->OnMessageReceived = HandleReceiveInitResponse;
@@ -413,20 +416,21 @@ WEAVE_ERROR BulkDataTransferClient::SendReceiveInitRequest()
      */
 
     ReferencedString aFileDesignator;
-    //NOTE: normally this URI would have been agreed upon with the SWU protocol
+    // NOTE: normally this URI would have been agreed upon with the SWU protocol
     //      Ex.: the SWU server returned "bdx://nestlabs/share/heatlink/data/firmware/production/heatlink.elf",
     //      so the file name is extracted and is sent to the BDX server.
-    char aFileDesignatorStr[] = "file:///var/log/heatlink.elf"; //FIXME: temporary hack for the purpose of testing
-    aFileDesignator.init((uint16_t)(sizeof(aFileDesignatorStr)-1), aFileDesignatorStr);
+    char aFileDesignatorStr[] = "file:///var/log/heatlink.elf"; // FIXME: temporary hack for the purpose of testing
+    aFileDesignator.init((uint16_t)(sizeof(aFileDesignatorStr) - 1), aFileDesignatorStr);
 
     ReceiveInit receiveInit;
     receiveInit.init(false /*SenderDrive*/, true /*ReceiverDrive*/, false /*AsynchMode*/, BDX_MAX_BLOCK_SIZE,
-                        (uint32_t)BDX_START_OFFSET, (uint32_t)0 /*Length (zero means undefined length)*/, aFileDesignator, NULL /*MetaData*/);
-    PacketBuffer* receiveInitPayload = PacketBuffer::New();
+                     (uint32_t) BDX_START_OFFSET, (uint32_t) 0 /*Length (zero means undefined length)*/, aFileDesignator,
+                     NULL /*MetaData*/);
+    PacketBuffer * receiveInitPayload = PacketBuffer::New();
     receiveInit.pack(receiveInitPayload);
 
     // Send a ReceiveInit request message. Discard the exchange context if the send fails.
-    WEAVE_ERROR err = mExchangeCtx->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveInit, receiveInitPayload);
+    WEAVE_ERROR err    = mExchangeCtx->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveInit, receiveInitPayload);
     receiveInitPayload = NULL;
     if (err != WEAVE_NO_ERROR)
     {
@@ -442,13 +446,15 @@ WEAVE_ERROR BulkDataTransferClient::SendReceiveInitRequest()
     return err;
 }
 
-WEAVE_ERROR BulkDataTransferClient::HandleReceiveInitResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+WEAVE_ERROR BulkDataTransferClient::HandleReceiveInitResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                              const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                              PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     printf("0 HandleReceiveInitResponse entering\n");
 
-    BulkDataTransferClient *bdxApp = (BulkDataTransferClient *)ec->AppState;
+    BulkDataTransferClient * bdxApp = (BulkDataTransferClient *) ec->AppState;
 
     // Verify that the message is a ReceiveInit Response.
     if (profileId != kWeaveProfile_BDX || (msgType != kMsgType_ReceiveAccept && msgType != kMsgType_ReceiveReject))
@@ -474,7 +480,7 @@ WEAVE_ERROR BulkDataTransferClient::HandleReceiveInitResponse(ExchangeContext *e
         printf("Supposed maxBlockSize: %d\n", ri.mMaxBlockSize);
         DumpMemory(payload->Start(), payload->DataLength(), "--> ", 16);
 
-        //Send BlockQuery request
+        // Send BlockQuery request
         bdxApp->SendBlockQueryRequest();
     }
     else if (msgType == kMsgType_ReceiveReject)
@@ -505,7 +511,7 @@ WEAVE_ERROR BulkDataTransferClient::SendBlock()
 
     // Configure the encryption and signature types to be used to send the request.
     mExchangeCtx->EncryptionType = EncryptionType;
-    mExchangeCtx->KeyId = KeyId;
+    mExchangeCtx->KeyId          = KeyId;
 
     // Read the data from the file and build the BlockSend message
     printf("Reading data\n");
@@ -514,8 +520,8 @@ WEAVE_ERROR BulkDataTransferClient::SendBlock()
     printf("Data read: %d bytes of max size %d\n", bytesRead, mMaxBlockSize);
 
     BlockSend blockSend;
-    blockSend.init(mBlockCounter++, bytesRead, blockData); //first block sent is zero (next will be one, next two, etc)
-    PacketBuffer* blockSendPayload = PacketBuffer::New();
+    blockSend.init(mBlockCounter++, bytesRead, blockData); // first block sent is zero (next will be one, next two, etc)
+    PacketBuffer * blockSendPayload = PacketBuffer::New();
     blockSend.pack(blockSendPayload);
 
     // Send a BlockSend message. Make sure it's an EOF if this is the last block.
@@ -536,7 +542,8 @@ WEAVE_ERROR BulkDataTransferClient::SendBlock()
     else
         printf("Sending Block...\n");
 
-    WEAVE_ERROR err = mExchangeCtx->SendMessage(kWeaveProfile_BDX, atEOF ? kMsgType_BlockEOF : kMsgType_BlockSend, blockSendPayload);
+    WEAVE_ERROR err =
+        mExchangeCtx->SendMessage(kWeaveProfile_BDX, atEOF ? kMsgType_BlockEOF : kMsgType_BlockSend, blockSendPayload);
     blockSendPayload = NULL;
     if (err != WEAVE_NO_ERROR)
     {
@@ -564,7 +571,7 @@ WEAVE_ERROR BulkDataTransferClient::SendBlockQueryRequest()
 
     // Configure the encryption and signature types to be used to send the request.
     mExchangeCtx->EncryptionType = EncryptionType;
-    mExchangeCtx->KeyId = KeyId;
+    mExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     mExchangeCtx->OnMessageReceived = HandleBlockQueryResponse;
@@ -574,13 +581,13 @@ WEAVE_ERROR BulkDataTransferClient::SendBlockQueryRequest()
      */
 
     BlockQuery blockQuery;
-    //FIXME: let's not increment the counter here so that we can e.g. resend the same block or test it easier
-    blockQuery.init(mBlockCounter++); //first block requested is zero (next will be one, next two, etc)
-    PacketBuffer* blockQueryPayload = PacketBuffer::New();
+    // FIXME: let's not increment the counter here so that we can e.g. resend the same block or test it easier
+    blockQuery.init(mBlockCounter++); // first block requested is zero (next will be one, next two, etc)
+    PacketBuffer * blockQueryPayload = PacketBuffer::New();
     blockQuery.pack(blockQueryPayload);
 
     // Send a BlockQuery request message. Discard the exchange context if the send fails.
-    WEAVE_ERROR err = mExchangeCtx->SendMessage(kWeaveProfile_BDX, kMsgType_BlockQuery, blockQueryPayload);
+    WEAVE_ERROR err   = mExchangeCtx->SendMessage(kWeaveProfile_BDX, kMsgType_BlockQuery, blockQueryPayload);
     blockQueryPayload = NULL;
     if (err != WEAVE_NO_ERROR)
     {
@@ -596,11 +603,13 @@ WEAVE_ERROR BulkDataTransferClient::SendBlockQueryRequest()
     return err;
 }
 
-void BulkDataTransferClient::HandleBlockQueryResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferClient::HandleBlockQueryResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * payload)
 {
     printf("0 HandleBlockQueryResponse entering\n");
 
-    BulkDataTransferClient *bdxApp = (BulkDataTransferClient *)ec->AppState;
+    BulkDataTransferClient * bdxApp = (BulkDataTransferClient *) ec->AppState;
 
     // Verify that the message is a ReceiveInit Response.
     if (profileId != kWeaveProfile_BDX || (msgType != kMsgType_BlockSend && msgType != kMsgType_BlockEOF))
@@ -624,14 +633,15 @@ void BulkDataTransferClient::HandleBlockQueryResponse(ExchangeContext *ec, const
         printf("3 HandleBlockQueryResponse (BlockSend)\n");
         DumpMemory(payload->Start(), payload->DataLength(), "--> ", 16);
 
-        if (bdxApp->mDestFile) {
+        if (bdxApp->mDestFile)
+        {
             // Write bulk data to disk.
             // TODO: ensure this isn't writing the header info to disk as well
             int wtd = fwrite(payload->Start(), 1, payload->DataLength(), bdxApp->mDestFile);
             printf("Wrote %d bytes to disk.\n", wtd);
         }
 
-        //Send another BlockQuery
+        // Send another BlockQuery
         bdxApp->SendBlockQueryRequest();
     }
     else if (msgType == kMsgType_BlockEOF)
@@ -639,8 +649,9 @@ void BulkDataTransferClient::HandleBlockQueryResponse(ExchangeContext *ec, const
         printf("4 HandleBlockQueryResponse (BlockEOF)\n");
         DumpMemory(payload->Start(), payload->DataLength(), "==> ", 16);
 
-        //TODO: this isn't writing the payload to the file!!!!!
-        if (bdxApp->mDestFile) {
+        // TODO: this isn't writing the payload to the file!!!!!
+        if (bdxApp->mDestFile)
+        {
             // Close destination file.
             if (fclose(bdxApp->mDestFile) == EOF)
             {
@@ -649,7 +660,7 @@ void BulkDataTransferClient::HandleBlockQueryResponse(ExchangeContext *ec, const
             }
         }
 
-        //Send final BlockEOFAck
+        // Send final BlockEOFAck
         bdxApp->SendBlockEOFAck();
     }
 
@@ -671,7 +682,7 @@ WEAVE_ERROR BulkDataTransferClient::SendBlockEOFAck()
 
     // Configure the encryption and signature types to be used to send the request.
     mExchangeCtx->EncryptionType = EncryptionType;
-    mExchangeCtx->KeyId = KeyId;
+    mExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     mExchangeCtx->OnMessageReceived = HandleBlockEOFAckResponse;
@@ -681,12 +692,12 @@ WEAVE_ERROR BulkDataTransferClient::SendBlockEOFAck()
      */
 
     BlockEOFAck blockEOFAck;
-    blockEOFAck.init(mBlockCounter - 1); //final ack uses same block-counter of last block-query request
-    PacketBuffer* blockEOFAckPayload = PacketBuffer::New();
+    blockEOFAck.init(mBlockCounter - 1); // final ack uses same block-counter of last block-query request
+    PacketBuffer * blockEOFAckPayload = PacketBuffer::New();
     blockEOFAck.pack(blockEOFAckPayload);
 
     // Send an BlockEOFAck request message. Discard the exchange context if the send fails.
-    WEAVE_ERROR err = mExchangeCtx->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAck, blockEOFAckPayload);
+    WEAVE_ERROR err    = mExchangeCtx->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAck, blockEOFAckPayload);
     blockEOFAckPayload = NULL;
     if (err != WEAVE_NO_ERROR)
     {
@@ -702,7 +713,9 @@ WEAVE_ERROR BulkDataTransferClient::SendBlockEOFAck()
     return err;
 }
 
-void BulkDataTransferClient::HandleBlockEOFAckResponse(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferClient::HandleBlockEOFAckResponse(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                       const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                       PacketBuffer * payload)
 {
     printf("A response to BlockEOFAck is NOT expected!\n");
 }

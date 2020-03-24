@@ -54,7 +54,7 @@ using namespace ::nl::Weave::Profiles::DeviceDescription;
 
 #define StandardTimeout 10000 // this is in milliseconds
 
-bool UpdateDone = false;
+bool UpdateDone     = false;
 bool RelocationDone = false;
 
 /*
@@ -67,13 +67,13 @@ bool RelocationDone = false;
 enum
 {
     // context-specific tags
-    kTag_SmokeStatus =        0,
-    kTag_CoStatus =           1,
-    kTag_HeatStatus =         2,
-    kTag_HushedState =        3,
-    kTag_GestureHushEnable =  8,
-    kTag_HeadsUpEnable =      9,
-    kTag_NightLightEnable =   10,
+    kTag_SmokeStatus       = 0,
+    kTag_CoStatus          = 1,
+    kTag_HeatStatus        = 2,
+    kTag_HushedState       = 3,
+    kTag_GestureHushEnable = 8,
+    kTag_HeadsUpEnable     = 9,
+    kTag_NightLightEnable  = 10,
 };
 
 /*
@@ -82,29 +82,16 @@ enum
 
 enum
 {
-    dspStatus_None =         0,
-    dspStatus_HU1 =         1,
-    dspStatus_HU2 =         2,
-    dspStatus_Alarm =        3,
+    dspStatus_None  = 0,
+    dspStatus_HU1   = 1,
+    dspStatus_HU2   = 2,
+    dspStatus_Alarm = 3,
 };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gCASEOptions,
-    &gDeviceDescOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
-
+static OptionSet * gToolOptionSets[] = { &gNetworkOptions,        &gWeaveNodeOptions, &gCASEOptions, &gDeviceDescOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,      NULL };
 
 /*
  * to perform a relocation test we use the Structure
@@ -112,7 +99,7 @@ static OptionSet *gToolOptionSets[] =
  */
 
 unsigned char BogusInstance[] = "fbeb75b0-6ad8-11e4-a2e3-22000a6d8bca";
-uint32_t BogusInstanceLength = 36;
+uint32_t BogusInstanceLength  = 36;
 
 // here's a root server record for the directory
 
@@ -128,9 +115,9 @@ const struct
 
 // and here's an accessor
 
-WEAVE_ERROR getRootDirectory(uint8_t *aDirectory, uint16_t aDirectoryLen)
+WEAVE_ERROR getRootDirectory(uint8_t * aDirectory, uint16_t aDirectoryLen)
 {
-    memcpy(aDirectory, (uint8_t *)&rootDirectory, 45);
+    memcpy(aDirectory, (uint8_t *) &rootDirectory, 45);
 
     return WEAVE_NO_ERROR;
 }
@@ -140,8 +127,7 @@ WEAVE_ERROR getRootDirectory(uint8_t *aDirectory, uint16_t aDirectoryLen)
  * instance in it, i.e. the Topaz device settings profile.
  */
 
-class StubSettingsDatabase :
-    public ProfileDatabase
+class StubSettingsDatabase : public ProfileDatabase
 {
 public:
     /*
@@ -149,37 +135,37 @@ public:
      * for testing purposes.
      */
 
-    class DeviceSettingsProfileData :
-        public ProfileData
+    class DeviceSettingsProfileData : public ProfileData
     {
     public:
         DeviceSettingsProfileData()
         {
             mVersion = 0;
 
-            mSmokeStatus = dspStatus_None;
-            mCoStatus = dspStatus_None;
-            mHeatStatus = dspStatus_None;
-            mIsHushed = false;
+            mSmokeStatus          = dspStatus_None;
+            mCoStatus             = dspStatus_None;
+            mHeatStatus           = dspStatus_None;
+            mIsHushed             = false;
             mGestureHushIsEnabled = true;
-            mHeadsUpIsEnabled = true;
-            mNightLightIsEnabled = false;
+            mHeadsUpIsEnabled     = true;
+            mNightLightIsEnabled  = false;
         };
 
-        WEAVE_ERROR init(uint8_t aSmokeStatus, uint8_t aCoStatus, uint8_t aHeatStatus, bool aHushed, bool aGestureHush, bool aHeadsUp, bool aNightLight)
+        WEAVE_ERROR init(uint8_t aSmokeStatus, uint8_t aCoStatus, uint8_t aHeatStatus, bool aHushed, bool aGestureHush,
+                         bool aHeadsUp, bool aNightLight)
         {
-            mSmokeStatus = aSmokeStatus;
-            mCoStatus = aCoStatus;
-            mHeatStatus = aHeatStatus;
-            mIsHushed = aHushed;
+            mSmokeStatus          = aSmokeStatus;
+            mCoStatus             = aCoStatus;
+            mHeatStatus           = aHeatStatus;
+            mIsHushed             = aHushed;
             mGestureHushIsEnabled = aGestureHush;
-            mHeadsUpIsEnabled = aHeadsUp;
-            mNightLightIsEnabled = aNightLight;
+            mHeadsUpIsEnabled     = aHeadsUp;
+            mNightLightIsEnabled  = aNightLight;
 
             return WEAVE_NO_ERROR;
         };
 
-        WEAVE_ERROR StoreItem(const uint64_t &aTag, TLVReader &aDataRdr)
+        WEAVE_ERROR StoreItem(const uint64_t & aTag, TLVReader & aDataRdr)
         {
             WEAVE_ERROR err;
 
@@ -214,10 +200,7 @@ public:
             return err;
         }
 
-        WEAVE_ERROR Retrieve(nl::Weave::TLV::TLVReader &aPathRdr, nl::Weave::TLV::TLVWriter &aDataWrtr)
-        {
-            return WEAVE_NO_ERROR;
-        }
+        WEAVE_ERROR Retrieve(nl::Weave::TLV::TLVReader & aPathRdr, nl::Weave::TLV::TLVWriter & aDataWrtr) { return WEAVE_NO_ERROR; }
 
         // data members
 
@@ -239,7 +222,7 @@ public:
      * not found).
      */
 
-    WEAVE_ERROR LookupProfileData(uint32_t aProfileId, TLVReader *aInstanceIdRdr, ProfileData **aTarget)
+    WEAVE_ERROR LookupProfileData(uint32_t aProfileId, TLVReader * aInstanceIdRdr, ProfileData ** aTarget)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -247,15 +230,9 @@ public:
 
         switch (aProfileId)
         {
-        case kWeaveProfile_NestProtect:
-            *aTarget = &TopazProfileData;
+        case kWeaveProfile_NestProtect: *aTarget = &TopazProfileData; break;
 
-            break;
-
-        default:
-            err = WEAVE_ERROR_INVALID_PROFILE_ID;
-
-            break;
+        default: err = WEAVE_ERROR_INVALID_PROFILE_ID; break;
         }
 
         return err;
@@ -274,10 +251,9 @@ ReferencedTLVData DataList;
  * a sub-class of the WDM client and supply the relevant methods as follows.
  */
 
-class WDMTestClient :
-    public DMClient
+class WDMTestClient : public DMClient
 {
-    WEAVE_ERROR ViewConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR ViewConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -314,7 +290,7 @@ class WDMTestClient :
         return err;
     }
 
-    WEAVE_ERROR ViewConfirm(const uint64_t &aResponderId, ReferencedTLVData &aDataList, uint16_t aTxnId)
+    WEAVE_ERROR ViewConfirm(const uint64_t & aResponderId, ReferencedTLVData & aDataList, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
         TLVWriter writer;
@@ -351,11 +327,7 @@ class WDMTestClient :
             err = StartDataListElement(writer);
             SuccessOrExit(err);
 
-            EncodePath(writer,
-                       ContextTag(kTag_WDMDataListElementPath),
-                       kWeaveProfile_NestProtect,
-                       gWeaveNodeOptions.LocalNodeId,
-                       1,
+            EncodePath(writer, ContextTag(kTag_WDMDataListElementPath), kWeaveProfile_NestProtect, gWeaveNodeOptions.LocalNodeId, 1,
                        ContextTag(kTag_NightLightEnable));
 
             // don't bother with the version and write the data and get out
@@ -368,7 +340,7 @@ class WDMTestClient :
             err = EndList(writer);
             SuccessOrExit(err);
 
-            DataList.init((uint16_t)writer.GetLengthWritten(), 100, TLVData);
+            DataList.init((uint16_t) writer.GetLengthWritten(), 100, TLVData);
 
             err = UpdateRequest(DataList, 3, StandardTimeout);
         }
@@ -394,7 +366,7 @@ class WDMTestClient :
             err = EndList(writer);
             SuccessOrExit(err);
 
-            PathList.init((uint16_t)writer.GetLengthWritten(), 100, TLVData);
+            PathList.init((uint16_t) writer.GetLengthWritten(), 100, TLVData);
 
             // now try a view request
             ViewRequest(PathList, 2, StandardTimeout);
@@ -412,35 +384,36 @@ class WDMTestClient :
         return err;
     }
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, uint16_t aTxnId)
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    WEAVE_ERROR SubscribeConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, ReferencedTLVData &aDataList, uint16_t aTxnId)
+    WEAVE_ERROR SubscribeConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList,
+                                 uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    WEAVE_ERROR UnsubscribeIndication(const uint64_t &aPublisherId, const TopicIdentifier &aTopicId, StatusReport &aReport)
+    WEAVE_ERROR UnsubscribeIndication(const uint64_t & aPublisherId, const TopicIdentifier & aTopicId, StatusReport & aReport)
     {
-    printf("processing: <unsubscribe indication 0x%" PRIx64 ", 0x%" PRIx64 ">\n", aPublisherId, aTopicId);
+        printf("processing: <unsubscribe indication 0x%" PRIx64 ", 0x%" PRIx64 ">\n", aPublisherId, aTopicId);
 
-    return WEAVE_NO_ERROR;
+        return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR UpdateConfirm(const uint64_t &aResponderId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR UpdateConfirm(const uint64_t & aResponderId, StatusReport & aStatus, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -464,7 +437,7 @@ class WDMTestClient :
             err = EndList(writer);
             SuccessOrExit(err);
 
-            PathList.init((uint16_t)writer.GetLengthWritten(), 100, TLVData);
+            PathList.init((uint16_t) writer.GetLengthWritten(), 100, TLVData);
 
             // now try a view request
             ViewRequest(PathList, 2, StandardTimeout);
@@ -482,41 +455,39 @@ class WDMTestClient :
         return err;
     }
 
-    WEAVE_ERROR UpdateConfirm(const uint64_t &aResponderId, ReferencedTLVData &aVersionList, uint16_t aTxnId)
+    WEAVE_ERROR UpdateConfirm(const uint64_t & aResponderId, ReferencedTLVData & aVersionList, uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    WEAVE_ERROR CancelSubscriptionIndication(const uint64_t &aRequestorId, const TopicIdentifier &aTopicId)
+    WEAVE_ERROR CancelSubscriptionIndication(const uint64_t & aRequestorId, const TopicIdentifier & aTopicId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    WEAVE_ERROR CancelSubscriptionConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, StatusReport &aStatus, uint16_t aTxnId)
+    WEAVE_ERROR CancelSubscriptionConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, StatusReport & aStatus,
+                                          uint16_t aTxnId)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    WEAVE_ERROR NotifyIndication(const TopicIdentifier &aTopicId, ReferencedTLVData &aDataList)
+    WEAVE_ERROR NotifyIndication(const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
         return err;
     }
 
-    void IncompleteIndication(const uint64_t &aPeerNodeId, StatusReport &aReport)
-    {
-    }
-
+    void IncompleteIndication(const uint64_t & aPeerNodeId, StatusReport & aReport) { }
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -547,30 +518,27 @@ int main(int argc, char *argv[])
 
     WeaveDeviceDescriptor deviceDesc;
 
-    deviceDesc.DeviceId = gWeaveNodeOptions.LocalNodeId;
-    deviceDesc.FabricId = gWeaveNodeOptions.FabricId;
-    deviceDesc.VendorId = kWeaveVendor_NestLabs;
-    deviceDesc.ProductId = nl::Weave::Profiles::Vendor::Nestlabs::DeviceDescription::kNestWeaveProduct_Topaz;
-    deviceDesc.ProductRevision = 1;
-    deviceDesc.ManufacturingDate.Year = 2013;
+    deviceDesc.DeviceId                = gWeaveNodeOptions.LocalNodeId;
+    deviceDesc.FabricId                = gWeaveNodeOptions.FabricId;
+    deviceDesc.VendorId                = kWeaveVendor_NestLabs;
+    deviceDesc.ProductId               = nl::Weave::Profiles::Vendor::Nestlabs::DeviceDescription::kNestWeaveProduct_Topaz;
+    deviceDesc.ProductRevision         = 1;
+    deviceDesc.ManufacturingDate.Year  = 2013;
     deviceDesc.ManufacturingDate.Month = 1;
-    deviceDesc.ManufacturingDate.Day = 1;
+    deviceDesc.ManufacturingDate.Day   = 1;
     memset(deviceDesc.Primary802154MACAddress, 0x11, sizeof(deviceDesc.Primary802154MACAddress));
     memset(deviceDesc.PrimaryWiFiMACAddress, 0x22, sizeof(deviceDesc.PrimaryWiFiMACAddress));
     strcpy(deviceDesc.RendezvousWiFiESSID, "MOCK-1111");
     strcpy(deviceDesc.SerialNumber, "mock-device");
     strcpy(deviceDesc.SoftwareVersion, "mock-device/1.0");
-    deviceDesc.DeviceFeatures =
-        WeaveDeviceDescriptor::kFeature_HomeAlarmLinkCapable |
-        WeaveDeviceDescriptor::kFeature_LinePowered;
+    deviceDesc.DeviceFeatures = WeaveDeviceDescriptor::kFeature_HomeAlarmLinkCapable | WeaveDeviceDescriptor::kFeature_LinePowered;
 
     uint8_t deviceInitData[256];
     uint32_t deviceInitDataLen;
     WeaveDeviceDescriptor::EncodeTLV(deviceDesc, deviceInitData, sizeof(deviceInitData), deviceInitDataLen);
 
-    gCASEOptions.NodePayload = deviceInitData;
+    gCASEOptions.NodePayload       = deviceInitData;
     gCASEOptions.NodePayloadLength = deviceInitDataLen;
-
 
     // initialize dummy path list
 
@@ -589,7 +557,7 @@ int main(int argc, char *argv[])
 
     writer.Finalize();
 
-    err = PathList.init((uint16_t)writer.GetLengthWritten(), 100, TLVData);
+    err = PathList.init((uint16_t) writer.GetLengthWritten(), 100, TLVData);
     SuccessOrExit(err);
 
     // set up NWK
@@ -620,7 +588,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
         ServiceNetwork(sleepTime);
     }

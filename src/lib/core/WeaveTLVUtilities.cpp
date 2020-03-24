@@ -35,9 +35,10 @@ namespace TLV {
 
 namespace Utilities {
 
-struct FindContext {
+struct FindContext
+{
     const uint64_t & mTag;
-    TLVReader &      mReader;
+    TLVReader & mReader;
 };
 
 /**
@@ -60,7 +61,7 @@ struct FindContext {
  *
  *  @retval  The last value returned by @a aHandler, if different than #WEAVE_NO_ERROR
  */
-static WEAVE_ERROR Iterate(TLVReader &aReader, size_t aDepth, IterateHandler aHandler, void *aContext, bool aRecurse)
+static WEAVE_ERROR Iterate(TLVReader & aReader, size_t aDepth, IterateHandler aHandler, void * aContext, bool aRecurse)
 {
     WEAVE_ERROR retval = WEAVE_NO_ERROR;
 
@@ -116,9 +117,9 @@ exit:
  *  @retval  The last value returned by @a aHandler, if different than #WEAVE_NO_ERROR
  *
  */
-WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aContext)
+WEAVE_ERROR Iterate(const TLVReader & aReader, IterateHandler aHandler, void * aContext)
 {
-    const bool  recurse = true;
+    const bool recurse = true;
     WEAVE_ERROR retval;
 
     retval = Iterate(aReader, aHandler, aContext, recurse);
@@ -148,11 +149,11 @@ WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aCo
  *  @retval  The last value returned by @a aHandler, if different than #WEAVE_NO_ERROR
  *
  */
-WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aContext, const bool aRecurse)
+WEAVE_ERROR Iterate(const TLVReader & aReader, IterateHandler aHandler, void * aContext, const bool aRecurse)
 {
-    const size_t depth  = 0;
-    TLVReader    temp;
-    WEAVE_ERROR  retval = WEAVE_ERROR_NOT_IMPLEMENTED;
+    const size_t depth = 0;
+    TLVReader temp;
+    WEAVE_ERROR retval = WEAVE_ERROR_NOT_IMPLEMENTED;
 
     VerifyOrExit(aHandler != NULL, retval = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -160,7 +161,7 @@ WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aCo
 
     retval = Iterate(temp, depth, aHandler, aContext, aRecurse);
 
- exit:
+exit:
     return retval;
 }
 
@@ -178,7 +179,7 @@ WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aCo
  *  @retval  #WEAVE_ERROR_INVALID_ARGUMENT  If @a aContext is NULL.
  *
  */
-static WEAVE_ERROR CountHandler(const TLVReader &aReader, size_t aDepth, void *aContext)
+static WEAVE_ERROR CountHandler(const TLVReader & aReader, size_t aDepth, void * aContext)
 {
     WEAVE_ERROR retval = WEAVE_NO_ERROR;
 
@@ -186,7 +187,7 @@ static WEAVE_ERROR CountHandler(const TLVReader &aReader, size_t aDepth, void *a
 
     *static_cast<size_t *>(aContext) += 1;
 
- exit:
+exit:
     return retval;
 }
 
@@ -204,9 +205,9 @@ static WEAVE_ERROR CountHandler(const TLVReader &aReader, size_t aDepth, void *a
  *  @retval  #WEAVE_NO_ERROR    On success.
  *
  */
-WEAVE_ERROR Count(const TLVReader &aReader, size_t &aCount)
+WEAVE_ERROR Count(const TLVReader & aReader, size_t & aCount)
 {
-    const bool  recurse = true;
+    const bool recurse = true;
     WEAVE_ERROR retval;
 
     retval = Count(aReader, aCount, recurse);
@@ -231,7 +232,7 @@ WEAVE_ERROR Count(const TLVReader &aReader, size_t &aCount)
  *  @retval  #WEAVE_NO_ERROR    On success.
  *
  */
-WEAVE_ERROR Count(const TLVReader &aReader, size_t &aCount, const bool aRecurse)
+WEAVE_ERROR Count(const TLVReader & aReader, size_t & aCount, const bool aRecurse)
 {
     WEAVE_ERROR retval;
 
@@ -260,10 +261,10 @@ WEAVE_ERROR Count(const TLVReader &aReader, size_t &aCount, const bool aRecurse)
  *  @retval  #WEAVE_ERROR_MAX               If the specified tag is found.
  *
  */
-static WEAVE_ERROR FindHandler(const TLVReader &aReader, size_t aDepth, void *aContext)
+static WEAVE_ERROR FindHandler(const TLVReader & aReader, size_t aDepth, void * aContext)
 {
     const FindContext * theContext = static_cast<const FindContext *>(aContext);
-    WEAVE_ERROR         retval     = WEAVE_NO_ERROR;
+    WEAVE_ERROR retval             = WEAVE_NO_ERROR;
 
     VerifyOrExit(aContext != NULL, retval = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -274,7 +275,7 @@ static WEAVE_ERROR FindHandler(const TLVReader &aReader, size_t aDepth, void *aC
         retval = WEAVE_ERROR_MAX;
     }
 
- exit:
+exit:
     return retval;
 }
 
@@ -293,9 +294,9 @@ static WEAVE_ERROR FindHandler(const TLVReader &aReader, size_t aDepth, void *aC
  *  @retval  #WEAVE_ERROR_TLV_TAG_NOT_FOUND     If the specified tag @a aTag was not found.
  *
  */
-WEAVE_ERROR Find(const TLVReader &aReader, const uint64_t &aTag, TLVReader &aResult)
+WEAVE_ERROR Find(const TLVReader & aReader, const uint64_t & aTag, TLVReader & aResult)
 {
-    const bool  recurse = true;
+    const bool recurse = true;
     WEAVE_ERROR retval;
 
     retval = Find(aReader, aTag, aResult, recurse);
@@ -322,7 +323,7 @@ WEAVE_ERROR Find(const TLVReader &aReader, const uint64_t &aTag, TLVReader &aRes
  *  @retval  #WEAVE_ERROR_TLV_TAG_NOT_FOUND     If the specified tag @a aTag was not found.
  *
  */
-WEAVE_ERROR Find(const TLVReader &aReader, const uint64_t &aTag, TLVReader &aResult, const bool aRecurse)
+WEAVE_ERROR Find(const TLVReader & aReader, const uint64_t & aTag, TLVReader & aResult, const bool aRecurse)
 {
     FindContext theContext = { aTag, aResult };
     WEAVE_ERROR retval;
@@ -339,22 +340,19 @@ WEAVE_ERROR Find(const TLVReader &aReader, const uint64_t &aTag, TLVReader &aRes
 
 struct FindPredicateContext
 {
-    TLVReader &mResult;
+    TLVReader & mResult;
     IterateHandler mHandler;
     void * mContext;
-    FindPredicateContext(TLVReader &inReader, IterateHandler inHandler, void *inContext);
+    FindPredicateContext(TLVReader & inReader, IterateHandler inHandler, void * inContext);
 };
 
-FindPredicateContext::FindPredicateContext(TLVReader &inReader, IterateHandler inHandler, void *inContext) :
-        mResult(inReader),
-        mHandler(inHandler),
-        mContext(inContext)
-{
-}
+FindPredicateContext::FindPredicateContext(TLVReader & inReader, IterateHandler inHandler, void * inContext) :
+    mResult(inReader), mHandler(inHandler), mContext(inContext)
+{ }
 
-static WEAVE_ERROR FindPredicateHandler(const TLVReader & aReader, size_t aDepth, void *aContext)
+static WEAVE_ERROR FindPredicateHandler(const TLVReader & aReader, size_t aDepth, void * aContext)
 {
-    FindPredicateContext *theContext = static_cast<FindPredicateContext *>(aContext);
+    FindPredicateContext * theContext = static_cast<FindPredicateContext *>(aContext);
     WEAVE_ERROR err;
 
     err = theContext->mHandler(aReader, aDepth, theContext->mContext);
@@ -392,9 +390,9 @@ static WEAVE_ERROR FindPredicateHandler(const TLVReader & aReader, size_t aDepth
  *  @retval  #WEAVE_ERROR_TLV_TAG_NOT_FOUND     If the specified @a aPredicate did not locate the specified element
  *
  */
-WEAVE_ERROR Find(const TLVReader &aReader, IterateHandler aPredicate, void *aContext, TLVReader &aResult)
+WEAVE_ERROR Find(const TLVReader & aReader, IterateHandler aPredicate, void * aContext, TLVReader & aResult)
 {
-    const bool  recurse = true;
+    const bool recurse = true;
     return Find(aReader, aPredicate, aContext, aResult, recurse);
 }
 
@@ -428,7 +426,7 @@ WEAVE_ERROR Find(const TLVReader &aReader, IterateHandler aPredicate, void *aCon
  *  @retval  #WEAVE_ERROR_TLV_TAG_NOT_FOUND     If the specified @a aPredicate did not locate the specified element
  *
  */
-WEAVE_ERROR Find(const TLVReader &aReader, IterateHandler aPredicate, void *aContext, TLVReader &aResult, const bool aRecurse)
+WEAVE_ERROR Find(const TLVReader & aReader, IterateHandler aPredicate, void * aContext, TLVReader & aResult, const bool aRecurse)
 {
     WEAVE_ERROR retval;
     FindPredicateContext theContext(aResult, aPredicate, aContext);

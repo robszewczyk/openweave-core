@@ -40,8 +40,8 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // user_pincodes
-    { kPropertyHandle_UserPincodes, 0 }, // value
+    { kPropertyHandle_Root, 1 },               // user_pincodes
+    { kPropertyHandle_UserPincodes, 0 },       // value
     { kPropertyHandle_UserPincodes_Value, 1 }, // user_id
     { kPropertyHandle_UserPincodes_Value, 2 }, // pincode
     { kPropertyHandle_UserPincodes_Value, 3 }, // pincode_credential_enabled
@@ -51,71 +51,56 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsDictionary Table
 //
 
-uint8_t IsDictionaryTypeHandleBitfield[] = {
-        0x1
-};
+uint8_t IsDictionaryTypeHandleBitfield[] = { 0x1 };
 
 //
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0x10
-};
+uint8_t IsNullableHandleBitfield[] = { 0x10 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        3,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    3,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        IsDictionaryTypeHandleBitfield,
-        NULL,
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    IsDictionaryTypeHandleBitfield,
+    NULL,
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor UserPincodeFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(UserPincode, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1
-    },
+const nl::FieldDescriptor UserPincodeFieldDescriptors[] = {
+    { NULL, offsetof(UserPincode, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1 },
 
-    {
-        NULL, offsetof(UserPincode, pincode), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 2
-    },
+    { NULL, offsetof(UserPincode, pincode), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 2 },
 
-    {
-        NULL, offsetof(UserPincode, pincodeCredentialEnabled), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1), 3
-    },
+    { NULL, offsetof(UserPincode, pincodeCredentialEnabled), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1), 3 },
 
 };
 
-const nl::SchemaFieldDescriptor UserPincode::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(UserPincodeFieldDescriptors)/sizeof(UserPincodeFieldDescriptors[0]),
-    .mFields = UserPincodeFieldDescriptors,
-    .mSize = sizeof(UserPincode)
-};
+const nl::SchemaFieldDescriptor UserPincode::FieldSchema = { .mNumFieldDescriptorElements = sizeof(UserPincodeFieldDescriptors) /
+                                                                 sizeof(UserPincodeFieldDescriptors[0]),
+                                                             .mFields = UserPincodeFieldDescriptors,
+                                                             .mSize   = sizeof(UserPincode) };
 
 } // namespace UserPincodesSettingsTrait
 } // namespace Security

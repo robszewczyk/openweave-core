@@ -33,7 +33,6 @@
 
 #include "BulkDataTransfer.h"
 
-
 namespace nl {
 namespace Weave {
 namespace Profiles {
@@ -44,12 +43,11 @@ class WeaveBdxDelegate
 public:
     WeaveBdxDelegate(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *pExchangeMgr,
-                     InetLayer *pInetLayer);
+    WEAVE_ERROR Init(WeaveExchangeManager * pExchangeMgr, InetLayer * pInetLayer);
     WEAVE_ERROR Shutdown(void);
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    WEAVE_ERROR EstablishWeaveConnection(ServiceDirectory::WeaveServiceManager &aServiceMgr, WeaveAuthMode anAuthMode);
+    WEAVE_ERROR EstablishWeaveConnection(ServiceDirectory::WeaveServiceManager & aServiceMgr, WeaveAuthMode anAuthMode);
 #endif
 
     void StartBdxUploadingFile(void);
@@ -57,47 +55,42 @@ public:
     bool UploadInProgress(void) { return mInProgress; };
 
 protected:
-    virtual void BdxSendAcceptHandler(SendAccept *aSendAcceptMsg) = 0;
-    virtual void BdxRejectHandler(StatusReport *aReport) = 0;
-    virtual void BdxGetBlockHandler(uint64_t *pLength,
-                                    uint8_t **aDataBlock,
-                                    bool *isLastBlock) = 0;
-    virtual void BdxXferErrorHandler(StatusReport *aXferError) = 0;
-    virtual void BdxXferDoneHandler(void) = 0;
-    virtual void BdxErrorHandler(WEAVE_ERROR anErrorCode) = 0;
+    virtual void BdxSendAcceptHandler(SendAccept * aSendAcceptMsg)                                 = 0;
+    virtual void BdxRejectHandler(StatusReport * aReport)                                          = 0;
+    virtual void BdxGetBlockHandler(uint64_t * pLength, uint8_t ** aDataBlock, bool * isLastBlock) = 0;
+    virtual void BdxXferErrorHandler(StatusReport * aXferError)                                    = 0;
+    virtual void BdxXferDoneHandler(void)                                                          = 0;
+    virtual void BdxErrorHandler(WEAVE_ERROR anErrorCode)                                          = 0;
 
-    virtual char *BdxGetFileName(void) = 0;
+    virtual char * BdxGetFileName(void) = 0;
 
 private:
-    static void BdxSendAcceptHandlerEntry(void *aAppState, SendAccept *aSendAcceptMsg);
-    static void BdxRejectHandlerEntry(void *aAppState, StatusReport *aReport);
-    static void BdxGetBlockHandlerEntry(void *aAppState,
-                                        uint64_t *pLength,
-                                        uint8_t **aDataBlock,
-                                        bool *isLastBlock);
-    static void BdxXferErrorHandlerEntry(void *aAppState, StatusReport *aXferError);
-    static void BdxXferDoneHandlerEntry(void *aAppState);
-    static void BdxErrorHandlerEntry(void *aAppState, WEAVE_ERROR anErrorCode);
+    static void BdxSendAcceptHandlerEntry(void * aAppState, SendAccept * aSendAcceptMsg);
+    static void BdxRejectHandlerEntry(void * aAppState, StatusReport * aReport);
+    static void BdxGetBlockHandlerEntry(void * aAppState, uint64_t * pLength, uint8_t ** aDataBlock, bool * isLastBlock);
+    static void BdxXferErrorHandlerEntry(void * aAppState, StatusReport * aXferError);
+    static void BdxXferDoneHandlerEntry(void * aAppState);
+    static void BdxErrorHandlerEntry(void * aAppState, WEAVE_ERROR anErrorCode);
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    static void HandleWeaveServiceMgrStatusEntry(void *anAppState, uint32_t aProfileId, uint16_t aStatusCode);
+    static void HandleWeaveServiceMgrStatusEntry(void * anAppState, uint32_t aProfileId, uint16_t aStatusCode);
 #endif
 
-    static void HandleWeaveConnectionCompleteEntry(WeaveConnection *con, WEAVE_ERROR conErr);
-    static void HandleWeaveConnectionClosedEntry(WeaveConnection *con, WEAVE_ERROR conErr);
+    static void HandleWeaveConnectionCompleteEntry(WeaveConnection * con, WEAVE_ERROR conErr);
+    static void HandleWeaveConnectionClosedEntry(WeaveConnection * con, WEAVE_ERROR conErr);
 
 protected:
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    virtual void HandleWeaveServiceMgrStatus(void *anAppState, uint32_t aProfileId, uint16_t aStatusCode);
+    virtual void HandleWeaveServiceMgrStatus(void * anAppState, uint32_t aProfileId, uint16_t aStatusCode);
 #endif
 
-    virtual void HandleWeaveConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-    virtual void HandleWeaveConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+    virtual void HandleWeaveConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+    virtual void HandleWeaveConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
 private:
     WeaveBdxClient mBdxClient;
-    InetLayer *mpInetLayer;
-    WeaveExchangeManager *mpExchangeMgr;
+    InetLayer * mpInetLayer;
+    WeaveExchangeManager * mpExchangeMgr;
 
     static bool mInProgress;
 
@@ -105,11 +98,10 @@ protected:
     uint16_t mMaxBlockSize;
     uint64_t mStartOffset;
     uint64_t mLength;
-
 };
-} // BulkDataTransfer
-} // Profiles
-} // Weave
-} // nl
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 #endif // _NL_WEAVE_BDX_DELEGATE_H_

@@ -22,14 +22,9 @@
 namespace nl {
 namespace Weave {
 
-MonotonicallyIncreasingCounter::MonotonicallyIncreasingCounter(void) :
-    mCounterValue(0)
-{
-}
+MonotonicallyIncreasingCounter::MonotonicallyIncreasingCounter(void) : mCounterValue(0) { }
 
-MonotonicallyIncreasingCounter::~MonotonicallyIncreasingCounter(void)
-{
-}
+MonotonicallyIncreasingCounter::~MonotonicallyIncreasingCounter(void) { }
 
 WEAVE_ERROR
 MonotonicallyIncreasingCounter::Init(uint32_t aStartValue)
@@ -51,11 +46,10 @@ MonotonicallyIncreasingCounter::Advance(void)
     return err;
 }
 
-uint32_t
-MonotonicallyIncreasingCounter::GetValue(void)
+uint32_t MonotonicallyIncreasingCounter::GetValue(void)
 {
     return mCounterValue;
 }
 
-} // Weave
-} // nl
+} // namespace Weave
+} // namespace nl

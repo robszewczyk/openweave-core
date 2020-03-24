@@ -34,7 +34,6 @@
 
 class VerhoeffTest;
 
-
 // Verhoeff10 -- Implements Verhoeff's check-digit algorithm for base-10 strings.
 //
 class NL_DLL_EXPORT Verhoeff10
@@ -42,35 +41,35 @@ class NL_DLL_EXPORT Verhoeff10
     friend class VerhoeffTest;
 
 public:
-    enum {
-        Base = 10,
+    enum
+    {
+        Base        = 10,
         PolygonSize = 5
     };
 
     // Compute a check character for a given string.
-    static char ComputeCheckChar(const char *str);
-    static char ComputeCheckChar(const char *str, size_t strLen);
+    static char ComputeCheckChar(const char * str);
+    static char ComputeCheckChar(const char * str, size_t strLen);
 
     // Verify a check character against a given string.
-    static bool ValidateCheckChar(char checkChar, const char *str);
-    static bool ValidateCheckChar(char checkChar, const char *str, size_t strLen);
+    static bool ValidateCheckChar(char checkChar, const char * str);
+    static bool ValidateCheckChar(char checkChar, const char * str, size_t strLen);
 
     // Verify a check character at the end of a given string.
-    static bool ValidateCheckChar(const char *str);
-    static bool ValidateCheckChar(const char *str, size_t strLen);
+    static bool ValidateCheckChar(const char * str);
+    static bool ValidateCheckChar(const char * str, size_t strLen);
 
     // Convert between a character and its corresponding value.
     static int CharToVal(char ch);
     static char ValToChar(int val);
 
 private:
-    Verhoeff10(void);	// not defined
-    ~Verhoeff10(void);	// not defined
+    Verhoeff10(void);  // not defined
+    ~Verhoeff10(void); // not defined
 
     static uint8_t sMultiplyTable[];
     static uint8_t sPermTable[];
 };
-
 
 // Verhoeff16 -- Implements Verhoeff's check-digit algorithm for base-16 (hex) strings.
 //
@@ -79,35 +78,35 @@ class NL_DLL_EXPORT Verhoeff16
     friend class VerhoeffTest;
 
 public:
-    enum {
-        Base = 16,
+    enum
+    {
+        Base        = 16,
         PolygonSize = 8
     };
 
     // Compute a check character for a given string.
-    static char ComputeCheckChar(const char *str);
-    static char ComputeCheckChar(const char *str, size_t strLen);
+    static char ComputeCheckChar(const char * str);
+    static char ComputeCheckChar(const char * str, size_t strLen);
 
     // Verify a check character against a given string.
-    static bool ValidateCheckChar(char checkChar, const char *str);
-    static bool ValidateCheckChar(char checkChar, const char *str, size_t strLen);
+    static bool ValidateCheckChar(char checkChar, const char * str);
+    static bool ValidateCheckChar(char checkChar, const char * str, size_t strLen);
 
     // Verify a check character at the end of a given string.
-    static bool ValidateCheckChar(const char *str);
-    static bool ValidateCheckChar(const char *str, size_t strLen);
+    static bool ValidateCheckChar(const char * str);
+    static bool ValidateCheckChar(const char * str, size_t strLen);
 
     // Convert between a character and its corresponding value.
     static int CharToVal(char ch);
     static char ValToChar(int val);
 
 private:
-    Verhoeff16(void);	// not defined
-    ~Verhoeff16(void);	// not defined
+    Verhoeff16(void);  // not defined
+    ~Verhoeff16(void); // not defined
 
     static uint8_t sMultiplyTable[];
     static uint8_t sPermTable[];
 };
-
 
 // Verhoeff32 -- Implements Verhoeff's check-digit algorithm for base-32 strings.
 //
@@ -118,37 +117,37 @@ class NL_DLL_EXPORT Verhoeff32
     friend class VerhoeffTest;
 
 public:
-    enum {
-        Base = 32,
+    enum
+    {
+        Base        = 32,
         PolygonSize = 16
     };
 
     // Compute a check character for a given string.
-    static char ComputeCheckChar(const char *str);
-    static char ComputeCheckChar(const char *str, size_t strLen);
+    static char ComputeCheckChar(const char * str);
+    static char ComputeCheckChar(const char * str, size_t strLen);
 
     // Verify a check character against a given string.
-    static bool ValidateCheckChar(char checkChar, const char *str);
-    static bool ValidateCheckChar(char checkChar, const char *str, size_t strLen);
+    static bool ValidateCheckChar(char checkChar, const char * str);
+    static bool ValidateCheckChar(char checkChar, const char * str, size_t strLen);
 
     // Verify a check character at the end of a given string.
-    static bool ValidateCheckChar(const char *str);
-    static bool ValidateCheckChar(const char *str, size_t strLen);
+    static bool ValidateCheckChar(const char * str);
+    static bool ValidateCheckChar(const char * str, size_t strLen);
 
     // Convert between a character and its corresponding value.
     static int CharToVal(char ch);
     static char ValToChar(int val);
 
 private:
-    Verhoeff32(void);	// not defined
-    ~Verhoeff32(void);	// not defined
+    Verhoeff32(void);  // not defined
+    ~Verhoeff32(void); // not defined
 
     static uint8_t sMultiplyTable[];
     static uint8_t sPermTable[];
     static int8_t sCharToValTable[];
     static char sValToCharTable[];
 };
-
 
 // Verhoeff36 -- Implements Verhoeff's check-digit algorithm for base-36 strings.
 //
@@ -159,31 +158,31 @@ class NL_DLL_EXPORT Verhoeff36
     friend class VerhoeffTest;
 
 public:
-    enum {
-        Base = 36,
+    enum
+    {
+        Base        = 36,
         PolygonSize = 18
     };
 
-    static char ComputeCheckChar(const char *str);
-    static char ComputeCheckChar(const char *str, size_t strLen);
-    static bool ValidateCheckChar(char checkChar, const char *str);
-    static bool ValidateCheckChar(char checkChar, const char *str, size_t strLen);
-    static bool ValidateCheckChar(const char *str);
-    static bool ValidateCheckChar(const char *str, size_t strLen);
+    static char ComputeCheckChar(const char * str);
+    static char ComputeCheckChar(const char * str, size_t strLen);
+    static bool ValidateCheckChar(char checkChar, const char * str);
+    static bool ValidateCheckChar(char checkChar, const char * str, size_t strLen);
+    static bool ValidateCheckChar(const char * str);
+    static bool ValidateCheckChar(const char * str, size_t strLen);
 
     static int CharToVal(char ch);
     static char ValToChar(int val);
 
 private:
-    Verhoeff36(void);	// not defined
-    ~Verhoeff36(void);	// not defined
+    Verhoeff36(void);  // not defined
+    ~Verhoeff36(void); // not defined
 
     static uint8_t sMultiplyTable[];
     static uint8_t sPermTable[];
     static int8_t sCharToValTable[];
     static char sValToCharTable[];
 };
-
 
 // Verhoeff -- Implements core functions for Verhoeff's algorithm.
 //
@@ -192,8 +191,7 @@ class Verhoeff
 public:
     static int DihedralMultiply(int x, int y, int n);
     static int DihedralInvert(int val, int n);
-    static int Permute(int val, uint8_t *permTable, int permTableLen, int iterCount);
+    static int Permute(int val, uint8_t * permTable, int permTableLen, int iterCount);
 };
-
 
 #endif // _VERHOEFF_TEST_H

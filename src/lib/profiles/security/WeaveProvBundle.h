@@ -39,27 +39,26 @@ class WeaveProvisioningBundle
 public:
     uint64_t WeaveDeviceId;
 
-    const uint8_t *Certificate;
+    const uint8_t * Certificate;
     uint16_t CertificateLen;
 
-    const uint8_t *PrivateKey;
+    const uint8_t * PrivateKey;
     uint16_t PrivateKeyLen;
 
-    const char *PairingCode;
+    const char * PairingCode;
     uint16_t PairingCodeLen;
 
     void Clear(void);
 
     WEAVE_ERROR Verify(uint64_t expectedDeviceId);
 
-    static WEAVE_ERROR Decode(uint8_t *provBundleBuf, uint32_t provBundleLen, const char *masterKey, uint32_t masterKeyLen, WeaveProvisioningBundle &provBundle);
+    static WEAVE_ERROR Decode(uint8_t * provBundleBuf, uint32_t provBundleLen, const char * masterKey, uint32_t masterKeyLen,
+                              WeaveProvisioningBundle & provBundle);
 };
-
 
 } // namespace Security
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif /* WEAVEPROVBUNDLE_H_ */

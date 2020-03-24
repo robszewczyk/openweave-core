@@ -38,11 +38,11 @@ namespace Echo_Next {
  */
 WeaveEchoServer::WeaveEchoServer()
 {
-    AppState = NULL;
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    AppState              = NULL;
+    FabricState           = NULL;
+    ExchangeMgr           = NULL;
     OnEchoRequestReceived = NULL;
-    mEventCallback = NULL;
+    mEventCallback        = NULL;
 }
 
 /**
@@ -82,15 +82,14 @@ WEAVE_ERROR WeaveEchoServer::Init(WeaveExchangeManager * exchangeMgr, EventCallb
 #endif
 
     // Register to receive unsolicited Echo Request messages from the exchange manager.
-    err = exchangeMgr->RegisterUnsolicitedMessageHandler(
-            kWeaveProfile_Echo, kEchoMessageType_EchoRequest, HandleEchoRequest, this);
+    err = exchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, HandleEchoRequest, this);
     SuccessOrExit(err);
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
-    AppState = appState;
+    ExchangeMgr           = exchangeMgr;
+    FabricState           = exchangeMgr->FabricState;
+    AppState              = appState;
     OnEchoRequestReceived = NULL;
-    mEventCallback = eventCallback;
+    mEventCallback        = eventCallback;
 
 exit:
     return err;
@@ -127,7 +126,8 @@ WEAVE_ERROR WeaveEchoServer::Shutdown()
  *  @param[in]  outParam    Reference of output event parameters passed by the event callback
  *
  */
-void WeaveEchoServer::DefaultEventHandler(void * appState, EventType eventType, const InEventParam & inParam, OutEventParam & outParam)
+void WeaveEchoServer::DefaultEventHandler(void * appState, EventType eventType, const InEventParam & inParam,
+                                          OutEventParam & outParam)
 {
     outParam.DefaultHandlerCalled = true;
 }
@@ -145,7 +145,7 @@ void WeaveEchoServer::DefaultEventHandler(void * appState, EventType eventType, 
  *  @param[in]  appState        A pointer to an application-defined object which will be passed back
  *                              to the application whenever an API event occurs.
  */
-WEAVE_ERROR WeaveEchoServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR WeaveEchoServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     return Init(exchangeMgr, DefaultEventHandler, NULL);
 }
@@ -155,11 +155,11 @@ WEAVE_ERROR WeaveEchoServer::Init(WeaveExchangeManager *exchangeMgr)
 /**
  * Handle an incoming EchoRequest message from a peer.
  */
-void WeaveEchoServer::HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo,
-        const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
+void WeaveEchoServer::HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WeaveEchoServer * server = (WeaveEchoServer *) ec->AppState;
-    System::Layer *systemLayer = server->ExchangeMgr->MessageLayer->SystemLayer;
+    WeaveEchoServer * server    = (WeaveEchoServer *) ec->AppState;
+    System::Layer * systemLayer = server->ExchangeMgr->MessageLayer->SystemLayer;
     InEventParam inParam;
     OutEventParam outParam;
 
@@ -172,10 +172,10 @@ void WeaveEchoServer::HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo
     // If the application is using the new event-based API, deliver an EchoRequestReceived event.
     if (server->mEventCallback != DefaultEventHandler)
     {
-        inParam.Source = server;
+        inParam.Source                          = server;
         inParam.EchoRequestReceived.MessageInfo = msgInfo;
-        inParam.EchoRequestReceived.EC = ec;
-        inParam.EchoRequestReceived.Payload = payload;
+        inParam.EchoRequestReceived.EC          = ec;
+        inParam.EchoRequestReceived.Payload     = payload;
 
         server->mEventCallback(server->AppState, kEvent_EchoRequestReceived, inParam, outParam);
     }
@@ -221,12 +221,12 @@ void WeaveEchoServer::HandleEchoRequest(ExchangeContext * ec, const IPPacketInfo
  */
 void WeaveEchoServer::SendEchoResponse(System::Layer * systemLayer, void * appState, System::Error /* ignored */)
 {
-    PacketBuffer * payload = (PacketBuffer *)appState;
+    PacketBuffer * payload = (PacketBuffer *) appState;
     InEventParam inParam;
     OutEventParam outParam;
-    ExchangeContext *& ec = inParam.EchoResponseSent.EC;
+    ExchangeContext *& ec     = inParam.EchoResponseSent.EC;
     WeaveEchoServer *& server = inParam.Source;
-    WEAVE_ERROR & err = inParam.EchoResponseSent.Error;
+    WEAVE_ERROR & err         = inParam.EchoResponseSent.Error;
 
     inParam.Clear();
     outParam.Clear();
@@ -247,7 +247,7 @@ void WeaveEchoServer::SendEchoResponse(System::Layer * systemLayer, void * appSt
     payload->EnsureReservedSize(WEAVE_SYSTEM_CONFIG_HEADER_RESERVE_SIZE);
 
     // Send an Echo Response message back to the sender containing the given payload.
-    err = ec->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoResponse, payload);
+    err     = ec->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoResponse, payload);
     payload = NULL;
 
     // Deliver a EchoResponseSent API event to the application.
@@ -282,7 +282,6 @@ exit:
  *
  * Sets the API event callback function on the WeaveEchoServer object.
  */
-
 
 } // namespace Echo_Next
 } // namespace Profiles

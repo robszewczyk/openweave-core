@@ -428,8 +428,7 @@ exit:
     return err;
 }
 
-template <class T>
-WEAVE_ERROR GenericTraitUpdatableDataSink::Set(const char * apPath, T aValue, bool aIsConditional)
+template <class T> WEAVE_ERROR GenericTraitUpdatableDataSink::Set(const char * apPath, T aValue, bool aIsConditional)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     nl::Weave::TLV::TLVWriter writer;
@@ -706,8 +705,7 @@ exit:
     return err;
 }
 
-template <class T>
-WEAVE_ERROR GenericTraitUpdatableDataSink::Get(const char * apPath, T & aValue)
+template <class T> WEAVE_ERROR GenericTraitUpdatableDataSink::Get(const char * apPath, T & aValue)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     nl::Weave::TLV::TLVReader reader;
@@ -909,9 +907,7 @@ void WdmClient::ClientEventCallback(void * const aAppState, SubscriptionClient::
 
     switch (aEvent)
     {
-    case SubscriptionClient::kEvent_OnExchangeStart:
-        WeaveLogDetail(DataManagement, "Client->kEvent_OnExchangeStart");
-        break;
+    case SubscriptionClient::kEvent_OnExchangeStart: WeaveLogDetail(DataManagement, "Client->kEvent_OnExchangeStart"); break;
     case SubscriptionClient::kEvent_OnSubscribeRequestPrepareNeeded:
         WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscribeRequestPrepareNeeded");
         VerifyOrExit(kOpState_RefreshData == savedOpState, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -1013,9 +1009,7 @@ void WdmClient::ClientEventCallback(void * const aAppState, SubscriptionClient::
         pWdmClient->ClearOpState();
         break;
 
-    default:
-        SubscriptionClient::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionClient::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 
 exit:

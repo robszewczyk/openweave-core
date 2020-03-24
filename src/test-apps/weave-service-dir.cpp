@@ -33,9 +33,9 @@
 
 #define TOOL_NAME "weave-service-dir"
 
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleServiceMgrStatus(void *appState, WEAVE_ERROR anError, StatusReport *aReport);
-static void HandleTestTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleServiceMgrStatus(void * appState, WEAVE_ERROR anError, StatusReport * aReport);
+static void HandleTestTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 
 enum
 {
@@ -46,35 +46,27 @@ enum
 uint8_t Role = kRole_ServiceDirServer;
 ServiceDirectory::WeaveServiceManager ServiceMgr;
 uint8_t ServiceDirCache[300];
-const char *DirectoryServer = NULL;
-WeaveAuthMode AuthMode = kWeaveAuthMode_Unauthenticated;
+const char * DirectoryServer = NULL;
+WeaveAuthMode AuthMode       = kWeaveAuthMode_Unauthenticated;
 MockServiceDirServer MockSDServer;
 static bool sLastIterationFailed = false;
-static bool sTimerRunning = false;
+static bool sTimerRunning        = false;
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n"
-    "       " TOOL_NAME " [<options...>] --service-dir-server <host>[:<port>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>]\n"
+                                "       " TOOL_NAME " [<options...>] --service-dir-server <host>[:<port>]\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gServiceDirClientOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gNetworkOptions,        &gWeaveNodeOptions, &gServiceDirClientOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,      NULL };
 
-static void HandleTestTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+static void HandleTestTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     printf("test timeout\n");
 
     sTimerRunning = false;
-    Done = true;
+    Done          = true;
     ServiceMgr.cancel(kServiceEndpoint_SoftwareUpdate, static_cast<void *>(&ServiceMgr));
 }
 
@@ -95,7 +87,7 @@ static int32_t GetNumEventsAvailable(void)
     return retval;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
     nl::Weave::System::Stats::Snapshot before;
@@ -134,14 +126,13 @@ int main(int argc, char *argv[])
     }
     else
     {
-        err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache),
-            GetRootServiceDirectoryEntry, AuthMode, NULL, NULL, OverrideServiceConnectArguments);
+        err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache), GetRootServiceDirectoryEntry, AuthMode, NULL,
+                              NULL, OverrideServiceConnectArguments);
         if (err != WEAVE_NO_ERROR)
         {
             printf("ServiceMgr.init() failed with error: %s\n", ErrorStr(err));
             exit(EXIT_FAILURE);
         }
-
     }
 
     for (uint32_t iteration = 1; iteration <= gFaultInjectionOptions.TestIterations; iteration++)
@@ -158,18 +149,16 @@ int main(int argc, char *argv[])
             SystemLayer.StartTimer(30000, HandleTestTimeout, NULL);
             sTimerRunning = true;
 
-            err = ServiceMgr.connect(kServiceEndpoint_SoftwareUpdate,
-                    AuthMode,
-                    static_cast<void *>(&ServiceMgr), // you have to put something here, or the status callback is not invoked
-                    HandleServiceMgrStatus,
-                    HandleConnectionComplete);
+            err = ServiceMgr.connect(
+                kServiceEndpoint_SoftwareUpdate, AuthMode,
+                static_cast<void *>(&ServiceMgr), // you have to put something here, or the status callback is not invoked
+                HandleServiceMgrStatus, HandleConnectionComplete);
             if (err != WEAVE_NO_ERROR)
             {
                 printf("WeaveServiceManager.Connect(): failed: %s\n", ErrorStr(err));
-                Done = true;
+                Done                 = true;
                 sLastIterationFailed = true;
             }
-
         }
 
         ServiceNetworkUntil(&Done);
@@ -210,7 +199,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -228,11 +217,11 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     Done = true;
 }
 
-void HandleServiceMgrStatus(void* anAppState, WEAVE_ERROR anError, StatusReport *aReport)
+void HandleServiceMgrStatus(void * anAppState, WEAVE_ERROR anError, StatusReport * aReport)
 {
     if (aReport)
         printf("service directory status report [%" PRIx32 ", %" PRIx32 "] %s\n", aReport->mProfileId, aReport->mStatusCode,
-                nl::StatusReportStr(aReport->mProfileId, aReport->mStatusCode));
+               nl::StatusReportStr(aReport->mProfileId, aReport->mStatusCode));
     else
     {
         printf("service directory error %" PRIx32 " %s\n", static_cast<uint32_t>(anError), nl::ErrorStr(anError));

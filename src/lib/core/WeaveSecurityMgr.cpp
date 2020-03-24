@@ -51,16 +51,12 @@ namespace Weave {
 namespace Platform {
 namespace Security {
 
-static inline void OnTimeConsumingCryptoStart()
-{
-}
+static inline void OnTimeConsumingCryptoStart() { }
 
-static inline void OnTimeConsumingCryptoDone()
-{
-}
+static inline void OnTimeConsumingCryptoDone() { }
 
-} // namespace Platform
 } // namespace Security
+} // namespace Platform
 
 #endif // WEAVE_CONFIG_SECURITY_MGR_TIME_ALERTS_DUMMY
 
@@ -75,47 +71,47 @@ using namespace nl::Weave::Crypto;
 
 WeaveSecurityManager::WeaveSecurityManager(void)
 {
-    State = kState_NotInitialized;
+    State        = kState_NotInitialized;
     mSystemLayer = NULL;
 }
 
-WEAVE_ERROR WeaveSecurityManager::Init(WeaveExchangeManager& aExchangeMgr, System::Layer& aSystemLayer)
+WEAVE_ERROR WeaveSecurityManager::Init(WeaveExchangeManager & aExchangeMgr, System::Layer & aSystemLayer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     if (State != kState_NotInitialized)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeManager = &aExchangeMgr;
-    mSystemLayer = &aSystemLayer;
+    ExchangeManager         = &aExchangeMgr;
+    mSystemLayer            = &aSystemLayer;
     SessionEstablishTimeout = WEAVE_CONFIG_DEFAULT_SECURITY_SESSION_ESTABLISHMENT_TIMEOUT;
-    IdleSessionTimeout = WEAVE_CONFIG_DEFAULT_SECURITY_SESSION_IDLE_TIMEOUT;
-    FabricState = aExchangeMgr.FabricState;
-    OnSessionEstablished = NULL;
-    OnSessionError = NULL;
-    OnKeyErrorMsgRcvd = NULL;
-    mEC = NULL;
-    mCon = NULL;
+    IdleSessionTimeout      = WEAVE_CONFIG_DEFAULT_SECURITY_SESSION_IDLE_TIMEOUT;
+    FabricState             = aExchangeMgr.FabricState;
+    OnSessionEstablished    = NULL;
+    OnSessionError          = NULL;
+    OnKeyErrorMsgRcvd       = NULL;
+    mEC                     = NULL;
+    mCon                    = NULL;
 #if WEAVE_CONFIG_ENABLE_PASE_INITIATOR || WEAVE_CONFIG_ENABLE_PASE_RESPONDER
     mPASEEngine = NULL;
 #endif
 #if WEAVE_CONFIG_ENABLE_PASE_RESPONDER
     mPASERateLimiterTimeout = 0;
-    mPASERateLimiterCount = 0;
+    mPASERateLimiterCount   = 0;
 #endif
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-    mCASEEngine = NULL;
+    mCASEEngine          = NULL;
     mDefaultAuthDelegate = NULL;
 #endif
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR
-    InitiatorCASEConfig = CASE::kCASEConfig_Config2;
-    InitiatorCASECurveId = WEAVE_CONFIG_DEFAULT_CASE_CURVE_ID;
-    InitiatorAllowedCASEConfigs = CASE::kCASEAllowedConfig_Config2|CASE::kCASEAllowedConfig_Config1;
-    InitiatorAllowedCASECurves = WEAVE_CONFIG_DEFAULT_CASE_ALLOWED_CURVES;
+    InitiatorCASEConfig         = CASE::kCASEConfig_Config2;
+    InitiatorCASECurveId        = WEAVE_CONFIG_DEFAULT_CASE_CURVE_ID;
+    InitiatorAllowedCASEConfigs = CASE::kCASEAllowedConfig_Config2 | CASE::kCASEAllowedConfig_Config1;
+    InitiatorAllowedCASECurves  = WEAVE_CONFIG_DEFAULT_CASE_ALLOWED_CURVES;
 #endif
 #if WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-    ResponderAllowedCASEConfigs = CASE::kCASEAllowedConfig_Config2|CASE::kCASEAllowedConfig_Config1;
-    ResponderAllowedCASECurves = WEAVE_CONFIG_DEFAULT_CASE_ALLOWED_CURVES;
+    ResponderAllowedCASEConfigs = CASE::kCASEAllowedConfig_Config2 | CASE::kCASEAllowedConfig_Config1;
+    ResponderAllowedCASECurves  = WEAVE_CONFIG_DEFAULT_CASE_ALLOWED_CURVES;
 #endif
 #if WEAVE_CONFIG_ENABLE_TAKE_INITIATOR || WEAVE_CONFIG_ENABLE_TAKE_RESPONDER
     mTAKEEngine = NULL;
@@ -127,8 +123,8 @@ WEAVE_ERROR WeaveSecurityManager::Init(WeaveExchangeManager& aExchangeMgr, Syste
     mDefaultTAKEChallengerAuthDelegate = NULL;
 #endif
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR
-    mKeyExport = NULL;
-    InitiatorKeyExportConfig = KeyExport::kKeyExportConfig_Config1;
+    mKeyExport                       = NULL;
+    InitiatorKeyExportConfig         = KeyExport::kKeyExportConfig_Config1;
     InitiatorAllowedKeyExportConfigs = KeyExport::kKeyExportSupportedConfig_All;
 #endif
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_RESPONDER
@@ -141,11 +137,11 @@ WEAVE_ERROR WeaveSecurityManager::Init(WeaveExchangeManager& aExchangeMgr, Syste
     mDefaultKeyExportDelegate = NULL;
 #endif
     mStartSecureSession_OnComplete = NULL;
-    mStartSecureSession_OnError = NULL;
-    mStartSecureSession_ReqState = NULL;
-    mRequestedAuthMode = kWeaveAuthMode_NotSpecified;
-    mSessionKeyId = WeaveKeyId::kNone;
-    mEncType = kWeaveEncryptionType_None;
+    mStartSecureSession_OnError    = NULL;
+    mStartSecureSession_ReqState   = NULL;
+    mRequestedAuthMode             = kWeaveAuthMode_NotSpecified;
+    mSessionKeyId                  = WeaveKeyId::kNone;
+    mEncType                       = kWeaveEncryptionType_None;
 
     mFlags = 0;
 
@@ -161,14 +157,12 @@ exit:
 }
 
 #if WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-WEAVE_ERROR WeaveSecurityManager::Init(WeaveExchangeManager* aExchangeMgr, InetLayer* aInetLayer)
+WEAVE_ERROR WeaveSecurityManager::Init(WeaveExchangeManager * aExchangeMgr, InetLayer * aInetLayer)
 {
-    return aExchangeMgr != NULL && aInetLayer != NULL
-        ? Init(*aExchangeMgr, *aInetLayer->SystemLayer())
-        : WEAVE_ERROR_INVALID_ARGUMENT;
+    return aExchangeMgr != NULL && aInetLayer != NULL ? Init(*aExchangeMgr, *aInetLayer->SystemLayer())
+                                                      : WEAVE_ERROR_INVALID_ARGUMENT;
 }
 #endif // WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-
 
 WEAVE_ERROR WeaveSecurityManager::Shutdown(void)
 {
@@ -187,18 +181,19 @@ WEAVE_ERROR WeaveSecurityManager::Shutdown(void)
     return WEAVE_NO_ERROR;
 }
 
-void WeaveSecurityManager::HandleUnsolicitedMessage(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleUnsolicitedMessage(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                    const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                    PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     // Handle Key Error Messages.
     if (profileId == kWeaveProfile_Security && msgType == kMsgType_KeyError)
     {
         secMgr->HandleKeyErrorMsg(ec, msgBuf);
         msgBuf = NULL;
-        ec = NULL;
+        ec     = NULL;
 
         ExitNow();
     }
@@ -206,11 +201,10 @@ void WeaveSecurityManager::HandleUnsolicitedMessage(ExchangeContext *ec, const I
     // Verify that we don't already have a session establishment in progress.
     VerifyOrExit(secMgr->State == kState_Idle, err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy,
-        {
-            secMgr->AsyncNotifySecurityManagerAvailable();
-            ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
-        });
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy, {
+        secMgr->AsyncNotifySecurityManagerAvailable();
+        ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
+    });
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     if (!ec->HasPeerRequestedAck())
@@ -233,7 +227,7 @@ void WeaveSecurityManager::HandleUnsolicitedMessage(ExchangeContext *ec, const I
         // PASE rate limiter.
         // Reject the request if too many PASE attempts in a given time period.
         VerifyOrExit(secMgr->mPASERateLimiterCount < WEAVE_CONFIG_PASE_RATE_LIMITER_MAX_ATTEMPTS ||
-                     secMgr->mPASERateLimiterTimeout < nowTimeMS,
+                         secMgr->mPASERateLimiterTimeout < nowTimeMS,
                      err = WEAVE_ERROR_RATE_LIMIT_EXCEEDED);
 
         secMgr->HandlePASESessionStart(ec, pktInfo, msgInfo, msgBuf);
@@ -314,12 +308,12 @@ exit:
  * @retval #WEAVE_NO_ERROR         On success.
  *
  */
-WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection *con, WeaveAuthMode requestedAuthMode, void *reqState,
+WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection * con, WeaveAuthMode requestedAuthMode, void * reqState,
                                                    SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                                   const uint8_t *pw, uint16_t pwLen)
+                                                   const uint8_t * pw, uint16_t pwLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
     bool clearStateOnError = false;
 
     // Verify security manager has been initialized.
@@ -328,11 +322,10 @@ WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection *con, WeaveAu
     // Verify there is no session in process.
     VerifyOrExit(State == kState_Idle, err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy,
-        {
-            AsyncNotifySecurityManagerAvailable();
-            ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
-        });
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy, {
+        AsyncNotifySecurityManagerAvailable();
+        ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
+    });
 
     // Verify correct authentication mode.
     VerifyOrExit(IsPASEAuthMode(requestedAuthMode), err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -341,14 +334,14 @@ WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection *con, WeaveAu
     // PASE is not yet supported over WRMP.
     VerifyOrExit(con != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    State = kState_PASEInProgress;
-    mRequestedAuthMode = requestedAuthMode;
-    mEncType = kWeaveEncryptionType_AES128CTRSHA1;
-    mCon = con;
+    State                          = kState_PASEInProgress;
+    mRequestedAuthMode             = requestedAuthMode;
+    mEncType                       = kWeaveEncryptionType_AES128CTRSHA1;
+    mCon                           = con;
     mStartSecureSession_OnComplete = onComplete;
-    mStartSecureSession_OnError = onError;
-    mStartSecureSession_ReqState = reqState;
-    mSessionKeyId = WeaveKeyId::kNone;
+    mStartSecureSession_OnError    = onError;
+    mStartSecureSession_ReqState   = reqState;
+    mSessionKeyId                  = WeaveKeyId::kNone;
 
     // Any error after this point requires call to the Reset() function.
     clearStateOnError = true;
@@ -369,14 +362,14 @@ WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection *con, WeaveAu
     SuccessOrExit(err);
 
     // Allocate and initialize PASE engine object.
-    mPASEEngine = (WeavePASEEngine *)Platform::Security::MemoryAlloc(sizeof(WeavePASEEngine), true);
+    mPASEEngine = (WeavePASEEngine *) Platform::Security::MemoryAlloc(sizeof(WeavePASEEngine), true);
     VerifyOrExit(mPASEEngine != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mPASEEngine->Init();
 
     // Initialize PASE password if provided.
     if (pw != NULL)
     {
-        mPASEEngine->Pw = pw;
+        mPASEEngine->Pw    = pw;
         mPASEEngine->PwLen = pwLen;
     }
 
@@ -402,7 +395,7 @@ void WeaveSecurityManager::StartPASESession(void)
     err = SendPASEInitiatorStep1(kPASEConfig_ConfigDefault);
     SuccessOrExit(err);
 
-    mEC->OnMessageReceived = HandlePASEMessageInitiator;
+    mEC->OnMessageReceived  = HandlePASEMessageInitiator;
     mEC->OnConnectionClosed = HandleConnectionClosed;
 
     // Time limit overall PASE duration.
@@ -413,11 +406,12 @@ exit:
         HandleSessionError(err, NULL);
 }
 
-void WeaveSecurityManager::HandlePASEMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandlePASEMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -508,10 +502,7 @@ void WeaveSecurityManager::HandlePASEMessageInitiator(ExchangeContext *ec, const
 
         break;
 
-    default:
-
-        ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-        break;
+    default: ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE); break;
     }
 
 exit:
@@ -521,12 +512,11 @@ exit:
         PacketBuffer::Free(msgBuf);
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendPASEInitiatorStep1(uint32_t paseConfig)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendPASEInitiatorStep1(uint32_t paseConfig)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
-    uint8_t         pwSource;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t pwSource;
 
     // Allocate buffer.
     msgBuf = PacketBuffer::New();
@@ -537,12 +527,13 @@ WEAVE_ERROR WeaveSecurityManager::SendPASEInitiatorStep1(uint32_t paseConfig)
 
     // Generate and encode PASE step 1 message.
     Platform::Security::OnTimeConsumingCryptoStart();
-    err = mPASEEngine->GenerateInitiatorStep1(msgBuf, paseConfig, FabricState->LocalNodeId, mEC->PeerNodeId, mSessionKeyId, kWeaveEncryptionType_AES128CTRSHA1, pwSource, FabricState, true);
+    err = mPASEEngine->GenerateInitiatorStep1(msgBuf, paseConfig, FabricState->LocalNodeId, mEC->PeerNodeId, mSessionKeyId,
+                                              kWeaveEncryptionType_AES128CTRSHA1, pwSource, FabricState, true);
     Platform::Security::OnTimeConsumingCryptoDone();
     SuccessOrExit(err);
 
     // Send PASE step 1 message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEInitiatorStep1, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEInitiatorStep1, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -552,8 +543,8 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderReconfigure(PacketBuffer* msgBuf, uint32_t &newConfig)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderReconfigure(PacketBuffer * msgBuf,
+                                                                                            uint32_t & newConfig)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -565,8 +556,7 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderStep1(PacketBuffer* msgBuf)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderStep1(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -580,8 +570,7 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderStep2(PacketBuffer* msgBuf)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderStep2(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -595,11 +584,10 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendPASEInitiatorStep2(void)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendPASEInitiatorStep2(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Allocate buffer.
     msgBuf = PacketBuffer::New();
@@ -612,7 +600,7 @@ WEAVE_ERROR WeaveSecurityManager::SendPASEInitiatorStep2(void)
     SuccessOrExit(err);
 
     // Send PASE step 2 message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEInitiatorStep2, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEInitiatorStep2, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -622,8 +610,7 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderKeyConfirm(PacketBuffer* msgBuf)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::ProcessPASEResponderKeyConfirm(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -637,9 +624,9 @@ exit:
 
 #else // !WEAVE_CONFIG_ENABLE_PASE_INITIATOR
 
-WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection *con, WeaveAuthMode requestedAuthMode, void *reqState,
+WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection * con, WeaveAuthMode requestedAuthMode, void * reqState,
                                                    SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                                   const uint8_t *pw, uint16_t pwLen)
+                                                   const uint8_t * pw, uint16_t pwLen)
 {
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 }
@@ -648,15 +635,16 @@ WEAVE_ERROR WeaveSecurityManager::StartPASESession(WeaveConnection *con, WeaveAu
 
 #if WEAVE_CONFIG_ENABLE_PASE_RESPONDER
 
-void WeaveSecurityManager::HandlePASESessionStart(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandlePASESessionStart(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                  const WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Setup state for the new PASE exchange.
-    State = kState_PASEInProgress;
-    mEC = ec;
-    mCon = ec->Con;
-    ec->OnMessageReceived = HandlePASEMessageResponder;
+    State                  = kState_PASEInProgress;
+    mEC                    = ec;
+    mCon                   = ec->Con;
+    ec->OnMessageReceived  = HandlePASEMessageResponder;
     ec->OnConnectionClosed = HandleConnectionClosed;
 
     // Ensure the exchange context stays around until we're done with it.
@@ -672,7 +660,7 @@ void WeaveSecurityManager::HandlePASESessionStart(ExchangeContext *ec, const IPP
     SuccessOrExit(err);
 
     // Prepare PASE engine and start session
-    mPASEEngine = (WeavePASEEngine *)Platform::Security::MemoryAlloc(sizeof(WeavePASEEngine), true);
+    mPASEEngine = (WeavePASEEngine *) Platform::Security::MemoryAlloc(sizeof(WeavePASEEngine), true);
     VerifyOrExit(mPASEEngine != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mPASEEngine->Init();
 
@@ -709,11 +697,12 @@ exit:
         HandleSessionError(err, NULL);
 }
 
-void WeaveSecurityManager::HandlePASEMessageResponder(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandlePASEMessageResponder(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -756,11 +745,10 @@ exit:
         PacketBuffer::Free(msgBuf);
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::ProcessPASEInitiatorStep1(ExchangeContext *ec, PacketBuffer* msgBuf)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::ProcessPASEInitiatorStep1(ExchangeContext * ec, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSessionKey *sessionKey;
+    WeaveSessionKey * sessionKey;
 
     // Generate and encode PASE step 1 message.
     Platform::Security::OnTimeConsumingCryptoStart();
@@ -781,17 +769,16 @@ WEAVE_ERROR WeaveSecurityManager::ProcessPASEInitiatorStep1(ExchangeContext *ec,
 
     // Save the proposed session key id and encryption type.
     mSessionKeyId = mPASEEngine->SessionKeyId;
-    mEncType = mPASEEngine->EncryptionType;
+    mEncType      = mPASEEngine->EncryptionType;
 
 exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendPASEResponderReconfigure(void)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendPASEResponderReconfigure(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Allocate buffer.
     msgBuf = PacketBuffer::New();
@@ -802,7 +789,7 @@ WEAVE_ERROR WeaveSecurityManager::SendPASEResponderReconfigure(void)
     SuccessOrExit(err);
 
     // Send PASE reconfigure message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderReconfigure, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderReconfigure, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -812,11 +799,10 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendPASEResponderStep1(void)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendPASEResponderStep1(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Allocate buffer.
     msgBuf = PacketBuffer::New();
@@ -829,7 +815,7 @@ WEAVE_ERROR WeaveSecurityManager::SendPASEResponderStep1(void)
     SuccessOrExit(err);
 
     // Send PASE step 1 message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderStep1, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderStep1, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -839,11 +825,10 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendPASEResponderStep2(void)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendPASEResponderStep2(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Allocate buffer.
     msgBuf = PacketBuffer::New();
@@ -856,7 +841,7 @@ WEAVE_ERROR WeaveSecurityManager::SendPASEResponderStep2(void)
     SuccessOrExit(err);
 
     // Send PASE step 2 message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderStep2, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderStep2, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -866,8 +851,7 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::ProcessPASEInitiatorStep2(PacketBuffer* msgBuf)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::ProcessPASEInitiatorStep2(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -881,11 +865,10 @@ exit:
     return err;
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendPASEResponderKeyConfirm(void)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendPASEResponderKeyConfirm(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Allocate buffer.
     msgBuf = PacketBuffer::New();
@@ -896,7 +879,7 @@ WEAVE_ERROR WeaveSecurityManager::SendPASEResponderKeyConfirm(void)
     SuccessOrExit(err);
 
     // Send a key confirmation message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderKeyConfirm, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_PASEResponderKeyConfirm, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -932,16 +915,16 @@ exit:
  * @retval #WEAVE_NO_ERROR         On success.
  *
  */
-WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection *con, uint64_t peerNodeId, const IPAddress &peerAddr,
-                                                   uint16_t peerPort, WeaveAuthMode requestedAuthMode, void *reqState,
+WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection * con, uint64_t peerNodeId, const IPAddress & peerAddr,
+                                                   uint16_t peerPort, WeaveAuthMode requestedAuthMode, void * reqState,
                                                    SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                                   WeaveCASEAuthDelegate *authDelegate, uint64_t terminatingNodeId)
+                                                   WeaveCASEAuthDelegate * authDelegate, uint64_t terminatingNodeId)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSessionKey *sessionKey = NULL;
-    bool clearStateOnError = false;
-    bool isSharedSession = (terminatingNodeId != kNodeIdNotSpecified);
-    const uint8_t encType = kWeaveEncryptionType_AES128CTRSHA1; // Only one encryption type supported for now.
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    WeaveSessionKey * sessionKey = NULL;
+    bool clearStateOnError       = false;
+    bool isSharedSession         = (terminatingNodeId != kNodeIdNotSpecified);
+    const uint8_t encType        = kWeaveEncryptionType_AES128CTRSHA1; // Only one encryption type supported for now.
 
     // Verify security manager has been initialized.
     VerifyOrExit(State != kState_NotInitialized, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -966,7 +949,8 @@ WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection *con, uint64_
             // the concurrent request to wait until the session is fully established.
             //
             // If the located shared session is NOT in the process of being established...
-            if (State != kState_CASEInProgress || mEC->PeerNodeId != terminatingNodeId || mSessionKeyId != sessionKey->MsgEncKey.KeyId)
+            if (State != kState_CASEInProgress || mEC->PeerNodeId != terminatingNodeId ||
+                mSessionKeyId != sessionKey->MsgEncKey.KeyId)
             {
                 // Add a new end node to the list of end nodes associated with the session.
                 err = FabricState->AddSharedSessionEndNode(sessionKey, peerNodeId);
@@ -986,28 +970,26 @@ WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection *con, uint64_
     // Verify there is no session in process.
     VerifyOrExit(State == kState_Idle, err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy,
-        {
-            AsyncNotifySecurityManagerAvailable();
-            ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
-        });
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy, {
+        AsyncNotifySecurityManagerAvailable();
+        ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
+    });
 
-    State = kState_CASEInProgress;
-    mRequestedAuthMode = requestedAuthMode;
-    mEncType = encType;
-    mCon = con;
+    State                          = kState_CASEInProgress;
+    mRequestedAuthMode             = requestedAuthMode;
+    mEncType                       = encType;
+    mCon                           = con;
     mStartSecureSession_OnComplete = onComplete;
-    mStartSecureSession_OnError = onError;
-    mStartSecureSession_ReqState = reqState;
-    mSessionKeyId = WeaveKeyId::kNone;
+    mStartSecureSession_OnError    = onError;
+    mStartSecureSession_ReqState   = reqState;
+    mSessionKeyId                  = WeaveKeyId::kNone;
 
     // Any error after that would require state clearing in case of error.
     clearStateOnError = true;
 
     // Allocate an entry in the session key table identified by a random key id. The actual
     // key itself will be set once the session is established.
-    err = FabricState->AllocSessionKey((isSharedSession ? terminatingNodeId : peerNodeId),
-                                       WeaveKeyId::kNone, con, sessionKey);
+    err = FabricState->AllocSessionKey((isSharedSession ? terminatingNodeId : peerNodeId), WeaveKeyId::kNone, con, sessionKey);
     SuccessOrExit(err);
     sessionKey->SetLocallyInitiated(true);
     sessionKey->SetSharedSession(isSharedSession);
@@ -1030,7 +1012,7 @@ WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection *con, uint64_
     SuccessOrExit(err);
 
     // Allocate and Initialize CASE Engine object
-    mCASEEngine = (WeaveCASEEngine *)Platform::Security::MemoryAlloc(sizeof(WeaveCASEEngine), true);
+    mCASEEngine = (WeaveCASEEngine *) Platform::Security::MemoryAlloc(sizeof(WeaveCASEEngine), true);
     VerifyOrExit(mCASEEngine != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mCASEEngine->Init();
 
@@ -1070,7 +1052,7 @@ void WeaveSecurityManager::StartCASESession(uint32_t config, uint32_t curveId)
 {
     WEAVE_ERROR err;
     PacketBuffer * msgBuf = NULL;
-    uint16_t sendFlags = 0;
+    uint16_t sendFlags    = 0;
 
     // Allocate a buffer to hold the Begin Session message.
     msgBuf = PacketBuffer::New();
@@ -1082,13 +1064,13 @@ void WeaveSecurityManager::StartCASESession(uint32_t config, uint32_t curveId)
 
         reqCtx.Reset();
         reqCtx.SetIsInitiator(true);
-        reqCtx.PeerNodeId = mEC->PeerNodeId;
+        reqCtx.PeerNodeId     = mEC->PeerNodeId;
         reqCtx.ProtocolConfig = config;
         mCASEEngine->SetAlternateConfigs(reqCtx);
         reqCtx.CurveId = curveId;
         mCASEEngine->SetAlternateCurves(reqCtx);
         reqCtx.SetPerformKeyConfirm(true);
-        reqCtx.SessionKeyId = mSessionKeyId;
+        reqCtx.SessionKeyId   = mSessionKeyId;
         reqCtx.EncryptionType = mEncType;
 
         Platform::Security::OnTimeConsumingCryptoStart();
@@ -1105,11 +1087,11 @@ void WeaveSecurityManager::StartCASESession(uint32_t config, uint32_t curveId)
 #endif
 
     // Send the message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_CASEBeginSessionRequest, msgBuf, sendFlags);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_CASEBeginSessionRequest, msgBuf, sendFlags);
     msgBuf = NULL;
     SuccessOrExit(err);
 
-    mEC->OnMessageReceived = HandleCASEMessageInitiator;
+    mEC->OnMessageReceived  = HandleCASEMessageInitiator;
     mEC->OnConnectionClosed = HandleConnectionClosed;
 
     // Time limit overall CASE duration.
@@ -1122,12 +1104,13 @@ exit:
         HandleSessionError(err, NULL);
 }
 
-void WeaveSecurityManager::HandleCASEMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleCASEMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
-    uint16_t sendFlags = 0;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
+    uint16_t sendFlags            = 0;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -1156,7 +1139,7 @@ void WeaveSecurityManager::HandleCASEMessageInitiator(ExchangeContext *ec, const
             respCtx.Reset();
             respCtx.SetIsInitiator(true);
             respCtx.PeerNodeId = ec->PeerNodeId;
-            respCtx.MsgInfo = msgInfo;
+            respCtx.MsgInfo    = msgInfo;
 
             Platform::Security::OnTimeConsumingCryptoStart();
             err = secMgr->mCASEEngine->ProcessBeginSessionResponse(msgBuf, respCtx);
@@ -1185,7 +1168,7 @@ void WeaveSecurityManager::HandleCASEMessageInitiator(ExchangeContext *ec, const
 #endif
 
             // Send the InitiatorKeyConfirm message to the peer.
-            err = secMgr->mEC->SendMessage(kWeaveProfile_Security, kMsgType_CASEInitiatorKeyConfirm, msgBuf, sendFlags);
+            err    = secMgr->mEC->SendMessage(kWeaveProfile_Security, kMsgType_CASEInitiatorKeyConfirm, msgBuf, sendFlags);
             msgBuf = NULL;
             SuccessOrExit(err);
         }
@@ -1245,10 +1228,10 @@ exit:
 
 #else // !WEAVE_CONFIG_ENABLE_CASE_INITIATOR
 
-WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection *con, uint64_t peerNodeId, const IPAddress &peerAddr,
-                                                   uint16_t peerPort, WeaveAuthMode requestedAuthMode, void *reqState,
+WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection * con, uint64_t peerNodeId, const IPAddress & peerAddr,
+                                                   uint16_t peerPort, WeaveAuthMode requestedAuthMode, void * reqState,
                                                    SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                                   WeaveCASEAuthDelegate *authDelegate, uint64_t terminatingNodeId)
+                                                   WeaveCASEAuthDelegate * authDelegate, uint64_t terminatingNodeId)
 {
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 }
@@ -1257,19 +1240,20 @@ WEAVE_ERROR WeaveSecurityManager::StartCASESession(WeaveConnection *con, uint64_
 
 #if WEAVE_CONFIG_ENABLE_CASE_RESPONDER
 
-void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                  const WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err;
     WeaveSessionKey * sessionKey;
     CASE::BeginSessionRequestContext reqCtx;
     CASE::ReconfigureContext reconfCtx;
     PacketBuffer * respMsgBuf = NULL;
-    uint16_t sendFlags = 0;
+    uint16_t sendFlags        = 0;
 
-    State = kState_CASEInProgress;
-    mEC = ec;
-    mCon = ec->Con;
-    ec->OnMessageReceived = HandleCASEMessageResponder;
+    State                  = kState_CASEInProgress;
+    mEC                    = ec;
+    mCon                   = ec->Con;
+    ec->OnMessageReceived  = HandleCASEMessageResponder;
     ec->OnConnectionClosed = HandleConnectionClosed;
 
     // Ensure the exchange context stays around until we're done with it.
@@ -1278,7 +1262,7 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     if (mCon == NULL)
     {
-        mEC->OnAckRcvd = WRMPHandleAckRcvd;
+        mEC->OnAckRcvd   = WRMPHandleAckRcvd;
         mEC->OnSendError = WRMPHandleSendError;
 
         // Flush any pending WRM ACKs before we begin the long crypto operation,
@@ -1295,7 +1279,7 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
     SuccessOrExit(err);
 
     // Allocate and initialize a CASE engine.
-    mCASEEngine = (WeaveCASEEngine *)Platform::Security::MemoryAlloc(sizeof(WeaveCASEEngine), true);
+    mCASEEngine = (WeaveCASEEngine *) Platform::Security::MemoryAlloc(sizeof(WeaveCASEEngine), true);
     VerifyOrExit(mCASEEngine != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mCASEEngine->Init();
 
@@ -1316,7 +1300,7 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
     // Process the BeginSessionRequest
     reqCtx.Reset();
     reqCtx.PeerNodeId = ec->PeerNodeId;
-    reqCtx.MsgInfo = msgInfo;
+    reqCtx.MsgInfo    = msgInfo;
     reconfCtx.Reset();
     Platform::Security::OnTimeConsumingCryptoStart();
     err = mCASEEngine->ProcessBeginSessionRequest(msgBuf, reqCtx, reconfCtx);
@@ -1338,7 +1322,7 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
         SuccessOrExit(err);
 
         // Send the Reconfigure message to the peer.
-        err = ec->SendMessage(kWeaveProfile_Security, kMsgType_CASEReconfigure, respMsgBuf, sendFlags);
+        err        = ec->SendMessage(kWeaveProfile_Security, kMsgType_CASEReconfigure, respMsgBuf, sendFlags);
         respMsgBuf = NULL;
         SuccessOrExit(err);
 
@@ -1361,7 +1345,7 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
 
         // Save the proposed session key id and encryption type.
         mSessionKeyId = reqCtx.SessionKeyId;
-        mEncType = reqCtx.EncryptionType;
+        mEncType      = reqCtx.EncryptionType;
 
         // Allocate a buffer to hold the encoded BeginSessionResponse message.
         respMsgBuf = PacketBuffer::New();
@@ -1372,10 +1356,10 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
             CASE::BeginSessionResponseContext respCtx;
 
             respCtx.Reset();
-            respCtx.PeerNodeId = ec->PeerNodeId;
-            respCtx.MsgInfo = msgInfo;
+            respCtx.PeerNodeId     = ec->PeerNodeId;
+            respCtx.MsgInfo        = msgInfo;
             respCtx.ProtocolConfig = reqCtx.ProtocolConfig;
-            respCtx.CurveId = reqCtx.CurveId;
+            respCtx.CurveId        = reqCtx.CurveId;
             respCtx.SetPerformKeyConfirm(true);
 
             Platform::Security::OnTimeConsumingCryptoStart();
@@ -1385,7 +1369,7 @@ void WeaveSecurityManager::HandleCASESessionStart(ExchangeContext *ec, const IPP
         }
 
         // Send the BeginSessionResponse message to the peer.
-        err = ec->SendMessage(kWeaveProfile_Security, kMsgType_CASEBeginSessionResponse, respMsgBuf, sendFlags);
+        err        = ec->SendMessage(kWeaveProfile_Security, kMsgType_CASEBeginSessionResponse, respMsgBuf, sendFlags);
         respMsgBuf = NULL;
         SuccessOrExit(err);
 
@@ -1422,11 +1406,12 @@ exit:
         PacketBuffer::Free(respMsgBuf);
 }
 
-void WeaveSecurityManager::HandleCASEMessageResponder(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleCASEMessageResponder(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -1494,14 +1479,13 @@ exit:
  * @retval #WEAVE_NO_ERROR        On success.
  *
  */
-WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAuthMode requestedAuthMode, void *reqState,
+WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection * con, WeaveAuthMode requestedAuthMode, void * reqState,
                                                    SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                                   bool encryptAuthPhase, bool encryptCommPhase,
-                                                   bool timeLimitedIK, bool sendChallengerId,
-                                                   WeaveTAKEChallengerAuthDelegate *authDelegate)
+                                                   bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK,
+                                                   bool sendChallengerId, WeaveTAKEChallengerAuthDelegate * authDelegate)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool useSessionKeyID = encryptAuthPhase || encryptCommPhase;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    bool useSessionKeyID   = encryptAuthPhase || encryptCommPhase;
     bool clearStateOnError = false;
 
     // Verify security manager has been initialized.
@@ -1510,11 +1494,10 @@ WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAu
     // Verify there is no session in process.
     VerifyOrExit(State == kState_Idle, err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
 
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy,
-        {
-            AsyncNotifySecurityManagerAvailable();
-            ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
-        });
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_SecMgrBusy, {
+        AsyncNotifySecurityManagerAvailable();
+        ExitNow(err = WEAVE_ERROR_SECURITY_MANAGER_BUSY);
+    });
 
     // Verify correct authentication mode (only one supported currently).
     VerifyOrExit(requestedAuthMode == kWeaveAuthMode_TAKE_IdentificationKey, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -1522,14 +1505,14 @@ WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAu
     // Reject the request if no connection has been specified.
     VerifyOrExit(con != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    State = kState_TAKEInProgress;
-    mRequestedAuthMode = requestedAuthMode;
-    mEncType = kWeaveEncryptionType_AES128CTRSHA1;
-    mCon = con;
+    State                          = kState_TAKEInProgress;
+    mRequestedAuthMode             = requestedAuthMode;
+    mEncType                       = kWeaveEncryptionType_AES128CTRSHA1;
+    mCon                           = con;
     mStartSecureSession_OnComplete = onComplete;
-    mStartSecureSession_OnError = onError;
-    mStartSecureSession_ReqState = reqState;
-    mSessionKeyId = WeaveKeyId::kNone;
+    mStartSecureSession_OnError    = onError;
+    mStartSecureSession_ReqState   = reqState;
+    mSessionKeyId                  = WeaveKeyId::kNone;
 
     // Any error after this point requires call to the Reset() function.
     clearStateOnError = true;
@@ -1538,7 +1521,7 @@ WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAu
     // key itself will be set once the session is established.
     if (useSessionKeyID)
     {
-        WeaveSessionKey *sessionKey;
+        WeaveSessionKey * sessionKey;
         err = FabricState->AllocSessionKey(con->PeerNodeId, WeaveKeyId::kNone, con, sessionKey);
         SuccessOrExit(err);
         sessionKey->SetLocallyInitiated(true);
@@ -1554,7 +1537,7 @@ WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAu
     SuccessOrExit(err);
 
     // Allocate and initialize TAKE engine object.
-    mTAKEEngine = (WeaveTAKEEngine *)Platform::Security::MemoryAlloc(sizeof(WeaveTAKEEngine), true);
+    mTAKEEngine = (WeaveTAKEEngine *) Platform::Security::MemoryAlloc(sizeof(WeaveTAKEEngine), true);
     VerifyOrExit(mTAKEEngine != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mTAKEEngine->Init();
 
@@ -1586,7 +1569,7 @@ void WeaveSecurityManager::StartTAKESession(bool encryptAuthPhase, bool encryptC
 
     mEncType = mTAKEEngine->GetEncryptionType();
 
-    mEC->OnMessageReceived = HandleTAKEMessageInitiator;
+    mEC->OnMessageReceived  = HandleTAKEMessageInitiator;
     mEC->OnConnectionClosed = HandleConnectionClosed;
 
     // Using a smaller timeout may help prevent Relay Attack.
@@ -1599,12 +1582,12 @@ exit:
         HandleSessionError(err, NULL);
 }
 
-
-void WeaveSecurityManager::HandleTAKEMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleTAKEMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -1623,7 +1606,7 @@ void WeaveSecurityManager::HandleTAKEMessageInitiator(ExchangeContext *ec, const
     {
     case kMsgType_TAKEIdentifyTokenResponse:
     {
-        err = secMgr->ProcessTAKEIdentifyTokenResponse(msgBuf);
+        err           = secMgr->ProcessTAKEIdentifyTokenResponse(msgBuf);
         bool doReauth = err == WEAVE_ERROR_TAKE_REAUTH_POSSIBLE;
 
         if (!doReauth)
@@ -1661,7 +1644,8 @@ void WeaveSecurityManager::HandleTAKEMessageInitiator(ExchangeContext *ec, const
         msgBuf = NULL;
 
         err = secMgr->SendTAKEIdentifyToken(newConfig, secMgr->mTAKEEngine->IsEncryptAuthPhase(),
-                secMgr->mTAKEEngine->IsEncryptCommPhase(), secMgr->mTAKEEngine->IsTimeLimitedIK(), secMgr->mTAKEEngine->HasSentChallengerId());
+                                            secMgr->mTAKEEngine->IsEncryptCommPhase(), secMgr->mTAKEEngine->IsTimeLimitedIK(),
+                                            secMgr->mTAKEEngine->HasSentChallengerId());
         SuccessOrExit(err);
         break;
 
@@ -1693,9 +1677,7 @@ void WeaveSecurityManager::HandleTAKEMessageInitiator(ExchangeContext *ec, const
         secMgr->HandleSessionComplete();
         break;
 
-    default:
-        ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-        break;
+    default: ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE); break;
     }
 
 exit:
@@ -1705,20 +1687,23 @@ exit:
         PacketBuffer::Free(msgBuf);
 }
 
-WEAVE_ERROR WeaveSecurityManager::SendTAKEIdentifyToken(uint8_t takeConfig, bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK, bool sendChallengerId)
+WEAVE_ERROR WeaveSecurityManager::SendTAKEIdentifyToken(uint8_t takeConfig, bool encryptAuthPhase, bool encryptCommPhase,
+                                                        bool timeLimitedIK, bool sendChallengerId)
 {
-    WEAVE_ERROR     err;
-    PacketBuffer*   msgBuf = NULL;
+    WEAVE_ERROR err;
+    PacketBuffer * msgBuf = NULL;
 
     /// Generate, encode and send our Token Identify message.
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    err = mTAKEEngine->GenerateIdentifyTokenMessage(mSessionKeyId, takeConfig, encryptAuthPhase, encryptCommPhase, timeLimitedIK, sendChallengerId, kWeaveEncryptionType_AES128CTRSHA1, FabricState->LocalNodeId, msgBuf);
+    err = mTAKEEngine->GenerateIdentifyTokenMessage(mSessionKeyId, takeConfig, encryptAuthPhase, encryptCommPhase, timeLimitedIK,
+                                                    sendChallengerId, kWeaveEncryptionType_AES128CTRSHA1, FabricState->LocalNodeId,
+                                                    msgBuf);
     SuccessOrExit(err);
 
     // Send the message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEIdentifyToken, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEIdentifyToken, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1728,8 +1713,7 @@ exit:
     return err;
 }
 
-
-WEAVE_ERROR WeaveSecurityManager::ProcessTAKEIdentifyTokenResponse(const PacketBuffer* msgBuf)
+WEAVE_ERROR WeaveSecurityManager::ProcessTAKEIdentifyTokenResponse(const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1740,7 +1724,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveSecurityManager::ProcessTAKETokenReconfigure(uint8_t& config, const PacketBuffer* msgBuf)
+WEAVE_ERROR WeaveSecurityManager::ProcessTAKETokenReconfigure(uint8_t & config, const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1753,8 +1737,8 @@ exit:
 
 WEAVE_ERROR WeaveSecurityManager::SendTAKEAuthenticateToken(void)
 {
-    WEAVE_ERROR     err = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -1764,7 +1748,7 @@ WEAVE_ERROR WeaveSecurityManager::SendTAKEAuthenticateToken(void)
     Platform::Security::OnTimeConsumingCryptoDone();
     SuccessOrExit(err);
 
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEAuthenticateToken, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEAuthenticateToken, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1772,7 +1756,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveSecurityManager::ProcessTAKEAuthenticateTokenResponse(const PacketBuffer* msgBuf)
+WEAVE_ERROR WeaveSecurityManager::ProcessTAKEAuthenticateTokenResponse(const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1787,8 +1771,8 @@ exit:
 
 WEAVE_ERROR WeaveSecurityManager::SendTAKEReAuthenticateToken(void)
 {
-    WEAVE_ERROR     err = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -1796,7 +1780,7 @@ WEAVE_ERROR WeaveSecurityManager::SendTAKEReAuthenticateToken(void)
     err = mTAKEEngine->GenerateReAuthenticateTokenMessage(msgBuf);
     SuccessOrExit(err);
 
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEReAuthenticateToken, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEReAuthenticateToken, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1804,7 +1788,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveSecurityManager::ProcessTAKEReAuthenticateTokenResponse(const PacketBuffer* msgBuf)
+WEAVE_ERROR WeaveSecurityManager::ProcessTAKEReAuthenticateTokenResponse(const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1817,11 +1801,10 @@ exit:
 
 #else // !WEAVE_CONFIG_ENABLE_TAKE_INITIATOR
 
-WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAuthMode authMode, void *reqState,
+WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection * con, WeaveAuthMode authMode, void * reqState,
                                                    SessionEstablishedFunct onComplete, SessionErrorFunct onError,
-                                                   bool encryptAuthPhase, bool encryptCommPhase,
-                                                   bool timeLimitedIK, bool sendChallengerId,
-                                                   WeaveTAKEChallengerAuthDelegate *authDelegate)
+                                                   bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK,
+                                                   bool sendChallengerId, WeaveTAKEChallengerAuthDelegate * authDelegate)
 {
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 }
@@ -1830,19 +1813,20 @@ WEAVE_ERROR WeaveSecurityManager::StartTAKESession(WeaveConnection *con, WeaveAu
 
 #if WEAVE_CONFIG_ENABLE_TAKE_RESPONDER
 
-void WeaveSecurityManager::HandleTAKESessionStart(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleTAKESessionStart(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                  const WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR     err = WEAVE_NO_ERROR;
-    PacketBuffer*   respMsgBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * respMsgBuf = NULL;
 
     VerifyOrExit(mDefaultTAKETokenAuthDelegate != NULL, err = WEAVE_ERROR_NO_TAKE_AUTH_DELEGATE);
 
     // Setup state for the new TAKE exchange.
     State = kState_TAKEInProgress;
-    mEC = ec;
-    mCon = ec->Con;
+    mEC   = ec;
+    mCon  = ec->Con;
 
-    ec->OnMessageReceived = HandleTAKEMessageResponder;
+    ec->OnMessageReceived  = HandleTAKEMessageResponder;
     ec->OnConnectionClosed = HandleConnectionClosed;
 
     // Ensure the exchange context stays around until we're done with it.
@@ -1855,7 +1839,7 @@ void WeaveSecurityManager::HandleTAKESessionStart(ExchangeContext *ec, const IPP
     SuccessOrExit(err);
 
     // Prepare TAKE engine and start session
-    mTAKEEngine = (WeaveTAKEEngine *)Platform::Security::MemoryAlloc(sizeof(WeaveTAKEEngine), true);
+    mTAKEEngine = (WeaveTAKEEngine *) Platform::Security::MemoryAlloc(sizeof(WeaveTAKEEngine), true);
     VerifyOrExit(mTAKEEngine != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mTAKEEngine->Init();
 
@@ -1880,13 +1864,13 @@ void WeaveSecurityManager::HandleTAKESessionStart(ExchangeContext *ec, const IPP
 
     if (mTAKEEngine->UseSessionKey())
     {
-        WeaveSessionKey *sessionKey;
+        WeaveSessionKey * sessionKey;
         err = FabricState->AllocSessionKey(ec->PeerNodeId, mTAKEEngine->SessionKeyId, ec->Con, sessionKey);
         SuccessOrExit(err);
         sessionKey->SetLocallyInitiated(false);
         sessionKey->SetRemoveOnIdle(true);
         mSessionKeyId = mTAKEEngine->SessionKeyId;
-        mEncType = mTAKEEngine->GetEncryptionType();
+        mEncType      = mTAKEEngine->GetEncryptionType();
     }
 
     respMsgBuf = PacketBuffer::New();
@@ -1895,7 +1879,7 @@ void WeaveSecurityManager::HandleTAKESessionStart(ExchangeContext *ec, const IPP
     err = mTAKEEngine->GenerateIdentifyTokenResponseMessage(respMsgBuf);
     SuccessOrExit(err);
 
-    err = ec->SendMessage(kWeaveProfile_Security, kMsgType_TAKEIdentifyTokenResponse, respMsgBuf);
+    err        = ec->SendMessage(kWeaveProfile_Security, kMsgType_TAKEIdentifyTokenResponse, respMsgBuf);
     respMsgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1914,11 +1898,12 @@ exit:
         HandleSessionError(err, NULL);
 }
 
-void WeaveSecurityManager::HandleTAKEMessageResponder(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleTAKEMessageResponder(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -1965,9 +1950,7 @@ void WeaveSecurityManager::HandleTAKEMessageResponder(ExchangeContext *ec, const
         secMgr->HandleSessionComplete();
         break;
 
-    default:
-        ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-
+    default: ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
     }
 
     // Free the received message buffer so that it can be reused to send the outgoing messages.
@@ -1981,7 +1964,7 @@ exit:
         PacketBuffer::Free(msgBuf);
 }
 
-WEAVE_ERROR WeaveSecurityManager::ProcessTAKEAuthenticateToken(const PacketBuffer* msgBuf)
+WEAVE_ERROR WeaveSecurityManager::ProcessTAKEAuthenticateToken(const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1996,8 +1979,8 @@ exit:
 
 WEAVE_ERROR WeaveSecurityManager::SendTAKETokenReconfigure(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     // Generate, encode and send reconfigure message.
     msgBuf = PacketBuffer::New();
@@ -2006,7 +1989,7 @@ WEAVE_ERROR WeaveSecurityManager::SendTAKETokenReconfigure(void)
     err = mTAKEEngine->GenerateTokenReconfigureMessage(msgBuf);
     SuccessOrExit(err);
 
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKETokenReconfigure, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKETokenReconfigure, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -2018,8 +2001,8 @@ exit:
 
 WEAVE_ERROR WeaveSecurityManager::SendTAKEAuthenticateTokenResponse(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -2029,7 +2012,7 @@ WEAVE_ERROR WeaveSecurityManager::SendTAKEAuthenticateTokenResponse(void)
     Platform::Security::OnTimeConsumingCryptoDone();
     SuccessOrExit(err);
 
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEAuthenticateTokenResponse, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEAuthenticateTokenResponse, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -2039,7 +2022,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveSecurityManager::ProcessTAKEReAuthenticateToken(const PacketBuffer* msgBuf)
+WEAVE_ERROR WeaveSecurityManager::ProcessTAKEReAuthenticateToken(const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2050,11 +2033,10 @@ exit:
     return err;
 }
 
-
 WEAVE_ERROR WeaveSecurityManager::SendTAKEReAuthenticateTokenResponse(void)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf  = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -2062,7 +2044,7 @@ WEAVE_ERROR WeaveSecurityManager::SendTAKEReAuthenticateTokenResponse(void)
     err = mTAKEEngine->GenerateReAuthenticateTokenResponseMessage(msgBuf);
     SuccessOrExit(err);
 
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEReAuthenticateTokenResponse, msgBuf, 0);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_TAKEReAuthenticateTokenResponse, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -2083,7 +2065,7 @@ WEAVE_ERROR WeaveSecurityManager::CreateTAKESecureSession(void)
     err = HandleSessionEstablished();
     SuccessOrExit(err);
 
-    mEC->KeyId = mSessionKeyId;
+    mEC->KeyId          = mSessionKeyId;
     mEC->EncryptionType = mEncType;
 
     // Add a reservation for the new session key and configure the ExchangeContext to automatically release
@@ -2112,7 +2094,7 @@ WEAVE_ERROR WeaveSecurityManager::FinishTAKESetUp(void)
             err = FabricState->RemoveSessionKey(mSessionKeyId, mEC->PeerNodeId);
             SuccessOrExit(err);
         }
-        mEncType = kWeaveEncryptionType_None;
+        mEncType      = kWeaveEncryptionType_None;
         mSessionKeyId = WeaveKeyId::kNone;
     }
 
@@ -2124,9 +2106,10 @@ exit:
 
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR
 
-WEAVE_ERROR WeaveSecurityManager::StartKeyExport(WeaveConnection *con, uint64_t peerNodeId, const IPAddress &peerAddr, uint16_t peerPort,
-        uint32_t keyId, bool signMessage, void *reqState,
-        KeyExportCompleteFunct onComplete, KeyExportErrorFunct onError, WeaveKeyExportDelegate *keyExportDelegate)
+WEAVE_ERROR WeaveSecurityManager::StartKeyExport(WeaveConnection * con, uint64_t peerNodeId, const IPAddress & peerAddr,
+                                                 uint16_t peerPort, uint32_t keyId, bool signMessage, void * reqState,
+                                                 KeyExportCompleteFunct onComplete, KeyExportErrorFunct onError,
+                                                 WeaveKeyExportDelegate * keyExportDelegate)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2153,7 +2136,7 @@ WEAVE_ERROR WeaveSecurityManager::StartKeyExport(WeaveConnection *con, uint64_t 
     SuccessOrExit(err);
 
     // Allocate and initialize KeyExport object.
-    mKeyExport = (WeaveKeyExport *)Platform::Security::MemoryAlloc(sizeof(WeaveKeyExport), true);
+    mKeyExport = (WeaveKeyExport *) Platform::Security::MemoryAlloc(sizeof(WeaveKeyExport), true);
     VerifyOrExit(mKeyExport != NULL, err = WEAVE_ERROR_NO_MEMORY);
     mKeyExport->Init(keyExportDelegate);
 
@@ -2165,10 +2148,10 @@ WEAVE_ERROR WeaveSecurityManager::StartKeyExport(WeaveConnection *con, uint64_t 
     SuccessOrExit(err);
 
     mStartKeyExport_OnComplete = onComplete;
-    mStartKeyExport_OnError = onError;
-    mStartKeyExport_ReqState = reqState;
+    mStartKeyExport_OnError    = onError;
+    mStartKeyExport_ReqState   = reqState;
 
-    mEC->OnMessageReceived = HandleKeyExportMessageInitiator;
+    mEC->OnMessageReceived  = HandleKeyExportMessageInitiator;
     mEC->OnConnectionClosed = HandleConnectionClosed;
 
     // Time limit overall Key Export duration.
@@ -2181,11 +2164,12 @@ exit:
     return err;
 }
 
-void WeaveSecurityManager::HandleKeyExportMessageInitiator(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-        uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf)
+void WeaveSecurityManager::HandleKeyExportMessageInitiator(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                           const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                           PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     VerifyOrDie(ec == secMgr->mEC);
 
@@ -2229,14 +2213,15 @@ void WeaveSecurityManager::HandleKeyExportMessageInitiator(ExchangeContext *ec, 
         uint16_t exportedKeyLen;
         uint8_t exportedKey[kWeaveFabricSecretSize];
 
-        err = secMgr->mKeyExport->ProcessKeyExportResponse(msgBuf->Start(), msgBuf->DataLength(), msgInfo,
-                                                           exportedKey, sizeof(exportedKey), exportedKeyLen, exportedKeyId);
+        err = secMgr->mKeyExport->ProcessKeyExportResponse(msgBuf->Start(), msgBuf->DataLength(), msgInfo, exportedKey,
+                                                           sizeof(exportedKey), exportedKeyLen, exportedKeyId);
         SuccessOrExit(err);
 
         // Call the user's completion function.
         if (secMgr->mStartKeyExport_OnComplete != NULL)
         {
-            secMgr->mStartKeyExport_OnComplete(secMgr, secMgr->mCon, secMgr->mStartKeyExport_ReqState, exportedKeyId, exportedKey, exportedKeyLen);
+            secMgr->mStartKeyExport_OnComplete(secMgr, secMgr->mCon, secMgr->mStartKeyExport_ReqState, exportedKeyId, exportedKey,
+                                               exportedKeyLen);
         }
 
         // Reset state.
@@ -2244,10 +2229,7 @@ void WeaveSecurityManager::HandleKeyExportMessageInitiator(ExchangeContext *ec, 
 
         break;
 
-    default:
-
-        ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE);
-        break;
+    default: ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_TYPE); break;
     }
 
 exit:
@@ -2258,7 +2240,7 @@ exit:
         PacketBuffer::Free(msgBuf);
 }
 
-void WeaveSecurityManager::HandleKeyExportError(WEAVE_ERROR err, PacketBuffer *statusReportMsgBuf)
+void WeaveSecurityManager::HandleKeyExportError(WEAVE_ERROR err, PacketBuffer * statusReportMsgBuf)
 {
     // If session establishment in progress...
     //
@@ -2271,11 +2253,11 @@ void WeaveSecurityManager::HandleKeyExportError(WEAVE_ERROR err, PacketBuffer *s
     //
     if (State != kState_Idle)
     {
-        WeaveConnection *con = mCon;
+        WeaveConnection * con           = mCon;
         KeyExportErrorFunct userOnError = mStartKeyExport_OnError;
-        void *reqState = mStartKeyExport_ReqState;
+        void * reqState                 = mStartKeyExport_ReqState;
         StatusReport rcvdStatusReport;
-        StatusReport *statusReportPtr = NULL;
+        StatusReport * statusReportPtr = NULL;
 
         // If a status report was received from the peer, parse it and arrange to pass it
         // to the callbacks.
@@ -2297,11 +2279,11 @@ void WeaveSecurityManager::HandleKeyExportError(WEAVE_ERROR err, PacketBuffer *s
     }
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendKeyExportRequest(uint8_t keyExportConfig, uint32_t keyId, bool signMessage)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendKeyExportRequest(uint8_t keyExportConfig, uint32_t keyId,
+                                                                                 bool signMessage)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
     uint16_t dataLen;
     uint16_t sendFlags = 0;
 
@@ -2310,7 +2292,8 @@ WEAVE_ERROR WeaveSecurityManager::SendKeyExportRequest(uint8_t keyExportConfig, 
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Generate key export request.
-    err = mKeyExport->GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, keyExportConfig, keyId, signMessage);
+    err = mKeyExport->GenerateKeyExportRequest(msgBuf->Start(), msgBuf->AvailableDataLength(), dataLen, keyExportConfig, keyId,
+                                               signMessage);
     SuccessOrExit(err);
 
     // Set message length.
@@ -2324,7 +2307,7 @@ WEAVE_ERROR WeaveSecurityManager::SendKeyExportRequest(uint8_t keyExportConfig, 
 #endif
 
     // Send key export request message.
-    err = mEC->SendMessage(kWeaveProfile_Security, kMsgType_KeyExportRequest, msgBuf, sendFlags);
+    err    = mEC->SendMessage(kWeaveProfile_Security, kMsgType_KeyExportRequest, msgBuf, sendFlags);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -2339,14 +2322,15 @@ exit:
 
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_RESPONDER
 
-void WeaveSecurityManager::HandleKeyExportRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf)
+void WeaveSecurityManager::HandleKeyExportRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                  const WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err;
     WeaveKeyExport keyExport;
 
     State = kState_KeyExportInProgress;
-    mEC = ec;
-    mCon = ec->Con;
+    mEC   = ec;
+    mCon  = ec->Con;
 
     // Ensure the exchange context stays around until we're done with it.
     ec->AddRef();
@@ -2409,11 +2393,11 @@ exit:
     Reset();
 }
 
-__attribute__((noinline))
-WEAVE_ERROR WeaveSecurityManager::SendKeyExportResponse(WeaveKeyExport& keyExport, uint8_t msgType, const WeaveMessageInfo *msgInfo)
+__attribute__((noinline)) WEAVE_ERROR WeaveSecurityManager::SendKeyExportResponse(WeaveKeyExport & keyExport, uint8_t msgType,
+                                                                                  const WeaveMessageInfo * msgInfo)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
     uint16_t dataLen;
     uint16_t sendFlags = 0;
 
@@ -2441,7 +2425,7 @@ WEAVE_ERROR WeaveSecurityManager::SendKeyExportResponse(WeaveKeyExport& keyExpor
 #endif
 
     // Send key export response message.
-    err = mEC->SendMessage(kWeaveProfile_Security, msgType, msgBuf, sendFlags);
+    err    = mEC->SendMessage(kWeaveProfile_Security, msgType, msgBuf, sendFlags);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -2467,11 +2451,8 @@ exit:
  */
 bool WeaveSecurityManager::IsKeyError(WEAVE_ERROR err)
 {
-    return (err == WEAVE_ERROR_KEY_NOT_FOUND ||
-            err == WEAVE_ERROR_WRONG_ENCRYPTION_TYPE ||
-            err == WEAVE_ERROR_UNKNOWN_KEY_TYPE ||
-            err == WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY ||
-            err == WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
+    return (err == WEAVE_ERROR_KEY_NOT_FOUND || err == WEAVE_ERROR_WRONG_ENCRYPTION_TYPE || err == WEAVE_ERROR_UNKNOWN_KEY_TYPE ||
+            err == WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY || err == WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
 
     // NOTE: This method should NOT return true for WEAVE_ERROR_SESSION_KEY_SUSPENDED.
     // A suspended session is one that has been serialized for persistence.  Once this
@@ -2498,19 +2479,21 @@ bool WeaveSecurityManager::IsKeyError(WEAVE_ERROR err)
  * @retval  #WEAVE_NO_ERROR                If the method succeeded.
  *
  */
-WEAVE_ERROR WeaveSecurityManager::SendKeyErrorMsg(WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo, WeaveConnection *con, WEAVE_ERROR keyErr)
+WEAVE_ERROR WeaveSecurityManager::SendKeyErrorMsg(WeaveMessageInfo * rcvdMsgInfo, const IPPacketInfo * rcvdMsgPacketInfo,
+                                                  WeaveConnection * con, WEAVE_ERROR keyErr)
 {
-    WEAVE_ERROR         err         = WEAVE_NO_ERROR;
-    ExchangeContext*    ec          = NULL;
-    PacketBuffer*       msgBuf      = NULL;
-    uint8_t*            p;
-    uint16_t            keyErrCode;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    ExchangeContext * ec  = NULL;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p;
+    uint16_t keyErrCode;
 
     // Create new exchange context.
     if (con == NULL)
     {
         VerifyOrExit(rcvdMsgPacketInfo != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
-        ec = ExchangeManager->NewContext(rcvdMsgInfo->SourceNodeId, rcvdMsgPacketInfo->SrcAddress, rcvdMsgPacketInfo->SrcPort, rcvdMsgPacketInfo->Interface, this);
+        ec = ExchangeManager->NewContext(rcvdMsgInfo->SourceNodeId, rcvdMsgPacketInfo->SrcAddress, rcvdMsgPacketInfo->SrcPort,
+                                         rcvdMsgPacketInfo->Interface, this);
     }
     else
     {
@@ -2521,24 +2504,12 @@ WEAVE_ERROR WeaveSecurityManager::SendKeyErrorMsg(WeaveMessageInfo *rcvdMsgInfo,
     // Encode key error status code.
     switch (keyErr)
     {
-    case WEAVE_ERROR_KEY_NOT_FOUND:
-        keyErrCode = kStatusCode_KeyNotFound;
-        break;
-    case WEAVE_ERROR_WRONG_ENCRYPTION_TYPE:
-        keyErrCode = kStatusCode_WrongEncryptionType;
-        break;
-    case WEAVE_ERROR_UNKNOWN_KEY_TYPE:
-        keyErrCode = kStatusCode_UnknownKeyType;
-        break;
-    case WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY:
-        keyErrCode = kStatusCode_InvalidUseOfSessionKey;
-        break;
-    case WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE:
-        keyErrCode = kStatusCode_UnsupportedEncryptionType;
-        break;
-    default:
-        keyErrCode = kStatusCode_InternalKeyError;
-        break;
+    case WEAVE_ERROR_KEY_NOT_FOUND: keyErrCode = kStatusCode_KeyNotFound; break;
+    case WEAVE_ERROR_WRONG_ENCRYPTION_TYPE: keyErrCode = kStatusCode_WrongEncryptionType; break;
+    case WEAVE_ERROR_UNKNOWN_KEY_TYPE: keyErrCode = kStatusCode_UnknownKeyType; break;
+    case WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY: keyErrCode = kStatusCode_InvalidUseOfSessionKey; break;
+    case WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE: keyErrCode = kStatusCode_UnsupportedEncryptionType; break;
+    default: keyErrCode = kStatusCode_InternalKeyError; break;
     }
 
     // Allocate new buffer.
@@ -2567,7 +2538,7 @@ WEAVE_ERROR WeaveSecurityManager::SendKeyErrorMsg(WeaveMessageInfo *rcvdMsgInfo,
     msgBuf->SetDataLength(kWeaveKeyErrorMessageSize);
 
     // Send key error message.
-    err = ec->SendMessage(kWeaveProfile_Security, kMsgType_KeyError, msgBuf, 0);
+    err    = ec->SendMessage(kWeaveProfile_Security, kMsgType_KeyError, msgBuf, 0);
     msgBuf = NULL;
 
 exit:
@@ -2580,13 +2551,13 @@ exit:
     return err;
 }
 
-void WeaveSecurityManager::HandleKeyErrorMsg(ExchangeContext *ec, PacketBuffer* msgBuf)
+void WeaveSecurityManager::HandleKeyErrorMsg(ExchangeContext * ec, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err;
-    WeaveSessionKey *sessionKey;
-    uint8_t *p = msgBuf->Start();
-    uint64_t srcNodeId = ec->PeerNodeId;
-    WeaveConnection *msgCon = ec->Con;
+    WeaveSessionKey * sessionKey;
+    uint8_t * p              = msgBuf->Start();
+    uint64_t srcNodeId       = ec->PeerNodeId;
+    WeaveConnection * msgCon = ec->Con;
     uint16_t keyId;
     uint8_t encType;
     uint16_t keyErrCode;
@@ -2600,9 +2571,9 @@ void WeaveSecurityManager::HandleKeyErrorMsg(ExchangeContext *ec, PacketBuffer* 
         ExitNow();
 
     // Read the message fields.
-    keyId = LittleEndian::Read16(p);
-    encType = Read8(p);
-    messageId = LittleEndian::Read32(p);
+    keyId      = LittleEndian::Read16(p);
+    encType    = Read8(p);
+    messageId  = LittleEndian::Read32(p);
     keyErrCode = LittleEndian::Read16(p);
 
     // Free the received message buffer so that it can be reused to initiate additional communication.
@@ -2616,24 +2587,12 @@ void WeaveSecurityManager::HandleKeyErrorMsg(ExchangeContext *ec, PacketBuffer* 
     // Decode error status code.
     switch (keyErrCode)
     {
-    case kStatusCode_KeyNotFound:
-        keyErr = WEAVE_ERROR_KEY_NOT_FOUND_FROM_PEER;
-        break;
-    case kStatusCode_WrongEncryptionType:
-        keyErr = WEAVE_ERROR_WRONG_ENCRYPTION_TYPE_FROM_PEER;
-        break;
-    case kStatusCode_UnknownKeyType:
-        keyErr = WEAVE_ERROR_UNKNOWN_KEY_TYPE_FROM_PEER;
-        break;
-    case kStatusCode_InvalidUseOfSessionKey:
-        keyErr = WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY_FROM_PEER;
-        break;
-    case kStatusCode_UnsupportedEncryptionType:
-        keyErr = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE_FROM_PEER;
-        break;
-    default:
-        keyErr = WEAVE_ERROR_INTERNAL_KEY_ERROR_FROM_PEER;
-        break;
+    case kStatusCode_KeyNotFound: keyErr = WEAVE_ERROR_KEY_NOT_FOUND_FROM_PEER; break;
+    case kStatusCode_WrongEncryptionType: keyErr = WEAVE_ERROR_WRONG_ENCRYPTION_TYPE_FROM_PEER; break;
+    case kStatusCode_UnknownKeyType: keyErr = WEAVE_ERROR_UNKNOWN_KEY_TYPE_FROM_PEER; break;
+    case kStatusCode_InvalidUseOfSessionKey: keyErr = WEAVE_ERROR_INVALID_USE_OF_SESSION_KEY_FROM_PEER; break;
+    case kStatusCode_UnsupportedEncryptionType: keyErr = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE_FROM_PEER; break;
+    default: keyErr = WEAVE_ERROR_INTERNAL_KEY_ERROR_FROM_PEER; break;
     }
 
     // If the failed key is a session key...
@@ -2657,7 +2616,8 @@ void WeaveSecurityManager::HandleKeyErrorMsg(ExchangeContext *ec, PacketBuffer* 
             // of peer nodes associated with the key.
             if (sessionKey->IsSharedSession())
             {
-                FabricState->GetSharedSessionEndNodeIds(sessionKey, endNodeIds, sizeof(endNodeIds) / sizeof(uint64_t), endNodeIdsCount);
+                FabricState->GetSharedSessionEndNodeIds(sessionKey, endNodeIds, sizeof(endNodeIds) / sizeof(uint64_t),
+                                                        endNodeIdsCount);
             }
 
             // Add the terminating node to the list of peer nodes associated with the key.
@@ -2720,7 +2680,7 @@ WEAVE_ERROR WeaveSecurityManager::NewSessionExchange(uint64_t peerNodeId, IPAddr
         mEC = ExchangeManager->NewContext(peerNodeId, peerAddr, peerPort, INET_NULL_INTERFACEID, this);
         VerifyOrExit(mEC != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-        mEC->OnAckRcvd = WRMPHandleAckRcvd;
+        mEC->OnAckRcvd   = WRMPHandleAckRcvd;
         mEC->OnSendError = WRMPHandleSendError;
 #else
         // Reject the request if no connection has been specified.
@@ -2735,7 +2695,8 @@ exit:
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
 
 // Create and initialize new exchange for the message counter synchronization request/response messages.
-WEAVE_ERROR WeaveSecurityManager::NewMsgCounterSyncExchange(const WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo, ExchangeContext *& ec)
+WEAVE_ERROR WeaveSecurityManager::NewMsgCounterSyncExchange(const WeaveMessageInfo * rcvdMsgInfo,
+                                                            const IPPacketInfo * rcvdMsgPacketInfo, ExchangeContext *& ec)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2746,12 +2707,13 @@ WEAVE_ERROR WeaveSecurityManager::NewMsgCounterSyncExchange(const WeaveMessageIn
     VerifyOrExit(WeaveKeyId::IsAppGroupKey(rcvdMsgInfo->KeyId), err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Create new exchange context.
-    ec = ExchangeManager->NewContext(rcvdMsgInfo->SourceNodeId, rcvdMsgPacketInfo->SrcAddress, rcvdMsgPacketInfo->SrcPort, rcvdMsgPacketInfo->Interface, this);
+    ec = ExchangeManager->NewContext(rcvdMsgInfo->SourceNodeId, rcvdMsgPacketInfo->SrcAddress, rcvdMsgPacketInfo->SrcPort,
+                                     rcvdMsgPacketInfo->Interface, this);
     VerifyOrExit(ec != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Set encryption type and key Id.
     ec->EncryptionType = rcvdMsgInfo->EncryptionType;
-    ec->KeyId = rcvdMsgInfo->KeyId;
+    ec->KeyId          = rcvdMsgInfo->KeyId;
 
 exit:
     return err;
@@ -2759,8 +2721,8 @@ exit:
 
 /**
  * Send peer message counter synchronization request.
- * This function is called while processing a message encrypted with an application key from a peer whose message counter is not synchronized.
- * This message is sent on a newly created exchange, which is closed immediately after.
+ * This function is called while processing a message encrypted with an application key from a peer whose message counter is not
+ * synchronized. This message is sent on a newly created exchange, which is closed immediately after.
  *
  * @param[in]  rcvdMsgInfo        A pointer to the message information for the received Weave message.
  *
@@ -2772,10 +2734,11 @@ exit:
  * @retval  #WEAVE_NO_ERROR                On success.
  *
  */
-WEAVE_ERROR WeaveSecurityManager::SendSolitaryMsgCounterSyncReq(const WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo)
+WEAVE_ERROR WeaveSecurityManager::SendSolitaryMsgCounterSyncReq(const WeaveMessageInfo * rcvdMsgInfo,
+                                                                const IPPacketInfo * rcvdMsgPacketInfo)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ExchangeContext *ec = NULL;
+    WEAVE_ERROR err      = WEAVE_NO_ERROR;
+    ExchangeContext * ec = NULL;
 
     // Create and initialize new exchange.
     err = NewMsgCounterSyncExchange(rcvdMsgInfo, rcvdMsgPacketInfo, ec);
@@ -2809,11 +2772,12 @@ exit:
  * @retval  #WEAVE_NO_ERROR                On success.
  *
  */
-WEAVE_ERROR WeaveSecurityManager::SendMsgCounterSyncResp(const WeaveMessageInfo *rcvdMsgInfo, const IPPacketInfo *rcvdMsgPacketInfo)
+WEAVE_ERROR WeaveSecurityManager::SendMsgCounterSyncResp(const WeaveMessageInfo * rcvdMsgInfo,
+                                                         const IPPacketInfo * rcvdMsgPacketInfo)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ExchangeContext *ec = NULL;
-    PacketBuffer *msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    ExchangeContext * ec  = NULL;
+    PacketBuffer * msgBuf = NULL;
 
     // Create and initialize new exchange.
     err = NewMsgCounterSyncExchange(rcvdMsgInfo, rcvdMsgPacketInfo, ec);
@@ -2833,7 +2797,7 @@ WEAVE_ERROR WeaveSecurityManager::SendMsgCounterSyncResp(const WeaveMessageInfo 
     msgBuf->SetDataLength(kWeaveMsgCounterSyncRespMsgSize);
 
     // Send message counter synchronization response message.
-    err = ec->SendMessage(kWeaveProfile_Security, kMsgType_MsgCounterSyncResp, msgBuf);
+    err    = ec->SendMessage(kWeaveProfile_Security, kMsgType_MsgCounterSyncResp, msgBuf);
     msgBuf = NULL;
 
 exit:
@@ -2856,7 +2820,7 @@ exit:
  * @retval None.
  *
  */
-void WeaveSecurityManager::HandleMsgCounterSyncRespMsg(WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf)
+void WeaveSecurityManager::HandleMsgCounterSyncRespMsg(WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     // Verify correct message size and that the message was encrypted with application group key.
     VerifyOrExit(msgBuf->DataLength() == kWeaveMsgCounterSyncRespMsgSize && WeaveKeyId::IsAppGroupKey(msgInfo->KeyId), /* no-op */);
@@ -2888,7 +2852,7 @@ void WeaveSecurityManager::UpdatePASERateLimiter(WEAVE_ERROR err)
         if (nowTimeMS > mPASERateLimiterTimeout)
         {
             mPASERateLimiterTimeout = nowTimeMS + WEAVE_CONFIG_PASE_RATE_LIMITER_TIMEOUT;
-            mPASERateLimiterCount = 1;
+            mPASERateLimiterCount   = 1;
         }
         // Otherwise, increment PASE rate limiter counter.
         else
@@ -2901,11 +2865,11 @@ void WeaveSecurityManager::UpdatePASERateLimiter(WEAVE_ERROR err)
 
 WEAVE_ERROR WeaveSecurityManager::HandleSessionEstablished(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint64_t peerNodeId = mEC->PeerNodeId;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    uint64_t peerNodeId   = mEC->PeerNodeId;
     uint16_t sessionKeyId = mSessionKeyId;
-    uint8_t encType = mEncType;
-    const WeaveEncryptionKey *sessionKey;
+    uint8_t encType       = mEncType;
+    const WeaveEncryptionKey * sessionKey;
     WeaveAuthMode authMode;
 
     switch (State)
@@ -2958,8 +2922,7 @@ WEAVE_ERROR WeaveSecurityManager::HandleSessionEstablished(void)
         break;
 #endif
 
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
     }
 
     // Save the session key into the session key table.
@@ -2972,12 +2935,12 @@ exit:
 
 void WeaveSecurityManager::HandleSessionComplete(void)
 {
-    WeaveConnection *con = mCon;
-    uint64_t peerNodeId = mEC->PeerNodeId;
-    uint16_t sessionKeyId = mSessionKeyId;
-    uint8_t encType = mEncType;
+    WeaveConnection * con                  = mCon;
+    uint64_t peerNodeId                    = mEC->PeerNodeId;
+    uint16_t sessionKeyId                  = mSessionKeyId;
+    uint8_t encType                        = mEncType;
     SessionEstablishedFunct userOnComplete = mStartSecureSession_OnComplete;
-    void *reqState = mStartSecureSession_ReqState;
+    void * reqState                        = mStartSecureSession_ReqState;
 
     // Reset state.
     Reset();
@@ -2996,7 +2959,7 @@ void WeaveSecurityManager::HandleSessionComplete(void)
     // this will result in the reservation count going to zero, which will make
     // eligible for removal if it remains idle past the idle timeout period.
     {
-        WeaveSessionKey *sessionKey;
+        WeaveSessionKey * sessionKey;
         if (FabricState->FindSessionKey(sessionKeyId, peerNodeId, false, sessionKey) == WEAVE_NO_ERROR &&
             !sessionKey->IsLocallyInitiated())
         {
@@ -3009,7 +2972,7 @@ void WeaveSecurityManager::HandleSessionComplete(void)
     AsyncNotifySecurityManagerAvailable();
 }
 
-void WeaveSecurityManager::HandleSessionError(WEAVE_ERROR err, PacketBuffer* statusReportMsgBuf)
+void WeaveSecurityManager::HandleSessionError(WEAVE_ERROR err, PacketBuffer * statusReportMsgBuf)
 {
     // If session establishment in progress...
     //
@@ -3022,13 +2985,13 @@ void WeaveSecurityManager::HandleSessionError(WEAVE_ERROR err, PacketBuffer* sta
     //
     if (State != kState_Idle)
     {
-        WeaveConnection *con = mCon;
-        uint64_t peerNodeId = mEC->PeerNodeId;
-        uint16_t sessionKeyId = mSessionKeyId;
+        WeaveConnection * con         = mCon;
+        uint64_t peerNodeId           = mEC->PeerNodeId;
+        uint16_t sessionKeyId         = mSessionKeyId;
         SessionErrorFunct userOnError = mStartSecureSession_OnError;
-        void *reqState = mStartSecureSession_ReqState;
+        void * reqState               = mStartSecureSession_ReqState;
         StatusReport rcvdStatusReport;
-        StatusReport *statusReportPtr = NULL;
+        StatusReport * statusReportPtr = NULL;
 
 #if WEAVE_CONFIG_ENABLE_PASE_RESPONDER
         UpdatePASERateLimiter(err);
@@ -3069,14 +3032,14 @@ void WeaveSecurityManager::HandleSessionError(WEAVE_ERROR err, PacketBuffer* sta
     }
 }
 
-void WeaveSecurityManager::HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveSecurityManager::HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
     if (conErr == WEAVE_NO_ERROR)
         conErr = WEAVE_ERROR_CONNECTION_CLOSED_UNEXPECTEDLY;
 
-    // Clean-up the local state and invoke the appropriate callbacks.
+        // Clean-up the local state and invoke the appropriate callbacks.
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR
     if (secMgr->State == kState_KeyExportInProgress)
         secMgr->HandleKeyExportError(conErr, NULL);
@@ -3085,12 +3048,12 @@ void WeaveSecurityManager::HandleConnectionClosed(ExchangeContext *ec, WeaveConn
         secMgr->HandleSessionError(conErr, NULL);
 }
 
-WEAVE_ERROR WeaveSecurityManager::SendStatusReport(WEAVE_ERROR localErr, ExchangeContext *ec)
+WEAVE_ERROR WeaveSecurityManager::SendStatusReport(WEAVE_ERROR localErr, ExchangeContext * ec)
 {
-    WEAVE_ERROR     err;
-    uint32_t        profileId;
-    uint16_t        statusCode;
-    uint16_t        sendFlags;
+    WEAVE_ERROR err;
+    uint32_t profileId;
+    uint16_t statusCode;
+    uint16_t sendFlags;
 
     // Verify that specified exchange isn't closed.
     VerifyOrExit(ec != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -3116,36 +3079,36 @@ WEAVE_ERROR WeaveSecurityManager::SendStatusReport(WEAVE_ERROR localErr, Exchang
     {
     case WEAVE_ERROR_INCORRECT_STATE:
     case WEAVE_ERROR_INVALID_MESSAGE_TYPE:
-        profileId = kWeaveProfile_Common;
+        profileId  = kWeaveProfile_Common;
         statusCode = kStatus_UnexpectedMessage;
         break;
     case WEAVE_ERROR_NOT_IMPLEMENTED:
-        profileId = kWeaveProfile_Common;
+        profileId  = kWeaveProfile_Common;
         statusCode = kStatus_UnsupportedMessage;
         break;
     case WEAVE_ERROR_SECURITY_MANAGER_BUSY:
     case WEAVE_ERROR_RATE_LIMIT_EXCEEDED:
-        profileId = kWeaveProfile_Common;
+        profileId  = kWeaveProfile_Common;
         statusCode = kStatus_Busy;
         break;
     case WEAVE_ERROR_TIMEOUT:
-        profileId = kWeaveProfile_Common;
+        profileId  = kWeaveProfile_Common;
         statusCode = kStatus_Timeout;
         break;
     case WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_UnsupportedEncryptionType;
         break;
     case WEAVE_ERROR_WRONG_KEY_TYPE:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_InvalidKeyId;
         break;
     case WEAVE_ERROR_DUPLICATE_KEY_ID:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_DuplicateKeyId;
         break;
     case WEAVE_ERROR_KEY_CONFIRMATION_FAILED:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_KeyConfirmationFailed;
         break;
     case WEAVE_ERROR_INVALID_PASE_PARAMETER:
@@ -3159,38 +3122,38 @@ WEAVE_ERROR WeaveSecurityManager::SendStatusReport(WEAVE_ERROR localErr, Exchang
     case WEAVE_ERROR_CERT_NOT_TRUSTED:
     case WEAVE_ERROR_WRONG_CERT_SUBJECT:
     case WEAVE_ERROR_WRONG_CERT_TYPE:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_AuthenticationFailed;
         break;
     case WEAVE_ERROR_PASE_SUPPORTS_ONLY_CONFIG1:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_PASESupportsOnlyConfig1;
         break;
     case WEAVE_ERROR_NO_COMMON_PASE_CONFIGURATIONS:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_NoCommonPASEConfigurations;
         break;
     case WEAVE_ERROR_UNSUPPORTED_CASE_CONFIGURATION:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_UnsupportedCASEConfiguration;
         break;
     case WEAVE_ERROR_UNSUPPORTED_CERT_FORMAT:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_UnsupportedCertificate;
         break;
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_RESPONDER
     case WEAVE_ERROR_NO_COMMON_KEY_EXPORT_CONFIGURATIONS:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_NoCommonKeyExportConfiguration;
         break;
     case WEAVE_ERROR_UNAUTHORIZED_KEY_EXPORT_REQUEST:
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_UnauthorizedKeyExportRequest;
         break;
 #endif // WEAVE_CONFIG_ENABLE_KEY_EXPORT_RESPONDER
     default:
         WeaveLogError(SecurityManager, "Internal security error %d", localErr);
-        profileId = kWeaveProfile_Security;
+        profileId  = kWeaveProfile_Security;
         statusCode = kStatusCode_InternalError;
         break;
     }
@@ -3255,22 +3218,21 @@ void WeaveSecurityManager::Reset(void)
         }
         break;
 #endif
-    default:
-        break;
+    default: break;
     }
 
     Platform::Security::MemoryShutdown();
 
     CancelSessionTimer();
 
-    State = kState_Idle;
-    mCon = NULL;
-    mRequestedAuthMode = kWeaveAuthMode_NotSpecified;
-    mSessionKeyId = WeaveKeyId::kNone;
-    mEncType = kWeaveEncryptionType_None;
+    State                          = kState_Idle;
+    mCon                           = NULL;
+    mRequestedAuthMode             = kWeaveAuthMode_NotSpecified;
+    mSessionKeyId                  = WeaveKeyId::kNone;
+    mEncType                       = kWeaveEncryptionType_None;
     mStartSecureSession_OnComplete = NULL;
-    mStartSecureSession_OnError = NULL;
-    mStartSecureSession_ReqState = NULL;
+    mStartSecureSession_OnError    = NULL;
+    mStartSecureSession_ReqState   = NULL;
 }
 
 void WeaveSecurityManager::StartSessionTimer(void)
@@ -3289,11 +3251,11 @@ void WeaveSecurityManager::CancelSessionTimer(void)
     mSystemLayer->CancelTimer(HandleSessionTimeout, this);
 }
 
-void WeaveSecurityManager::HandleSessionTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveSecurityManager::HandleSessionTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     WeaveLogProgress(SecurityManager, "%s", __FUNCTION__);
 
-    WeaveSecurityManager* securityMgr = reinterpret_cast<WeaveSecurityManager*>(aAppState);
+    WeaveSecurityManager * securityMgr = reinterpret_cast<WeaveSecurityManager *>(aAppState);
     if (securityMgr)
     {
         securityMgr->HandleSessionError(WEAVE_ERROR_TIMEOUT, NULL);
@@ -3304,8 +3266,8 @@ void WeaveSecurityManager::StartIdleSessionTimer(void)
 {
     if (IdleSessionTimeout != 0 && !GetFlag(mFlags, kFlag_IdleSessionTimerRunning))
     {
-        System::Layer *systemLayer = FabricState->MessageLayer->SystemLayer;
-        System::Error err = systemLayer->StartTimer(IdleSessionTimeout, HandleIdleSessionTimeout, this);
+        System::Layer * systemLayer = FabricState->MessageLayer->SystemLayer;
+        System::Error err           = systemLayer->StartTimer(IdleSessionTimeout, HandleIdleSessionTimeout, this);
         if (err == WEAVE_SYSTEM_NO_ERROR)
         {
             WeaveLogDetail(SecurityManager, "Session idle timer started");
@@ -3316,15 +3278,15 @@ void WeaveSecurityManager::StartIdleSessionTimer(void)
 
 void WeaveSecurityManager::StopIdleSessionTimer(void)
 {
-    System::Layer *systemLayer = FabricState->MessageLayer->SystemLayer;
+    System::Layer * systemLayer = FabricState->MessageLayer->SystemLayer;
     systemLayer->CancelTimer(HandleIdleSessionTimeout, this);
     ClearFlag(mFlags, kFlag_IdleSessionTimerRunning);
     WeaveLogDetail(SecurityManager, "Session idle timer stopped");
 }
 
-void WeaveSecurityManager::HandleIdleSessionTimeout(System::Layer* aLayer, void* aAppState, System::Error aError)
+void WeaveSecurityManager::HandleIdleSessionTimeout(System::Layer * aLayer, void * aAppState, System::Error aError)
 {
-    WeaveSecurityManager *_this = (WeaveSecurityManager *)aAppState;
+    WeaveSecurityManager * _this = (WeaveSecurityManager *) aAppState;
     bool unreservedSessionsExist;
 
     ClearFlag(_this->mFlags, kFlag_IdleSessionTimerRunning);
@@ -3344,11 +3306,8 @@ void WeaveSecurityManager::OnEncryptedMsgRcvd(uint16_t sessionKeyId, uint64_t pe
     // is received before the Ack for the last message on the session establishment exchange.
     // In that case there is no need to wait for the Ack and the session can be completed.
 #if WEAVE_CONFIG_ENABLE_CASE_INITIATOR || WEAVE_CONFIG_ENABLE_CASE_RESPONDER
-    if (State == kState_CASEInProgress &&
-        mCASEEngine->State == WeaveCASEEngine::kState_Complete &&
-        mSessionKeyId == sessionKeyId &&
-        mEC->PeerNodeId == peerNodeId &&
-        mEncType == encType)
+    if (State == kState_CASEInProgress && mCASEEngine->State == WeaveCASEEngine::kState_Complete && mSessionKeyId == sessionKeyId &&
+        mEC->PeerNodeId == peerNodeId && mEncType == encType)
     {
         HandleSessionComplete();
     }
@@ -3357,22 +3316,21 @@ void WeaveSecurityManager::OnEncryptedMsgRcvd(uint16_t sessionKeyId, uint64_t pe
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-void WeaveSecurityManager::WRMPHandleAckRcvd(ExchangeContext *ec, void *msgCtxt)
+void WeaveSecurityManager::WRMPHandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
 {
     WeaveLogProgress(SecurityManager, "%s", __FUNCTION__);
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
-    if (secMgr->State == kState_CASEInProgress &&
-        secMgr->mCASEEngine->State == WeaveCASEEngine::kState_Complete)
+    if (secMgr->State == kState_CASEInProgress && secMgr->mCASEEngine->State == WeaveCASEEngine::kState_Complete)
     {
         secMgr->HandleSessionComplete();
     }
 }
 
-void WeaveSecurityManager::WRMPHandleSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt)
+void WeaveSecurityManager::WRMPHandleSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt)
 {
     WeaveLogProgress(SecurityManager, "%s", __FUNCTION__);
-    WeaveSecurityManager *secMgr = (WeaveSecurityManager *)ec->AppState;
+    WeaveSecurityManager * secMgr = (WeaveSecurityManager *) ec->AppState;
 
 #if WEAVE_CONFIG_ENABLE_KEY_EXPORT_INITIATOR
     if (secMgr->State == kState_KeyExportInProgress)
@@ -3393,9 +3351,9 @@ void WeaveSecurityManager::AsyncNotifySecurityManagerAvailable()
     mSystemLayer->ScheduleWork(DoNotifySecurityManagerAvailable, this);
 }
 
-void WeaveSecurityManager::DoNotifySecurityManagerAvailable(System::Layer *systemLayer, void *appState, System::Error err)
+void WeaveSecurityManager::DoNotifySecurityManagerAvailable(System::Layer * systemLayer, void * appState, System::Error err)
 {
-    WeaveSecurityManager *_this = (WeaveSecurityManager *)appState;
+    WeaveSecurityManager * _this = (WeaveSecurityManager *) appState;
     if (_this->State == kState_Idle)
     {
         _this->ExchangeManager->NotifySecurityManagerAvailable();
@@ -3413,7 +3371,7 @@ void WeaveSecurityManager::DoNotifySecurityManagerAvailable(System::Layer *syste
  * @retval #WEAVE_ERROR_INCORRECT_STATE   If there was no session establishment in progress, or the
  *                              in-progress session did not match the supplied request state pointer.
  */
-WEAVE_ERROR WeaveSecurityManager::CancelSessionEstablishment(void *reqState)
+WEAVE_ERROR WeaveSecurityManager::CancelSessionEstablishment(void * reqState)
 {
     // If a session establishment is in progress and the supplied request state matches what was provided
     // when the session was started...
@@ -3458,7 +3416,7 @@ void WeaveSecurityManager::ReserveKey(uint64_t peerNodeId, uint16_t keyId)
     // (Currently reservations only apply to session keys).
     if (WeaveKeyId::IsSessionKey(keyId))
     {
-        WeaveSessionKey *sessionKey;
+        WeaveSessionKey * sessionKey;
         if (FabricState->FindSessionKey(keyId, peerNodeId, false, sessionKey) == WEAVE_NO_ERROR)
         {
             ReserveSessionKey(sessionKey);
@@ -3486,7 +3444,7 @@ void WeaveSecurityManager::ReleaseKey(uint64_t peerNodeId, uint16_t keyId)
     // (Currently reservations only apply to session keys).
     if (WeaveKeyId::IsSessionKey(keyId))
     {
-        WeaveSessionKey *sessionKey;
+        WeaveSessionKey * sessionKey;
         if (FabricState->FindSessionKey(keyId, peerNodeId, false, sessionKey) == WEAVE_NO_ERROR)
         {
             ReleaseSessionKey(sessionKey);
@@ -3500,13 +3458,13 @@ void WeaveSecurityManager::ReleaseKey(uint64_t peerNodeId, uint16_t keyId)
  * @param[in]  sessionKey       A pointer to the session key to be reserved.
  *
  */
-void WeaveSecurityManager::ReserveSessionKey(WeaveSessionKey *sessionKey)
+void WeaveSecurityManager::ReserveSessionKey(WeaveSessionKey * sessionKey)
 {
     VerifyOrDie(sessionKey->ReserveCount < UINT8_MAX);
     sessionKey->ReserveCount++;
     sessionKey->MarkRecentlyActive();
     WeaveLogDetail(SecurityManager, "Reserve session key: Id=%04" PRIX16 " Peer=%016" PRIX64 " Reserve=%" PRId8,
-            sessionKey->MsgEncKey.KeyId, sessionKey->NodeId, sessionKey->ReserveCount);
+                   sessionKey->MsgEncKey.KeyId, sessionKey->NodeId, sessionKey->ReserveCount);
 }
 
 /**
@@ -3515,19 +3473,17 @@ void WeaveSecurityManager::ReserveSessionKey(WeaveSessionKey *sessionKey)
  * @param[in]  sessionKey       A pointer to the session key to be released.
  *
  */
-void WeaveSecurityManager::ReleaseSessionKey(WeaveSessionKey *sessionKey)
+void WeaveSecurityManager::ReleaseSessionKey(WeaveSessionKey * sessionKey)
 {
     VerifyOrDie(sessionKey->ReserveCount > 0);
 
     sessionKey->ReserveCount--;
 
     WeaveLogDetail(SecurityManager, "Release session key: Id=%04" PRIX16 " Peer=%016" PRIX64 " Reserve=%" PRId8,
-            sessionKey->MsgEncKey.KeyId, sessionKey->NodeId, sessionKey->ReserveCount);
+                   sessionKey->MsgEncKey.KeyId, sessionKey->NodeId, sessionKey->ReserveCount);
 
     // If the session key is subject to automatic removal and its reserve count is now zero...
-    if (sessionKey->BoundCon == NULL &&
-        sessionKey->IsKeySet() &&
-        sessionKey->ReserveCount == 0)
+    if (sessionKey->BoundCon == NULL && sessionKey->IsKeySet() && sessionKey->ReserveCount == 0)
     {
         // If the session key is marked remove-on-idle, enable the idle session timer and mark the key as
         // recently active.  This will give it the maximum lifetime before it gets removed for inactivity.

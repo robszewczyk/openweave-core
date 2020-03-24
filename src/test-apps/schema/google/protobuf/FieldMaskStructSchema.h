@@ -29,26 +29,22 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Google {
 namespace Protobuf {
 
 struct FieldMask
 {
-    nl::SerializedFieldTypeUTF8String_array  paths;
+    nl::SerializedFieldTypeUTF8String_array paths;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct FieldMask_array {
+struct FieldMask_array
+{
     uint32_t num;
-    FieldMask *buf;
+    FieldMask * buf;
 };
-
-
 
 } // namespace Protobuf
 } // namespace Google

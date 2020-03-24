@@ -52,30 +52,29 @@ namespace Weave {
 namespace Profiles {
 namespace DeviceControl {
 
-
 using namespace nl::Weave::Crypto;
 using namespace nl::Weave::Encoding;
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles::DeviceDescription;
 
-DeviceControlServer *DeviceControlServer::sRemotePassiveRendezvousServer = NULL;
+DeviceControlServer * DeviceControlServer::sRemotePassiveRendezvousServer = NULL;
 
 DeviceControlServer::DeviceControlServer()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    mCurClientOp = NULL;
-    mDelegate = NULL;
-    mRemotePassiveRendezvousOp = NULL;
-    mFailSafeToken = 0;
-    mFailSafeArmed = false;
-    mResetFlags = 0x0000;
-    mRemotePassiveRendezvousClientCon = NULL;
-    mRemotePassiveRendezvousJoinerCon = NULL;
-    mRemotePassiveRendezvousTunnel = NULL;
-    mRemotePassiveRendezvousTimeout = 0;
-    mTunnelInactivityTimeout = 0;
-    mRemotePassiveRendezvousKeyId = 0;
+    FabricState                            = NULL;
+    ExchangeMgr                            = NULL;
+    mCurClientOp                           = NULL;
+    mDelegate                              = NULL;
+    mRemotePassiveRendezvousOp             = NULL;
+    mFailSafeToken                         = 0;
+    mFailSafeArmed                         = false;
+    mResetFlags                            = 0x0000;
+    mRemotePassiveRendezvousClientCon      = NULL;
+    mRemotePassiveRendezvousJoinerCon      = NULL;
+    mRemotePassiveRendezvousTunnel         = NULL;
+    mRemotePassiveRendezvousTimeout        = 0;
+    mTunnelInactivityTimeout               = 0;
+    mRemotePassiveRendezvousKeyId          = 0;
     mRemotePassiveRendezvousEncryptionType = 0;
 }
 
@@ -91,14 +90,14 @@ DeviceControlServer::DeviceControlServer()
  *                                                              handlers are registered.
  * @retval  #WEAVE_NO_ERROR                                     On success.
  */
-WEAVE_ERROR DeviceControlServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR DeviceControlServer::Init(WeaveExchangeManager * exchangeMgr)
 {
-    FabricState = exchangeMgr->FabricState;
-    ExchangeMgr = exchangeMgr;
-    mCurClientOp = NULL;
+    FabricState    = exchangeMgr->FabricState;
+    ExchangeMgr    = exchangeMgr;
+    mCurClientOp   = NULL;
     mFailSafeToken = 0;
     mFailSafeArmed = false;
-    mResetFlags = 0x0000;
+    mResetFlags    = 0x0000;
 
     // Global used here, as used in DeviceManager, to get app state in WeaveMessageLayer::HandleConnectionReceived.
     if (sRemotePassiveRendezvousServer != NULL)
@@ -107,8 +106,7 @@ WEAVE_ERROR DeviceControlServer::Init(WeaveExchangeManager *exchangeMgr)
     sRemotePassiveRendezvousServer = this;
 
     // Register to receive unsolicited Device Control messages from the exchange manager.
-    WEAVE_ERROR err =
-        ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_DeviceControl, HandleClientRequest, this);
+    WEAVE_ERROR err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_DeviceControl, HandleClientRequest, this);
 
     return err;
 }
@@ -126,11 +124,11 @@ WEAVE_ERROR DeviceControlServer::Shutdown()
 
     CloseClientOp();
 
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState    = NULL;
+    ExchangeMgr    = NULL;
     mFailSafeToken = 0;
     mFailSafeArmed = false;
-    mResetFlags = 0x0000;
+    mResetFlags    = 0x0000;
 
     // Kill any pending or completed Remote Passive Rendezvous.
     CloseRemotePassiveRendezvous();
@@ -143,7 +141,7 @@ WEAVE_ERROR DeviceControlServer::Shutdown()
  *
  * @param[in]   delegate    A pointer to the Device Control Delegate.
  */
-void DeviceControlServer::SetDelegate(DeviceControlDelegate *delegate)
+void DeviceControlServer::SetDelegate(DeviceControlDelegate * delegate)
 {
     mDelegate = delegate;
 }
@@ -213,13 +211,13 @@ void DeviceControlServer::SystemTestTimeout()
     CloseClientOp();
 }
 
-void DeviceControlServer::HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-    const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *msgBuf)
+void DeviceControlServer::HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                              uint32_t profileId, uint8_t msgType, PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    DeviceControlServer *server = (DeviceControlServer *) ec->AppState;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    DeviceControlServer * server = (DeviceControlServer *) ec->AppState;
     uint16_t dataLen;
-    uint8_t *p;
+    uint8_t * p;
 
     // Fail messages for the wrong profile. This shouldn't happen, but better safe than sorry.
     if (profileId != kWeaveProfile_DeviceControl)
@@ -255,7 +253,8 @@ void DeviceControlServer::HandleClientRequest(ExchangeContext *ec, const IPPacke
 
     // Because the exchange context will be gone when we are waiting for our reset config
     // callback, we must also check mResetFlags to disallow simultaneous requests.
-    if (server->mResetFlags != 0x0000) {
+    if (server->mResetFlags != 0x0000)
+    {
         WeaveServerBase::SendStatusReport(ec, kWeaveProfile_Common, Common::kStatus_Busy, WEAVE_NO_ERROR);
         ExitNow();
     }
@@ -280,7 +279,7 @@ void DeviceControlServer::HandleClientRequest(ExchangeContext *ec, const IPPacke
     server->mCurClientOp = ec;
 
     dataLen = msgBuf->DataLength();
-    p = msgBuf->Start();
+    p       = msgBuf->Start();
 
     // Decode and dispatch the message.
     switch (msgType)
@@ -360,17 +359,16 @@ exit:
             server->CloseRemotePassiveRendezvous();
         }
 
-        uint16_t statusCode = (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH)
-                ? Common::kStatus_BadRequest
-                : Common::kStatus_InternalError;
+        uint16_t statusCode =
+            (err == WEAVE_ERROR_INVALID_MESSAGE_LENGTH) ? Common::kStatus_BadRequest : Common::kStatus_InternalError;
         server->SendStatusReport(kWeaveProfile_Common, statusCode, err);
     }
 }
 
-void DeviceControlServer::HandleResetConfigConnectionClose(WeaveConnection *aCon, WEAVE_ERROR conErr)
+void DeviceControlServer::HandleResetConfigConnectionClose(WeaveConnection * aCon, WEAVE_ERROR conErr)
 {
-    DeviceControlServer *server = (DeviceControlServer *) aCon->AppState;
-    DeviceControlDelegate *delegate = server->mDelegate;
+    DeviceControlServer * server     = (DeviceControlServer *) aCon->AppState;
+    DeviceControlDelegate * delegate = server->mDelegate;
     aCon->Close();
 
     delegate->OnResetConfig(server->mResetFlags);
@@ -381,10 +379,11 @@ void DeviceControlServer::HandleResetConfigConnectionClose(WeaveConnection *aCon
     server->mResetFlags = 0x0000;
 }
 
-WEAVE_ERROR DeviceControlServer::SetConnectionMonitor(uint64_t peerNodeId, WeaveConnection *peerCon, uint16_t idleTimeout, uint16_t monitorInterval)
+WEAVE_ERROR DeviceControlServer::SetConnectionMonitor(uint64_t peerNodeId, WeaveConnection * peerCon, uint16_t idleTimeout,
+                                                      uint16_t monitorInterval)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    ExchangeContext *monitorOp;
+    ExchangeContext * monitorOp;
 
     // Search for an existing monitor exchange context for this connection.
     //
@@ -398,8 +397,8 @@ WEAVE_ERROR DeviceControlServer::SetConnectionMonitor(uint64_t peerNodeId, Weave
         {
             monitorOp = ExchangeMgr->NewContext(peerCon, this);
             VerifyOrExit(monitorOp != NULL, err = WEAVE_ERROR_NO_MEMORY);
-            monitorOp->PeerNodeId = peerNodeId;
-            monitorOp->OnMessageReceived = HandleMonitorResponse;
+            monitorOp->PeerNodeId         = peerNodeId;
+            monitorOp->OnMessageReceived  = HandleMonitorResponse;
             monitorOp->OnConnectionClosed = HandleMonitorConnectionClose;
         }
 
@@ -432,23 +431,23 @@ exit:
     return err;
 }
 
-void DeviceControlServer::StartMonitorTimer(ExchangeContext *monitorOp)
+void DeviceControlServer::StartMonitorTimer(ExchangeContext * monitorOp)
 {
-    System::Layer* lSystemLayer = ExchangeMgr->MessageLayer->SystemLayer;
+    System::Layer * lSystemLayer = ExchangeMgr->MessageLayer->SystemLayer;
     lSystemLayer->StartTimer(monitorOp->RetransInterval, HandleMonitorTimer, monitorOp);
 }
 
-void DeviceControlServer::CancelMonitorTimer(ExchangeContext *monitorOp)
+void DeviceControlServer::CancelMonitorTimer(ExchangeContext * monitorOp)
 {
-    System::Layer* lSystemLayer = ExchangeMgr->MessageLayer->SystemLayer;
+    System::Layer * lSystemLayer = ExchangeMgr->MessageLayer->SystemLayer;
     lSystemLayer->CancelTimer(HandleMonitorTimer, monitorOp);
 }
 
-void DeviceControlServer::HandleMonitorTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void DeviceControlServer::HandleMonitorTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    ExchangeContext*        monitorOp   = reinterpret_cast<ExchangeContext*>(aAppState);
-    DeviceControlServer*    server      = reinterpret_cast<DeviceControlServer*>(monitorOp->AppState);
-    PacketBuffer*           msgBuf      = NULL;
+    ExchangeContext * monitorOp  = reinterpret_cast<ExchangeContext *>(aAppState);
+    DeviceControlServer * server = reinterpret_cast<DeviceControlServer *>(monitorOp->AppState);
+    PacketBuffer * msgBuf        = NULL;
 
     WeaveLogProgress(DeviceControl, "Sending EchoRequest to device manager");
 
@@ -468,10 +467,11 @@ exit:
         server->StartMonitorTimer(monitorOp);
 }
 
-void DeviceControlServer::HandleMonitorResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-        uint8_t msgType, PacketBuffer *payload)
+void DeviceControlServer::HandleMonitorResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                PacketBuffer * payload)
 {
-    DeviceControlServer *server = (DeviceControlServer *)ec->AppState;
+    DeviceControlServer * server = (DeviceControlServer *) ec->AppState;
 
     WeaveLogProgress(DeviceControl, "EchoResponse received from device manager");
 
@@ -481,9 +481,9 @@ void DeviceControlServer::HandleMonitorResponse(ExchangeContext *ec, const IPPac
     server->StartMonitorTimer(ec);
 }
 
-void DeviceControlServer::HandleMonitorConnectionClose(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void DeviceControlServer::HandleMonitorConnectionClose(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
-    DeviceControlServer *server = (DeviceControlServer *)ec->AppState;
+    DeviceControlServer * server = (DeviceControlServer *) ec->AppState;
 
     WeaveLogProgress(DeviceControl, "Monitored connection closed");
 
@@ -555,10 +555,10 @@ void DeviceControlServer::CloseRemotePassiveRendezvous()
         mDelegate->OnRemotePassiveRendezvousDone();
 }
 
-void DeviceControlServer::HandleRemotePassiveRendezvousConnectionClosed(ExchangeContext *ec, WeaveConnection *con,
-        WEAVE_ERROR conErr)
+void DeviceControlServer::HandleRemotePassiveRendezvousConnectionClosed(ExchangeContext * ec, WeaveConnection * con,
+                                                                        WEAVE_ERROR conErr)
 {
-    DeviceControlServer *server = (DeviceControlServer *)ec->AppState;
+    DeviceControlServer * server = (DeviceControlServer *) ec->AppState;
 
     WeaveLogProgress(DeviceControl, "RemotePassiveRendezvous connection closed");
 
@@ -566,10 +566,10 @@ void DeviceControlServer::HandleRemotePassiveRendezvousConnectionClosed(Exchange
     server->CloseRemotePassiveRendezvous();
 }
 
-WEAVE_ERROR DeviceControlServer::CompleteRemotePassiveRendezvous(WeaveConnection *con)
+WEAVE_ERROR DeviceControlServer::CompleteRemotePassiveRendezvous(WeaveConnection * con)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
 
     VerifyOrExit(con != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -585,7 +585,7 @@ WEAVE_ERROR DeviceControlServer::CompleteRemotePassiveRendezvous(WeaveConnection
 
     // Capture rendezvoused connection to joiner.
     mRemotePassiveRendezvousJoinerCon = con;
-    con = NULL; // Set con to NULL so we don't close client-half of tunnel at exit.
+    con                               = NULL; // Set con to NULL so we don't close client-half of tunnel at exit.
 
     // Send RemoteConnectionComplete message to client. Expect no response, as client knows all future data it sends
     // over this connection will be forwarded to the rendezvoused device.
@@ -593,8 +593,7 @@ WEAVE_ERROR DeviceControlServer::CompleteRemotePassiveRendezvous(WeaveConnection
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Send RemoteConnectionComplete.
-    err = mRemotePassiveRendezvousOp->SendMessage(kWeaveProfile_DeviceControl, kMsgType_RemoteConnectionComplete,
-            msgBuf, 0);
+    err    = mRemotePassiveRendezvousOp->SendMessage(kWeaveProfile_DeviceControl, kMsgType_RemoteConnectionComplete, msgBuf, 0);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -604,7 +603,7 @@ WEAVE_ERROR DeviceControlServer::CompleteRemotePassiveRendezvous(WeaveConnection
     // As we've completed the Remote Passive Rendezvous, stop listening for connections accepted on the
     // unsecured Weave port.
     err = ExchangeMgr->MessageLayer->ClearUnsecuredConnectionListener(HandleConnectionReceived,
-            HandleUnsecuredConnectionCallbackRemoved);
+                                                                      HandleUnsecuredConnectionCallbackRemoved);
     if (err != WEAVE_NO_ERROR)
         WeaveLogProgress(DeviceControl, "ClearUnsecuredConnectionListener failed, err = %d", err);
 
@@ -622,9 +621,9 @@ WEAVE_ERROR DeviceControlServer::CompleteRemotePassiveRendezvous(WeaveConnection
         ExitNow();
     }
 
-    err = ExchangeMgr->MessageLayer->CreateTunnel(&mRemotePassiveRendezvousTunnel,
-            *mRemotePassiveRendezvousJoinerCon, *mRemotePassiveRendezvousClientCon,
-            secondsToMilliseconds(mTunnelInactivityTimeout));
+    err = ExchangeMgr->MessageLayer->CreateTunnel(&mRemotePassiveRendezvousTunnel, *mRemotePassiveRendezvousJoinerCon,
+                                                  *mRemotePassiveRendezvousClientCon,
+                                                  secondsToMilliseconds(mTunnelInactivityTimeout));
     mRemotePassiveRendezvousJoinerCon = NULL;
     mRemotePassiveRendezvousClientCon = NULL;
     SuccessOrExit(err);
@@ -661,7 +660,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleResetConfig(uint8_t *p, WeaveConnection *curCon)
+WEAVE_ERROR DeviceControlServer::HandleResetConfig(uint8_t * p, WeaveConnection * curCon)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -672,13 +671,14 @@ WEAVE_ERROR DeviceControlServer::HandleResetConfig(uint8_t *p, WeaveConnection *
         // If there is a connection, find out if it needs to be closed before
         // calling the OnResetConfig delegate method. If it does, ensure the response
         // is sent and the connection is closed before calling OnResetConfig.
-        if (curCon != NULL && mDelegate->ShouldCloseConBeforeResetConfig(resetFlags)) {
+        if (curCon != NULL && mDelegate->ShouldCloseConBeforeResetConfig(resetFlags))
+        {
             // We must wait until the connection successfully shuts down to perform the reset.
             // So we cache the reset flags in mResetFlags, and register the callback so the
             // reset will be performed.
             mResetFlags = resetFlags;
 
-            curCon->AppState = this;
+            curCon->AppState           = this;
             curCon->OnConnectionClosed = HandleResetConfigConnectionClose;
 
             // Send the response that indicates the connection will close, then
@@ -688,7 +688,9 @@ WEAVE_ERROR DeviceControlServer::HandleResetConfig(uint8_t *p, WeaveConnection *
             SuccessOrExit(err);
 
             curCon->Shutdown();
-        } else {
+        }
+        else
+        {
             err = mDelegate->OnResetConfig(resetFlags);
             if (err == WEAVE_ERROR_NOT_IMPLEMENTED)
             {
@@ -720,11 +722,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleArmFailSafe(uint8_t *p)
+WEAVE_ERROR DeviceControlServer::HandleArmFailSafe(uint8_t * p)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    uint8_t armMode = Read8(p);
+    uint8_t armMode        = Read8(p);
     uint32_t failSafeToken = LittleEndian::Read32(p);
 
     switch (armMode)
@@ -816,13 +818,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleEnableConnectionMonitor(uint8_t *p, const WeaveMessageInfo *msgInfo,
-    ExchangeContext *ec)
+WEAVE_ERROR DeviceControlServer::HandleEnableConnectionMonitor(uint8_t * p, const WeaveMessageInfo * msgInfo, ExchangeContext * ec)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Parse the monitoring interval and timeout from the message.
-    uint16_t idleTimeout = LittleEndian::Read16(p);
+    uint16_t idleTimeout     = LittleEndian::Read16(p);
     uint16_t monitorInterval = LittleEndian::Read16(p);
 
     err = SetConnectionMonitor(msgInfo->SourceNodeId, ec->Con, idleTimeout, monitorInterval);
@@ -835,8 +836,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleDisableConnectionMonitor(const WeaveMessageInfo *msgInfo,
-    ExchangeContext *ec)
+WEAVE_ERROR DeviceControlServer::HandleDisableConnectionMonitor(const WeaveMessageInfo * msgInfo, ExchangeContext * ec)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -850,7 +850,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleRemotePassiveRendezvous(uint8_t *p, ExchangeContext *ec)
+WEAVE_ERROR DeviceControlServer::HandleRemotePassiveRendezvous(uint8_t * p, ExchangeContext * ec)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -879,18 +879,18 @@ WEAVE_ERROR DeviceControlServer::HandleRemotePassiveRendezvous(uint8_t *p, Excha
 
     // Capture ExchangeContext over which to eventually send RemoteConnectionComplete.
     mRemotePassiveRendezvousOp = ec;
-    ec->OnConnectionClosed = HandleRemotePassiveRendezvousConnectionClosed;
+    ec->OnConnectionClosed     = HandleRemotePassiveRendezvousConnectionClosed;
 
     // Parse Remote Passive Rendezvous request body.
     WeaveLogProgress(DeviceControl, "Parsing RPR request");
     mRemotePassiveRendezvousTimeout = LittleEndian::Read16(p);
-    mTunnelInactivityTimeout = LittleEndian::Read16(p);
+    mTunnelInactivityTimeout        = LittleEndian::Read16(p);
 
     // Decode joiner filter address.
     IPAddress::ReadAddress(const_cast<const uint8_t *&>(p), mRemotePassiveRendezvousJoinerAddr);
 
-    WeaveLogProgress(DeviceControl, "Got rendezvous timeout = %d, inactivity timeout = %d",
-             mRemotePassiveRendezvousTimeout, mTunnelInactivityTimeout);
+    WeaveLogProgress(DeviceControl, "Got rendezvous timeout = %d, inactivity timeout = %d", mRemotePassiveRendezvousTimeout,
+                     mTunnelInactivityTimeout);
 
     // Arm timer to reset our connection to the client if no rendezvous connection has been accepted after
     // a client-specified interval.
@@ -900,7 +900,7 @@ WEAVE_ERROR DeviceControlServer::HandleRemotePassiveRendezvous(uint8_t *p, Excha
     // Set up callback to intercept new connections received on the unsecured Weave port. Fail if someone else
     // such as the Device Manager has already set this callback.
     err = ExchangeMgr->MessageLayer->SetUnsecuredConnectionListener(HandleConnectionReceived,
-            HandleUnsecuredConnectionCallbackRemoved, false, this);
+                                                                    HandleUnsecuredConnectionCallbackRemoved, false, this);
     SuccessOrExit(err);
 
     if (mDelegate != NULL)
@@ -935,12 +935,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleStartSystemTest(uint8_t *p)
+WEAVE_ERROR DeviceControlServer::HandleStartSystemTest(uint8_t * p)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     uint32_t profileId = LittleEndian::Read32(p);
-    uint32_t testId = LittleEndian::Read32(p);
+    uint32_t testId    = LittleEndian::Read32(p);
 
     if (mDelegate != NULL)
     {
@@ -970,19 +970,19 @@ WEAVE_ERROR DeviceControlServer::HandleStopSystemTest()
     return err;
 }
 
-WEAVE_ERROR DeviceControlServer::HandleLookingToRendezvousMessage(const WeaveMessageInfo *msgInfo, ExchangeContext *ec)
+WEAVE_ERROR DeviceControlServer::HandleLookingToRendezvousMessage(const WeaveMessageInfo * msgInfo, ExchangeContext * ec)
 {
-    WEAVE_ERROR err = WEAVE_ERROR_INCORRECT_STATE;
-    System::Layer* lSystemLayer = ExchangeMgr->MessageLayer->SystemLayer;
+    WEAVE_ERROR err              = WEAVE_ERROR_INCORRECT_STATE;
+    System::Layer * lSystemLayer = ExchangeMgr->MessageLayer->SystemLayer;
 
     // We are going to be dealing with the connection closing here rather than in the timer close
     lSystemLayer->CancelTimer(HandleLookingToRendezvousTimeout, ec->Con);
 
     // LookingToRendezvous message is not authenticated
     // but we only pay attention to it while:
-    if (IsRemotePassiveRendezvousInProgress() &&  // in remote passive rendezvous
-        (mRemotePassiveRendezvousJoinerCon == NULL) && // and before we completed the tunnel
-        (ec->Con != NULL) && // and it has an associated connection
+    if (IsRemotePassiveRendezvousInProgress() &&        // in remote passive rendezvous
+        (mRemotePassiveRendezvousJoinerCon == NULL) &&  // and before we completed the tunnel
+        (ec->Con != NULL) &&                            // and it has an associated connection
         (ec->Con != mRemotePassiveRendezvousClientCon)) // sanity: the request did not come from the client
     {
         // && of course, we actually match the RPR joiner address
@@ -1000,7 +1000,8 @@ WEAVE_ERROR DeviceControlServer::HandleLookingToRendezvousMessage(const WeaveMes
 #if WEAVE_DETAIL_LOGGING
             char joinerAddr[INET6_ADDRSTRLEN] = { 0 };
             mRemotePassiveRendezvousJoinerAddr.ToString(joinerAddr, sizeof(joinerAddr));
-            WeaveLogProgress(DeviceControl, "LookingToRendezvous failed filter: Joiner node id: %" PRIX64 " expected address %s", msgInfo->SourceNodeId, joinerAddr);
+            WeaveLogProgress(DeviceControl, "LookingToRendezvous failed filter: Joiner node id: %" PRIX64 " expected address %s",
+                             msgInfo->SourceNodeId, joinerAddr);
 #else
             WeaveLogProgress(DeviceControl, "LookingToRendezvous failed to matched client filter");
 #endif
@@ -1024,11 +1025,10 @@ exit:
     return err;
 }
 
-
-void DeviceControlServer::HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void DeviceControlServer::HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    DeviceControlServer *server = sRemotePassiveRendezvousServer;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    DeviceControlServer * server = sRemotePassiveRendezvousServer;
 
     VerifyOrExit(server->mRemotePassiveRendezvousJoinerCon == NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
@@ -1044,15 +1044,16 @@ void DeviceControlServer::HandleConnectionReceived(WeaveMessageLayer *msgLayer, 
         }
         else
         {
-            System::Layer* lSystemLayer = server->ExchangeMgr->MessageLayer->SystemLayer;
+            System::Layer * lSystemLayer = server->ExchangeMgr->MessageLayer->SystemLayer;
 
             WeaveLogProgress(DeviceControl, "Remote device addr failed to match client filter");
             WeaveLogProgress(DeviceControl, "Awaiting looking to rendezvous message");
             server->ExchangeMgr->AllowUnsolicitedMessages(con);
-            err = lSystemLayer->StartTimer(secondsToMilliseconds(server->mTunnelInactivityTimeout), HandleLookingToRendezvousTimeout, con);
+            err = lSystemLayer->StartTimer(secondsToMilliseconds(server->mTunnelInactivityTimeout),
+                                           HandleLookingToRendezvousTimeout, con);
             SuccessOrExit(err);
             con->OnConnectionClosed = HandleLookingToRendezvousClosed;
-            con = NULL;
+            con                     = NULL;
         }
     }
     else
@@ -1086,10 +1087,10 @@ exit:
  * @param[in] con    The connection.
  * @param[in] conErr An error code that explains why the connection was closed.
  */
-void DeviceControlServer::HandleLookingToRendezvousClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void DeviceControlServer::HandleLookingToRendezvousClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
-    DeviceControlServer *_this =  sRemotePassiveRendezvousServer;
-    System::Layer* lSystemLayer = _this->ExchangeMgr->MessageLayer->SystemLayer;
+    DeviceControlServer * _this  = sRemotePassiveRendezvousServer;
+    System::Layer * lSystemLayer = _this->ExchangeMgr->MessageLayer->SystemLayer;
 
     WeaveLogProgress(DeviceControl, "Connection waiting for LookingToRendezvous message self-closed with error %d", conErr);
 
@@ -1098,10 +1099,10 @@ void DeviceControlServer::HandleLookingToRendezvousClosed(WeaveConnection *con, 
     con->Close();
 }
 
-void DeviceControlServer::HandleLookingToRendezvousTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void DeviceControlServer::HandleLookingToRendezvousTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveConnection * con = static_cast<WeaveConnection *>(aAppState);
-    DeviceControlServer *_this =  sRemotePassiveRendezvousServer;
+    WeaveConnection * con       = static_cast<WeaveConnection *>(aAppState);
+    DeviceControlServer * _this = sRemotePassiveRendezvousServer;
 
     if (con != _this->mRemotePassiveRendezvousJoinerCon)
     {
@@ -1121,10 +1122,10 @@ void DeviceControlServer::HandleLookingToRendezvousTimeout(System::Layer* aSyste
  *
  * @retval other          Other errors returned by nl::Weave::ExchangeContext::SendMessage
  */
-WEAVE_ERROR SendLookingToRendezvous(ExchangeContext *ec)
+WEAVE_ERROR SendLookingToRendezvous(ExchangeContext * ec)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *buf = NULL;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    PacketBuffer * buf = NULL;
 
     buf = PacketBuffer::NewWithAvailableSize(0);
     VerifyOrExit(buf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -1140,25 +1141,25 @@ exit:
     return err;
 }
 
-void DeviceControlServer::HandleUnsecuredConnectionCallbackRemoved(void *appState)
+void DeviceControlServer::HandleUnsecuredConnectionCallbackRemoved(void * appState)
 {
     WeaveLogProgress(DeviceControl, "OnUnsecuredConnectionReceived callback pre-empted");
 
-    DeviceControlServer *server = static_cast<DeviceControlServer *>(appState);
+    DeviceControlServer * server = static_cast<DeviceControlServer *>(appState);
 
     server->WeaveServerBase::SendStatusReport(server->mRemotePassiveRendezvousOp, kWeaveProfile_DeviceControl,
-            kStatusCode_UnsecuredListenPreempted, WEAVE_NO_ERROR);
+                                              kStatusCode_UnsecuredListenPreempted, WEAVE_NO_ERROR);
 
     server->CloseRemotePassiveRendezvous();
 }
 
-void DeviceControlServer::HandleRemotePassiveRendezvousTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void DeviceControlServer::HandleRemotePassiveRendezvousTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    DeviceControlServer* server = reinterpret_cast<DeviceControlServer*>(aAppState);
+    DeviceControlServer * server = reinterpret_cast<DeviceControlServer *>(aAppState);
     WeaveLogProgress(DeviceControl, "Remote Passive Rendezvous timed out");
 
     server->WeaveServerBase::SendStatusReport(server->mRemotePassiveRendezvousOp, kWeaveProfile_DeviceControl,
-            kStatusCode_RemotePassiveRendezvousTimedOut, WEAVE_NO_ERROR);
+                                              kStatusCode_RemotePassiveRendezvousTimedOut, WEAVE_NO_ERROR);
 
     // Close Remote Passive Rendezvous, but leave connection open for additional messages from client.
     server->mRemotePassiveRendezvousClientCon = NULL;
@@ -1167,20 +1168,19 @@ void DeviceControlServer::HandleRemotePassiveRendezvousTimeout(System::Layer* aS
 
 WEAVE_ERROR DeviceControlServer::ArmRemotePassiveRendezvousTimer()
 {
-    System::Layer*  lSystemLayer                        = ExchangeMgr->MessageLayer->SystemLayer;
-    uint32_t        mRemotePassiveRendezvousTimeoutMs   =
-        static_cast<uint32_t>(secondsToMilliseconds(mRemotePassiveRendezvousTimeout));
+    System::Layer * lSystemLayer               = ExchangeMgr->MessageLayer->SystemLayer;
+    uint32_t mRemotePassiveRendezvousTimeoutMs = static_cast<uint32_t>(secondsToMilliseconds(mRemotePassiveRendezvousTimeout));
 
     WeaveLogProgress(DeviceControl, "Arming Remote Passive Rendezvous timer %lu ms",
-            static_cast<unsigned long>(mRemotePassiveRendezvousTimeoutMs));
+                     static_cast<unsigned long>(mRemotePassiveRendezvousTimeoutMs));
 
     return lSystemLayer->StartTimer(mRemotePassiveRendezvousTimeoutMs, HandleRemotePassiveRendezvousTimeout, this);
 }
 
-void DeviceControlServer::HandleTunnelShutdown(WeaveConnectionTunnel *tun)
+void DeviceControlServer::HandleTunnelShutdown(WeaveConnectionTunnel * tun)
 {
     WeaveLogProgress(DeviceControl, "Remote Passive Rendezvous tunnel shut down.");
-    DeviceControlServer *server = (DeviceControlServer *)tun->AppState;
+    DeviceControlServer * server = (DeviceControlServer *) tun->AppState;
 
     if (tun != server->mRemotePassiveRendezvousTunnel)
         return;
@@ -1191,8 +1191,8 @@ void DeviceControlServer::HandleTunnelShutdown(WeaveConnectionTunnel *tun)
     server->CloseRemotePassiveRendezvous();
 }
 
-void DeviceControlDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-        const WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void DeviceControlDelegate::EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                 const WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     // If the result has not already been determined by a subclass...
     if (result == kAccessControlResult_NotDetermined)
@@ -1239,9 +1239,7 @@ void DeviceControlDelegate::EnforceAccessControl(ExchangeContext *ec, uint32_t m
         case kMsgType_DisableConnectionMonitor:
         case kMsgType_RemotePassiveRendezvous:
         case kMsgType_StartSystemTest:
-        case kMsgType_StopSystemTest:
-            result = kAccessControlResult_Accepted;
-            break;
+        case kMsgType_StopSystemTest: result = kAccessControlResult_Accepted; break;
 
 #endif // WEAVE_CONFIG_REQUIRE_AUTH_DEVICE_CONTROL
 

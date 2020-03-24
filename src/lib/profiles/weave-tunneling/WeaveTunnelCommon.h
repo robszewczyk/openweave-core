@@ -58,56 +58,59 @@ namespace WeaveTunnel {
 // Tunnel Control Message Types
 enum TunnelCtrlMsgType
 {
-    kMsgType_TunnelOpen                     = 0x01,
-    kMsgType_TunnelRouteUpdate              = 0x02,
-    kMsgType_TunnelClose                    = 0x03,
-    kMsgType_TunnelReconnect                = 0x04,
-    kMsgType_TunnelRouterAdvertise          = 0x05,
-    kMsgType_TunnelMobileClientAdvertise    = 0x06,
-    kMsgType_TunnelOpenV2                   = 0x07,
-    kMsgType_TunnelLiveness                 = 0x08
+    kMsgType_TunnelOpen                  = 0x01,
+    kMsgType_TunnelRouteUpdate           = 0x02,
+    kMsgType_TunnelClose                 = 0x03,
+    kMsgType_TunnelReconnect             = 0x04,
+    kMsgType_TunnelRouterAdvertise       = 0x05,
+    kMsgType_TunnelMobileClientAdvertise = 0x06,
+    kMsgType_TunnelOpenV2                = 0x07,
+    kMsgType_TunnelLiveness              = 0x08
 };
 
 /// Type of the Tunnel.
 typedef enum TunnelType
 {
-    kType_TunnelUnknown                        = 0, ///<Used to indicate an unknown tunnel type.
-    kType_TunnelPrimary                        = 1, ///<A primary tunnel for transiting traffic between the device/fabric and the Service.
-    kType_TunnelBackup                         = 2, ///<A secondary tunnel serving as an alternate route between the device/fabric and Service.
-                                                    /// in the event that no primary tunnel is available.
-    kType_TunnelShortcut                       = 3, ///<Used to indicate a shortcut tunnel between a local stand-alone node(mobile device) and
-                                                    /// a border gateway.
+    kType_TunnelUnknown = 0, ///< Used to indicate an unknown tunnel type.
+    kType_TunnelPrimary = 1, ///< A primary tunnel for transiting traffic between the device/fabric and the Service.
+    kType_TunnelBackup  = 2, ///< A secondary tunnel serving as an alternate route between the device/fabric and Service.
+                            /// in the event that no primary tunnel is available.
+    kType_TunnelShortcut = 3, ///< Used to indicate a shortcut tunnel between a local stand-alone node(mobile device) and
+                              /// a border gateway.
 } TunnelType;
 
 /// Direction of packet traversing the tunnel.
 typedef enum TunnelPktDirection
 {
-    kDir_Inbound                               = 1, ///<Indicates packet coming in to the border gateway over the tunnel.
-    kDir_Outbound                              = 2, ///<Indicates packet going out of the border gateway over the tunnel.
+    kDir_Inbound  = 1, ///< Indicates packet coming in to the border gateway over the tunnel.
+    kDir_Outbound = 2, ///< Indicates packet going out of the border gateway over the tunnel.
 } TunnelPktDirection;
 
 /// Roles that the Tunnel Agent can assume; i.e., either border gateway or mobile device.
 typedef enum Role
 {
-    kClientRole_BorderGateway     = 1, ///<The device is acting as a border gateway for the purpose of routing traffic to and from itself,
-                                       /// as well as other devices in its associated fabric.
-    kClientRole_StandaloneDevice  = 2, ///<The device is acting as a stand-alone node which does not route traffic for other devices.
-    kClientRole_MobileDevice      = 3, ///<The device is acting as a stand-alone node which does not route traffic for other devices.
-                                       /// It can establish a shortcut tunnel between itself and another border gateway.
+    kClientRole_BorderGateway =
+        1, ///< The device is acting as a border gateway for the purpose of routing traffic to and from itself,
+           /// as well as other devices in its associated fabric.
+    kClientRole_StandaloneDevice =
+        2,                        ///< The device is acting as a stand-alone node which does not route traffic for other devices.
+    kClientRole_MobileDevice = 3, ///< The device is acting as a stand-alone node which does not route traffic for other devices.
+                                  /// It can establish a shortcut tunnel between itself and another border gateway.
 } Role;
 
 /// The technology type of the network interface on the device over which the Tunnel is established with the Service.
 typedef enum SrcInterfaceType
 {
-    kSrcInterface_WiFi      = 1, ///<Used when the WiFi interface is used as the source of the Tunnel to the Service.
-    kSrcInterface_Cellular  = 2, ///<Used when the Cellular interface is used as the source of the Tunnel to the Service.
+    kSrcInterface_WiFi     = 1, ///< Used when the WiFi interface is used as the source of the Tunnel to the Service.
+    kSrcInterface_Cellular = 2, ///< Used when the Cellular interface is used as the source of the Tunnel to the Service.
 } SrcInterfaceType;
 
 /// The liveness strategy employed to maintain the Tunnel connection to theService.
 typedef enum LivenessStrategy
 {
-    kLiveness_TCPKeepAlive  = 1, ///<Used to indicate that the tunnel connection liveness is maintained by TCP KeepAlives.
-    kLiveness_TunnelControl = 2, ///<Used to indicate that the tunnel connection liveness is maintained by Tunnel Control Liveness messages.
+    kLiveness_TCPKeepAlive = 1, ///< Used to indicate that the tunnel connection liveness is maintained by TCP KeepAlives.
+    kLiveness_TunnelControl =
+        2, ///< Used to indicate that the tunnel connection liveness is maintained by Tunnel Control Liveness messages.
 } LivenessStrategy;
 
 // Tunnel Profile Tags
@@ -117,37 +120,34 @@ typedef enum LivenessStrategy
 
 enum
 {
-    kTag_TunnelRoutingRestricted        = 0x0001,  // Profile-specific  Boolean           Tunnel is operating in a restricted mode
-                                                   //                                     and cannot route for other devices.
+    kTag_TunnelRoutingRestricted = 0x0001, // Profile-specific  Boolean           Tunnel is operating in a restricted mode
+                                           //                                     and cannot route for other devices.
 };
 
 // Weave Tunnel Header
 class WeaveTunnelHeader
 {
 public:
-    uint8_t  Version;
+    uint8_t Version;
     //...
 
-/**
- * Encode Tunnel header into the PacketBuffer to encapsulate the IPv6 packet
- * being sent.
- */
-    static WEAVE_ERROR EncodeTunnelHeader(WeaveTunnelHeader *tunHeader,
-                                          PacketBuffer *message);
+    /**
+     * Encode Tunnel header into the PacketBuffer to encapsulate the IPv6 packet
+     * being sent.
+     */
+    static WEAVE_ERROR EncodeTunnelHeader(WeaveTunnelHeader * tunHeader, PacketBuffer * message);
 
-/**
- * Decode Tunnel header out from the PacketBuffer to decapsulate the IPv6 packet
- * out.
- */
-    static WEAVE_ERROR DecodeTunnelHeader(WeaveTunnelHeader *tunHeader,
-                                          PacketBuffer *message);
+    /**
+     * Decode Tunnel header out from the PacketBuffer to decapsulate the IPv6 packet
+     * out.
+     */
+    static WEAVE_ERROR DecodeTunnelHeader(WeaveTunnelHeader * tunHeader, PacketBuffer * message);
 };
 
 // Weave Tunnel Route
 class WeaveTunnelRoute
 {
 public:
-
     /**
      *  Weave Tunnel Route priority values.
      *
@@ -162,35 +162,30 @@ public:
 
     typedef enum RoutePriority
     {
-        kRoutePriority_High                     = 1, ///< The route priority value for high
-        kRoutePriority_Medium                   = 2, ///< The route priority value for medium
-        kRoutePriority_Low                      = 3, ///< The route priority value for low
+        kRoutePriority_High   = 1, ///< The route priority value for high
+        kRoutePriority_Medium = 2, ///< The route priority value for medium
+        kRoutePriority_Low    = 3, ///< The route priority value for low
     } RoutePriority;
 
     // Set of prefix routes to pass to the Service
-    IPPrefix  tunnelRoutePrefix[MAX_NUM_ROUTES];
+    IPPrefix tunnelRoutePrefix[MAX_NUM_ROUTES];
 
     // Route priority values
     uint8_t priority[MAX_NUM_ROUTES];
 
-    uint8_t   numOfPrefixes;
+    uint8_t numOfPrefixes;
 
-/**
- * Encode Tunnel routes containing the set of prefixes into the PacketBuffer containing
- * the Tunnel Control message being sent.
- */
-    static WEAVE_ERROR EncodeFabricTunnelRoutes(uint64_t fabricId,
-                                                WeaveTunnelRoute *tunRoute,
-                                                PacketBuffer *message);
+    /**
+     * Encode Tunnel routes containing the set of prefixes into the PacketBuffer containing
+     * the Tunnel Control message being sent.
+     */
+    static WEAVE_ERROR EncodeFabricTunnelRoutes(uint64_t fabricId, WeaveTunnelRoute * tunRoute, PacketBuffer * message);
 
-/**
- * Decode Tunnel routes containing the set of prefixes from the PacketBuffer containing
- * the Tunnel Control message.
- */
-    static WEAVE_ERROR DecodeFabricTunnelRoutes(uint64_t *fabricId,
-                                                WeaveTunnelRoute *tunRoute,
-                                                PacketBuffer *message);
-
+    /**
+     * Decode Tunnel routes containing the set of prefixes from the PacketBuffer containing
+     * the Tunnel Control message.
+     */
+    static WEAVE_ERROR DecodeFabricTunnelRoutes(uint64_t * fabricId, WeaveTunnelRoute * tunRoute, PacketBuffer * message);
 };
 
 // Version of the Weave Tunnel Subsystem
@@ -199,10 +194,10 @@ typedef enum WeaveTunnelVersion
     kWeaveTunnelVersion_V1 = 1
 } WeaveTunnelVersion;
 
-}
-}
-}
-}
+} // namespace WeaveTunnel
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 #endif // WEAVE_CONFIG_ENABLE_TUNNELING
 #endif //_WEAVE_TUNNEL_COMMON_H_

@@ -51,10 +51,11 @@ WEAVE_ERROR InitServiceTunnelAgent()
         uint16_t tunnelServerPort;
 
         err = ParseHostAndPort(WEAVE_DEVICE_CONFIG_TUNNEL_SERVER_ADDRESS, strlen(WEAVE_DEVICE_CONFIG_TUNNEL_SERVER_ADDRESS),
-                tunnelServerAddrStr, tunnelServerAddrStrLen, tunnelServerPort);
+                               tunnelServerAddrStr, tunnelServerAddrStrLen, tunnelServerPort);
         if (err != WEAVE_NO_ERROR || !IPAddress::FromString(tunnelServerAddrStr, tunnelServerAddrStrLen, tunnelServerAddr))
         {
-            WeaveLogError(DeviceLayer, "Invalid value specified for TUNNEL_SERVER_ADDRESS config: %s", CONFIG_TUNNEL_SERVER_ADDRESS);
+            WeaveLogError(DeviceLayer, "Invalid value specified for TUNNEL_SERVER_ADDRESS config: %s",
+                          CONFIG_TUNNEL_SERVER_ADDRESS);
             ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
         }
 
@@ -65,8 +66,8 @@ WEAVE_ERROR InitServiceTunnelAgent()
 
         ESP_LOGW(TAG, "Using fixed tunnel server address: %s", CONFIG_TUNNEL_SERVER_ADDRESS);
 
-        err = ServiceTunnelAgent.Init(&InetLayer, &ExchangeMgr, kServiceEndpoint_WeaveTunneling,
-                tunnelServerAddr, kWeaveAuthMode_CASE_ServiceEndPoint);
+        err = ServiceTunnelAgent.Init(&InetLayer, &ExchangeMgr, kServiceEndpoint_WeaveTunneling, tunnelServerAddr,
+                                      kWeaveAuthMode_CASE_ServiceEndPoint);
         SuccessOrExit(err);
 
         // This is necessary because the Init() function doesn't provide a way to specify the port.
@@ -79,8 +80,8 @@ WEAVE_ERROR InitServiceTunnelAgent()
 #error "Weave service directory feature not enabled (WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY)"
 #endif
 
-    err = ServiceTunnelAgent.Init(&InetLayer, &ExchangeMgr, kServiceEndpoint_WeaveTunneling,
-            kWeaveAuthMode_CASE_ServiceEndPoint, &ServiceDirectoryMgr);
+    err = ServiceTunnelAgent.Init(&InetLayer, &ExchangeMgr, kServiceEndpoint_WeaveTunneling, kWeaveAuthMode_CASE_ServiceEndPoint,
+                                  &ServiceDirectoryMgr);
     SuccessOrExit(err);
 
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_FIXED_TUNNEL_SERVER

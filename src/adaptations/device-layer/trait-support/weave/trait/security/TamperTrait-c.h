@@ -27,34 +27,25 @@
 #ifndef _WEAVE_TRAIT_SECURITY__TAMPER_TRAIT_C_H_
 #define _WEAVE_TRAIT_SECURITY__TAMPER_TRAIT_C_H_
 
+//
+// Commands
+//
 
+typedef enum
+{
+    kResetTamperRequestId = 0x1,
+} schema_weave_security_tamper_trait_command_id_t;
 
-    //
-    // Commands
-    //
+//
+// Enums
+//
 
-    typedef enum
-    {
-      kResetTamperRequestId = 0x1,
-    } schema_weave_security_tamper_trait_command_id_t;
-
-
-
-
-
-    //
-    // Enums
-    //
-
-    // TamperState
-    typedef enum
-    {
-    TAMPER_STATE_CLEAR = 1,
+// TamperState
+typedef enum
+{
+    TAMPER_STATE_CLEAR    = 1,
     TAMPER_STATE_TAMPERED = 2,
-    TAMPER_STATE_UNKNOWN = 3,
-    } schema_weave_security_tamper_trait_tamper_state_t;
-
-
-
+    TAMPER_STATE_UNKNOWN  = 3,
+} schema_weave_security_tamper_trait_tamper_state_t;
 
 #endif // _WEAVE_TRAIT_SECURITY__TAMPER_TRAIT_C_H_

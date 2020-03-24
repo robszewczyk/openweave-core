@@ -41,33 +41,29 @@ enum
     ConnectionTunnelDest,
 };
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 static void StartConnections();
 static void DriveSending();
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleMessageReceived(WeaveConnection *con, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleMessageReceived(WeaveConnection * con, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf);
 
-uint8_t Role = ConnectionTunnelAgent;
-WeaveConnectionTunnel *tun = NULL;
-WeaveConnection *conSource = NULL;
-WeaveConnection *conDest = NULL;
-WeaveConnection *connection = NULL;
+uint8_t Role                 = ConnectionTunnelAgent;
+WeaveConnectionTunnel * tun  = NULL;
+WeaveConnection * conSource  = NULL;
+WeaveConnection * conDest    = NULL;
+WeaveConnection * connection = NULL;
 uint64_t TunnelSourceNodeId;
 uint64_t TunnelDestNodeId;
 IPAddress TunnelSourceAddr = IPAddress::Any;
-IPAddress TunnelDestAddr = IPAddress::Any;
+IPAddress TunnelDestAddr   = IPAddress::Any;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "tunnel-source",          kNoArgument, 'S' },
-    { "tunnel-destination",     kNoArgument, 'D' },
-    { "tunnel-agent",           kNoArgument, 'A' },
-    { }
+static OptionDef gToolOptionDefs[] = {
+    { "tunnel-source", kNoArgument, 'S' }, { "tunnel-destination", kNoArgument, 'D' }, { "tunnel-agent", kNoArgument, 'A' }, { }
 };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -S, --tunnel-source\n"
     "       Specify the node as tunnel source, act as sender to vefify tunnel link\n"
     "\n"
@@ -78,33 +74,20 @@ static const char *const gToolOptionHelp =
     "       Specify the node as tunnel agent, establish connection tunnel between source node and destination node\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] --tunnel-source\n"
-    "       " TOOL_NAME " [<options...>] --tunnel-destination\n"
-    "       " TOOL_NAME " [<options...>] --tunnel-agent <source-node-id> <dest-node-id>\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] --tunnel-source\n"
+                                "       " TOOL_NAME
+                                " [<options...>] --tunnel-destination\n"
+                                "       " TOOL_NAME " [<options...>] --tunnel-agent <source-node-id> <dest-node-id>\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     InitToolCommon();
 
@@ -135,12 +118,12 @@ int main(int argc, char *argv[])
 
     // Tunnel Agent: create connections to Tunnel Source and Destination
     if (Role == ConnectionTunnelAgent)
-       StartConnections();
+        StartConnections();
 
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -161,13 +144,13 @@ void StartConnections()
     WEAVE_ERROR err;
 
     conSource = MessageLayer.NewConnection();
-    conDest = MessageLayer.NewConnection();
+    conDest   = MessageLayer.NewConnection();
     VerifyOrExit(conSource != NULL && conDest != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     conSource->OnConnectionComplete = conDest->OnConnectionComplete = HandleConnectionComplete;
 
     TunnelSourceAddr = FabricState.SelectNodeAddress(TunnelSourceNodeId);
-    TunnelDestAddr = FabricState.SelectNodeAddress(TunnelDestNodeId);
+    TunnelDestAddr   = FabricState.SelectNodeAddress(TunnelDestNodeId);
 
     err = conSource->Connect(TunnelSourceNodeId, TunnelSourceAddr);
     SuccessOrExit(err);
@@ -181,28 +164,20 @@ exit:
     exit(EXIT_FAILURE);
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'A':
-        Role = ConnectionTunnelAgent;
-        break;
-    case 'S':
-        Role = ConnectionTunnelSource;
-        break;
-    case 'D':
-        Role = ConnectionTunnelDest;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'A': Role = ConnectionTunnelAgent; break;
+    case 'S': Role = ConnectionTunnelSource; break;
+    case 'D': Role = ConnectionTunnelDest; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (Role == ConnectionTunnelAgent)
     {
@@ -220,13 +195,15 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
 
         if (!ParseNodeId(argv[0], TunnelSourceNodeId))
         {
-            PrintArgError("%s: weave-connection-tunnel: Invalid value specified for tunnel source node id: %s\n", progName, argv[0]);
+            PrintArgError("%s: weave-connection-tunnel: Invalid value specified for tunnel source node id: %s\n", progName,
+                          argv[0]);
             return false;
         }
 
         if (!ParseNodeId(argv[1], TunnelDestNodeId))
         {
-            PrintArgError("%s: weave-connection-tunnel: Invalid value specified for tunnel destination node id: %s\n", progName, argv[1]);
+            PrintArgError("%s: weave-connection-tunnel: Invalid value specified for tunnel destination node id: %s\n", progName,
+                          argv[1]);
             return false;
         }
     }
@@ -243,7 +220,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-void HandleMessageReceived(WeaveConnection *con, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf)
+void HandleMessageReceived(WeaveConnection * con, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     if (Role == ConnectionTunnelDest)
     {
@@ -255,13 +232,13 @@ void HandleMessageReceived(WeaveConnection *con, WeaveMessageInfo *msgInfo, Pack
 }
 
 // Tunnel Source and Destination: will receive connection from Tunnel Agent.
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
-    connection = con;
+    connection                    = con;
     connection->OnMessageReceived = HandleMessageReceived;
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     WEAVE_ERROR res = WEAVE_NO_ERROR;
 
@@ -285,11 +262,11 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
 
 void DriveSending()
 {
-    WEAVE_ERROR res = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = NULL;
+    WEAVE_ERROR res       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
     WeaveMessageInfo msgInfo;
     uint32_t len = 0;
-    char *p;
+    char * p;
 
     if ((connection != NULL) && (connection->State == WeaveConnection::kState_Connected))
     {
@@ -299,17 +276,17 @@ void DriveSending()
             printf("Tunnel Source: PacketBuffer alloc failed\n");
             exit(-1);
         }
-        p = (char *)msgBuf->Start();
+        p   = (char *) msgBuf->Start();
         len = sprintf(p, "Message from tunnel source node to destination node\n");
         msgBuf->SetDataLength(len);
 
         msgInfo.Clear();
         msgInfo.MessageVersion = kWeaveMessageVersion_V2;
-        msgInfo.Flags = 0;
-        msgInfo.SourceNodeId = FabricState.LocalNodeId;
-        msgInfo.DestNodeId = kNodeIdNotSpecified;
+        msgInfo.Flags          = 0;
+        msgInfo.SourceNodeId   = FabricState.LocalNodeId;
+        msgInfo.DestNodeId     = kNodeIdNotSpecified;
         msgInfo.EncryptionType = kWeaveEncryptionType_None;
-        msgInfo.KeyId = WeaveKeyId::kNone;
+        msgInfo.KeyId          = WeaveKeyId::kNone;
 
         res = connection->SendMessage(&msgInfo, msgBuf);
         if (res != WEAVE_NO_ERROR)

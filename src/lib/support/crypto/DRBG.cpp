@@ -35,21 +35,19 @@ namespace nl {
 namespace Weave {
 namespace Crypto {
 
-template <class BlockCipher>
-CTR_DRBG<BlockCipher>::CTR_DRBG()
+template <class BlockCipher> CTR_DRBG<BlockCipher>::CTR_DRBG()
 {
     memset(this, 0, sizeof(*this));
 }
 
-template <class BlockCipher>
-CTR_DRBG<BlockCipher>::~CTR_DRBG()
+template <class BlockCipher> CTR_DRBG<BlockCipher>::~CTR_DRBG()
 {
     Uninstantiate();
 }
 
 template <class BlockCipher>
-WEAVE_ERROR CTR_DRBG<BlockCipher>::Instantiate(EntropyFunct entropyFunct, uint16_t entropyLen,
-                                               const uint8_t *personalizationData, uint16_t perDataLen)
+WEAVE_ERROR CTR_DRBG<BlockCipher>::Instantiate(EntropyFunct entropyFunct, uint16_t entropyLen, const uint8_t * personalizationData,
+                                               uint16_t perDataLen)
 {
     WEAVE_ERROR err;
     uint8_t key[kKeyLength] = { 0 };
@@ -61,8 +59,8 @@ WEAVE_ERROR CTR_DRBG<BlockCipher>::Instantiate(EntropyFunct entropyFunct, uint16
     mEntropyFunct = entropyFunct;
 
     // Verify valid entropy length parameter
-    VerifyOrExit(entropyLen <= WEAVE_CONFIG_DRBG_MAX_ENTROPY_LENGTH &&
-                 entropyLen >= kSecurityStrength, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(entropyLen <= WEAVE_CONFIG_DRBG_MAX_ENTROPY_LENGTH && entropyLen >= kSecurityStrength,
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Initialize entropy length
     mEntropyLen = entropyLen;
@@ -77,8 +75,7 @@ WEAVE_ERROR CTR_DRBG<BlockCipher>::Instantiate(EntropyFunct entropyFunct, uint16
     mBlockCipher.SetKey(key);
 
     // Verify valid entropy length parameter
-    VerifyOrExit((entropyLen + perDataLen) >= (kSecurityStrength * 3 / 2),
-                                                  err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit((entropyLen + perDataLen) >= (kSecurityStrength * 3 / 2), err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Reseed
     err = Reseed(personalizationData, perDataLen);
@@ -89,8 +86,7 @@ exit:
     return err;
 }
 
-template <class BlockCipher>
-WEAVE_ERROR CTR_DRBG<BlockCipher>::Reseed(const uint8_t *addData, uint16_t addDataLen)
+template <class BlockCipher> WEAVE_ERROR CTR_DRBG<BlockCipher>::Reseed(const uint8_t * addData, uint16_t addDataLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     int ret;
@@ -105,8 +101,7 @@ WEAVE_ERROR CTR_DRBG<BlockCipher>::Reseed(const uint8_t *addData, uint16_t addDa
 
     // Verify correct addData input
     if (addDataLen > 0)
-        VerifyOrExit(addData != NULL &&
-                     addDataLen + mEntropyLen < 0xFFFF, err = WEAVE_ERROR_INVALID_ARGUMENT);
+        VerifyOrExit(addData != NULL && addDataLen + mEntropyLen < 0xFFFF, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Gather entropy
     ret = mEntropyFunct(u.entropy, mEntropyLen);
@@ -126,10 +121,10 @@ exit:
 }
 
 template <class BlockCipher>
-WEAVE_ERROR CTR_DRBG<BlockCipher>::GenerateInternal(uint8_t *outData, uint16_t outDataLen,
-                                                    const uint8_t *addData, uint16_t addDataLen)
+WEAVE_ERROR CTR_DRBG<BlockCipher>::GenerateInternal(uint8_t * outData, uint16_t outDataLen, const uint8_t * addData,
+                                                    uint16_t addDataLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
     uint8_t seed[kSeedLength] = { 0 };
     uint8_t encryptedCounter[kBlockLength];
     uint8_t bytesToCopy;
@@ -172,8 +167,7 @@ exit:
 }
 
 template <class BlockCipher>
-WEAVE_ERROR CTR_DRBG<BlockCipher>::Generate(uint8_t *outData, uint16_t outDataLen,
-                                            const uint8_t *addData, uint16_t addDataLen)
+WEAVE_ERROR CTR_DRBG<BlockCipher>::Generate(uint8_t * outData, uint16_t outDataLen, const uint8_t * addData, uint16_t addDataLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -198,16 +192,14 @@ exit:
     return err;
 }
 
-template <class BlockCipher>
-void CTR_DRBG<BlockCipher>::Uninstantiate()
+template <class BlockCipher> void CTR_DRBG<BlockCipher>::Uninstantiate()
 {
     mBlockCipher.Reset();
     memset(mCounter, 0, kBlockLength);
     mEntropyFunct = NULL;
 }
 
-template <class BlockCipher>
-void CTR_DRBG<BlockCipher>::Update(const uint8_t *data)
+template <class BlockCipher> void CTR_DRBG<BlockCipher>::Update(const uint8_t * data)
 {
     uint8_t tmp[kRoundedSeedLength];
 
@@ -229,17 +221,16 @@ void CTR_DRBG<BlockCipher>::Update(const uint8_t *data)
     memcpy(mCounter, tmp + kKeyLength, kBlockLength);
 }
 
-template <class BlockCipher>
-void CTR_DRBG<BlockCipher>::IncrementCounter()
+template <class BlockCipher> void CTR_DRBG<BlockCipher>::IncrementCounter()
 {
     for (uint8_t i = kBlockLength; i > 0; i--)
-        if (++mCounter[i-1] != 0)
+        if (++mCounter[i - 1] != 0)
             return;
 }
 
 template <class BlockCipher>
-void CTR_DRBG<BlockCipher>::DerivationFunction(uint8_t *seed, const uint8_t *data2, uint16_t data2Len,
-                                               const uint8_t *data1, uint16_t data1Len)
+void CTR_DRBG<BlockCipher>::DerivationFunction(uint8_t * seed, const uint8_t * data2, uint16_t data2Len, const uint8_t * data1,
+                                               uint16_t data1Len)
 {
     BlockCipher blockCipher;
     union
@@ -248,7 +239,7 @@ void CTR_DRBG<BlockCipher>::DerivationFunction(uint8_t *seed, const uint8_t *dat
         uint8_t block[kBlockLength];
     } u;
     uint8_t temp[kRoundedSeedLength];
-    uint8_t *x;
+    uint8_t * x;
     uint16_t dataLen = data2Len + data1Len;
     uint16_t data1Idx;
     uint16_t data2Idx;
@@ -281,7 +272,7 @@ void CTR_DRBG<BlockCipher>::DerivationFunction(uint8_t *seed, const uint8_t *dat
                 // IV = 4 byte Counter (j) zero padded to 16 bytes
                 //      Note that j < 256 and only one byte is used
                 memset(u.block, 0, kBlockLength);
-                u.block[3] = (uint8_t) (j / kBlockLength);
+                u.block[3] = (uint8_t)(j / kBlockLength);
                 break;
 
             case 1:
@@ -289,10 +280,10 @@ void CTR_DRBG<BlockCipher>::DerivationFunction(uint8_t *seed, const uint8_t *dat
                 // S = <dataLen> | <kSeedLength> | <data1 || data2> |  <0x80>
 
                 // assume that dataLen < 2^16
-                u.block[2] ^= (uint8_t) (dataLen >> 8);
-                u.block[3] ^= (uint8_t) (dataLen);
+                u.block[2] ^= (uint8_t)(dataLen >> 8);
+                u.block[3] ^= (uint8_t)(dataLen);
                 // kSeedLength < 256
-                u.block[7] ^= (uint8_t) (kSeedLength);
+                u.block[7] ^= (uint8_t)(kSeedLength);
 
                 // fall through with blockIdx initialized to 8
                 blockIdx = 8;

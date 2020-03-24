@@ -40,7 +40,7 @@ DeviceDescriptionServer::DeviceDescriptionServer()
 {
     FabricState = NULL;
     ExchangeMgr = NULL;
-    AppState = NULL;
+    AppState    = NULL;
 }
 
 /**
@@ -55,7 +55,7 @@ DeviceDescriptionServer::DeviceDescriptionServer()
  *                                                              handlers are registered.
  * @retval #WEAVE_NO_ERROR                                      On success.
  */
-WEAVE_ERROR DeviceDescriptionServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR DeviceDescriptionServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
@@ -65,7 +65,8 @@ WEAVE_ERROR DeviceDescriptionServer::Init(WeaveExchangeManager *exchangeMgr)
     FabricState = exchangeMgr->FabricState;
 
     // Register to receive unsolicited Echo Request messages from the exchange manager.
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, HandleRequest, this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_DeviceDescription, kMessageType_IdentifyRequest, HandleRequest,
+                                                   this);
 
     return WEAVE_NO_ERROR;
 }
@@ -89,11 +90,11 @@ WEAVE_ERROR DeviceDescriptionServer::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-void DeviceDescriptionServer::HandleRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void DeviceDescriptionServer::HandleRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                            uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err;
-    DeviceDescriptionServer *server = (DeviceDescriptionServer *) ec->AppState;
+    DeviceDescriptionServer * server = (DeviceDescriptionServer *) ec->AppState;
     IdentifyRequestMessage reqMsg;
     IdentifyResponseMessage respMsg;
     bool sendResp;
@@ -110,8 +111,8 @@ void DeviceDescriptionServer::HandleRequest(ExchangeContext *ec, const IPPacketI
     SuccessOrExit(err);
 
     // Call the callback to handle the request and generate the full response.
-    server->OnIdentifyRequestReceived(server->AppState, msgInfo->SourceNodeId, (pktInfo != NULL) ? pktInfo->SrcAddress : IPAddress::Any,
-            reqMsg, sendResp, respMsg);
+    server->OnIdentifyRequestReceived(server->AppState, msgInfo->SourceNodeId,
+                                      (pktInfo != NULL) ? pktInfo->SrcAddress : IPAddress::Any, reqMsg, sendResp, respMsg);
 
     // If the user has opted NOT to send a response, return now.
     if (!sendResp)
@@ -139,7 +140,6 @@ exit:
     if (payload != NULL)
         PacketBuffer::Free(payload);
 }
-
 
 } // namespace DeviceDescription
 } // namespace Profiles

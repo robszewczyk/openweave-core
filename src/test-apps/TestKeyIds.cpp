@@ -33,7 +33,7 @@
 
 #define DEBUG_PRINT_ENABLE 0
 
-void KeyIds_Test1(nlTestSuite *inSuite, void *inContext)
+void KeyIds_Test1(nlTestSuite * inSuite, void * inContext)
 {
     // Testing WeaveKeyId::GetType().
     NL_TEST_ASSERT(inSuite, WeaveKeyId::GetType(WeaveKeyId::kNone) == WeaveKeyId::kType_None);
@@ -75,15 +75,21 @@ void KeyIds_Test1(nlTestSuite *inSuite, void *inContext)
 
     // Testing make key functions.
     uint16_t shortKeyNumber = 0x02F6;
-    uint16_t longKeyNumber = 0x8000 | shortKeyNumber;
+    uint16_t longKeyNumber  = 0x8000 | shortKeyNumber;
     NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeSessionKeyId(shortKeyNumber) == (WeaveKeyId::kType_Session | shortKeyNumber));
     NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeGeneralKeyId(shortKeyNumber) == (WeaveKeyId::kType_General | shortKeyNumber));
     NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeSessionKeyId(longKeyNumber) == (WeaveKeyId::kType_Session | shortKeyNumber));
     NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeGeneralKeyId(longKeyNumber) == (WeaveKeyId::kType_General | shortKeyNumber));
     shortKeyNumber = 0x03;
-    NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeRootKeyId(shortKeyNumber) == (static_cast<uint32_t>(WeaveKeyId::kType_AppRootKey | (shortKeyNumber << 10))));
-    NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeEpochKeyId(shortKeyNumber) == (static_cast<uint32_t>(WeaveKeyId::kType_AppEpochKey | (shortKeyNumber << 7))));
-    NL_TEST_ASSERT(inSuite, WeaveKeyId::MakeAppGroupMasterKeyId(shortKeyNumber) == (static_cast<uint32_t>(WeaveKeyId::kType_AppGroupMasterKey | (shortKeyNumber << 0))));
+    NL_TEST_ASSERT(inSuite,
+                   WeaveKeyId::MakeRootKeyId(shortKeyNumber) ==
+                       (static_cast<uint32_t>(WeaveKeyId::kType_AppRootKey | (shortKeyNumber << 10))));
+    NL_TEST_ASSERT(inSuite,
+                   WeaveKeyId::MakeEpochKeyId(shortKeyNumber) ==
+                       (static_cast<uint32_t>(WeaveKeyId::kType_AppEpochKey | (shortKeyNumber << 7))));
+    NL_TEST_ASSERT(inSuite,
+                   WeaveKeyId::MakeAppGroupMasterKeyId(shortKeyNumber) ==
+                       (static_cast<uint32_t>(WeaveKeyId::kType_AppGroupMasterKey | (shortKeyNumber << 0))));
 
     // Testing property checking functions.
     NL_TEST_ASSERT(inSuite, WeaveKeyId::IncorporatesEpochKey(sPasscodeEncRotatingKeyId_CRK_E0_G4));
@@ -99,22 +105,25 @@ void KeyIds_Test1(nlTestSuite *inSuite, void *inContext)
     // Testing make key functions.
     uint32_t keyId;
     uint32_t keyId2;
-    keyId = WeaveKeyId::MakeAppKeyId(WeaveKeyId::kType_AppRootKey, WeaveKeyId::kClientRootKey, WeaveKeyId::kNone, WeaveKeyId::kNone, false);
+    keyId = WeaveKeyId::MakeAppKeyId(WeaveKeyId::kType_AppRootKey, WeaveKeyId::kClientRootKey, WeaveKeyId::kNone, WeaveKeyId::kNone,
+                                     false);
     NL_TEST_ASSERT(inSuite, keyId == WeaveKeyId::kClientRootKey);
     keyId = WeaveKeyId::MakeAppKeyId(WeaveKeyId::kType_AppEpochKey, WeaveKeyId::kNone, sEpochKey3_KeyId, WeaveKeyId::kNone, true);
     NL_TEST_ASSERT(inSuite, keyId == WeaveKeyId::ConvertToCurrentAppKeyId(sEpochKey3_KeyId));
-    keyId = WeaveKeyId::MakeAppIntermediateKeyId(WeaveKeyId::kClientRootKey, sEpochKey3_KeyId, false);
+    keyId  = WeaveKeyId::MakeAppIntermediateKeyId(WeaveKeyId::kClientRootKey, sEpochKey3_KeyId, false);
     keyId2 = WeaveKeyId::kType_AppIntermediateKey | ((WeaveKeyId::kClientRootKey | sEpochKey3_KeyId) & 0xFFF);
     NL_TEST_ASSERT(inSuite, keyId == keyId2);
     keyId = WeaveKeyId::MakeAppRotatingKeyId(WeaveKeyId::kFabricRootKey, sEpochKey5_KeyId, sAppGroupMasterKey54_KeyId, false);
-    keyId2 = WeaveKeyId::kType_AppRotatingKey | ((WeaveKeyId::kFabricRootKey | sEpochKey5_KeyId | sAppGroupMasterKey54_KeyId) & 0xFFF);
+    keyId2 =
+        WeaveKeyId::kType_AppRotatingKey | ((WeaveKeyId::kFabricRootKey | sEpochKey5_KeyId | sAppGroupMasterKey54_KeyId) & 0xFFF);
     NL_TEST_ASSERT(inSuite, keyId == keyId2);
-    keyId = WeaveKeyId::MakeAppStaticKeyId(WeaveKeyId::kServiceRootKey, sAppGroupMasterKey4_KeyId);
+    keyId  = WeaveKeyId::MakeAppStaticKeyId(WeaveKeyId::kServiceRootKey, sAppGroupMasterKey4_KeyId);
     keyId2 = WeaveKeyId::kType_AppStaticKey | ((WeaveKeyId::kServiceRootKey | sAppGroupMasterKey4_KeyId) & 0xFFF);
     NL_TEST_ASSERT(inSuite, keyId == keyId2);
 
     NL_TEST_ASSERT(inSuite, WeaveKeyId::ConvertToCurrentAppKeyId(sIntermediateKeyId_FRK_E2) == sIntermediateKeyId_FRK_EC);
-    NL_TEST_ASSERT(inSuite, WeaveKeyId::ConvertToStaticAppKeyId(sPasscodeEncRotatingKeyId_CRK_E0_G4) == sPasscodeEncStaticKeyId_CRK_G4);
+    NL_TEST_ASSERT(inSuite,
+                   WeaveKeyId::ConvertToStaticAppKeyId(sPasscodeEncRotatingKeyId_CRK_E0_G4) == sPasscodeEncStaticKeyId_CRK_G4);
     NL_TEST_ASSERT(inSuite, WeaveKeyId::UpdateEpochKeyId(sIntermediateKeyId_FRK_EC, sEpochKey2_KeyId) == sIntermediateKeyId_FRK_E2);
 
     // Testing WeaveKeyId::IsValidKeyId() function.
@@ -137,8 +146,8 @@ void KeyIds_Test1(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, !WeaveKeyId::IsValidKeyId(WeaveKeyId::kType_AppGroupMasterKey | WeaveKeyId::kType_AppRotatingKey));
 
     // Testing WeaveKeyId::DescribeKey() function.
-    const char *strKeyId1;
-    const char *strKeyId2;
+    const char * strKeyId1;
+    const char * strKeyId2;
     strKeyId1 = WeaveKeyId::DescribeKey(WeaveKeyId::kNone);
     strKeyId2 = WeaveKeyId::DescribeKey(0xFFF);
     NL_TEST_ASSERT(inSuite, strcmp(strKeyId1, strKeyId2) == 0);
@@ -153,18 +162,11 @@ void KeyIds_Test1(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, strcmp(strKeyId1, "Application Group Master Key") == 0);
 }
 
-
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-    static const nlTest tests[] = {
-        NL_TEST_DEF("KeyIds_Test1",                             KeyIds_Test1),
-        NL_TEST_SENTINEL()
-    };
+    static const nlTest tests[] = { NL_TEST_DEF("KeyIds_Test1", KeyIds_Test1), NL_TEST_SENTINEL() };
 
-    static nlTestSuite testSuite = {
-        "key-identifiers",
-        &tests[0]
-    };
+    static nlTestSuite testSuite = { "key-identifiers", &tests[0] };
 
     nl_test_set_output_style(OUTPUT_CSV);
 

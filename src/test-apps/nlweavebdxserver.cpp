@@ -27,13 +27,13 @@ namespace Profiles {
 
 BulkDataTransferServer::BulkDataTransferServer()
 {
-    ExchangeMgr = NULL;
-    mpAppState = NULL;
+    ExchangeMgr                     = NULL;
+    mpAppState                      = NULL;
     OnBDXReceiveInitRequestReceived = NULL;
-    OnBDXBlockQueryRequestReceived = NULL;
-    OnBDXBlockEOFAckReceived = NULL;
-    OnBDXTransferFailed = NULL;
-    OnBDXTransferSucceeded = NULL;
+    OnBDXBlockQueryRequestReceived  = NULL;
+    OnBDXBlockEOFAckReceived        = NULL;
+    OnBDXTransferFailed             = NULL;
+    OnBDXTransferSucceeded          = NULL;
 }
 
 BulkDataTransferServer::~BulkDataTransferServer()
@@ -41,16 +41,16 @@ BulkDataTransferServer::~BulkDataTransferServer()
     Shutdown();
 }
 
-WEAVE_ERROR BulkDataTransferServer::Init(WeaveExchangeManager *exchangeMgr, void *appState,
-        const char *hostedFileName, const char *receivedFileLocation)
+WEAVE_ERROR BulkDataTransferServer::Init(WeaveExchangeManager * exchangeMgr, void * appState, const char * hostedFileName,
+                                         const char * receivedFileLocation)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    mpAppState = appState;
-    mHostedFileName = hostedFileName;
+    ExchangeMgr           = exchangeMgr;
+    mpAppState            = appState;
+    mHostedFileName       = hostedFileName;
     mReceivedFileLocation = receivedFileLocation;
 
     // Initialize connection pool
@@ -88,18 +88,18 @@ WEAVE_ERROR BulkDataTransferServer::Shutdown()
 
     // Shutdown actions to perform even if BDX server uninitialized:
 
-    mpAppState = NULL;
+    mpAppState                      = NULL;
     OnBDXReceiveInitRequestReceived = NULL;
-    OnBDXBlockQueryRequestReceived = NULL;
-    OnBDXBlockEOFAckReceived = NULL;
-    OnBDXTransferFailed = NULL;
-    OnBDXTransferSucceeded = NULL;
+    OnBDXBlockQueryRequestReceived  = NULL;
+    OnBDXBlockEOFAckReceived        = NULL;
+    OnBDXTransferFailed             = NULL;
+    OnBDXTransferSucceeded          = NULL;
 
     printf("1 BDX Shutdown exiting\n");
     return WEAVE_NO_ERROR;
 }
 
-BulkDataTransferServer::BDXTransfer *BulkDataTransferServer::NewTransfer()
+BulkDataTransferServer::BDXTransfer * BulkDataTransferServer::NewTransfer()
 {
     for (int i = 0; i < MAX_NUM_BDX_TRANSFERS; i++)
     {
@@ -113,7 +113,7 @@ BulkDataTransferServer::BDXTransfer *BulkDataTransferServer::NewTransfer()
     return NULL;
 }
 
-void BulkDataTransferServer::ShutdownTransfer(BDXTransfer *xfer, bool closeCon)
+void BulkDataTransferServer::ShutdownTransfer(BDXTransfer * xfer, bool closeCon)
 {
     if (xfer->BdxApp == NULL)
     {
@@ -123,13 +123,13 @@ void BulkDataTransferServer::ShutdownTransfer(BDXTransfer *xfer, bool closeCon)
 
     printf("0 BDX ShutdownTransfer entering\n");
     uint64_t peerNodeId = kNodeIdNotSpecified;
-    IPAddress peerAddr = IPAddress::Any;
+    IPAddress peerAddr  = IPAddress::Any;
 
     // Get values to send application callback
     if (xfer->EC && xfer->EC->Con)
     {
         peerNodeId = xfer->EC->Con->PeerNodeId;
-        peerAddr = xfer->EC->Con->PeerAddr;
+        peerAddr   = xfer->EC->Con->PeerAddr;
     }
 
     // Fire application callback
@@ -153,9 +153,9 @@ void BulkDataTransferServer::ShutdownTransfer(BDXTransfer *xfer, bool closeCon)
        call our OnConnectionClosed handler which will then call ShutdownTranser() again.
        Because xfer->BdxApp is NULL the second time ShutdownTranser() is called it will exit right away */
 
-    xfer->MaxBlockSize = 0;
+    xfer->MaxBlockSize          = 0;
     xfer->CompletedSuccessfully = false;
-    xfer->BdxApp = NULL;
+    xfer->BdxApp                = NULL;
 
     // Release Weave resources
     if (xfer->EC)
@@ -184,25 +184,25 @@ void BulkDataTransferServer::ShutdownTransfer(BDXTransfer *xfer, bool closeCon)
     printf("5 BDX ShutdownTransfer exiting");
 }
 
-void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payloadReceiveInit)
+void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * payloadReceiveInit)
 {
     // We're guaranteed of the right message profile and type by the ExchangeMgr.
     printf("0 BDX HandleReceiveInitRequest entering\n");
 
-    WEAVE_ERROR ret = WEAVE_NO_ERROR;
-    const uint8_t BDX_SERVER_TRANSFER_MODE = 0x02U; //ASYNC==0, RDRIVE==1, SDRIVE==0
-    BulkDataTransferServer *bdxApp = NULL;
-    BDXTransfer *xfer = NULL;
-    PacketBuffer *payload = NULL;
-    char *fileDesignator = NULL;
+    WEAVE_ERROR ret                        = WEAVE_NO_ERROR;
+    const uint8_t BDX_SERVER_TRANSFER_MODE = 0x02U; // ASYNC==0, RDRIVE==1, SDRIVE==0
+    BulkDataTransferServer * bdxApp        = NULL;
+    BDXTransfer * xfer                     = NULL;
+    PacketBuffer * payload                 = NULL;
+    char * fileDesignator                  = NULL;
 
     ReceiveAccept receiveAccept;
     ReceiveReject receiveReject;
-    ReceiveInit   receiveInit;
+    ReceiveInit receiveInit;
 
-    nlREQUIRE_ACTION(ec != NULL, handle_receive_init_request_failed,
-                     printf("0.5 BDX HandleReceiveInitRequest failed, null EC\n"));
+    nlREQUIRE_ACTION(ec != NULL, handle_receive_init_request_failed, printf("0.5 BDX HandleReceiveInitRequest failed, null EC\n"));
     bdxApp = (BulkDataTransferServer *) ec->AppState;
 
     // Parse init request and discard payload buffer
@@ -228,7 +228,8 @@ void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const
     xfer->EC = ec;
     xfer->FD = -1; // memset(0) doesn't set us up for ShutdownTransfer()
 
-    if (receiveInit.theMaxBlockSize <= 0) {
+    if (receiveInit.theMaxBlockSize <= 0)
+    {
         printf("2 BDX HandleReceiveInitRequest (maxBlockSize <= 0)\n");
 
         // Send rejection status message
@@ -240,18 +241,18 @@ void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const
         }
 
         receiveReject.pack(payload);
-        ret = ec->SendMessage(kWeaveProfile_Common, kMsgType_ReceiveReject, payload);
+        ret     = ec->SendMessage(kWeaveProfile_Common, kMsgType_ReceiveReject, payload);
         payload = NULL;
         if (ret != WEAVE_NO_ERROR)
         {
             printf("3 BDX HandleReceiveInitRequest err=%d\n", ret);
         }
         goto handle_receive_init_request_failed;
-
     }
-    xfer->MaxBlockSize  = receiveInit.theMaxBlockSize;
+    xfer->MaxBlockSize = receiveInit.theMaxBlockSize;
 
-    if (receiveInit.theFileDesignator.theLength <= 0) {
+    if (receiveInit.theFileDesignator.theLength <= 0)
+    {
         printf("4 BDX HandleReceiveInitRequest (bad FileDesignator)\n");
         SendTransferError(ec, kWeaveProfile_Common, kStatus_LengthTooShort);
         goto handle_receive_init_request_failed;
@@ -259,7 +260,7 @@ void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const
 
     // Copy file name onto C-string
     // NOTE: the original string is not NUL terminated, but we know its length.
-    fileDesignator = (char*)malloc(1 + receiveInit.theFileDesignator.theLength);
+    fileDesignator = (char *) malloc(1 + receiveInit.theFileDesignator.theLength);
     memcpy(fileDesignator, receiveInit.theFileDesignator.theString, receiveInit.theFileDesignator.theLength);
     fileDesignator[receiveInit.theFileDesignator.theLength] = '\0';
 
@@ -269,7 +270,7 @@ void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const
     if (0 != strcmp(fileDesignator, bdxApp->mHostedFileName))
     {
         printf("5 BDX HandleReceiveInitRequest (forbidden FileDesignator)\n");
-        SendTransferError(ec, kWeaveProfile_Common, kStatus_UnknownFile); //TODO add 'forbidden' Weave status code
+        SendTransferError(ec, kWeaveProfile_Common, kStatus_UnknownFile); // TODO add 'forbidden' Weave status code
         free(fileDesignator);
         fileDesignator = NULL;
         goto handle_receive_init_request_failed;
@@ -297,10 +298,10 @@ void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const
     }
 
     // Set up response timeout and connection closed handler
-    ec->Con->AppState = xfer;
+    ec->Con->AppState      = xfer;
     ec->OnConnectionClosed = HandleBDXConnectionClosed;
-    ec->OnResponseTimeout = HandleResponseTimeout;
-    ec->ResponseTimeout = BDX_RESPONSE_TIMEOUT_MS;
+    ec->OnResponseTimeout  = HandleResponseTimeout;
+    ec->ResponseTimeout    = BDX_RESPONSE_TIMEOUT_MS;
 
     // Set ourselves up to handle first BlockQueryRequest.
     ec->OnMessageReceived = HandleBlockQueryRequest;
@@ -313,10 +314,10 @@ void BulkDataTransferServer::HandleReceiveInitRequest(ExchangeContext *ec, const
     }
 
     receiveAccept.theMaxBlockSize = receiveInit.theMaxBlockSize;
-    ret = receiveAccept.pack(payload);
+    ret                           = receiveAccept.pack(payload);
     nlREQUIRE(ret == WEAVE_NO_ERROR, handle_receive_init_request_failed);
 
-    ret = ec->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveAccept, payload, ExchangeContext::kSendFlag_ExpectResponse);
+    ret     = ec->SendMessage(kWeaveProfile_BDX, kMsgType_ReceiveAccept, payload, ExchangeContext::kSendFlag_ExpectResponse);
     payload = NULL;
     if (ret != WEAVE_NO_ERROR)
     {
@@ -363,25 +364,27 @@ handle_receive_init_request_failed:
     }
 }
 
-void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                   const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                   PacketBuffer * payload)
 {
     printf("BDX HandleSendInitRequest entering\n");
 
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BulkDataTransferServer *bdxApp = NULL;
-    BDXTransfer *xfer = NULL;
+    WEAVE_ERROR err                 = WEAVE_NO_ERROR;
+    BulkDataTransferServer * bdxApp = NULL;
+    BDXTransfer * xfer              = NULL;
 
     SendInit sendInit;
     SendAccept sendAccept;
     SendReject sendReject;
 
-    char *filename = NULL;
-    char *filename_buf = NULL;
-    size_t filename_len = 0;
-    size_t received_location_len = 0;
-    uint8_t offset = 0;
-    char *destination_filename = NULL;
-    PacketBuffer *SendInitResponsePayload = NULL;
+    char * filename                        = NULL;
+    char * filename_buf                    = NULL;
+    size_t filename_len                    = 0;
+    size_t received_location_len           = 0;
+    uint8_t offset                         = 0;
+    char * destination_filename            = NULL;
+    PacketBuffer * SendInitResponsePayload = NULL;
 
     nlREQUIRE(ec, handle_send_init_request_failed);
     bdxApp = static_cast<BulkDataTransferServer *>(ec->AppState);
@@ -389,10 +392,10 @@ void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IP
     xfer = bdxApp->NewTransfer();
     nlREQUIRE(xfer, handle_send_init_request_failed);
 
-    xfer->EC = ec;
-    xfer->FD = -1;
+    xfer->EC                    = ec;
+    xfer->FD                    = -1;
     xfer->CompletedSuccessfully = false;
-    ec->AppState = (void*)xfer;
+    ec->AppState                = (void *) xfer;
 
     err = SendInit::parse(payload, sendInit);
     nlREQUIRE(err == WEAVE_NO_ERROR, handle_send_init_request_failed);
@@ -404,7 +407,7 @@ void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IP
     // Allocate PacketBuffer
     SendInitResponsePayload = PacketBuffer::New();
     nlREQUIRE_ACTION(SendInitResponsePayload != NULL, handle_send_init_request_failed,
-                         printf("Error: BDX HandleSendInitRequest: PacketBuffer alloc failed\n"));
+                     printf("Error: BDX HandleSendInitRequest: PacketBuffer alloc failed\n"));
 
     // Copy out the name of the file being received to a NULL-terminated string
     filename_buf = strndup(sendInit.theFileDesignator.theString, sendInit.theFileDesignator.theLength);
@@ -421,7 +424,7 @@ void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IP
     }
     else
     {
-        filename++; //skip over '/'
+        filename++; // skip over '/'
     }
 
     filename_len = strlen(filename);
@@ -429,7 +432,7 @@ void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IP
     received_location_len = strlen(bdxApp->mReceivedFileLocation);
 
     // malloc enough space for the NULL terminator and a '/'
-    destination_filename = (char*)malloc(received_location_len + filename_len + 2);
+    destination_filename = (char *) malloc(received_location_len + filename_len + 2);
     nlREQUIRE(destination_filename != NULL, handle_send_init_request_failed);
 
     memcpy(destination_filename, bdxApp->mReceivedFileLocation, received_location_len);
@@ -459,14 +462,15 @@ void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IP
         err = sendReject.pack(SendInitResponsePayload);
         nlREQUIRE(err == WEAVE_NO_ERROR, handle_send_init_request_failed);
 
-        err = ec->SendMessage(kWeaveProfile_BDX, kMsgType_SendReject, SendInitResponsePayload, ExchangeContext::kSendFlag_ExpectResponse);
+        err                     = ec->SendMessage(kWeaveProfile_BDX, kMsgType_SendReject, SendInitResponsePayload,
+                              ExchangeContext::kSendFlag_ExpectResponse);
         SendInitResponsePayload = NULL;
         goto handle_send_init_request_failed;
     }
 
     // Finish up configuring and then send the SendInitResponse message
     sendAccept.theMaxBlockSize = xfer->MaxBlockSize;
-    err = sendAccept.init(kMode_SenderDrive, xfer->MaxBlockSize, NULL);
+    err                        = sendAccept.init(kMode_SenderDrive, xfer->MaxBlockSize, NULL);
     nlREQUIRE(err == WEAVE_NO_ERROR, handle_send_init_request_failed);
 
     err = sendAccept.pack(SendInitResponsePayload);
@@ -474,11 +478,11 @@ void BulkDataTransferServer::HandleSendInitRequest(ExchangeContext *ec, const IP
 
     ec->OnMessageReceived = HandleBlockSend;
 
-    err = ec->SendMessage(kWeaveProfile_BDX, kMsgType_SendAccept, SendInitResponsePayload,
-                          ExchangeContext::kSendFlag_ExpectResponse);
+    err =
+        ec->SendMessage(kWeaveProfile_BDX, kMsgType_SendAccept, SendInitResponsePayload, ExchangeContext::kSendFlag_ExpectResponse);
     SendInitResponsePayload = NULL;
     nlREQUIRE_ACTION(err == WEAVE_NO_ERROR, handle_send_init_request_failed,
-                 printf("SendInitResponse error sending accept message: %d", err));
+                     printf("SendInitResponse error sending accept message: %d", err));
 
     return;
 
@@ -531,7 +535,9 @@ handle_send_init_request_failed:
     }
 }
 
-void BulkDataTransferServer::HandleBlockSend(ExchangeContext *ec, const IPPacketInfo *packetInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferServer::HandleBlockSend(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                             const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                             PacketBuffer * payload)
 {
     printf("BDX HandleBlockSend entering\n");
 
@@ -540,20 +546,19 @@ void BulkDataTransferServer::HandleBlockSend(ExchangeContext *ec, const IPPacket
     int len = 0;
 
     BlockSend blockSend;
-    BDXTransfer *xfer = static_cast<BDXTransfer *>(ec->AppState);
-    BulkDataTransferServer *bdxApp = xfer->BdxApp;
-    PacketBuffer* ackPayload = PacketBuffer::New();
+    BDXTransfer * xfer              = static_cast<BDXTransfer *>(ec->AppState);
+    BulkDataTransferServer * bdxApp = xfer->BdxApp;
+    PacketBuffer * ackPayload       = PacketBuffer::New();
 
     // Parse message data to get the block counter later
     err = BlockSend::parse(payload, blockSend);
-    //NOTE: we skip over the block counter so it doesn't appear in the file
+    // NOTE: we skip over the block counter so it doesn't appear in the file
     len = write(xfer->FD, blockSend.theData + sizeof(blockSend.theBlockCounter),
-                     blockSend.theLength - sizeof(blockSend.theBlockCounter));
+                blockSend.theLength - sizeof(blockSend.theBlockCounter));
     PacketBuffer::Free(payload);
     payload = NULL;
 
-    nlREQUIRE_ACTION(len >= 0, handle_block_send_failed,
-                 printf("Error: HandleBlockSend: Unable to read image into block\n"));
+    nlREQUIRE_ACTION(len >= 0, handle_block_send_failed, printf("Error: HandleBlockSend: Unable to read image into block\n"));
 
     // Always need to ACK a BlockEOF
     if (msgType == kMsgType_BlockEOF)
@@ -561,17 +566,16 @@ void BulkDataTransferServer::HandleBlockSend(ExchangeContext *ec, const IPPacket
         printf("Sending BlockEOFAck");
 
         BlockEOFAck blockEOFAck;
-        nlREQUIRE_ACTION(ackPayload, handle_block_send_failed,
-                         err = WEAVE_ERROR_NO_MEMORY;
+        nlREQUIRE_ACTION(ackPayload, handle_block_send_failed, err = WEAVE_ERROR_NO_MEMORY;
                          printf("Error: BDX HandleBlockSend: PacketBuffer alloc failed\n"));
 
-        err = blockEOFAck.init(blockSend.theBlockCounter-1); //final ack uses same block-counter of last block-query request
+        err = blockEOFAck.init(blockSend.theBlockCounter - 1); // final ack uses same block-counter of last block-query request
         nlREQUIRE(err == WEAVE_NO_ERROR, handle_block_send_failed);
 
         err = blockEOFAck.pack(ackPayload);
         nlREQUIRE(err == WEAVE_NO_ERROR, handle_block_send_failed);
 
-        err = ec->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAck, ackPayload);
+        err        = ec->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOFAck, ackPayload);
         ackPayload = NULL;
         nlREQUIRE(err == WEAVE_NO_ERROR, handle_block_send_failed);
 
@@ -579,12 +583,12 @@ void BulkDataTransferServer::HandleBlockSend(ExchangeContext *ec, const IPPacket
     }
 
     // currently we only support synchronous mode, so send BlockAck
-    else {
+    else
+    {
         printf("Sending BlockAck\n");
 
         BlockAck blockAck;
-        nlREQUIRE_ACTION(ackPayload, handle_block_send_failed,
-                         err = WEAVE_ERROR_NO_MEMORY;
+        nlREQUIRE_ACTION(ackPayload, handle_block_send_failed, err = WEAVE_ERROR_NO_MEMORY;
                          printf("Error: BDX HandleBlockSend: PacketBuffer alloc failed\n"));
 
         err = blockAck.init(blockSend.theBlockCounter);
@@ -593,7 +597,7 @@ void BulkDataTransferServer::HandleBlockSend(ExchangeContext *ec, const IPPacket
         err = blockAck.pack(ackPayload);
         nlREQUIRE(err == WEAVE_NO_ERROR, handle_block_send_failed);
 
-        err = ec->SendMessage(kWeaveProfile_BDX, kMsgType_BlockAck, ackPayload);
+        err        = ec->SendMessage(kWeaveProfile_BDX, kMsgType_BlockAck, ackPayload);
         ackPayload = NULL;
         nlREQUIRE(err == WEAVE_NO_ERROR, handle_block_send_failed);
     }
@@ -615,7 +619,7 @@ handle_block_send_failed:
     return;
 }
 
-static int read_n(int fd, char *buf, int n)
+static int read_n(int fd, char * buf, int n)
 {
     int nread, left = n;
 
@@ -642,18 +646,19 @@ static int read_n(int fd, char *buf, int n)
     return n;
 }
 
-void BulkDataTransferServer::HandleBlockQueryRequest(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payloadBlockQuery)
+void BulkDataTransferServer::HandleBlockQueryRequest(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                                     const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                     PacketBuffer * payloadBlockQuery)
 {
     printf("0 BDX HandleBlockQueryRequest entering\n");
     WEAVE_ERROR ret = WEAVE_NO_ERROR;
-    char *block = NULL;
-    int len = 0;
+    char * block    = NULL;
+    int len         = 0;
 
     BlockQuery blockQuery;
-    BDXTransfer *xfer = (BDXTransfer* ) ec->AppState;
-    BulkDataTransferServer *bdxApp = xfer->BdxApp;
-    PacketBuffer *responseBuf = NULL;
+    BDXTransfer * xfer              = (BDXTransfer *) ec->AppState;
+    BulkDataTransferServer * bdxApp = xfer->BdxApp;
+    PacketBuffer * responseBuf      = NULL;
 
     // Parse message data to get the block counter later
     BlockQuery::parse(payloadBlockQuery, blockQuery);
@@ -661,7 +666,7 @@ void BulkDataTransferServer::HandleBlockQueryRequest(ExchangeContext *ec, const 
     PacketBuffer::Free(payloadBlockQuery);
     payloadBlockQuery = NULL;
 
-    if (kWeaveProfile_BDX != profileId ||  kMsgType_BlockQuery != msgType)
+    if (kWeaveProfile_BDX != profileId || kMsgType_BlockQuery != msgType)
     {
         printf("1 BDX HandleBlockQueryRequest bad msg type (%d, %d)\n", profileId, msgType);
         SendTransferError(ec, kWeaveProfile_Common, kStatus_BadRequest);
@@ -677,9 +682,9 @@ void BulkDataTransferServer::HandleBlockQueryRequest(ExchangeContext *ec, const 
 
     printf("3 BDX HandleBlockQueryRequest (xfer->FD: %d)\n", xfer->FD);
 
-    block = (char *) responseBuf->Start();
+    block  = (char *) responseBuf->Start();
     *block = blockQuery.theBlockCounter;
-    len = read_n(xfer->FD, block + 1, xfer->MaxBlockSize);
+    len    = read_n(xfer->FD, block + 1, xfer->MaxBlockSize);
 
     if (len == xfer->MaxBlockSize)
     {
@@ -698,7 +703,7 @@ void BulkDataTransferServer::HandleBlockQueryRequest(ExchangeContext *ec, const 
             goto handle_block_query_request_failed;
         }
     }
-    else if ((len >= 0) && (len < xfer-> MaxBlockSize))
+    else if ((len >= 0) && (len < xfer->MaxBlockSize))
     {
         printf("6 BDX HandleBlockQueryRequest (len == 0)\n");
 
@@ -709,7 +714,7 @@ void BulkDataTransferServer::HandleBlockQueryRequest(ExchangeContext *ec, const 
         ec->OnMessageReceived = HandleBlockEOFAck;
 
         // Send a BlockEOF Response back to the sender.
-        ret = ec->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOF, responseBuf, ExchangeContext::kSendFlag_ExpectResponse);
+        ret         = ec->SendMessage(kWeaveProfile_BDX, kMsgType_BlockEOF, responseBuf, ExchangeContext::kSendFlag_ExpectResponse);
         responseBuf = NULL;
         if (ret != WEAVE_NO_ERROR)
         {
@@ -739,18 +744,19 @@ handle_block_query_request_failed:
     }
 }
 
-void BulkDataTransferServer::HandleBlockEOFAck(ExchangeContext *ec, const IPPacketInfo *packetInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void BulkDataTransferServer::HandleBlockEOFAck(ExchangeContext * ec, const IPPacketInfo * packetInfo,
+                                               const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                               PacketBuffer * payload)
 {
     printf("0 BDX HandleBlockEOFAck entering\n");
-    BDXTransfer *xfer = (BDXTransfer* ) ec->AppState;
-    BulkDataTransferServer *bdxApp = xfer->BdxApp;
+    BDXTransfer * xfer              = (BDXTransfer *) ec->AppState;
+    BulkDataTransferServer * bdxApp = xfer->BdxApp;
 
     // Free unused query payload.
     PacketBuffer::Free(payload);
     payload = NULL;
 
-    if (kWeaveProfile_BDX != profileId ||  kMsgType_BlockEOFAck != msgType)
+    if (kWeaveProfile_BDX != profileId || kMsgType_BlockEOFAck != msgType)
     {
         printf("1 BDX HandleBlockEOFAck bad msg type (%d, %d)\n", profileId, msgType);
         SendTransferError(ec, kWeaveProfile_Common, kStatus_BadRequest);
@@ -773,29 +779,29 @@ void BulkDataTransferServer::HandleBlockEOFAck(ExchangeContext *ec, const IPPack
     printf("2 BDX HandleBlockEOFAck exiting\n");
 }
 
-void BulkDataTransferServer::HandleBDXConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void BulkDataTransferServer::HandleBDXConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
     printf("0 BDX HandleBDXConnectionClosed entering (conErr = %d)\n", conErr);
-    BDXTransfer *xfer = (BDXTransfer* ) ec->AppState;
-    BulkDataTransferServer *bdxApp = xfer->BdxApp;
+    BDXTransfer * xfer              = (BDXTransfer *) ec->AppState;
+    BulkDataTransferServer * bdxApp = xfer->BdxApp;
     bdxApp->ShutdownTransfer(xfer, false);
     printf("1 BDX HandleBDXConnectionClosed exiting\n");
 }
 
-void BulkDataTransferServer::HandleResponseTimeout(ExchangeContext *ec)
+void BulkDataTransferServer::HandleResponseTimeout(ExchangeContext * ec)
 {
     printf("0 BDX HandleResponseTimeout entering\n");
-    BDXTransfer *xfer = (BDXTransfer* ) ec->AppState;
-    BulkDataTransferServer *bdxApp = xfer->BdxApp;
+    BDXTransfer * xfer              = (BDXTransfer *) ec->AppState;
+    BulkDataTransferServer * bdxApp = xfer->BdxApp;
     bdxApp->ShutdownTransfer(xfer, true);
     printf("1 BDX HandleResponseTimeout exiting\n");
 }
 
-void BulkDataTransferServer::SendTransferError(ExchangeContext *ec, uint32_t aProfileId, uint16_t aStatusCode)
+void BulkDataTransferServer::SendTransferError(ExchangeContext * ec, uint32_t aProfileId, uint16_t aStatusCode)
 {
     TransferError transferError;
     transferError.init(aProfileId, aStatusCode);
-    PacketBuffer* payloadTransferError = PacketBuffer::New();
+    PacketBuffer * payloadTransferError = PacketBuffer::New();
     if (payloadTransferError == NULL)
     {
         printf("BDX SendTransferError (PacketBuffer alloc failed)\n");

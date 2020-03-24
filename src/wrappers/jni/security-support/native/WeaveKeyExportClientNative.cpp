@@ -48,14 +48,14 @@ using namespace nl::Weave::Profiles::Security::KeyExport;
 
 enum
 {
-    kMaxPubKeySize = (((WEAVE_CONFIG_MAX_EC_BITS + 7) / 8) + 1) * 2,
+    kMaxPubKeySize   = (((WEAVE_CONFIG_MAX_EC_BITS + 7) / 8) + 1) * 2,
     kMaxECDSASigSize = kMaxPubKeySize,
 };
 
-jlong WeaveKeyExportClientNative::newNativeClient(JNIEnv *env, jclass cls)
+jlong WeaveKeyExportClientNative::newNativeClient(JNIEnv * env, jclass cls)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient;
+    WeaveStandAloneKeyExportClient * keyExportClient;
 
     keyExportClient = new WeaveStandAloneKeyExportClient();
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -68,12 +68,12 @@ exit:
         JNIUtils::ThrowError(env, err);
     }
 
-    return (jlong)keyExportClient;
+    return (jlong) keyExportClient;
 }
 
-void WeaveKeyExportClientNative::releaseNativeClient(JNIEnv *env, jclass cls, jlong nativeClientPtr)
+void WeaveKeyExportClientNative::releaseNativeClient(JNIEnv * env, jclass cls, jlong nativeClientPtr)
 {
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
 
     if (keyExportClient != NULL)
     {
@@ -82,9 +82,9 @@ void WeaveKeyExportClientNative::releaseNativeClient(JNIEnv *env, jclass cls, jl
     }
 }
 
-void WeaveKeyExportClientNative::resetNativeClient(JNIEnv *env, jclass cls, jlong nativeClientPtr)
+void WeaveKeyExportClientNative::resetNativeClient(JNIEnv * env, jclass cls, jlong nativeClientPtr)
 {
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
 
     if (keyExportClient != NULL)
     {
@@ -92,16 +92,17 @@ void WeaveKeyExportClientNative::resetNativeClient(JNIEnv *env, jclass cls, jlon
     }
 }
 
-jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_Cert(JNIEnv *env, jclass cls, jlong nativeClientPtr, jint keyId, jlong responderNodeId,
-        jbyteArray clientCert, jbyteArray clientKey)
+jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_Cert(JNIEnv * env, jclass cls, jlong nativeClientPtr, jint keyId,
+                                                                     jlong responderNodeId, jbyteArray clientCert,
+                                                                     jbyteArray clientKey)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
-    const uint8_t *clientCertBuf = NULL;
-    const uint8_t *clientKeyBuf = NULL;
-    jsize clientCertLen = 0;
-    jsize clientKeyLen = 0;
-    uint8_t *exportReqBuf = NULL;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
+    const uint8_t * clientCertBuf                    = NULL;
+    const uint8_t * clientKeyBuf                     = NULL;
+    jsize clientCertLen                              = 0;
+    jsize clientKeyLen                               = 0;
+    uint8_t * exportReqBuf                           = NULL;
     size_t exportReqBufSize;
     uint16_t exportReqLen;
     jbyteArray exportReq = NULL;
@@ -110,27 +111,26 @@ jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_Cert(JNIEnv *env
     VerifyOrExit(clientCert != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(clientKey != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    clientCertBuf = (uint8_t *)env->GetByteArrayElements(clientCert, 0);
+    clientCertBuf = (uint8_t *) env->GetByteArrayElements(clientCert, 0);
     clientCertLen = env->GetArrayLength(clientCert);
 
-    clientKeyBuf = (uint8_t *)env->GetByteArrayElements(clientKey, 0);
+    clientKeyBuf = (uint8_t *) env->GetByteArrayElements(clientKey, 0);
     clientKeyLen = env->GetArrayLength(clientKey);
 
-    exportReqBufSize =
-            7                       // Key export request header size
-          + kMaxPubKeySize          // Ephemeral public key size
-          + kMaxECDSASigSize        // Size of bare signature field
-          + clientCertLen           // Size of client certificate
-          + 1024;                   // Space for additional signature fields plus encoding overhead
+    exportReqBufSize = 7   // Key export request header size
+        + kMaxPubKeySize   // Ephemeral public key size
+        + kMaxECDSASigSize // Size of bare signature field
+        + clientCertLen    // Size of client certificate
+        + 1024;            // Space for additional signature fields plus encoding overhead
 
     VerifyOrExit(exportReqBufSize <= UINT16_MAX, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    exportReqBuf = (uint8_t *)malloc(exportReqBufSize);
+    exportReqBuf = (uint8_t *) malloc(exportReqBufSize);
     VerifyOrExit(exportReqBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    err = keyExportClient->GenerateKeyExportRequest((uint32_t)keyId, (uint64_t)responderNodeId,
-            clientCertBuf, clientCertLen, clientKeyBuf, clientKeyLen,
-            exportReqBuf, (uint16_t)exportReqBufSize, exportReqLen);
+    err = keyExportClient->GenerateKeyExportRequest((uint32_t) keyId, (uint64_t) responderNodeId, clientCertBuf, clientCertLen,
+                                                    clientKeyBuf, clientKeyLen, exportReqBuf, (uint16_t) exportReqBufSize,
+                                                    exportReqLen);
     SuccessOrExit(err);
 
     err = JNIUtils::N2J_ByteArray(env, exportReqBuf, exportReqLen, exportReq);
@@ -139,11 +139,11 @@ jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_Cert(JNIEnv *env
 exit:
     if (clientCertBuf != NULL)
     {
-        env->ReleaseByteArrayElements(clientCert, (jbyte *)clientCertBuf, JNI_ABORT);
+        env->ReleaseByteArrayElements(clientCert, (jbyte *) clientCertBuf, JNI_ABORT);
     }
     if (clientKeyBuf != NULL)
     {
-        env->ReleaseByteArrayElements(clientKey, (jbyte *)clientKeyBuf, JNI_ABORT);
+        env->ReleaseByteArrayElements(clientKey, (jbyte *) clientKeyBuf, JNI_ABORT);
     }
     if (err != WEAVE_NO_ERROR)
     {
@@ -152,14 +152,15 @@ exit:
     return exportReq;
 }
 
-jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_AccessToken(JNIEnv *env, jclass cls, jlong nativeClientPtr, jint keyId, jlong responderNodeId,
-        jbyteArray accessToken)
+jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_AccessToken(JNIEnv * env, jclass cls, jlong nativeClientPtr,
+                                                                            jint keyId, jlong responderNodeId,
+                                                                            jbyteArray accessToken)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
-    const uint8_t *accessTokenBuf = NULL;
-    jsize accessTokenLen = 0;
-    uint8_t *exportReqBuf = NULL;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
+    const uint8_t * accessTokenBuf                   = NULL;
+    jsize accessTokenLen                             = 0;
+    uint8_t * exportReqBuf                           = NULL;
     size_t exportReqBufSize;
     uint16_t exportReqLen;
     jbyteArray exportReq = NULL;
@@ -167,24 +168,22 @@ jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_AccessToken(JNIE
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(accessToken != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    accessTokenBuf = (uint8_t *)env->GetByteArrayElements(accessToken, 0);
+    accessTokenBuf = (uint8_t *) env->GetByteArrayElements(accessToken, 0);
     accessTokenLen = env->GetArrayLength(accessToken);
 
-    exportReqBufSize =
-            7                       // Key export request header size
-          + kMaxPubKeySize          // Ephemeral public key size
-          + kMaxECDSASigSize        // Size of bare signature field
-          + accessTokenLen          // Size equal to at least the total size of the client certificates
-          + 1024;                   // Space for additional signature fields plus encoding overhead
+    exportReqBufSize = 7   // Key export request header size
+        + kMaxPubKeySize   // Ephemeral public key size
+        + kMaxECDSASigSize // Size of bare signature field
+        + accessTokenLen   // Size equal to at least the total size of the client certificates
+        + 1024;            // Space for additional signature fields plus encoding overhead
 
     VerifyOrExit(exportReqBufSize <= UINT16_MAX, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    exportReqBuf = (uint8_t *)malloc(exportReqBufSize);
+    exportReqBuf = (uint8_t *) malloc(exportReqBufSize);
     VerifyOrExit(exportReqBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    err = keyExportClient->GenerateKeyExportRequest((uint32_t)keyId, (uint64_t)responderNodeId,
-            accessTokenBuf, accessTokenLen,
-            exportReqBuf, (uint16_t)exportReqBufSize, exportReqLen);
+    err = keyExportClient->GenerateKeyExportRequest((uint32_t) keyId, (uint64_t) responderNodeId, accessTokenBuf, accessTokenLen,
+                                                    exportReqBuf, (uint16_t) exportReqBufSize, exportReqLen);
     SuccessOrExit(err);
 
     err = JNIUtils::N2J_ByteArray(env, exportReqBuf, exportReqLen, exportReq);
@@ -193,7 +192,7 @@ jbyteArray WeaveKeyExportClientNative::generateKeyExportRequest_AccessToken(JNIE
 exit:
     if (accessTokenBuf != NULL)
     {
-        env->ReleaseByteArrayElements(accessToken, (jbyte *)accessTokenBuf, JNI_ABORT);
+        env->ReleaseByteArrayElements(accessToken, (jbyte *) accessTokenBuf, JNI_ABORT);
     }
     if (exportReqBuf != NULL)
     {
@@ -206,13 +205,14 @@ exit:
     return exportReq;
 }
 
-jbyteArray WeaveKeyExportClientNative::processKeyExportResponse(JNIEnv *env, jclass cls, jlong nativeClientPtr, jlong responderNodeId, jbyteArray exportResp)
+jbyteArray WeaveKeyExportClientNative::processKeyExportResponse(JNIEnv * env, jclass cls, jlong nativeClientPtr,
+                                                                jlong responderNodeId, jbyteArray exportResp)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
-    const uint8_t *exportRespBuf = NULL;
-    jsize exportRespLen = 0;
-    uint8_t *exportedKeyBuf = NULL;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
+    const uint8_t * exportRespBuf                    = NULL;
+    jsize exportRespLen                              = 0;
+    uint8_t * exportedKeyBuf                         = NULL;
     size_t exportedKeyBufSize;
     uint16_t exportedKeyLen;
     jbyteArray exportedKey = NULL;
@@ -221,17 +221,18 @@ jbyteArray WeaveKeyExportClientNative::processKeyExportResponse(JNIEnv *env, jcl
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(exportResp != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    exportRespBuf = (uint8_t *)env->GetByteArrayElements(exportResp, 0);
+    exportRespBuf = (uint8_t *) env->GetByteArrayElements(exportResp, 0);
     exportRespLen = env->GetArrayLength(exportResp);
 
     // Since the exported key is contained within the export response, a buffer of the same size
     // is guaranteed to be sufficient.
     exportedKeyBufSize = exportRespLen;
 
-    exportedKeyBuf = (uint8_t *)malloc(exportedKeyBufSize);
+    exportedKeyBuf = (uint8_t *) malloc(exportedKeyBufSize);
     VerifyOrExit(exportedKeyBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    err = keyExportClient->ProcessKeyExportResponse(exportRespBuf, exportRespLen, (uint64_t)responderNodeId, exportedKeyBuf, exportedKeyBufSize, exportedKeyLen, exportedKeyId);
+    err = keyExportClient->ProcessKeyExportResponse(exportRespBuf, exportRespLen, (uint64_t) responderNodeId, exportedKeyBuf,
+                                                    exportedKeyBufSize, exportedKeyLen, exportedKeyId);
     SuccessOrExit(err);
 
     err = JNIUtils::N2J_ByteArray(env, exportedKeyBuf, exportedKeyLen, exportedKey);
@@ -244,7 +245,7 @@ exit:
     }
     if (exportRespBuf != NULL)
     {
-        env->ReleaseByteArrayElements(exportResp, (jbyte *)exportRespBuf, JNI_ABORT);
+        env->ReleaseByteArrayElements(exportResp, (jbyte *) exportRespBuf, JNI_ABORT);
     }
     if (exportedKeyBuf != NULL)
     {
@@ -257,17 +258,17 @@ exit:
     return exportedKey;
 }
 
-void WeaveKeyExportClientNative::processKeyExportReconfigure(JNIEnv *env, jclass cls, jlong nativeClientPtr, jbyteArray reconfig)
+void WeaveKeyExportClientNative::processKeyExportReconfigure(JNIEnv * env, jclass cls, jlong nativeClientPtr, jbyteArray reconfig)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
-    const uint8_t *reconfigBuf = NULL;
-    jsize reconfigLen = 0;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
+    const uint8_t * reconfigBuf                      = NULL;
+    jsize reconfigLen                                = 0;
 
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(reconfig != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    reconfigBuf = (uint8_t *)env->GetByteArrayElements(reconfig, 0);
+    reconfigBuf = (uint8_t *) env->GetByteArrayElements(reconfig, 0);
     reconfigLen = env->GetArrayLength(reconfig);
 
     err = keyExportClient->ProcessKeyExportReconfigure(reconfigBuf, reconfigLen);
@@ -276,7 +277,7 @@ void WeaveKeyExportClientNative::processKeyExportReconfigure(JNIEnv *env, jclass
 exit:
     if (reconfigBuf != NULL)
     {
-        env->ReleaseByteArrayElements(reconfig, (jbyte *)reconfigBuf, JNI_ABORT);
+        env->ReleaseByteArrayElements(reconfig, (jbyte *) reconfigBuf, JNI_ABORT);
     }
     if (err != WEAVE_NO_ERROR)
     {
@@ -284,11 +285,11 @@ exit:
     }
 }
 
-jboolean WeaveKeyExportClientNative::allowNestDevelopmentDevices(JNIEnv *env, jclass cls, jlong nativeClientPtr)
+jboolean WeaveKeyExportClientNative::allowNestDevelopmentDevices(JNIEnv * env, jclass cls, jlong nativeClientPtr)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
-    jboolean res = JNI_FALSE;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
+    jboolean res                                     = JNI_FALSE;
 
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -302,10 +303,10 @@ exit:
     return res;
 }
 
-void WeaveKeyExportClientNative::setAllowNestDevelopmentDevices(JNIEnv *env, jclass cls, jlong nativeClientPtr, jboolean val)
+void WeaveKeyExportClientNative::setAllowNestDevelopmentDevices(JNIEnv * env, jclass cls, jlong nativeClientPtr, jboolean val)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
 
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -318,11 +319,11 @@ exit:
     }
 }
 
-jboolean WeaveKeyExportClientNative::allowSHA1DeviceCertificates(JNIEnv *env, jclass cls, jlong nativeClientPtr)
+jboolean WeaveKeyExportClientNative::allowSHA1DeviceCertificates(JNIEnv * env, jclass cls, jlong nativeClientPtr)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
-    jboolean res = JNI_FALSE;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
+    jboolean res                                     = JNI_FALSE;
 
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -336,10 +337,10 @@ exit:
     return res;
 }
 
-void WeaveKeyExportClientNative::setAllowSHA1DeviceCertificates(JNIEnv *env, jclass cls, jlong nativeClientPtr, jboolean val)
+void WeaveKeyExportClientNative::setAllowSHA1DeviceCertificates(JNIEnv * env, jclass cls, jlong nativeClientPtr, jboolean val)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveStandAloneKeyExportClient *keyExportClient = (WeaveStandAloneKeyExportClient *)nativeClientPtr;
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    WeaveStandAloneKeyExportClient * keyExportClient = (WeaveStandAloneKeyExportClient *) nativeClientPtr;
 
     VerifyOrExit(keyExportClient != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -351,7 +352,6 @@ exit:
         JNIUtils::ThrowError(env, err);
     }
 }
-
 
 } // namespace SecuritySupport
 } // namespace Weave

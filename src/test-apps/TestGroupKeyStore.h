@@ -130,7 +130,6 @@ extern const uint8_t sAppRotatingKeyDiversifierLen_SRK_E3_G54;
 extern const uint8_t sAppRotatingKey_SRK_E3_G54[];
 extern const uint8_t sAppRotatingKeyLen_SRK_E3_G54;
 
-
 extern const uint32_t sPasscodeEncryptionKeyNonce;
 extern const uint8_t sPasscodeEncryptionKeyNonceLen;
 extern const uint8_t sPasscodeEncryptionKeyDiversifier[];
@@ -158,7 +157,7 @@ public:
     virtual WEAVE_ERROR StoreGroupKey(const nl::Weave::Profiles::Security::AppKeys::WeaveGroupKey & key);
     virtual WEAVE_ERROR DeleteGroupKey(uint32_t keyId);
     virtual WEAVE_ERROR DeleteGroupKeysOfAType(uint32_t keyType);
-    virtual WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t *keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount);
+    virtual WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t * keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount);
     virtual WEAVE_ERROR Clear(void);
 
     // Retrieve and Store LastUsedEpochKeyId value.
@@ -166,7 +165,7 @@ public:
     virtual WEAVE_ERROR StoreLastUsedEpochKeyId(void);
 
     // Get current platform UTC time in seconds.
-    virtual WEAVE_ERROR GetCurrentUTCTime(uint32_t& utcTime);
+    virtual WEAVE_ERROR GetCurrentUTCTime(uint32_t & utcTime);
 
     // Functions added for test purposes. Used to check values of the member variables.
     uint32_t TestValue_LastUsedEpochKeyId(void);
@@ -175,15 +174,15 @@ public:
 private:
     enum
     {
-        MaxGroupKeyCount                                = 1 + 1 + WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS + WEAVE_CONFIG_MAX_APPLICATION_GROUPS,
+        MaxGroupKeyCount = 1 + 1 + WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS + WEAVE_CONFIG_MAX_APPLICATION_GROUPS,
 
 #if WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS > WEAVE_CONFIG_MAX_APPLICATION_GROUPS
-        MaxGroupKeysOfATypeCount                        = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS,
+        MaxGroupKeysOfATypeCount = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS,
 #elif WEAVE_CONFIG_MAX_APPLICATION_GROUPS > 1
-        MaxGroupKeysOfATypeCount                        = WEAVE_CONFIG_MAX_APPLICATION_GROUPS,
+        MaxGroupKeysOfATypeCount = WEAVE_CONFIG_MAX_APPLICATION_GROUPS,
 #else
         // At lease one fabric secret key should be supported on any Weave platform.
-        MaxGroupKeysOfATypeCount                        = 1,
+        MaxGroupKeysOfATypeCount = 1,
 #endif
     };
 

@@ -47,10 +47,9 @@ extern int GetEntropy_nRF5(uint8_t * buf, size_t bufSize);
  * Concrete implementation of the ThreadStackManager singleton object for nRF52 platforms
  * using the Nordic nRF5 SDK and the OpenThread stack.
  */
-class ThreadStackManagerImpl final
-    : public ThreadStackManager,
-      public Internal::GenericThreadStackManagerImpl_OpenThread_LwIP<ThreadStackManagerImpl>,
-      public Internal::GenericThreadStackManagerImpl_FreeRTOS<ThreadStackManagerImpl>
+class ThreadStackManagerImpl final : public ThreadStackManager,
+                                     public Internal::GenericThreadStackManagerImpl_OpenThread_LwIP<ThreadStackManagerImpl>,
+                                     public Internal::GenericThreadStackManagerImpl_FreeRTOS<ThreadStackManagerImpl>
 {
     // Allow the ThreadStackManager interface class to delegate method calls to
     // the implementation methods provided by this class.
@@ -68,7 +67,6 @@ class ThreadStackManagerImpl final
     friend void ::otSysEventSignalPending(void);
 
 public:
-
     // ===== Platform-specific members that may be accessed directly by the application.
 
     using ThreadStackManager::InitThreadStack;
@@ -77,7 +75,6 @@ public:
     void _OnWoBLEAdvertisingStop(void);
 
 private:
-
     // ===== Methods that implement the ThreadStackManager abstract interface.
 
     WEAVE_ERROR _InitThreadStack(void);
@@ -118,7 +115,6 @@ inline ThreadStackManagerImpl & ThreadStackMgrImpl(void)
 {
     return ThreadStackManagerImpl::sInstance;
 }
-
 
 } // namespace DeviceLayer
 } // namespace Weave

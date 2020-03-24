@@ -31,67 +31,50 @@
 #include "MockWdmNodeOptions.h"
 
 MockWdmNodeOptions::MockWdmNodeOptions() :
-    mWdmPublisherNodeId(nl::Weave::kAnyNodeId),
-    mWdmUseSubnetId(nl::Weave::kWeaveSubnetId_NotSpecified),
-    mWdmRoleInTest(0),
-    mEnableMutualSubscription(false),
-    mTestCaseId(NULL),
-    mUseTCP(false),
-    mEnableStopTest(false),
-    mNumDataChangeBeforeCancellation(NULL),
-    mFinalStatus(NULL),
-    mTimeBetweenDataChangeMsec(NULL),
-    mEnableDataFlip(true),
-    mEventGeneratorType(kGenerator_None),
-    mTimeBetweenEvents(1000),
-    mTimeBetweenLivenessCheckSec(NULL),
-    mEnableDictionaryTest(false),
-    mEnableRetry(false),
+    mWdmPublisherNodeId(nl::Weave::kAnyNodeId), mWdmUseSubnetId(nl::Weave::kWeaveSubnetId_NotSpecified), mWdmRoleInTest(0),
+    mEnableMutualSubscription(false), mTestCaseId(NULL), mUseTCP(false), mEnableStopTest(false),
+    mNumDataChangeBeforeCancellation(NULL), mFinalStatus(NULL), mTimeBetweenDataChangeMsec(NULL), mEnableDataFlip(true),
+    mEventGeneratorType(kGenerator_None), mTimeBetweenEvents(1000), mTimeBetweenLivenessCheckSec(NULL),
+    mEnableDictionaryTest(false), mEnableRetry(false),
 #if WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
     mWdmSublessNotifyDestNodeId(nl::Weave::kAnyNodeId),
 #endif // WDM_ENABLE_SUBSCRIPTIONLESS_NOTIFICATION
-    mWdmUpdateConditionality(kConditionality_Conditional),
-    mWdmUpdateMutation(kMutation_OneLeaf),
-    mWdmUpdateNumberOfTraits(0),
-    mWdmUpdateNumberOfMutations(1),
-    mWdmUpdateNumberOfRepeatedMutations(1),
-    mWdmUpdateTiming(kTiming_AfterSub),
-    mWdmUpdateDiscardOnError(false),
-    mWdmUpdateMaxNumberOfTraits(1)
+    mWdmUpdateConditionality(kConditionality_Conditional), mWdmUpdateMutation(kMutation_OneLeaf), mWdmUpdateNumberOfTraits(0),
+    mWdmUpdateNumberOfMutations(1), mWdmUpdateNumberOfRepeatedMutations(1), mWdmUpdateTiming(kTiming_AfterSub),
+    mWdmUpdateDiscardOnError(false), mWdmUpdateMaxNumberOfTraits(1)
 {
-    static OptionDef optionDefs[] =
-    {
-        { "test-case",                                      kArgumentRequired,  kToolOpt_TestCaseId },
-        { "tcp",                                            kNoArgument,        kToolOpt_UseTCP },
-        { "enable-stop",                                    kNoArgument,        kToolOpt_EnableStopTest },
-        { "total-count",                                    kArgumentRequired,  kToolOpt_NumDataChangeBeforeCancellation },
-        { "final-status",                                   kArgumentRequired,  kToolOpt_FinalStatus },
-        { "timer-period",                                   kArgumentRequired,  kToolOpt_TimeBetweenDataChangeMsec },
-        { "enable-flip",                                    kArgumentRequired,  kToolOpt_EnableDataFlip },
-        { "enable-dictionary-test",                         kNoArgument,        kToolOpt_EnableDictionaryTest },
-        { "event-generator",                                kArgumentRequired,  kToolOpt_EventGenerator },
-        { "inter-event-period",                             kArgumentRequired,  kToolOpt_TimeBetweenEvents },
+    static OptionDef optionDefs[] = {
+        { "test-case", kArgumentRequired, kToolOpt_TestCaseId },
+        { "tcp", kNoArgument, kToolOpt_UseTCP },
+        { "enable-stop", kNoArgument, kToolOpt_EnableStopTest },
+        { "total-count", kArgumentRequired, kToolOpt_NumDataChangeBeforeCancellation },
+        { "final-status", kArgumentRequired, kToolOpt_FinalStatus },
+        { "timer-period", kArgumentRequired, kToolOpt_TimeBetweenDataChangeMsec },
+        { "enable-flip", kArgumentRequired, kToolOpt_EnableDataFlip },
+        { "enable-dictionary-test", kNoArgument, kToolOpt_EnableDictionaryTest },
+        { "event-generator", kArgumentRequired, kToolOpt_EventGenerator },
+        { "inter-event-period", kArgumentRequired, kToolOpt_TimeBetweenEvents },
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-        { "wdm-publisher",                                  kArgumentRequired,  kToolOpt_WdmPublisherNodeId },
-        { "wdm-subless-notify-dest-node",                   kArgumentRequired,  kToolOpt_WdmSublessNotifyDestNodeId },
-        { "wdm-subnet",                                     kArgumentRequired,  kToolOpt_WdmUseSubnetId },
-        //{ "wdm-simple-view-client",                       kNoArgument,        kToolOpt_WdmSimpleViewClient },
-        //{ "wdm-simple-view-server",                       kNoArgument,        kToolOpt_WdmSimpleViewServer },
-        { "wdm-simple-subless-notify-client",               kNoArgument,        kToolOpt_WdmSimpleSublessNotifyClient },
-        { "wdm-simple-subless-notify-server",               kNoArgument,        kToolOpt_WdmSimpleSublessNotifyServer },
-        { "wdm-one-way-sub-client",                         kNoArgument,        kToolOpt_WdmSubscriptionClient },
-        { "wdm-one-way-sub-publisher",                      kNoArgument,        kToolOpt_WdmSubscriptionPublisher },
-        { "wdm-init-mutual-sub",                            kNoArgument,        kToolOpt_WdmInitMutualSubscription },
-        { "wdm-resp-mutual-sub",                            kNoArgument,        kToolOpt_WdmRespMutualSubscription },
-        { "wdm-liveness-check-period",                      kArgumentRequired,  kToolOpt_TimeBetweenLivenessCheckSec },
-        { "enable-retry",                                   kNoArgument,        kToolOpt_WdmEnableRetry },
-        { "wdm-update-mutation",                            kArgumentRequired,  kToolOpt_WdmUpdateMutation },
-        { "wdm-update-number-of-mutations",                 kArgumentRequired,  kToolOpt_WdmUpdateNumberOfMutations },
-        { "wdm-update-number-of-repeated-mutations",        kArgumentRequired,  kToolOpt_WdmUpdateNumberOfRepeatedMutations },
-        { "wdm-update-number-of-traits",                    kArgumentRequired,  kToolOpt_WdmUpdateNumberOfTraits },
-        { "wdm-update-conditionality",                      kArgumentRequired,  kToolOpt_WdmUpdateConditionality },
-        { "wdm-update-timing",                              kArgumentRequired,  kToolOpt_WdmUpdateTiming },
-        { "wdm-update-discard-on-error",                    kNoArgument,        kToolOpt_WdmUpdateDiscardOnError },
+        { "wdm-publisher", kArgumentRequired, kToolOpt_WdmPublisherNodeId },
+        { "wdm-subless-notify-dest-node", kArgumentRequired, kToolOpt_WdmSublessNotifyDestNodeId },
+        { "wdm-subnet", kArgumentRequired, kToolOpt_WdmUseSubnetId },
+        // { "wdm-simple-view-client",                       kNoArgument,        kToolOpt_WdmSimpleViewClient },
+        // { "wdm-simple-view-server",                       kNoArgument,        kToolOpt_WdmSimpleViewServer },
+        { "wdm-simple-subless-notify-client", kNoArgument, kToolOpt_WdmSimpleSublessNotifyClient },
+        { "wdm-simple-subless-notify-server", kNoArgument, kToolOpt_WdmSimpleSublessNotifyServer },
+        { "wdm-one-way-sub-client", kNoArgument, kToolOpt_WdmSubscriptionClient },
+        { "wdm-one-way-sub-publisher", kNoArgument, kToolOpt_WdmSubscriptionPublisher },
+        { "wdm-init-mutual-sub", kNoArgument, kToolOpt_WdmInitMutualSubscription },
+        { "wdm-resp-mutual-sub", kNoArgument, kToolOpt_WdmRespMutualSubscription },
+        { "wdm-liveness-check-period", kArgumentRequired, kToolOpt_TimeBetweenLivenessCheckSec },
+        { "enable-retry", kNoArgument, kToolOpt_WdmEnableRetry },
+        { "wdm-update-mutation", kArgumentRequired, kToolOpt_WdmUpdateMutation },
+        { "wdm-update-number-of-mutations", kArgumentRequired, kToolOpt_WdmUpdateNumberOfMutations },
+        { "wdm-update-number-of-repeated-mutations", kArgumentRequired, kToolOpt_WdmUpdateNumberOfRepeatedMutations },
+        { "wdm-update-number-of-traits", kArgumentRequired, kToolOpt_WdmUpdateNumberOfTraits },
+        { "wdm-update-conditionality", kArgumentRequired, kToolOpt_WdmUpdateConditionality },
+        { "wdm-update-timing", kArgumentRequired, kToolOpt_WdmUpdateTiming },
+        { "wdm-update-discard-on-error", kNoArgument, kToolOpt_WdmUpdateDiscardOnError },
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
         { }
     };
@@ -234,13 +217,11 @@ MockWdmNodeOptions::MockWdmNodeOptions() :
         "  --wdm-update-discard-on-error\n"
         "       Tells the client to discard the paths on which SetUpdated was called in case of error\n"
         "\n";
-
 }
 
-const char **MockWdmNodeOptions::GetMutationStrings(void)
+const char ** MockWdmNodeOptions::GetMutationStrings(void)
 {
-    static const char *mutationStrings[kMutation_NumItems] =
-    {
+    static const char * mutationStrings[kMutation_NumItems] = {
         "OneLeaf",
         "SameLevelLeaves",
         "DiffLevelLeaves",
@@ -258,45 +239,30 @@ const char **MockWdmNodeOptions::GetMutationStrings(void)
     return mutationStrings;
 }
 
-const char **MockWdmNodeOptions::GetGeneratorStrings(void)
+const char ** MockWdmNodeOptions::GetGeneratorStrings(void)
 {
-    static const char *generatorStrings[kGenerator_NumItems] = {
-        "None",
-        "Debug",
-        "Liveness",
-        "Security",
-        "Telemetry",
-        "TestTrait"
+    static const char * generatorStrings[kGenerator_NumItems] = {
+        "None", "Debug", "Liveness", "Security", "Telemetry", "TestTrait"
     };
 
     return generatorStrings;
 }
 
-const char **MockWdmNodeOptions::GetConditionalityStrings(void)
+const char ** MockWdmNodeOptions::GetConditionalityStrings(void)
 {
-    static const char *conditionalityStrings[kConditionality_NumItems] = {
-        "Conditional",
-        "Unconditional",
-        "Mixed",
-        "Alternate"
-    };
+    static const char * conditionalityStrings[kConditionality_NumItems] = { "Conditional", "Unconditional", "Mixed", "Alternate" };
 
     return conditionalityStrings;
 }
 
-const char **MockWdmNodeOptions::GetUpdateTimingStrings(void)
+const char ** MockWdmNodeOptions::GetUpdateTimingStrings(void)
 {
-    static const char *updateTimingStrings[kTiming_NumItems] = {
-        "BeforeSub",
-        "DuringSub",
-        "AfterSub",
-        "NoSub"
-    };
+    static const char * updateTimingStrings[kTiming_NumItems] = { "BeforeSub", "DuringSub", "AfterSub", "NoSub" };
 
     return updateTimingStrings;
 }
 
-static bool FindStringInArray(const char *aTarget, const char **aArray, size_t aArrayLength, size_t &aIndex)
+static bool FindStringInArray(const char * aTarget, const char ** aArray, size_t aArrayLength, size_t & aIndex)
 {
     for (aIndex = 0; aIndex < aArrayLength && (strcmp(aTarget, aArray[aIndex]) != 0); aIndex++)
     {
@@ -311,7 +277,7 @@ static bool FindStringInArray(const char *aTarget, const char **aArray, size_t a
     return true;
 }
 
-bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool MockWdmNodeOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -399,7 +365,7 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
             PrintArgError("%s: Mock WDM device can only play one role in WDM tests (%s)\n", progName, arg);
             return false;
         }
-        mWdmRoleInTest = kToolOpt_WdmInitMutualSubscription;
+        mWdmRoleInTest            = kToolOpt_WdmInitMutualSubscription;
         mEnableMutualSubscription = true;
         break;
     case kToolOpt_WdmRespMutualSubscription:
@@ -408,13 +374,11 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
             PrintArgError("%s: Mock WDM device can only play one role in WDM tests (%s)\n", progName, arg);
             return false;
         }
-        mWdmRoleInTest = kToolOpt_WdmRespMutualSubscription;
+        mWdmRoleInTest            = kToolOpt_WdmRespMutualSubscription;
         mEnableMutualSubscription = true;
         break;
 
-    case kToolOpt_WdmEnableRetry:
-        mEnableRetry = true;
-        break;
+    case kToolOpt_WdmEnableRetry: mEnableRetry = true; break;
 
     case kToolOpt_TestCaseId:
         if (NULL != mTestCaseId)
@@ -423,12 +387,8 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
         }
         mTestCaseId = strdup(arg);
         break;
-    case kToolOpt_UseTCP:
-        mUseTCP = true;
-        break;
-    case kToolOpt_EnableStopTest:
-        mEnableStopTest = true;
-        break;
+    case kToolOpt_UseTCP: mUseTCP = true; break;
+    case kToolOpt_EnableStopTest: mEnableStopTest = true; break;
     case kToolOpt_NumDataChangeBeforeCancellation:
         if (NULL != mNumDataChangeBeforeCancellation)
         {
@@ -464,9 +424,7 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
             return false;
         }
         break;
-    case kToolOpt_EnableDictionaryTest:
-        mEnableDictionaryTest = true;
-        break;
+    case kToolOpt_EnableDictionaryTest: mEnableDictionaryTest = true; break;
 
     case kToolOpt_EventGenerator:
     {
@@ -482,7 +440,7 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
     }
     case kToolOpt_TimeBetweenEvents:
     {
-        char *endptr;
+        char * endptr;
         mTimeBetweenEvents = strtoul(arg, &endptr, 0);
         if (endptr == arg)
         {
@@ -534,7 +492,8 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
 
         if ((!ParseInt(arg, tmp)) || (tmp < 1) || (tmp > mWdmUpdateMaxNumberOfTraits))
         {
-            PrintArgError("%s: Invalid value specified for --wdm-update-number-of-traits: %s; min 1, max %u\n", progName, arg, mWdmUpdateMaxNumberOfTraits);
+            PrintArgError("%s: Invalid value specified for --wdm-update-number-of-traits: %s; min 1, max %u\n", progName, arg,
+                          mWdmUpdateMaxNumberOfTraits);
             return false;
         }
         mWdmUpdateNumberOfTraits = static_cast<uint32_t>(tmp);
@@ -569,9 +528,7 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
         mWdmUpdateDiscardOnError = true;
         break;
     }
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -580,21 +537,16 @@ bool MockWdmNodeOptions::HandleOption(const char *progName, OptionSet *optSet, i
 MockWdmNodeOptions gMockWdmNodeOptions;
 
 TestWdmNextOptions::TestWdmNextOptions(void) :
-    mEnableMockTimestampInitialCounter(false),
-    mTestIterations(1),
-    mTestDelayBetweenIterationMsec(0),
-    mSavePerfData(false),
+    mEnableMockTimestampInitialCounter(false), mTestIterations(1), mTestDelayBetweenIterationMsec(0), mSavePerfData(false),
     mClearDataSinkState(false)
 {
-    static OptionDef optionDefs[] =
-    {
-        { "enable-mock-event-timestamp-initial-counter",    kNoArgument,        kToolOpt_EnableMockTimestampInitialCounter },
-        { "test-iterations",                                kArgumentRequired,  kToolOpt_TestIterations },
-        { "test-delay",                                     kArgumentRequired,  kToolOpt_TestDelayBetweenIterationMsec },
-        { "save-perf",                                      kNoArgument,        kToolOpt_SavePerfData },
-        { "clear-state-between-iterations",                 kNoArgument,        kToolOpt_ClearDataSinkStateBetweenTests },
-        { }
-    };
+    static OptionDef optionDefs[] = { { "enable-mock-event-timestamp-initial-counter", kNoArgument,
+                                        kToolOpt_EnableMockTimestampInitialCounter },
+                                      { "test-iterations", kArgumentRequired, kToolOpt_TestIterations },
+                                      { "test-delay", kArgumentRequired, kToolOpt_TestDelayBetweenIterationMsec },
+                                      { "save-perf", kNoArgument, kToolOpt_SavePerfData },
+                                      { "clear-state-between-iterations", kNoArgument, kToolOpt_ClearDataSinkStateBetweenTests },
+                                      { } };
 
     OptionDefs = optionDefs;
 
@@ -619,13 +571,11 @@ TestWdmNextOptions::TestWdmNextOptions(void) :
         "\n";
 }
 
-bool TestWdmNextOptions::HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool TestWdmNextOptions::HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case kToolOpt_EnableMockTimestampInitialCounter:
-        mEnableMockTimestampInitialCounter = true;
-        break;
+    case kToolOpt_EnableMockTimestampInitialCounter: mEnableMockTimestampInitialCounter = true; break;
     case kToolOpt_TestIterations:
         if (!ParseInt(arg, mTestIterations))
         {
@@ -640,15 +590,9 @@ bool TestWdmNextOptions::HandleOption(const char *progName, OptionSet *optSet, i
             return false;
         }
         break;
-    case kToolOpt_SavePerfData:
-        mSavePerfData = true;
-        break;
-    case kToolOpt_ClearDataSinkStateBetweenTests:
-        mClearDataSinkState = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case kToolOpt_SavePerfData: mSavePerfData = true; break;
+    case kToolOpt_ClearDataSinkStateBetweenTests: mClearDataSinkState = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

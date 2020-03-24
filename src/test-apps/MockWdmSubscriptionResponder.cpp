@@ -62,25 +62,25 @@ using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::DataManagement;
 using namespace Schema::Weave::Trait::Auth::ApplicationKeysTrait;
 
-const nl::Weave::ExchangeContext::Timeout kResponseTimeoutMsec = 15000;
-const nl::Weave::ExchangeContext::Timeout kWRMPActiveRetransTimeoutMsec = 3000;
+const nl::Weave::ExchangeContext::Timeout kResponseTimeoutMsec           = 15000;
+const nl::Weave::ExchangeContext::Timeout kWRMPActiveRetransTimeoutMsec  = 3000;
 const nl::Weave::ExchangeContext::Timeout kWRMPInitialRetransTimeoutMsec = 3000;
-const uint16_t kWRMPMaxRetrans = 3;
-const uint16_t kWRMPAckTimeoutMsec = 200;
-const nl::Weave::Profiles::Time::timesync_t kCommandTimeoutMicroSecs = 30*nl::kMicrosecondsPerSecond;
+const uint16_t kWRMPMaxRetrans                                           = 3;
+const uint16_t kWRMPAckTimeoutMsec                                       = 200;
+const nl::Weave::Profiles::Time::timesync_t kCommandTimeoutMicroSecs     = 30 * nl::kMicrosecondsPerSecond;
 
 static int gNumDataChangeBeforeCancellation;
 static int gFinalStatus;
-static SubscriptionHandler *gSubscriptionHandler = NULL;
-static int gTimeBetweenDataChangeMsec = 0;
-static bool gEnableDataFlip = true;
-static nl::Weave::Binding * gBinding = NULL;
-static bool gClearDataSink = false;
-static bool gCleanStatus = true;
-static nl::Weave::WRMPConfig gWRMPConfig = { kWRMPInitialRetransTimeoutMsec, kWRMPActiveRetransTimeoutMsec, kWRMPAckTimeoutMsec, kWRMPMaxRetrans };
+static SubscriptionHandler * gSubscriptionHandler = NULL;
+static int gTimeBetweenDataChangeMsec             = 0;
+static bool gEnableDataFlip                       = true;
+static nl::Weave::Binding * gBinding              = NULL;
+static bool gClearDataSink                        = false;
+static bool gCleanStatus                          = true;
+static nl::Weave::WRMPConfig gWRMPConfig = { kWRMPInitialRetransTimeoutMsec, kWRMPActiveRetransTimeoutMsec, kWRMPAckTimeoutMsec,
+                                             kWRMPMaxRetrans };
 
-
-static void TLVPrettyPrinter(const char *aFormat, ...)
+static void TLVPrettyPrinter(const char * aFormat, ...)
 {
     va_list args;
 
@@ -110,7 +110,6 @@ struct VersionNode
     VersionNode * next;
 };
 
-
 class WdmResponderState
 {
 public:
@@ -119,29 +118,26 @@ public:
     int mPublisherStateCount;
     void init(void)
     {
-        mDataflipCount = 1;
-        mClientStateCount = 1;
+        mDataflipCount       = 1;
+        mClientStateCount    = 1;
         mPublisherStateCount = 1;
     }
 };
 
 static WdmResponderState gResponderState;
 
-
-class MockWdmSubscriptionResponderImpl: public MockWdmSubscriptionResponder
+class MockWdmSubscriptionResponderImpl : public MockWdmSubscriptionResponder
 {
 public:
+    MockWdmSubscriptionResponderImpl();
 
-    MockWdmSubscriptionResponderImpl ();
-
-    virtual WEAVE_ERROR Init (nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                              const MockWdmNodeOptions &aConfig);
+    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, const MockWdmNodeOptions & aConfig);
     void PrintVersionsLog();
     virtual void ClearDataSinkState(void);
 
 private:
-    nl::Weave::WeaveExchangeManager *mExchangeMgr;
-    static void ClearDataSinkIterator(void *aTraitInstance, TraitDataHandle aHandle, void *aContext);
+    nl::Weave::WeaveExchangeManager * mExchangeMgr;
+    static void ClearDataSinkIterator(void * aTraitInstance, TraitDataHandle aHandle, void * aContext);
 
     bool mIsMutualSubscription;
     int mTestCaseId;
@@ -165,11 +161,13 @@ private:
     ApplicationKeysTraitDataSource mApplicationKeysTraitDataSource;
     TestCTraitDataSource mTestCDataSource;
 
-    static void EngineEventCallback (void * const aAppState, SubscriptionEngine::EventID aEvent,
-        const SubscriptionEngine::InEventParam & aInParam, SubscriptionEngine::OutEventParam & aOutParam);
+    static void EngineEventCallback(void * const aAppState, SubscriptionEngine::EventID aEvent,
+                                    const SubscriptionEngine::InEventParam & aInParam,
+                                    SubscriptionEngine::OutEventParam & aOutParam);
 
-    static void PublisherEventCallback (void * const aAppState,
-        SubscriptionHandler::EventID aEvent, const SubscriptionHandler::InEventParam & aInParam, SubscriptionHandler::OutEventParam & aOutParam);
+    static void PublisherEventCallback(void * const aAppState, SubscriptionHandler::EventID aEvent,
+                                       const SubscriptionHandler::InEventParam & aInParam,
+                                       SubscriptionHandler::OutEventParam & aOutParam);
 
     // client side
     TestATraitDataSink mTestADataSink0;
@@ -178,7 +176,7 @@ private:
     LocaleCapabilitiesTraitDataSink mLocaleCapabilitiesDataSink;
     SingleResourceSinkTraitCatalog mSinkCatalog;
     SingleResourceSinkTraitCatalog::CatalogItem mSinkCatalogStore[5];
-    nl::Weave::Profiles::DataManagement_Current::TraitSchemaEngine::IGetDataDelegate* mSinkAddressList[4];
+    nl::Weave::Profiles::DataManagement_Current::TraitSchemaEngine::IGetDataDelegate * mSinkAddressList[4];
 
     enum
     {
@@ -216,14 +214,14 @@ private:
     {
         // subscribe LocaleSettings, TestA(two instances) and TestB traits in initiator
         // publish TestA(two instances) and TestB traits in initiator
-        kTestCase_TestTrait                         = 1,
+        kTestCase_TestTrait = 1,
 
         // subscribe Locale Setting, ApplicationKeys traits in initiator
         // publish Locale Capabilities traits in responder
-        kTestCase_IntegrationTrait                  = 2,
+        kTestCase_IntegrationTrait = 2,
 
-        //Reject Incoming subscribe request
-        kTestCase_RejectIncomingSubscribeRequest    = 3,
+        // Reject Incoming subscribe request
+        kTestCase_RejectIncomingSubscribeRequest = 3,
 
         // subscribe oversize TestB, TestA(two instances) traits and LocaleSettings in initiator
         // publish TestA(two instances) and oversize TestB traits in initiator
@@ -246,8 +244,8 @@ private:
 
     enum
     {
-        kMonitorCurrentStateCnt = 160,
-        kMonitorCurrentStateInterval = 120 //msec
+        kMonitorCurrentStateCnt      = 160,
+        kMonitorCurrentStateInterval = 120 // msec
     };
 
     TraitPath mTraitPaths[4];
@@ -258,7 +256,7 @@ private:
 
     SubscriptionClient * mSubscriptionClient;
 
-    void AddNewVersion (int aTraitDataSinkIndex);
+    void AddNewVersion(int aTraitDataSinkIndex);
 
     void DumpClientTraitChecksum(int TraitDataSinkIndex);
     void DumpClientTraits(void);
@@ -266,57 +264,58 @@ private:
     void DumpPublisherTraitChecksum(int TraitDataSounceIndex);
     void DumpPublisherTraits(void);
 
-    static void ClientEventCallback (void * const aAppState, SubscriptionClient::EventID aEvent,
-            const SubscriptionClient::InEventParam & aInParam, SubscriptionClient::OutEventParam & aOutParam);
+    static void ClientEventCallback(void * const aAppState, SubscriptionClient::EventID aEvent,
+                                    const SubscriptionClient::InEventParam & aInParam,
+                                    SubscriptionClient::OutEventParam & aOutParam);
 
-    static void HandleDataFlipTimeout(nl::Weave::System::Layer* aSystemLayer, void *aAppState, ::nl::Weave::System::Error aErr);
+    static void HandleDataFlipTimeout(nl::Weave::System::Layer * aSystemLayer, void * aAppState, ::nl::Weave::System::Error aErr);
 
-    static void HandleClientComplete(void *aAppState);
+    static void HandleClientComplete(void * aAppState);
 
-    static void HandleClientRelease(void *aAppState);
+    static void HandleClientRelease(void * aAppState);
 
     static void HandlePublisherComplete();
 
     static void HandlePublisherRelease();
 
-    static void MonitorPublisherCurrentState (nl::Weave::System::Layer* aSystemLayer, void *aAppState, INET_ERROR aErr);
+    static void MonitorPublisherCurrentState(nl::Weave::System::Layer * aSystemLayer, void * aAppState, INET_ERROR aErr);
 
-    static void MonitorClientCurrentState (nl::Weave::System::Layer* aSystemLayer, void *aAppState, INET_ERROR aErr);
+    static void MonitorClientCurrentState(nl::Weave::System::Layer * aSystemLayer, void * aAppState, INET_ERROR aErr);
 
     enum CustomCommandState
     {
-        kCmdState_Idle          = 0,    ///< No active command
-        kCmdState_Requesting    = 1,    ///< Command has been sent but we haven't heard anything back
-        kCmdState_Operating     = 2,    ///< We have received In-Progress message but are still waiting for response
+        kCmdState_Idle       = 0, ///< No active command
+        kCmdState_Requesting = 1, ///< Command has been sent but we haven't heard anything back
+        kCmdState_Operating  = 2, ///< We have received In-Progress message but are still waiting for response
     };
     CustomCommandState mCmdState;
     nl::Weave::ExchangeContext * mEcCommand;
-    void Command_Send (void);
-    void Command_End (const bool aAbort = false);
-    static void OnMessageReceivedForCustomCommand (nl::Weave::ExchangeContext *aEC, const nl::Inet::IPPacketInfo *aPktInfo,
-        const nl::Weave::WeaveMessageInfo *aMsgInfo, uint32_t aProfileId,
-        uint8_t aMsgType, PacketBuffer *aPayload);
-    static void HandleCustomCommandTimeout(nl::Weave::System::Layer* aSystemLayer, void *aAppState, ::nl::Weave::System::Error aErr);
+    void Command_Send(void);
+    void Command_End(const bool aAbort = false);
+    static void OnMessageReceivedForCustomCommand(nl::Weave::ExchangeContext * aEC, const nl::Inet::IPPacketInfo * aPktInfo,
+                                                  const nl::Weave::WeaveMessageInfo * aMsgInfo, uint32_t aProfileId,
+                                                  uint8_t aMsgType, PacketBuffer * aPayload);
+    static void HandleCustomCommandTimeout(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                           ::nl::Weave::System::Error aErr);
 };
 
 static MockWdmSubscriptionResponderImpl gWdmSubscriptionResponder;
 
-MockWdmSubscriptionResponder * MockWdmSubscriptionResponder::GetInstance ()
+MockWdmSubscriptionResponder * MockWdmSubscriptionResponder::GetInstance()
 {
     return &gWdmSubscriptionResponder;
 }
 
 MockWdmSubscriptionResponderImpl::MockWdmSubscriptionResponderImpl() :
-    mTimeBetweenLivenessCheckSec(30),
-    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, sizeof(mSourceCatalogStore) / sizeof(mSourceCatalogStore[0])),
-    mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore, sizeof(mSinkCatalogStore) / sizeof(mSinkCatalogStore[0])),
-    mCmdState(kCmdState_Idle),
-    mEcCommand(NULL)
-{
-}
+    mTimeBetweenLivenessCheckSec(30), mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore,
+                                                     sizeof(mSourceCatalogStore) / sizeof(mSourceCatalogStore[0])),
+    mSinkCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSinkCatalogStore,
+                 sizeof(mSinkCatalogStore) / sizeof(mSinkCatalogStore[0])),
+    mCmdState(kCmdState_Idle), mEcCommand(NULL)
+{ }
 
-WEAVE_ERROR MockWdmSubscriptionResponderImpl::Init (nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                                                    const MockWdmNodeOptions &aConfig)
+WEAVE_ERROR MockWdmSubscriptionResponderImpl::Init(nl::Weave::WeaveExchangeManager * aExchangeMgr,
+                                                   const MockWdmNodeOptions & aConfig)
 {
     gResponderState.init();
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -389,11 +388,9 @@ WEAVE_ERROR MockWdmSubscriptionResponderImpl::Init (nl::Weave::WeaveExchangeMana
     {
     case kTestCase_TestOversizeTrait1:
     case kTestCase_TestOversizeTrait2:
-         mSourceCatalog.Add(0, &mTestBLargeDataSource, mTraitHandleSet[kTestBLargeTraitSourceIndex]);
-         break;
-    default:
-        mSourceCatalog.Add(0, &mTestBDataSource, mTraitHandleSet[kTestBTraitSourceIndex]);
+        mSourceCatalog.Add(0, &mTestBLargeDataSource, mTraitHandleSet[kTestBLargeTraitSourceIndex]);
         break;
+    default: mSourceCatalog.Add(0, &mTestBDataSource, mTraitHandleSet[kTestBTraitSourceIndex]); break;
     }
 
     mSourceCatalog.Add(0, &mLocaleSettingsDataSource, mTraitHandleSet[kLocaleSettingsTraitSourceIndex]);
@@ -404,56 +401,42 @@ WEAVE_ERROR MockWdmSubscriptionResponderImpl::Init (nl::Weave::WeaveExchangeMana
 
     switch (mTestCaseId)
     {
-    case kTestCase_IntegrationTrait:
-        WeaveLogDetail(DataManagement, "kTestCase_IntegrationTrait");
-        break;
+    case kTestCase_IntegrationTrait: WeaveLogDetail(DataManagement, "kTestCase_IntegrationTrait"); break;
 
     case kTestCase_RejectIncomingSubscribeRequest:
         WeaveLogDetail(DataManagement, "kTestCase_RejectIncomingSubscribeRequest");
         break;
 
-    case kTestCase_TestTrait:
-        WeaveLogDetail(DataManagement, "kTestCase_TestTrait");
-        break;
+    case kTestCase_TestTrait: WeaveLogDetail(DataManagement, "kTestCase_TestTrait"); break;
 
     case kTestCase_TestOversizeTrait1:
-    case kTestCase_TestOversizeTrait2:
-        WeaveLogDetail(DataManagement, "kTestCase_TestOversizeTrait %d", mTestCaseId);
-        break;
+    case kTestCase_TestOversizeTrait2: WeaveLogDetail(DataManagement, "kTestCase_TestOversizeTrait %d", mTestCaseId); break;
 
-    case kTestCase_CompatibleVersionedRequest:
-        WeaveLogDetail(DataManagement, "kTestCase_CompatibleVersionedRequest");
-        break;
+    case kTestCase_CompatibleVersionedRequest: WeaveLogDetail(DataManagement, "kTestCase_CompatibleVersionedRequest"); break;
 
     case kTestCase_ForwardCompatibleVersionedRequest:
         WeaveLogDetail(DataManagement, "kTestCase_ForwardCompatibleVersionedRequest");
         break;
 
-    case kTestCase_IncompatibleVersionedRequest:
-        WeaveLogDetail(DataManagement, "kTestCase_IncompatibleVersionedRequest");
-        break;
+    case kTestCase_IncompatibleVersionedRequest: WeaveLogDetail(DataManagement, "kTestCase_IncompatibleVersionedRequest"); break;
 
     case kTestCase_IncompatibleVersionedCommandRequest:
         WeaveLogDetail(DataManagement, "kTestCase_IncompatibleVersionedCommandRequest");
         break;
 
-    case kTestCase_TestUpdatableTrait:
-        WeaveLogDetail(DataManagement, "kTestCase_TestUpdatableTrait");
-        break;
+    case kTestCase_TestUpdatableTrait: WeaveLogDetail(DataManagement, "kTestCase_TestUpdatableTrait"); break;
 
-    default:
-        WeaveLogDetail(DataManagement, "kTestCase_TestTrait");
-        break;
+    default: WeaveLogDetail(DataManagement, "kTestCase_TestTrait"); break;
     }
 
-    #if WEAVE_CONFIG_ENABLE_WDM_UPDATE
+#if WEAVE_CONFIG_ENABLE_WDM_UPDATE
     mUpdateTiming = aConfig.mWdmUpdateTiming;
-    #endif // WEAVE_CONFIG_ENABLE_WDM_UPDATE
+#endif // WEAVE_CONFIG_ENABLE_WDM_UPDATE
 
     mIsMutualSubscription = aConfig.mEnableMutualSubscription;
 
     mSubscriptionClient = NULL;
-    mExchangeMgr = aExchangeMgr;
+    mExchangeMgr        = aExchangeMgr;
 
     err = SubscriptionEngine::GetInstance()->Init(mExchangeMgr, this, EngineEventCallback);
     SuccessOrExit(err);
@@ -461,18 +444,18 @@ WEAVE_ERROR MockWdmSubscriptionResponderImpl::Init (nl::Weave::WeaveExchangeMana
     err = SubscriptionEngine::GetInstance()->EnablePublisher(NULL, &mSourceCatalog);
     SuccessOrExit(err);
 
-    mTraitVersionSet[kTestADataSink0Index].versionInfo = mTestADataSink0.GetVersion();
-    mTraitVersionSet[kTestADataSink0Index].next = NULL;
-    mTraitVersionSet[kTestADataSink1Index].versionInfo = mTestADataSink1.GetVersion();
-    mTraitVersionSet[kTestADataSink1Index].next = NULL;
-    mTraitVersionSet[kTestBDataSinkIndex].versionInfo = mTestBDataSink.GetVersion();
-    mTraitVersionSet[kTestBDataSinkIndex].next = NULL;
+    mTraitVersionSet[kTestADataSink0Index].versionInfo              = mTestADataSink0.GetVersion();
+    mTraitVersionSet[kTestADataSink0Index].next                     = NULL;
+    mTraitVersionSet[kTestADataSink1Index].versionInfo              = mTestADataSink1.GetVersion();
+    mTraitVersionSet[kTestADataSink1Index].next                     = NULL;
+    mTraitVersionSet[kTestBDataSinkIndex].versionInfo               = mTestBDataSink.GetVersion();
+    mTraitVersionSet[kTestBDataSinkIndex].next                      = NULL;
     mTraitVersionSet[kLocaleCapabilitiesTraitSinkIndex].versionInfo = mLocaleCapabilitiesDataSink.GetVersion();
-    mTraitVersionSet[kLocaleCapabilitiesTraitSinkIndex].next = NULL;
+    mTraitVersionSet[kLocaleCapabilitiesTraitSinkIndex].next        = NULL;
 
-    mSinkAddressList[kTestADataSink0Index] = &mTestADataSink0;
-    mSinkAddressList[kTestADataSink1Index] = &mTestADataSink1;
-    mSinkAddressList[kTestBDataSinkIndex] = &mTestBDataSink;
+    mSinkAddressList[kTestADataSink0Index]              = &mTestADataSink0;
+    mSinkAddressList[kTestADataSink1Index]              = &mTestADataSink1;
+    mSinkAddressList[kTestBDataSinkIndex]               = &mTestBDataSink;
     mSinkAddressList[kLocaleCapabilitiesTraitSinkIndex] = &mLocaleCapabilitiesDataSink;
 
     Command_End();
@@ -484,7 +467,7 @@ exit:
 void MockWdmSubscriptionResponderImpl::DumpPublisherTraitChecksum(int inTraitDataSourceIndex)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    TraitDataSource *dataSource;
+    TraitDataSource * dataSource;
     err = mSourceCatalog.Locate(mTraitHandleSet[inTraitDataSourceIndex], &dataSource);
     SuccessOrExit(err);
 
@@ -496,11 +479,11 @@ exit:
 void MockWdmSubscriptionResponderImpl::DumpClientTraitChecksum(int inTraitDataSinkIndex)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    TraitDataSink *dataSink;
-    TraitSchemaEngine::IGetDataDelegate *dataSource;
+    TraitDataSink * dataSink;
+    TraitSchemaEngine::IGetDataDelegate * dataSource;
 
     dataSource = mSinkAddressList[inTraitDataSinkIndex];
-    err = mSinkCatalog.Locate(mTraitHandleSet[inTraitDataSinkIndex], &dataSink);
+    err        = mSinkCatalog.Locate(mTraitHandleSet[inTraitDataSinkIndex], &dataSink);
     SuccessOrExit(err);
 
     ::DumpClientTraitChecksum(dataSink->GetSchemaEngine(), dataSource);
@@ -512,24 +495,21 @@ void MockWdmSubscriptionResponderImpl::DumpClientTraits(void)
 {
     switch (mTestCaseId)
     {
-        case kTestCase_IntegrationTrait:
-            DumpClientTraitChecksum(kLocaleCapabilitiesTraitSinkIndex);
-            break;
-        case kTestCase_TestTrait:
-        case kTestCase_CompatibleVersionedRequest:
-        case kTestCase_ForwardCompatibleVersionedRequest:
-        case kTestCase_IncompatibleVersionedCommandRequest:
-            DumpClientTraitChecksum(kTestADataSink0Index);
-            DumpClientTraitChecksum(kTestADataSink1Index);
-            DumpClientTraitChecksum(kTestBDataSinkIndex);
-            break;
-        case kTestCase_TestOversizeTrait1:
-        case kTestCase_TestOversizeTrait2:
-            DumpClientTraitChecksum(kTestADataSink0Index);
-            DumpClientTraitChecksum(kTestADataSink1Index);
-            break;
-        case kTestCase_TestUpdatableTrait:
-            break;
+    case kTestCase_IntegrationTrait: DumpClientTraitChecksum(kLocaleCapabilitiesTraitSinkIndex); break;
+    case kTestCase_TestTrait:
+    case kTestCase_CompatibleVersionedRequest:
+    case kTestCase_ForwardCompatibleVersionedRequest:
+    case kTestCase_IncompatibleVersionedCommandRequest:
+        DumpClientTraitChecksum(kTestADataSink0Index);
+        DumpClientTraitChecksum(kTestADataSink1Index);
+        DumpClientTraitChecksum(kTestBDataSinkIndex);
+        break;
+    case kTestCase_TestOversizeTrait1:
+    case kTestCase_TestOversizeTrait2:
+        DumpClientTraitChecksum(kTestADataSink0Index);
+        DumpClientTraitChecksum(kTestADataSink1Index);
+        break;
+    case kTestCase_TestUpdatableTrait: break;
     }
 }
 
@@ -537,54 +517,52 @@ void MockWdmSubscriptionResponderImpl::DumpPublisherTraits(void)
 {
     switch (mTestCaseId)
     {
-        case kTestCase_IntegrationTrait:
-            DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
-            DumpPublisherTraitChecksum(kApplicationKeysTraitSourceIndex);
-            break;
-        case kTestCase_TestTrait:
-        case kTestCase_CompatibleVersionedRequest:
-        case kTestCase_ForwardCompatibleVersionedRequest:
-        case kTestCase_IncompatibleVersionedCommandRequest:
-            DumpPublisherTraitChecksum(kTestATraitSource0Index);
-            DumpPublisherTraitChecksum(kTestATraitSource1Index);
-            DumpPublisherTraitChecksum(kTestBTraitSourceIndex);
-            DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
-            break;
-        case kTestCase_TestOversizeTrait1:
-            DumpPublisherTraitChecksum(kTestATraitSource0Index);
-            DumpPublisherTraitChecksum(kTestATraitSource1Index);
-            DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
-            break;
-        case kTestCase_TestOversizeTrait2:
-            DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
-            DumpPublisherTraitChecksum(kTestATraitSource0Index);
-            DumpPublisherTraitChecksum(kTestATraitSource1Index);
-            break;
-        case kTestCase_TestUpdatableTrait:
-            break;
+    case kTestCase_IntegrationTrait:
+        DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
+        DumpPublisherTraitChecksum(kApplicationKeysTraitSourceIndex);
+        break;
+    case kTestCase_TestTrait:
+    case kTestCase_CompatibleVersionedRequest:
+    case kTestCase_ForwardCompatibleVersionedRequest:
+    case kTestCase_IncompatibleVersionedCommandRequest:
+        DumpPublisherTraitChecksum(kTestATraitSource0Index);
+        DumpPublisherTraitChecksum(kTestATraitSource1Index);
+        DumpPublisherTraitChecksum(kTestBTraitSourceIndex);
+        DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
+        break;
+    case kTestCase_TestOversizeTrait1:
+        DumpPublisherTraitChecksum(kTestATraitSource0Index);
+        DumpPublisherTraitChecksum(kTestATraitSource1Index);
+        DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
+        break;
+    case kTestCase_TestOversizeTrait2:
+        DumpPublisherTraitChecksum(kLocaleSettingsTraitSourceIndex);
+        DumpPublisherTraitChecksum(kTestATraitSource0Index);
+        DumpPublisherTraitChecksum(kTestATraitSource1Index);
+        break;
+    case kTestCase_TestUpdatableTrait: break;
     }
 }
 
-void MockWdmSubscriptionResponderImpl::EngineEventCallback (void * const aAppState,
-    SubscriptionEngine::EventID aEvent,
-    const SubscriptionEngine::InEventParam & aInParam, SubscriptionEngine::OutEventParam & aOutParam)
+void MockWdmSubscriptionResponderImpl::EngineEventCallback(void * const aAppState, SubscriptionEngine::EventID aEvent,
+                                                           const SubscriptionEngine::InEventParam & aInParam,
+                                                           SubscriptionEngine::OutEventParam & aOutParam)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     switch (aEvent)
     {
     case SubscriptionEngine::kEvent_OnIncomingSubscribeRequest:
-        WeaveLogDetail(DataManagement, "Engine->kEvent_OnIncomingSubscribeRequest peer = 0x%" PRIX64, aInParam.mIncomingSubscribeRequest.mEC->PeerNodeId);
-        aOutParam.mIncomingSubscribeRequest.mHandlerAppState = responder;
+        WeaveLogDetail(DataManagement, "Engine->kEvent_OnIncomingSubscribeRequest peer = 0x%" PRIX64,
+                       aInParam.mIncomingSubscribeRequest.mEC->PeerNodeId);
+        aOutParam.mIncomingSubscribeRequest.mHandlerAppState      = responder;
         aOutParam.mIncomingSubscribeRequest.mHandlerEventCallback = MockWdmSubscriptionResponderImpl::PublisherEventCallback;
-        aOutParam.mIncomingSubscribeRequest.mRejectRequest = false;
+        aOutParam.mIncomingSubscribeRequest.mRejectRequest        = false;
 
         aInParam.mIncomingSubscribeRequest.mBinding->SetDefaultResponseTimeout(kResponseTimeoutMsec);
         aInParam.mIncomingSubscribeRequest.mBinding->SetDefaultWRMPConfig(gWRMPConfig);
 
         break;
-    default:
-        SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 }
 
@@ -598,18 +576,20 @@ void MockWdmSubscriptionResponderImpl::AddNewVersion(int aTraitDataSinkIndex)
 
     if (curr->versionInfo != mSinkCatalogStore[aTraitDataSinkIndex].mItem->GetVersion())
     {
-        VersionNode * updatingVersion = (VersionNode *)malloc(sizeof(VersionNode));
-        WeaveLogDetail(DataManagement, "Trait %u version is changed %" PRIu64 " ---> %" PRIu64, aTraitDataSinkIndex, curr->versionInfo, mSinkCatalogStore[aTraitDataSinkIndex].mItem->GetVersion());
+        VersionNode * updatingVersion = (VersionNode *) malloc(sizeof(VersionNode));
+        WeaveLogDetail(DataManagement, "Trait %u version is changed %" PRIu64 " ---> %" PRIu64, aTraitDataSinkIndex,
+                       curr->versionInfo, mSinkCatalogStore[aTraitDataSinkIndex].mItem->GetVersion());
         updatingVersion->versionInfo = mSinkCatalogStore[aTraitDataSinkIndex].mItem->GetVersion();
-        updatingVersion->next = NULL;
-        curr->next = updatingVersion;
+        updatingVersion->next        = NULL;
+        curr->next                   = updatingVersion;
     }
 }
 
-void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aAppState,
-        SubscriptionHandler::EventID aEvent, const SubscriptionHandler::InEventParam & aInParam, SubscriptionHandler::OutEventParam & aOutParam)
+void MockWdmSubscriptionResponderImpl::PublisherEventCallback(void * const aAppState, SubscriptionHandler::EventID aEvent,
+                                                              const SubscriptionHandler::InEventParam & aInParam,
+                                                              SubscriptionHandler::OutEventParam & aOutParam)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err                                    = WEAVE_NO_ERROR;
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     switch (aEvent)
     {
@@ -628,20 +608,17 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
         case kTestCase_RejectIncomingSubscribeRequest:
             // reject right here and release the resources associated with this incoming request
             aInParam.mSubscribeRequestParsed.mHandler->EndSubscription(nl::Weave::Profiles::kWeaveProfile_Common,
-                nl::Weave::Profiles::Common::kStatus_Canceled);
+                                                                       nl::Weave::Profiles::Common::kStatus_Canceled);
             break;
         default:
             WeaveLogDetail(DataManagement, "Liveness check range provided by client %u - %u sec. Set to %u sec",
-                    aInParam.mSubscribeRequestParsed.mTimeoutSecMin,
-                    aInParam.mSubscribeRequestParsed.mTimeoutSecMax,
-                    responder->mTimeBetweenLivenessCheckSec);
+                           aInParam.mSubscribeRequestParsed.mTimeoutSecMin, aInParam.mSubscribeRequestParsed.mTimeoutSecMax,
+                           responder->mTimeBetweenLivenessCheckSec);
             aInParam.mSubscribeRequestParsed.mHandler->AcceptSubscribeRequest(responder->mTimeBetweenLivenessCheckSec);
         }
         break;
 
-    case SubscriptionHandler::kEvent_OnExchangeStart:
-        WeaveLogDetail(DataManagement, "Publisher->kEvent_OnExchangeStart");
-        break;
+    case SubscriptionHandler::kEvent_OnExchangeStart: WeaveLogDetail(DataManagement, "Publisher->kEvent_OnExchangeStart"); break;
 
     case SubscriptionHandler::kEvent_OnSubscriptionEstablished:
         if (true == gClearDataSink || true == gCleanStatus)
@@ -652,7 +629,7 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
 
         WeaveLogDetail(DataManagement, "Publisher->kEvent_OnSubscriptionEstablished");
         gSubscriptionHandler = aInParam.mSubscriptionEstablished.mHandler;
-        gBinding = gSubscriptionHandler->GetBinding();
+        gBinding             = gSubscriptionHandler->GetBinding();
         gBinding->AddRef();
 
         if (responder->mIsMutualSubscription)
@@ -669,31 +646,31 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
                 {
                 case kTestCase_TestTrait:
                 case kTestCase_TestUpdatableTrait:
-                    responder->mNumPaths = 3;
-                    responder->mTraitPaths[0].mTraitDataHandle = responder->mTraitHandleSet[kTestADataSink0Index];
+                    responder->mNumPaths                          = 3;
+                    responder->mTraitPaths[0].mTraitDataHandle    = responder->mTraitHandleSet[kTestADataSink0Index];
                     responder->mTraitPaths[0].mPropertyPathHandle = kRootPropertyPathHandle;
 
-                    responder->mTraitPaths[1].mTraitDataHandle = responder->mTraitHandleSet[kTestADataSink1Index];
+                    responder->mTraitPaths[1].mTraitDataHandle    = responder->mTraitHandleSet[kTestADataSink1Index];
                     responder->mTraitPaths[1].mPropertyPathHandle = kRootPropertyPathHandle;
 
-                    responder->mTraitPaths[2].mTraitDataHandle = responder->mTraitHandleSet[kTestBDataSinkIndex];
+                    responder->mTraitPaths[2].mTraitDataHandle    = responder->mTraitHandleSet[kTestBDataSinkIndex];
                     responder->mTraitPaths[2].mPropertyPathHandle = kRootPropertyPathHandle;
                     break;
                 case kTestCase_IntegrationTrait:
-                    responder->mNumPaths = 1;
-                    responder->mTraitPaths[0].mTraitDataHandle = responder->mTraitHandleSet[kLocaleCapabilitiesTraitSinkIndex];
+                    responder->mNumPaths                          = 1;
+                    responder->mTraitPaths[0].mTraitDataHandle    = responder->mTraitHandleSet[kLocaleCapabilitiesTraitSinkIndex];
                     responder->mTraitPaths[0].mPropertyPathHandle = kRootPropertyPathHandle;
                     break;
                 case kTestCase_TestOversizeTrait1:
                 case kTestCase_TestOversizeTrait2:
-                    responder->mNumPaths = 3;
-                    responder->mTraitPaths[0].mTraitDataHandle = responder->mTraitHandleSet[kTestADataSink0Index];
+                    responder->mNumPaths                          = 3;
+                    responder->mTraitPaths[0].mTraitDataHandle    = responder->mTraitHandleSet[kTestADataSink0Index];
                     responder->mTraitPaths[0].mPropertyPathHandle = kRootPropertyPathHandle;
 
-                    responder->mTraitPaths[1].mTraitDataHandle = responder->mTraitHandleSet[kTestADataSink1Index];
+                    responder->mTraitPaths[1].mTraitDataHandle    = responder->mTraitHandleSet[kTestADataSink1Index];
                     responder->mTraitPaths[1].mPropertyPathHandle = kRootPropertyPathHandle;
 
-                    responder->mTraitPaths[2].mTraitDataHandle = responder->mTraitHandleSet[kTestBDataSinkIndex];
+                    responder->mTraitPaths[2].mTraitDataHandle    = responder->mTraitHandleSet[kTestBDataSinkIndex];
                     responder->mTraitPaths[2].mPropertyPathHandle = kRootPropertyPathHandle;
                     break;
 
@@ -704,45 +681,48 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
 
                     responder->mNumPaths = 3;
 
-                    for (int i = 0; i < 3; i++) {
-                        if (responder->mTestCaseId == kTestCase_CompatibleVersionedRequest) {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (responder->mTestCaseId == kTestCase_CompatibleVersionedRequest)
+                        {
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMinVersion = 1;
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMaxVersion = 1;
                         }
-                        else if (responder->mTestCaseId == kTestCase_ForwardCompatibleVersionedRequest) {
+                        else if (responder->mTestCaseId == kTestCase_ForwardCompatibleVersionedRequest)
+                        {
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMinVersion = 1;
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMaxVersion = 4;
                         }
-                        else if (responder->mTestCaseId == kTestCase_IncompatibleVersionedRequest) {
+                        else if (responder->mTestCaseId == kTestCase_IncompatibleVersionedRequest)
+                        {
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMinVersion = 2;
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMaxVersion = 4;
                         }
-                        else if (responder->mTestCaseId == kTestCase_IncompatibleVersionedCommandRequest) {
+                        else if (responder->mTestCaseId == kTestCase_IncompatibleVersionedCommandRequest)
+                        {
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMinVersion = 1;
                             responder->mVersionedTraitPaths[i].mRequestedVersionRange.mMaxVersion = 4;
                         }
                     }
 
-                    responder->mVersionedTraitPaths[0].mTraitDataHandle = responder->mTraitHandleSet[kTestADataSink0Index];
+                    responder->mVersionedTraitPaths[0].mTraitDataHandle    = responder->mTraitHandleSet[kTestADataSink0Index];
                     responder->mVersionedTraitPaths[0].mPropertyPathHandle = kRootPropertyPathHandle;
 
-                    responder->mVersionedTraitPaths[1].mTraitDataHandle = responder->mTraitHandleSet[kTestADataSink1Index];
+                    responder->mVersionedTraitPaths[1].mTraitDataHandle    = responder->mTraitHandleSet[kTestADataSink1Index];
                     responder->mVersionedTraitPaths[1].mPropertyPathHandle = kRootPropertyPathHandle;
 
-                    responder->mVersionedTraitPaths[2].mTraitDataHandle = responder->mTraitHandleSet[kTestBDataSinkIndex];
+                    responder->mVersionedTraitPaths[2].mTraitDataHandle    = responder->mTraitHandleSet[kTestBDataSinkIndex];
                     responder->mVersionedTraitPaths[2].mPropertyPathHandle = kRootPropertyPathHandle;
                     break;
                 }
 
-                err = SubscriptionEngine::GetInstance()->NewClient(&(responder->mSubscriptionClient),
-                    aInParam.mSubscriptionEstablished.mHandler->GetBinding(),
-                    responder, ClientEventCallback,
-                    &(responder->mSinkCatalog), kResponseTimeoutMsec * 2);
+                err = SubscriptionEngine::GetInstance()->NewClient(
+                    &(responder->mSubscriptionClient), aInParam.mSubscriptionEstablished.mHandler->GetBinding(), responder,
+                    ClientEventCallback, &(responder->mSinkCatalog), kResponseTimeoutMsec * 2);
                 VerifyOrExit(err == WEAVE_NO_ERROR, gBinding->Release());
 
                 // TODO: EVENT-DEMO
-                responder->mSubscriptionClient->InitiateCounterSubscription(
-                    responder->mTimeBetweenLivenessCheckSec);
+                responder->mSubscriptionClient->InitiateCounterSubscription(responder->mTimeBetweenLivenessCheckSec);
             }
         }
         else
@@ -750,7 +730,8 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
             if (gNumDataChangeBeforeCancellation != 0)
             {
                 // alter data every gTimeBetweenDataChangeMsec milliseconds
-                responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(gTimeBetweenDataChangeMsec, HandleDataFlipTimeout, aAppState);
+                responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(gTimeBetweenDataChangeMsec, HandleDataFlipTimeout,
+                                                                               aAppState);
             }
             else
             {
@@ -760,14 +741,15 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
                     {
                     case kPublisherCancel:
                     case kPublisherAbort:
-                        responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorPublisherCurrentState, responder);
+                        responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval,
+                                                                                       MonitorPublisherCurrentState, responder);
                         break;
                     case kClientCancel:
                     case kClientAbort:
-                        responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorClientCurrentState, responder);
+                        responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval,
+                                                                                       MonitorClientCurrentState, responder);
                         break;
-                    default:
-                        break;
+                    default: break;
                     }
                 }
             }
@@ -776,11 +758,12 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
 
     case SubscriptionHandler::kEvent_OnSubscriptionTerminated:
         WeaveLogDetail(DataManagement, "Publisher->kEvent_OnSubscriptionTerminated. peer = 0x%" PRIX64 ", %s: %s",
-                aInParam.mSubscriptionTerminated.mHandler->GetPeerNodeId(),
-                (aInParam.mSubscriptionTerminated.mIsStatusCodeValid) ? "Status Report" : "Error",
-                (aInParam.mSubscriptionTerminated.mIsStatusCodeValid)
-                    ? ::nl::StatusReportStr(aInParam.mSubscriptionTerminated.mStatusProfileId, aInParam.mSubscriptionTerminated.mStatusCode)
-                    : ::nl::ErrorStr(aInParam.mSubscriptionTerminated.mReason));
+                       aInParam.mSubscriptionTerminated.mHandler->GetPeerNodeId(),
+                       (aInParam.mSubscriptionTerminated.mIsStatusCodeValid) ? "Status Report" : "Error",
+                       (aInParam.mSubscriptionTerminated.mIsStatusCodeValid)
+                           ? ::nl::StatusReportStr(aInParam.mSubscriptionTerminated.mStatusProfileId,
+                                                   aInParam.mSubscriptionTerminated.mStatusCode)
+                           : ::nl::ErrorStr(aInParam.mSubscriptionTerminated.mReason));
         switch (gFinalStatus)
         {
         case kPublisherCancel:
@@ -792,29 +775,26 @@ void MockWdmSubscriptionResponderImpl::PublisherEventCallback (void * const aApp
             responder->mExchangeMgr->MessageLayer->SystemLayer->CancelTimer(MonitorClientCurrentState, responder);
             break;
         case kIdle:
-        default:
-            break;
+        default: break;
         }
 
         if (gNumDataChangeBeforeCancellation != 0)
         {
-            //responder->mExchangeMgr->MessageLayer->SystemLayer->CancelTimer(HandleDataFlipTimeout, aAppState);
+            // responder->mExchangeMgr->MessageLayer->SystemLayer->CancelTimer(HandleDataFlipTimeout, aAppState);
         }
         HandlePublisherRelease();
         gResponderState.init();
         responder->onCompleteTest();
         break;
 
-    default:
-        SubscriptionHandler::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionHandler::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 
 exit:
     if (err != WEAVE_NO_ERROR && gSubscriptionHandler)
     {
         // tell the handler to cancel
-        (void)gSubscriptionHandler->EndSubscription();
+        (void) gSubscriptionHandler->EndSubscription();
     }
 
     WeaveLogFunctError(err);
@@ -822,15 +802,15 @@ exit:
 
 void MockWdmSubscriptionResponderImpl::PrintVersionsLog()
 {
-    for (int i = 0; i< kNumTraitHandles; i++)
+    for (int i = 0; i < kNumTraitHandles; i++)
     {
-        VersionNode * pre = &mTraitVersionSet[i];
+        VersionNode * pre  = &mTraitVersionSet[i];
         VersionNode * curr = mTraitVersionSet[i].next;
 
         printf("Responder's trait %u versions log is : %" PRIu64, i, pre->versionInfo);
         while (curr != NULL)
         {
-            pre = curr;
+            pre  = curr;
             curr = curr->next;
             printf(" ==> %" PRIu64, pre->versionInfo);
         }
@@ -844,43 +824,43 @@ void MockWdmSubscriptionResponderImpl::ClearDataSinkState(void)
     gClearDataSink = true;
 }
 
-void MockWdmSubscriptionResponderImpl::ClearDataSinkIterator(void *aTraitInstance, TraitDataHandle aHandle, void *aContext)
+void MockWdmSubscriptionResponderImpl::ClearDataSinkIterator(void * aTraitInstance, TraitDataHandle aHandle, void * aContext)
 {
-    MockTraitDataSink *traitInstance = static_cast<MockTraitDataSink *>(aTraitInstance);
+    MockTraitDataSink * traitInstance = static_cast<MockTraitDataSink *>(aTraitInstance);
     traitInstance->ResetDataSink();
 }
 
-
-void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppState, SubscriptionClient::EventID aEvent,
-        const SubscriptionClient::InEventParam & aInParam, SubscriptionClient::OutEventParam & aOutParam)
+void MockWdmSubscriptionResponderImpl::ClientEventCallback(void * const aAppState, SubscriptionClient::EventID aEvent,
+                                                           const SubscriptionClient::InEventParam & aInParam,
+                                                           SubscriptionClient::OutEventParam & aOutParam)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     switch (aEvent)
     {
-    case SubscriptionClient::kEvent_OnExchangeStart:
-        WeaveLogDetail(DataManagement, "Client->kEvent_OnExchangeStart");
-        break;
+    case SubscriptionClient::kEvent_OnExchangeStart: WeaveLogDetail(DataManagement, "Client->kEvent_OnExchangeStart"); break;
 
     case SubscriptionClient::kEvent_OnSubscribeRequestPrepareNeeded:
         WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscribeRequestPrepareNeeded");
-        if (gSubscriptionHandler->GetSubscriptionId(&(aOutParam.mSubscribeRequestPrepareNeeded.mSubscriptionId))
-                != WEAVE_NO_ERROR)
+        if (gSubscriptionHandler->GetSubscriptionId(&(aOutParam.mSubscribeRequestPrepareNeeded.mSubscriptionId)) != WEAVE_NO_ERROR)
         {
             WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscribeRequestPrepareNeeded invalid state");
             HandleClientRelease(aAppState);
         }
         else
         {
-            if (responder->mTestCaseId >= kTestCase_CompatibleVersionedRequest && responder->mTestCaseId <= kTestCase_IncompatibleVersionedCommandRequest) {
+            if (responder->mTestCaseId >= kTestCase_CompatibleVersionedRequest &&
+                responder->mTestCaseId <= kTestCase_IncompatibleVersionedCommandRequest)
+            {
                 aOutParam.mSubscribeRequestPrepareNeeded.mVersionedPathList = responder->mVersionedTraitPaths;
             }
-            else {
+            else
+            {
                 aOutParam.mSubscribeRequestPrepareNeeded.mPathList = responder->mTraitPaths;
             }
 
-            aOutParam.mSubscribeRequestPrepareNeeded.mPathListSize = responder->mNumPaths;
-            aOutParam.mSubscribeRequestPrepareNeeded.mNeedAllEvents = true;
-            aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventList = NULL;
+            aOutParam.mSubscribeRequestPrepareNeeded.mPathListSize              = responder->mNumPaths;
+            aOutParam.mSubscribeRequestPrepareNeeded.mNeedAllEvents             = true;
+            aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventList     = NULL;
             aOutParam.mSubscribeRequestPrepareNeeded.mLastObservedEventListSize = 0;
         }
 
@@ -888,11 +868,13 @@ void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppSta
 
     case SubscriptionClient::kEvent_OnSubscriptionEstablished:
         WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscriptionEstablished");
-        WeaveLogDetail(DataManagement, "Liveness Timeout: %u msec", aInParam.mSubscriptionEstablished.mClient->GetLivenessTimeoutMsec());
+        WeaveLogDetail(DataManagement, "Liveness Timeout: %u msec",
+                       aInParam.mSubscriptionEstablished.mClient->GetLivenessTimeoutMsec());
         if (gNumDataChangeBeforeCancellation != 0)
         {
             // alter data every gTimeBetweenDataChangeMsec milliseconds
-            responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(gTimeBetweenDataChangeMsec, HandleDataFlipTimeout, aAppState);
+            responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(gTimeBetweenDataChangeMsec, HandleDataFlipTimeout,
+                                                                           aAppState);
         }
         else
         {
@@ -902,14 +884,15 @@ void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppSta
                 {
                 case kPublisherCancel:
                 case kPublisherAbort:
-                    responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorPublisherCurrentState, responder);
+                    responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval,
+                                                                                   MonitorPublisherCurrentState, responder);
                     break;
                 case kClientCancel:
                 case kClientAbort:
-                    responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorClientCurrentState, responder);
+                    responder->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(kMonitorCurrentStateInterval,
+                                                                                   MonitorClientCurrentState, responder);
                     break;
-                default:
-                    break;
+                default: break;
                 }
             }
         }
@@ -921,9 +904,7 @@ void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppSta
         WeaveLogDetail(DataManagement, "Client->kEvent_OnNotificationProcessed");
         switch (responder->mTestCaseId)
         {
-        case kTestCase_IntegrationTrait:
-            responder->AddNewVersion(responder->kLocaleCapabilitiesTraitSinkIndex);
-            break;
+        case kTestCase_IntegrationTrait: responder->AddNewVersion(responder->kLocaleCapabilitiesTraitSinkIndex); break;
         case kTestCase_TestTrait:
         case kTestCase_CompatibleVersionedRequest:
         case kTestCase_ForwardCompatibleVersionedRequest:
@@ -942,8 +923,7 @@ void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppSta
         break;
     case SubscriptionClient::kEvent_OnSubscriptionTerminated:
         WeaveLogDetail(DataManagement, "Client->kEvent_OnSubscriptionTerminated, Reason: %u, peer = 0x%" PRIX64 "\n",
-                aInParam.mSubscriptionTerminated.mReason,
-                aInParam.mSubscriptionTerminated.mClient->GetPeerNodeId());
+                       aInParam.mSubscriptionTerminated.mReason, aInParam.mSubscriptionTerminated.mClient->GetPeerNodeId());
 
         switch (gFinalStatus)
         {
@@ -956,8 +936,7 @@ void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppSta
             responder->mExchangeMgr->MessageLayer->SystemLayer->CancelTimer(MonitorClientCurrentState, responder);
             break;
         case kIdle:
-        default:
-            break;
+        default: break;
         }
         if (gNumDataChangeBeforeCancellation != 0)
         {
@@ -972,9 +951,7 @@ void MockWdmSubscriptionResponderImpl::ClientEventCallback (void * const aAppSta
         gResponderState.init();
         responder->onCompleteTest();
         break;
-    default:
-        SubscriptionClient::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionClient::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 }
 
@@ -984,16 +961,16 @@ void MockWdmSubscriptionResponderImpl::HandlePublisherComplete()
     {
         if (gFinalStatus == kPublisherCancel)
         {
-            (void)gSubscriptionHandler->EndSubscription();
+            (void) gSubscriptionHandler->EndSubscription();
         }
         if (gFinalStatus == kPublisherAbort)
         {
-            (void)gSubscriptionHandler->AbortSubscription();
+            (void) gSubscriptionHandler->AbortSubscription();
         }
     }
 }
 
-void MockWdmSubscriptionResponderImpl::HandleClientRelease(void *aAppState)
+void MockWdmSubscriptionResponderImpl::HandleClientRelease(void * aAppState)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     if (NULL != responder->mSubscriptionClient)
@@ -1003,14 +980,14 @@ void MockWdmSubscriptionResponderImpl::HandleClientRelease(void *aAppState)
     }
 }
 
-void MockWdmSubscriptionResponderImpl::HandleClientComplete(void *aAppState)
+void MockWdmSubscriptionResponderImpl::HandleClientComplete(void * aAppState)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     if (NULL != responder->mSubscriptionClient)
     {
         if (gFinalStatus == kClientCancel)
         {
-            (void)responder->mSubscriptionClient->EndSubscription();
+            (void) responder->mSubscriptionClient->EndSubscription();
         }
         if (gFinalStatus == kClientAbort)
         {
@@ -1031,14 +1008,13 @@ void MockWdmSubscriptionResponderImpl::HandlePublisherRelease()
         gBinding->Release();
         gBinding = NULL;
     }
-
 }
 
 void MockWdmSubscriptionResponderImpl::Command_End(const bool aAbort)
 {
     WeaveLogDetail(DataManagement, "Responder %s: state: %d", __func__, mCmdState);
 
-    (void)mExchangeMgr->MessageLayer->SystemLayer->CancelTimer(HandleCustomCommandTimeout, this);
+    (void) mExchangeMgr->MessageLayer->SystemLayer->CancelTimer(HandleCustomCommandTimeout, this);
 
     mCmdState = kCmdState_Idle;
     if (NULL != mEcCommand)
@@ -1058,7 +1034,8 @@ void MockWdmSubscriptionResponderImpl::Command_End(const bool aAbort)
     }
 }
 
-void MockWdmSubscriptionResponderImpl::HandleCustomCommandTimeout(nl::Weave::System::Layer* aSystemLayer, void *aAppState, ::nl::Weave::System::Error aErr)
+void MockWdmSubscriptionResponderImpl::HandleCustomCommandTimeout(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                                                  ::nl::Weave::System::Error aErr)
 {
     MockWdmSubscriptionResponderImpl * const pResponder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
 
@@ -1067,19 +1044,21 @@ void MockWdmSubscriptionResponderImpl::HandleCustomCommandTimeout(nl::Weave::Sys
     pResponder->Command_End(true);
 }
 
-void MockWdmSubscriptionResponderImpl::OnMessageReceivedForCustomCommand (nl::Weave::ExchangeContext *aEC, const nl::Inet::IPPacketInfo *aPktInfo,
-        const nl::Weave::WeaveMessageInfo *aMsgInfo, uint32_t aProfileId,
-        uint8_t aMsgType, PacketBuffer *aPayload)
+void MockWdmSubscriptionResponderImpl::OnMessageReceivedForCustomCommand(nl::Weave::ExchangeContext * aEC,
+                                                                         const nl::Inet::IPPacketInfo * aPktInfo,
+                                                                         const nl::Weave::WeaveMessageInfo * aMsgInfo,
+                                                                         uint32_t aProfileId, uint8_t aMsgType,
+                                                                         PacketBuffer * aPayload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err                               = WEAVE_NO_ERROR;
     MockWdmSubscriptionResponderImpl * pResponder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aEC->AppState);
     nl::Weave::Profiles::StatusReporting::StatusReport status;
     enum
     {
-        kMsgIdentified_Unknown        = 0,
-        kMsgIdentified_StatusReport   = 1,
-        kMsgIdentified_Response       = 2,
-        kMsgIdentified_InProgress     = 3,
+        kMsgIdentified_Unknown      = 0,
+        kMsgIdentified_StatusReport = 1,
+        kMsgIdentified_Response     = 2,
+        kMsgIdentified_InProgress   = 3,
     } messageType = kMsgIdentified_Unknown;
 
     WeaveLogDetail(DataManagement, "Responder %s: state: %d", __func__, pResponder->mCmdState);
@@ -1087,7 +1066,8 @@ void MockWdmSubscriptionResponderImpl::OnMessageReceivedForCustomCommand (nl::We
     VerifyOrExit(aEC == pResponder->mEcCommand, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(kCmdState_Idle != pResponder->mCmdState, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    if ((nl::Weave::Profiles::kWeaveProfile_Common == aProfileId) && (nl::Weave::Profiles::Common::kMsgType_StatusReport == aMsgType))
+    if ((nl::Weave::Profiles::kWeaveProfile_Common == aProfileId) &&
+        (nl::Weave::Profiles::Common::kMsgType_StatusReport == aMsgType))
     {
         // Note that payload is not freed in this call to parse
         err = nl::Weave::Profiles::StatusReporting::StatusReport::parse(aPayload, status);
@@ -1196,9 +1176,9 @@ exit:
 
 void MockWdmSubscriptionResponderImpl::Command_Send(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = PacketBuffer::New();
-    static uint32_t commandType = 1;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf         = PacketBuffer::New();
+    static uint32_t commandType   = 1;
     static uint32_t signatureType = 0; // static dummy signature.  Values: 0 == None, 1 -- Weave Signature, 2 -- Group Key Signature
 
     WeaveLogDetail(DataManagement, "Responder %s: state: %d", __func__, mCmdState);
@@ -1211,11 +1191,11 @@ void MockWdmSubscriptionResponderImpl::Command_Send(void)
     err = gBinding->NewExchangeContext(mEcCommand);
     SuccessOrExit(err);
 
-    mEcCommand->AppState = this;
+    mEcCommand->AppState          = this;
     mEcCommand->OnMessageReceived = OnMessageReceivedForCustomCommand;
     mEcCommand->OnResponseTimeout = NULL;
-    mEcCommand->OnSendError = NULL;
-    mEcCommand->OnAckRcvd = NULL;
+    mEcCommand->OnSendError       = NULL;
+    mEcCommand->OnAckRcvd         = NULL;
 
     {
         nl::Weave::TLV::TLVWriter writer;
@@ -1228,13 +1208,20 @@ void MockWdmSubscriptionResponderImpl::Command_Send(void)
 
         Path::Builder & path = request.CreatePathBuilder();
 
-        if (mTestCaseId == kTestCase_ForwardCompatibleVersionedRequest) {
-            path.ProfileID(Schema::Nest::Test::Trait::TestATrait::kWeaveProfileId, SchemaVersionRange(4, 1)).InstanceID(1).EndOfPath();
+        if (mTestCaseId == kTestCase_ForwardCompatibleVersionedRequest)
+        {
+            path.ProfileID(Schema::Nest::Test::Trait::TestATrait::kWeaveProfileId, SchemaVersionRange(4, 1))
+                .InstanceID(1)
+                .EndOfPath();
         }
-        else if (mTestCaseId == kTestCase_IncompatibleVersionedCommandRequest) {
-            path.ProfileID(Schema::Nest::Test::Trait::TestATrait::kWeaveProfileId, SchemaVersionRange(4, 2)).InstanceID(1).EndOfPath();
+        else if (mTestCaseId == kTestCase_IncompatibleVersionedCommandRequest)
+        {
+            path.ProfileID(Schema::Nest::Test::Trait::TestATrait::kWeaveProfileId, SchemaVersionRange(4, 2))
+                .InstanceID(1)
+                .EndOfPath();
         }
-        else {
+        else
+        {
             path.ProfileID(Schema::Nest::Test::Trait::TestATrait::kWeaveProfileId).InstanceID(1).EndOfPath();
         }
 
@@ -1253,16 +1240,17 @@ void MockWdmSubscriptionResponderImpl::Command_Send(void)
         SuccessOrExit(err);
 
         deadline = nowMicroSecs + kCommandTimeoutMicroSecs;
-        request.ExpiryTimeMicroSecond((int64_t)deadline);
+        request.ExpiryTimeMicroSecond((int64_t) deadline);
 
         SuccessOrExit(err = request.GetError());
 
         // Add arguments here
         {
-            uint32_t dummyUInt = 7;
-            bool dummyBool = false;
+            uint32_t dummyUInt                = 7;
+            bool dummyBool                    = false;
             nl::Weave::TLV::TLVType dummyType = nl::Weave::TLV::kTLVType_NotSpecified;
-            err = writer.StartContainer(nl::Weave::TLV::ContextTag(CustomCommand::kCsTag_Argument), nl::Weave::TLV::kTLVType_Structure, dummyType);
+            err                               = writer.StartContainer(nl::Weave::TLV::ContextTag(CustomCommand::kCsTag_Argument),
+                                        nl::Weave::TLV::kTLVType_Structure, dummyType);
             SuccessOrExit(err);
 
             err = writer.Put(nl::Weave::TLV::ContextTag(1), dummyUInt);
@@ -1276,43 +1264,49 @@ void MockWdmSubscriptionResponderImpl::Command_Send(void)
 
         switch (signatureType)
         {
-            case 0: // dummy signature -- No signature
-                WeaveLogDetail(DataManagement, "Command with no authenticator" );
-                break;
-            case 1: // dummy signature -- Weave signature
-                {
-                    nl::Weave::TLV::TLVType dummyType =  nl::Weave::TLV::kTLVType_NotSpecified;
+        case 0: // dummy signature -- No signature
+            WeaveLogDetail(DataManagement, "Command with no authenticator");
+            break;
+        case 1: // dummy signature -- Weave signature
+        {
+            nl::Weave::TLV::TLVType dummyType = nl::Weave::TLV::kTLVType_NotSpecified;
 
-                    WeaveLogDetail(DataManagement, "Command with dummy WeaveSignature authenticator" );
+            WeaveLogDetail(DataManagement, "Command with dummy WeaveSignature authenticator");
 
-                    err = writer.StartContainer(nl::Weave::TLV::ProfileTag(nl::Weave::Profiles::kWeaveProfile_Security,  nl::Weave::Profiles::Security::kTag_WeaveSignature), nl::Weave::TLV::kTLVType_Structure, dummyType);
-                    SuccessOrExit(err);
+            err = writer.StartContainer(nl::Weave::TLV::ProfileTag(nl::Weave::Profiles::kWeaveProfile_Security,
+                                                                   nl::Weave::Profiles::Security::kTag_WeaveSignature),
+                                        nl::Weave::TLV::kTLVType_Structure, dummyType);
+            SuccessOrExit(err);
 
-                    // dummy signature -- for now, just an algorithm specification
-                    err = writer.Put(nl::Weave::TLV::ContextTag(nl::Weave::Profiles::Security::kTag_WeaveSignature_SignatureAlgorithm), nl::Weave::ASN1::kOID_SigAlgo_ECDSAWithSHA256);
-                    SuccessOrExit(err);
+            // dummy signature -- for now, just an algorithm specification
+            err = writer.Put(nl::Weave::TLV::ContextTag(nl::Weave::Profiles::Security::kTag_WeaveSignature_SignatureAlgorithm),
+                             nl::Weave::ASN1::kOID_SigAlgo_ECDSAWithSHA256);
+            SuccessOrExit(err);
 
-                    err = writer.EndContainer(dummyType);
-                    SuccessOrExit(err);
-                    break;
-                }
-            case 2: // dummy signature -- Group key signature
-                {
-                    nl::Weave::TLV::TLVType dummyType =  nl::Weave::TLV::kTLVType_NotSpecified;
+            err = writer.EndContainer(dummyType);
+            SuccessOrExit(err);
+            break;
+        }
+        case 2: // dummy signature -- Group key signature
+        {
+            nl::Weave::TLV::TLVType dummyType = nl::Weave::TLV::kTLVType_NotSpecified;
 
-                    WeaveLogDetail(DataManagement, "Command with dummy Group Key Authenticator authenticator" );
+            WeaveLogDetail(DataManagement, "Command with dummy Group Key Authenticator authenticator");
 
-                    err = writer.StartContainer(nl::Weave::TLV::ProfileTag(nl::Weave::Profiles::kWeaveProfile_Security,  nl::Weave::Profiles::Security::kTag_GroupKeySignature), nl::Weave::TLV::kTLVType_Structure, dummyType);
-                    SuccessOrExit(err);
+            err = writer.StartContainer(nl::Weave::TLV::ProfileTag(nl::Weave::Profiles::kWeaveProfile_Security,
+                                                                   nl::Weave::Profiles::Security::kTag_GroupKeySignature),
+                                        nl::Weave::TLV::kTLVType_Structure, dummyType);
+            SuccessOrExit(err);
 
-                    // dummy signature -- for now, just an algorithm specification
-                    err = writer.Put(nl::Weave::TLV::ContextTag(nl::Weave::Profiles::Security::kTag_GroupKeySignature_SignatureAlgorithm), nl::Weave::ASN1::kOID_SigAlgo_HMACWithSHA256);
-                    SuccessOrExit(err);
+            // dummy signature -- for now, just an algorithm specification
+            err = writer.Put(nl::Weave::TLV::ContextTag(nl::Weave::Profiles::Security::kTag_GroupKeySignature_SignatureAlgorithm),
+                             nl::Weave::ASN1::kOID_SigAlgo_HMACWithSHA256);
+            SuccessOrExit(err);
 
-                    err = writer.EndContainer(dummyType);
-                    SuccessOrExit(err);
-                    break;
-                }
+            err = writer.EndContainer(dummyType);
+            SuccessOrExit(err);
+            break;
+        }
         }
 
         request.EndOfCustomCommand();
@@ -1326,9 +1320,8 @@ void MockWdmSubscriptionResponderImpl::Command_Send(void)
             signatureType = (signatureType + 1) % 3;
         }
 
-
-        err = mEcCommand->SendMessage(nl::Weave::Profiles::kWeaveProfile_WDM, kMsgType_CustomCommandRequest,
-            msgBuf, nl::Weave::ExchangeContext::kSendFlag_ExpectResponse);
+        err    = mEcCommand->SendMessage(nl::Weave::Profiles::kWeaveProfile_WDM, kMsgType_CustomCommandRequest, msgBuf,
+                                      nl::Weave::ExchangeContext::kSendFlag_ExpectResponse);
         msgBuf = NULL;
         SuccessOrExit(err);
     }
@@ -1353,8 +1346,8 @@ exit:
     }
 }
 
-void MockWdmSubscriptionResponderImpl::HandleDataFlipTimeout(nl::Weave::System::Layer* aSystemLayer, void *aAppState,
-    nl::Weave::System::Error aErr)
+void MockWdmSubscriptionResponderImpl::HandleDataFlipTimeout(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                                             nl::Weave::System::Error aErr)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
 
@@ -1382,8 +1375,7 @@ void MockWdmSubscriptionResponderImpl::HandleDataFlipTimeout(nl::Weave::System::
             responder->Command_Send();
             SubscriptionEngine::GetInstance()->GetNotificationEngine()->Run();
             break;
-        case kTestCase_TestUpdatableTrait:
-            break;
+        case kTestCase_TestUpdatableTrait: break;
         case kTestCase_IncompatibleVersionedCommandRequest:
             responder->Command_Send();
             SubscriptionEngine::GetInstance()->GetNotificationEngine()->Run();
@@ -1415,7 +1407,8 @@ void MockWdmSubscriptionResponderImpl::HandleDataFlipTimeout(nl::Weave::System::
     }
     else
     {
-        WeaveLogDetail(DataManagement, "Completed cycle %d per %d", gResponderState.mDataflipCount, gNumDataChangeBeforeCancellation);
+        WeaveLogDetail(DataManagement, "Completed cycle %d per %d", gResponderState.mDataflipCount,
+                       gNumDataChangeBeforeCancellation);
         if (gResponderState.mDataflipCount == gNumDataChangeBeforeCancellation)
         {
             gResponderState.mDataflipCount = 1;
@@ -1431,8 +1424,7 @@ void MockWdmSubscriptionResponderImpl::HandleDataFlipTimeout(nl::Weave::System::
                 case kClientAbort:
                     aSystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorClientCurrentState, responder);
                     break;
-                default:
-                    break;
+                default: break;
                 }
             }
         }
@@ -1445,14 +1437,17 @@ void MockWdmSubscriptionResponderImpl::HandleDataFlipTimeout(nl::Weave::System::
     }
 }
 
-void MockWdmSubscriptionResponderImpl::MonitorPublisherCurrentState (nl::Weave::System::Layer* aSystemLayer, void *aAppState, INET_ERROR aErr)
+void MockWdmSubscriptionResponderImpl::MonitorPublisherCurrentState(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                                                    INET_ERROR aErr)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     if (NULL != gSubscriptionHandler)
     {
-        if (gSubscriptionHandler->IsEstablishedIdle() && (NULL == responder->mSubscriptionClient || responder->mSubscriptionClient->IsEstablishedIdle()))
+        if (gSubscriptionHandler->IsEstablishedIdle() &&
+            (NULL == responder->mSubscriptionClient || responder->mSubscriptionClient->IsEstablishedIdle()))
         {
-            WeaveLogDetail(DataManagement, "state transitions to idle within %d msec", kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
+            WeaveLogDetail(DataManagement, "state transitions to idle within %d msec",
+                           kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
             gResponderState.mPublisherStateCount = 1;
             HandlePublisherComplete();
             if (!responder->mIsMutualSubscription)
@@ -1466,14 +1461,15 @@ void MockWdmSubscriptionResponderImpl::MonitorPublisherCurrentState (nl::Weave::
         {
             if (gResponderState.mPublisherStateCount < kMonitorCurrentStateCnt)
             {
-                gResponderState.mPublisherStateCount ++;
+                gResponderState.mPublisherStateCount++;
                 aSystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorPublisherCurrentState, responder);
             }
             else
             {
                 gResponderState.mPublisherStateCount = 1;
-                WeaveLogDetail(DataManagement, "state is not idle or aborted within %d msec", kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
-                (void)gSubscriptionHandler->AbortSubscription();
+                WeaveLogDetail(DataManagement, "state is not idle or aborted within %d msec",
+                               kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
+                (void) gSubscriptionHandler->AbortSubscription();
                 HandleClientRelease(responder);
                 HandlePublisherRelease();
                 responder->onCompleteTest();
@@ -1489,14 +1485,17 @@ void MockWdmSubscriptionResponderImpl::MonitorPublisherCurrentState (nl::Weave::
     }
 }
 
-void MockWdmSubscriptionResponderImpl::MonitorClientCurrentState (nl::Weave::System::Layer* aSystemLayer, void *aAppState, INET_ERROR aErr)
+void MockWdmSubscriptionResponderImpl::MonitorClientCurrentState(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                                                 INET_ERROR aErr)
 {
     MockWdmSubscriptionResponderImpl * const responder = reinterpret_cast<MockWdmSubscriptionResponderImpl *>(aAppState);
     if (NULL != responder->mSubscriptionClient)
     {
-        if (responder->mSubscriptionClient->IsEstablishedIdle() && (NULL == gSubscriptionHandler || gSubscriptionHandler->IsEstablishedIdle()))
+        if (responder->mSubscriptionClient->IsEstablishedIdle() &&
+            (NULL == gSubscriptionHandler || gSubscriptionHandler->IsEstablishedIdle()))
         {
-            WeaveLogDetail(DataManagement, "state transitions to idle within %d msec", kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
+            WeaveLogDetail(DataManagement, "state transitions to idle within %d msec",
+                           kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
             gResponderState.mClientStateCount = 1;
             HandleClientComplete(responder);
         }
@@ -1504,21 +1503,22 @@ void MockWdmSubscriptionResponderImpl::MonitorClientCurrentState (nl::Weave::Sys
         {
             if (gResponderState.mClientStateCount < kMonitorCurrentStateCnt)
             {
-                gResponderState.mClientStateCount ++;
+                gResponderState.mClientStateCount++;
                 aSystemLayer->StartTimer(kMonitorCurrentStateInterval, MonitorClientCurrentState, responder);
             }
             else
             {
                 gResponderState.mClientStateCount = 1;
-                WeaveLogDetail(DataManagement, "state is not idle or aborted within %d msec", kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
-                (void)gSubscriptionHandler->AbortSubscription();
+                WeaveLogDetail(DataManagement, "state is not idle or aborted within %d msec",
+                               kMonitorCurrentStateInterval * kMonitorCurrentStateCnt);
+                (void) gSubscriptionHandler->AbortSubscription();
             }
         }
     }
     else
     {
         WeaveLogDetail(DataManagement, "mSubscriptionClient is NULL, and current session is torn down");
-        (void)gSubscriptionHandler->AbortSubscription();
+        (void) gSubscriptionHandler->AbortSubscription();
         HandleClientRelease(responder);
         HandlePublisherRelease();
         responder->onCompleteTest();

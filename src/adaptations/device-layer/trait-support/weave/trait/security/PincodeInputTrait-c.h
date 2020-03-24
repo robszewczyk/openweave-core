@@ -27,29 +27,23 @@
 #ifndef _WEAVE_TRAIT_SECURITY__PINCODE_INPUT_TRAIT_C_H_
 #define _WEAVE_TRAIT_SECURITY__PINCODE_INPUT_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // PincodeEntryResult
-    typedef enum
-    {
-    PINCODE_ENTRY_RESULT_FAILURE_INVALID_PINCODE = 1,
-    PINCODE_ENTRY_RESULT_FAILURE_OUT_OF_SCHEDULE = 2,
+// PincodeEntryResult
+typedef enum
+{
+    PINCODE_ENTRY_RESULT_FAILURE_INVALID_PINCODE  = 1,
+    PINCODE_ENTRY_RESULT_FAILURE_OUT_OF_SCHEDULE  = 2,
     PINCODE_ENTRY_RESULT_FAILURE_PINCODE_DISABLED = 3,
-    PINCODE_ENTRY_RESULT_SUCCESS = 4,
-    } schema_weave_security_pincode_input_trait_pincode_entry_result_t;
-    // PincodeInputState
-    typedef enum
-    {
-    PINCODE_INPUT_STATE_ENABLED = 1,
+    PINCODE_ENTRY_RESULT_SUCCESS                  = 4,
+} schema_weave_security_pincode_input_trait_pincode_entry_result_t;
+// PincodeInputState
+typedef enum
+{
+    PINCODE_INPUT_STATE_ENABLED  = 1,
     PINCODE_INPUT_STATE_DISABLED = 2,
-    } schema_weave_security_pincode_input_trait_pincode_input_state_t;
-
-
-
+} schema_weave_security_pincode_input_trait_pincode_input_state_t;
 
 #endif // _WEAVE_TRAIT_SECURITY__PINCODE_INPUT_TRAIT_C_H_

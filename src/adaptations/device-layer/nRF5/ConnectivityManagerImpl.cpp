@@ -33,7 +33,6 @@
 
 #include <new>
 
-
 #if WEAVE_DEVICE_CONFIG_ENABLE_WOBLE
 #include <Weave/DeviceLayer/internal/GenericConnectivityManagerImpl_BLE.ipp>
 #endif
@@ -41,7 +40,6 @@
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
 #include <Weave/DeviceLayer/internal/GenericConnectivityManagerImpl_Thread.ipp>
 #endif
-
 
 using namespace ::nl;
 using namespace ::nl::Weave;
@@ -58,7 +56,6 @@ namespace Weave {
 namespace DeviceLayer {
 
 ConnectivityManagerImpl ConnectivityManagerImpl::sInstance;
-
 
 WEAVE_ERROR ConnectivityManagerImpl::_Init()
 {

@@ -21,7 +21,6 @@
 
 #include <Weave/DeviceLayer/internal/GenericNetworkProvisioningServerImpl.h>
 
-
 namespace nl {
 namespace Weave {
 namespace DeviceLayer {
@@ -30,12 +29,10 @@ namespace Internal {
 /**
  * Concrete implementation of the NetworkProvisioningServer singleton object for the ESP32 platform.
  */
-class NetworkProvisioningServerImpl final
-    : public NetworkProvisioningServer,
-      public GenericNetworkProvisioningServerImpl<NetworkProvisioningServerImpl>
+class NetworkProvisioningServerImpl final : public NetworkProvisioningServer,
+                                            public GenericNetworkProvisioningServerImpl<NetworkProvisioningServerImpl>
 {
 private:
-
     using GenericImplClass = GenericNetworkProvisioningServerImpl<NetworkProvisioningServerImpl>;
 
     // Allow the NetworkProvisioningServer interface class to delegate method calls to

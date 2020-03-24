@@ -36,7 +36,7 @@ MockImageAnnounceServer::MockImageAnnounceServer()
     mCurServerOp = NULL;
 }
 
-WEAVE_ERROR MockImageAnnounceServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockImageAnnounceServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -50,49 +50,48 @@ WEAVE_ERROR MockImageAnnounceServer::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR MockImageAnnounceServer::CreateExchangeCtx(const uint64_t &peerNodeId, const IPAddress &peerAddr)
+WEAVE_ERROR MockImageAnnounceServer::CreateExchangeCtx(const uint64_t & peerNodeId, const IPAddress & peerAddr)
 {
-     CloseExistingExchangeCtx();
+    CloseExistingExchangeCtx();
 
-     // Create a new exchange context.
-     mCurServerOp = ExchangeMgr.NewContext(peerNodeId, peerAddr,  this);
-     if (mCurServerOp == NULL)
-         return WEAVE_ERROR_NO_MEMORY;
-     return WEAVE_NO_ERROR;
+    // Create a new exchange context.
+    mCurServerOp = ExchangeMgr.NewContext(peerNodeId, peerAddr, this);
+    if (mCurServerOp == NULL)
+        return WEAVE_ERROR_NO_MEMORY;
+    return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR MockImageAnnounceServer::CreateExchangeCtx(WeaveConnection *con)
+WEAVE_ERROR MockImageAnnounceServer::CreateExchangeCtx(WeaveConnection * con)
 {
-     CloseExistingExchangeCtx();
+    CloseExistingExchangeCtx();
 
-     // Create a new exchange context.
-     mCurServerOp = ExchangeMgr.NewContext(con, this);
-     if (mCurServerOp == NULL)
-         return WEAVE_ERROR_NO_MEMORY;
-     return WEAVE_NO_ERROR;
+    // Create a new exchange context.
+    mCurServerOp = ExchangeMgr.NewContext(con, this);
+    if (mCurServerOp == NULL)
+        return WEAVE_ERROR_NO_MEMORY;
+    return WEAVE_NO_ERROR;
 }
 
 void MockImageAnnounceServer::CloseExistingExchangeCtx()
 {
     if (mCurServerOp != NULL)
     {
-         mCurServerOp->Close();
-         mCurServerOp = NULL;
+        mCurServerOp->Close();
+        mCurServerOp = NULL;
     }
 }
 
-void MockImageAnnounceServer::OnImageAnnounce(ExchangeContext* ec)
+void MockImageAnnounceServer::OnImageAnnounce(ExchangeContext * ec)
 {
-   printf("1. OnImageAnnounce...\n");
+    printf("1. OnImageAnnounce...\n");
 
-   MockImageAnnounceServer *server = (MockImageAnnounceServer *) mCurServerOp->AppState;
-   if (server->OnImageAnnounceReceived == NULL)
-   {
+    MockImageAnnounceServer * server = (MockImageAnnounceServer *) mCurServerOp->AppState;
+    if (server->OnImageAnnounceReceived == NULL)
+    {
         printf("2. OnImageAnnounceReceived is NULL\n");
         return;
-   }
-   server->OnImageAnnounceReceived(mCurServerOp);
-   CloseExistingExchangeCtx();
-   printf("3. OnImageAnnounce done\n");
-
+    }
+    server->OnImageAnnounceReceived(mCurServerOp);
+    CloseExistingExchangeCtx();
+    printf("3. OnImageAnnounce done\n");
 }

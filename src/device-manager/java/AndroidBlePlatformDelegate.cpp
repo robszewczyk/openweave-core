@@ -23,33 +23,31 @@
 
 #include <stddef.h>
 
-AndroidBlePlatformDelegate::AndroidBlePlatformDelegate(BleLayer *ble):
-    SendWriteRequestCb(NULL),
-    SubscribeCharacteristicCb(NULL),
-    UnsubscribeCharacteristicCb(NULL),
-    CloseConnectionCb(NULL),
+AndroidBlePlatformDelegate::AndroidBlePlatformDelegate(BleLayer * ble) :
+    SendWriteRequestCb(NULL), SubscribeCharacteristicCb(NULL), UnsubscribeCharacteristicCb(NULL), CloseConnectionCb(NULL),
     GetMTUCb(NULL)
-{
-}
+{ }
 
-bool AndroidBlePlatformDelegate::SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool AndroidBlePlatformDelegate::SubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                         const nl::Ble::WeaveBleUUID * charId)
 {
     bool rc = true;
     if (SubscribeCharacteristicCb)
     {
         rc = SubscribeCharacteristicCb(connObj, static_cast<const uint8_t *>(svcId->bytes),
-				       static_cast<const uint8_t *>(charId->bytes));
+                                       static_cast<const uint8_t *>(charId->bytes));
     }
     return rc;
 }
 
-bool AndroidBlePlatformDelegate::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool AndroidBlePlatformDelegate::UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                           const nl::Ble::WeaveBleUUID * charId)
 {
     bool rc = true;
     if (UnsubscribeCharacteristicCb)
     {
         rc = UnsubscribeCharacteristicCb(connObj, static_cast<const uint8_t *>(svcId->bytes),
-					 static_cast<const uint8_t *>(charId->bytes));
+                                         static_cast<const uint8_t *>(charId->bytes));
     }
     return rc;
 }
@@ -60,7 +58,7 @@ uint16_t AndroidBlePlatformDelegate::GetMTU(BLE_CONNECTION_OBJECT connObj) const
     uint16_t mtu = 0;
     if (GetMTUCb)
     {
-      mtu = GetMTUCb(connObj);
+        mtu = GetMTUCb(connObj);
     }
     return mtu;
 }
@@ -75,40 +73,45 @@ bool AndroidBlePlatformDelegate::CloseConnection(BLE_CONNECTION_OBJECT connObj)
     return rc;
 }
 
-bool AndroidBlePlatformDelegate::SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, PacketBuffer *pBuf)
+bool AndroidBlePlatformDelegate::SendIndication(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                const nl::Ble::WeaveBleUUID * charId, PacketBuffer * pBuf)
 {
     // TODO Android queue-based implementation
 
-    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to it.
+    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to
+    // it.
     PacketBuffer::Free(pBuf);
 
     return false;
 }
 
-bool AndroidBlePlatformDelegate::SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, PacketBuffer *pBuf)
+bool AndroidBlePlatformDelegate::SendWriteRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                  const nl::Ble::WeaveBleUUID * charId, PacketBuffer * pBuf)
 {
     bool rc = true;
     // TODO Android queue-based implementation, for now, pretend it works.
     if (SendWriteRequestCb)
     {
-        rc = SendWriteRequestCb(connObj, static_cast<const uint8_t *>(svcId->bytes),
-				static_cast<const uint8_t *>(charId->bytes), pBuf->Start(), pBuf->DataLength());
+        rc = SendWriteRequestCb(connObj, static_cast<const uint8_t *>(svcId->bytes), static_cast<const uint8_t *>(charId->bytes),
+                                pBuf->Start(), pBuf->DataLength());
     }
 
-    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to it.
-    // We release pBuf's reference here since its payload bytes were copied onto the Java heap by SendWriteRequestCb.
+    // Release delegate's reference to pBuf. pBuf will be freed when both platform delegate and Weave stack free their references to
+    // it. We release pBuf's reference here since its payload bytes were copied onto the Java heap by SendWriteRequestCb.
     PacketBuffer::Free(pBuf);
 
     return rc;
 }
 
-bool AndroidBlePlatformDelegate::SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId, PacketBuffer *pBuf)
+bool AndroidBlePlatformDelegate::SendReadRequest(BLE_CONNECTION_OBJECT connObj, const nl::Ble::WeaveBleUUID * svcId,
+                                                 const nl::Ble::WeaveBleUUID * charId, PacketBuffer * pBuf)
 {
     // TODO Android queue-based implementation, for now, pretend it works.
     return true;
 }
 
-bool AndroidBlePlatformDelegate::SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext, const nl::Ble::WeaveBleUUID *svcId, const nl::Ble::WeaveBleUUID *charId)
+bool AndroidBlePlatformDelegate::SendReadResponse(BLE_CONNECTION_OBJECT connObj, BLE_READ_REQUEST_CONTEXT requestContext,
+                                                  const nl::Ble::WeaveBleUUID * svcId, const nl::Ble::WeaveBleUUID * charId)
 {
     // TODO Android queue-based implementation, for now, pretend it works.
     return true;

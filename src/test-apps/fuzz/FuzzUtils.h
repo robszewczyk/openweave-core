@@ -27,7 +27,7 @@
 #include <Weave/Profiles/security/WeavePASE.h>
 #include <Weave/Support/RandUtils.h>
 
-void saveCorpus(const uint8_t *inBuf, size_t size, char *fileName);
-void printCorpus(const uint8_t *inBuf, size_t size);
+void saveCorpus(const uint8_t * inBuf, size_t size, char * fileName);
+void printCorpus(const uint8_t * inBuf, size_t size);
 
 #endif // FUZZUTILS_H

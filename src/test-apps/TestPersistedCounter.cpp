@@ -53,33 +53,30 @@ struct TestPersistedCounterContext
     bool mVerbose;
 };
 
-TestPersistedCounterContext::TestPersistedCounterContext() :
-    mVerbose(false)
-{
-}
+TestPersistedCounterContext::TestPersistedCounterContext() : mVerbose(false) { }
 
-static void InitializePersistedStorage(TestPersistedCounterContext *context)
+static void InitializePersistedStorage(TestPersistedCounterContext * context)
 {
     sPersistentStore.clear();
 }
 
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     return SUCCESS;
 }
 
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     sPersistentStore.clear();
     return SUCCESS;
 }
 
-static void CheckOOB(nlTestSuite *inSuite, void *inContext)
+static void CheckOOB(nlTestSuite * inSuite, void * inContext)
 {
-    TestPersistedCounterContext *context = static_cast<TestPersistedCounterContext *>(inContext);
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    TestPersistedCounterContext * context = static_cast<TestPersistedCounterContext *>(inContext);
+    WEAVE_ERROR err                       = WEAVE_NO_ERROR;
     nl::Weave::PersistedCounter counter;
-    const char *testKey = "testcounter";
+    const char * testKey = "testcounter";
     char testValue[WEAVE_CONFIG_PERSISTED_STORAGE_MAX_VALUE_LENGTH];
     uint64_t value = 0;
 
@@ -98,12 +95,12 @@ static void CheckOOB(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, value == 0);
 }
 
-static void CheckReboot(nlTestSuite *inSuite, void *inContext)
+static void CheckReboot(nlTestSuite * inSuite, void * inContext)
 {
-    TestPersistedCounterContext *context = static_cast<TestPersistedCounterContext *>(inContext);
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    TestPersistedCounterContext * context = static_cast<TestPersistedCounterContext *>(inContext);
+    WEAVE_ERROR err                       = WEAVE_NO_ERROR;
     nl::Weave::PersistedCounter counter, counter2;
-    const char *testKey = "testcounter";
+    const char * testKey = "testcounter";
     char testValue[WEAVE_CONFIG_PERSISTED_STORAGE_MAX_VALUE_LENGTH];
     uint64_t value = 0;
 
@@ -129,12 +126,12 @@ static void CheckReboot(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, value == 0x10000);
 }
 
-static void CheckWriteNextCounterStart(nlTestSuite *inSuite, void *inContext)
+static void CheckWriteNextCounterStart(nlTestSuite * inSuite, void * inContext)
 {
-    TestPersistedCounterContext *context = static_cast<TestPersistedCounterContext *>(inContext);
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    TestPersistedCounterContext * context = static_cast<TestPersistedCounterContext *>(inContext);
+    WEAVE_ERROR err                       = WEAVE_NO_ERROR;
     nl::Weave::PersistedCounter counter;
-    const char *testKey = "testcounter";
+    const char * testKey = "testcounter";
     char testValue[WEAVE_CONFIG_PERSISTED_STORAGE_MAX_VALUE_LENGTH];
     uint64_t value = 0;
 
@@ -178,29 +175,17 @@ static void CheckWriteNextCounterStart(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Suite that lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("Out of box Test", CheckOOB),
-    NL_TEST_DEF("Reboot Test", CheckReboot),
-    NL_TEST_DEF("Write Next Counter Start Test", CheckWriteNextCounterStart),
+static const nlTest sTests[] = { NL_TEST_DEF("Out of box Test", CheckOOB), NL_TEST_DEF("Reboot Test", CheckReboot),
+                                 NL_TEST_DEF("Write Next Counter Start Test", CheckWriteNextCounterStart),
 
-    NL_TEST_SENTINEL()
-};
+                                 NL_TEST_SENTINEL() };
 
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Test persisted counter API.  Without any options, the program invokes a suite of local tests.\n");
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Test persisted counter API.  Without any options, the program invokes a suite of local tests.\n"
-);
+static OptionSet * gOptionSets[] = { &gHelpOptions, NULL };
 
-static OptionSet *gOptionSets[] =
-{
-    &gHelpOptions,
-    NULL
-};
-
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     TestPersistedCounterContext context;
 
@@ -210,12 +195,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    nlTestSuite theSuite = {
-        "weave-persisted-storage",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-persisted-storage", &sTests[0], TestSetup, TestTeardown };
 
     // Generate machine-readable, comma-separated value (CSV) output.
     nl_test_set_output_style(OUTPUT_CSV);

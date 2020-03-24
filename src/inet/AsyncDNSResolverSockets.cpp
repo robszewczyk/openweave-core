@@ -48,7 +48,7 @@ namespace Inet {
  *                                           successful.
  *  @retval other appropriate POSIX network or OS error.
  */
-INET_ERROR AsyncDNSResolverSockets::Init(InetLayer *aInet)
+INET_ERROR AsyncDNSResolverSockets::Init(InetLayer * aInet)
 {
     INET_ERROR err = INET_NO_ERROR;
     int pthreadErr;
@@ -135,23 +135,23 @@ INET_ERROR AsyncDNSResolverSockets::Shutdown(void)
  *                                          successfully.
  *
  */
-INET_ERROR AsyncDNSResolverSockets::PrepareDNSResolver(DNSResolver &resolver, const char *hostName, uint16_t hostNameLen,
-                                                       uint8_t options, uint8_t maxAddrs, IPAddress *addrArray,
-                                                       DNSResolver::OnResolveCompleteFunct onComplete, void *appState)
+INET_ERROR AsyncDNSResolverSockets::PrepareDNSResolver(DNSResolver & resolver, const char * hostName, uint16_t hostNameLen,
+                                                       uint8_t options, uint8_t maxAddrs, IPAddress * addrArray,
+                                                       DNSResolver::OnResolveCompleteFunct onComplete, void * appState)
 {
     INET_ERROR err = INET_NO_ERROR;
 
     memcpy(resolver.asyncHostNameBuf, hostName, hostNameLen);
     resolver.asyncHostNameBuf[hostNameLen] = 0;
-    resolver.MaxAddrs = maxAddrs;
-    resolver.NumAddrs = 0;
-    resolver.DNSOptions = options;
-    resolver.AddrArray = addrArray;
-    resolver.AppState = appState;
-    resolver.OnComplete = onComplete;
-    resolver.asyncDNSResolveResult = INET_NO_ERROR;
-    resolver.mState = DNSResolver::kState_Active;
-    resolver.pNextAsyncDNSResolver = NULL;
+    resolver.MaxAddrs                      = maxAddrs;
+    resolver.NumAddrs                      = 0;
+    resolver.DNSOptions                    = options;
+    resolver.AddrArray                     = addrArray;
+    resolver.AppState                      = appState;
+    resolver.OnComplete                    = onComplete;
+    resolver.asyncDNSResolveResult         = INET_NO_ERROR;
+    resolver.mState                        = DNSResolver::kState_Active;
+    resolver.pNextAsyncDNSResolver         = NULL;
 
     return err;
 }
@@ -168,7 +168,7 @@ INET_ERROR AsyncDNSResolverSockets::PrepareDNSResolver(DNSResolver &resolver, co
  *  @retval other appropriate POSIX network or OS error.
  *
  */
-INET_ERROR AsyncDNSResolverSockets::EnqueueRequest(DNSResolver &resolver)
+INET_ERROR AsyncDNSResolverSockets::EnqueueRequest(DNSResolver & resolver)
 {
     INET_ERROR err = INET_NO_ERROR;
     int pthreadErr;
@@ -201,7 +201,7 @@ INET_ERROR AsyncDNSResolverSockets::EnqueueRequest(DNSResolver &resolver)
  * Make the worker thread block if there is no item in the queue.
  *
  */
-INET_ERROR AsyncDNSResolverSockets::DequeueRequest(DNSResolver **outResolver)
+INET_ERROR AsyncDNSResolverSockets::DequeueRequest(DNSResolver ** outResolver)
 {
     INET_ERROR err = INET_NO_ERROR;
     int pthreadErr;
@@ -209,8 +209,7 @@ INET_ERROR AsyncDNSResolverSockets::DequeueRequest(DNSResolver **outResolver)
     AsyncMutexLock();
 
     // block until there is work to do or we detect a shutdown
-    while ( (mAsyncDNSQueueHead == NULL) &&
-            (mInet->State == InetLayer::kState_Initialized) )
+    while ((mAsyncDNSQueueHead == NULL) && (mInet->State == InetLayer::kState_Initialized))
     {
         pthreadErr = pthread_cond_wait(&mAsyncDNSCondVar, &mAsyncDNSMutex);
         VerifyOrDie(pthreadErr == 0);
@@ -246,7 +245,7 @@ INET_ERROR AsyncDNSResolverSockets::DequeueRequest(DNSResolver **outResolver)
  *
  *  @param[in]    resolver   A reference to the DNSResolver object.
  */
-INET_ERROR AsyncDNSResolverSockets::Cancel(DNSResolver &resolver)
+INET_ERROR AsyncDNSResolverSockets::Cancel(DNSResolver & resolver)
 {
     INET_ERROR err = INET_NO_ERROR;
 
@@ -259,17 +258,18 @@ INET_ERROR AsyncDNSResolverSockets::Cancel(DNSResolver &resolver)
     return err;
 }
 
-void AsyncDNSResolverSockets::UpdateDNSResult(DNSResolver &resolver, struct addrinfo *inLookupRes)
+void AsyncDNSResolverSockets::UpdateDNSResult(DNSResolver & resolver, struct addrinfo * inLookupRes)
 {
     resolver.NumAddrs = 0;
 
-    for (struct addrinfo *addr = inLookupRes; addr != NULL && resolver.NumAddrs < resolver.MaxAddrs; addr = addr->ai_next, resolver.NumAddrs++)
+    for (struct addrinfo * addr = inLookupRes; addr != NULL && resolver.NumAddrs < resolver.MaxAddrs;
+         addr                   = addr->ai_next, resolver.NumAddrs++)
     {
         resolver.AddrArray[resolver.NumAddrs] = IPAddress::FromSockAddr(*addr->ai_addr);
     }
 }
 
-void AsyncDNSResolverSockets::Resolve(DNSResolver &resolver)
+void AsyncDNSResolverSockets::Resolve(DNSResolver & resolver)
 {
     struct addrinfo gaiHints;
     struct addrinfo * gaiResults = NULL;
@@ -298,9 +298,9 @@ void AsyncDNSResolverSockets::Resolve(DNSResolver &resolver)
 }
 
 /* Event handler function for asynchronous DNS notification */
-void  AsyncDNSResolverSockets::DNSResultEventHandler (Weave::System::Layer* aLayer, void* aAppState, Weave::System::Error aError)
+void AsyncDNSResolverSockets::DNSResultEventHandler(Weave::System::Layer * aLayer, void * aAppState, Weave::System::Error aError)
 {
-    DNSResolver *resolver = static_cast<DNSResolver *>(aAppState);
+    DNSResolver * resolver = static_cast<DNSResolver *>(aAppState);
 
     if (resolver)
     {
@@ -308,24 +308,24 @@ void  AsyncDNSResolverSockets::DNSResultEventHandler (Weave::System::Layer* aLay
     }
 }
 
-void AsyncDNSResolverSockets::NotifyWeaveThread(DNSResolver *resolver)
+void AsyncDNSResolverSockets::NotifyWeaveThread(DNSResolver * resolver)
 {
     // Post work item via Timer Event for the Weave thread
-    Weave::System::Layer& lSystemLayer = resolver->SystemLayer();
+    Weave::System::Layer & lSystemLayer = resolver->SystemLayer();
 
     WeaveLogDetail(Inet, "Posting DNS completion event to Weave thread.");
     lSystemLayer.ScheduleWork(AsyncDNSResolverSockets::DNSResultEventHandler, resolver);
 }
 
-void *AsyncDNSResolverSockets::AsyncDNSThreadRun(void *args)
+void * AsyncDNSResolverSockets::AsyncDNSThreadRun(void * args)
 {
 
-    INET_ERROR err = INET_NO_ERROR;
-    AsyncDNSResolverSockets *asyncResolver = static_cast<AsyncDNSResolverSockets*>(args);
+    INET_ERROR err                          = INET_NO_ERROR;
+    AsyncDNSResolverSockets * asyncResolver = static_cast<AsyncDNSResolverSockets *>(args);
 
     while (true)
     {
-        DNSResolver *request = NULL;
+        DNSResolver * request = NULL;
 
         // Dequeue a DNSResolver for resolution. This function would block until there
         // is an item in the queue or shutdown has been called.

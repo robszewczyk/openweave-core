@@ -154,7 +154,7 @@ WEAVE_ERROR WirelessRegConfig::Decode(TLVReader & reader)
             VerifyOrExit(reader.GetType() == kTLVType_UTF8String, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
             VerifyOrExit(!IsRegDomainPresent(), err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
             VerifyOrExit(reader.GetLength() == sizeof(RegDomain.Code), err = WEAVE_ERROR_INVALID_ARGUMENT);
-            err = reader.GetBytes((uint8_t *)RegDomain.Code, sizeof(WirelessRegDomain::Code));
+            err = reader.GetBytes((uint8_t *) RegDomain.Code, sizeof(WirelessRegDomain::Code));
             SuccessOrExit(err);
             break;
 
@@ -177,7 +177,8 @@ WEAVE_ERROR WirelessRegConfig::Decode(TLVReader & reader)
                 VerifyOrExit(NumSupportedRegDomains < maxSupportedRegDomains, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
                 VerifyOrExit(reader.GetType() == kTLVType_UTF8String, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
                 VerifyOrExit(reader.GetLength() == sizeof(RegDomain.Code), err = WEAVE_ERROR_INVALID_ARGUMENT);
-                err = reader.GetBytes((uint8_t *)SupportedRegDomains[NumSupportedRegDomains].Code, sizeof(WirelessRegDomain::Code));
+                err =
+                    reader.GetBytes((uint8_t *) SupportedRegDomains[NumSupportedRegDomains].Code, sizeof(WirelessRegDomain::Code));
                 SuccessOrExit(err);
                 VerifyOrExit(!SupportedRegDomains[NumSupportedRegDomains].IsNull(), err = WEAVE_ERROR_INVALID_ARGUMENT);
                 NumSupportedRegDomains++;
@@ -225,14 +226,13 @@ WEAVE_ERROR WirelessRegConfig::DecodeInPlace(PacketBuffer * buf)
     // the packet buffer, overwriting the encoded config data.  Because the encoded size
     // of the array is always larger than the decoded size, writing the array will never
     // disrupt the reading of the encoded config data.
-    SupportedRegDomains = reinterpret_cast<WirelessRegDomain *>(buf->Start());
+    SupportedRegDomains    = reinterpret_cast<WirelessRegDomain *>(buf->Start());
     NumSupportedRegDomains = static_cast<uint16_t>(buf->MaxDataLength() / sizeof(WirelessRegDomain));
 
     reader.Init(buf);
 
     return Decode(reader);
 }
-
 
 } // namespace NetworkProvisioning
 } // namespace Profiles

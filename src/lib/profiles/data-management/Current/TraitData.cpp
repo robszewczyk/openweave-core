@@ -1167,24 +1167,15 @@ void TraitDataSink::OnSetDataEvent(SetDataEventType aEventType, PropertyPathHand
 
     switch (aEventType)
     {
-    case kSetDataEvent_DictionaryReplaceBegin:
-        event = kEventDictionaryReplaceBegin;
-        break;
+    case kSetDataEvent_DictionaryReplaceBegin: event = kEventDictionaryReplaceBegin; break;
 
-    case kSetDataEvent_DictionaryReplaceEnd:
-        event = kEventDictionaryReplaceEnd;
-        break;
+    case kSetDataEvent_DictionaryReplaceEnd: event = kEventDictionaryReplaceEnd; break;
 
-    case kSetDataEvent_DictionaryItemModifyBegin:
-        event = kEventDictionaryItemModifyBegin;
-        break;
+    case kSetDataEvent_DictionaryItemModifyBegin: event = kEventDictionaryItemModifyBegin; break;
 
-    case kSetDataEvent_DictionaryItemModifyEnd:
-        event = kEventDictionaryItemModifyEnd;
-        break;
+    case kSetDataEvent_DictionaryItemModifyEnd: event = kEventDictionaryItemModifyEnd; break;
 
-    default:
-        return;
+    default: return;
     };
 
     OnEvent(event, &aHandle);
@@ -1566,24 +1557,15 @@ void TraitUpdatableDataSource::OnSetDataEvent(SetDataEventType aEventType, Prope
 
     switch (aEventType)
     {
-    case kSetDataEvent_DictionaryReplaceBegin:
-        event = kEventDictionaryReplaceBegin;
-        break;
+    case kSetDataEvent_DictionaryReplaceBegin: event = kEventDictionaryReplaceBegin; break;
 
-    case kSetDataEvent_DictionaryReplaceEnd:
-        event = kEventDictionaryReplaceEnd;
-        break;
+    case kSetDataEvent_DictionaryReplaceEnd: event = kEventDictionaryReplaceEnd; break;
 
-    case kSetDataEvent_DictionaryItemModifyBegin:
-        event = kEventDictionaryItemModifyBegin;
-        break;
+    case kSetDataEvent_DictionaryItemModifyBegin: event = kEventDictionaryItemModifyBegin; break;
 
-    case kSetDataEvent_DictionaryItemModifyEnd:
-        event = kEventDictionaryItemModifyEnd;
-        break;
+    case kSetDataEvent_DictionaryItemModifyEnd: event = kEventDictionaryItemModifyEnd; break;
 
-    default:
-        return;
+    default: return;
     };
 
     OnEvent(event, &aHandle);

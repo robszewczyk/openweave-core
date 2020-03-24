@@ -22,7 +22,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <vector>
 
@@ -42,49 +41,51 @@ using namespace nl::Weave::Profiles::Security::PASE;
 using System::PacketBuffer;
 
 #define TOOL_NAME "TestPASE"
-const char * INITIATOR_STEP_1 = "InitiatorStep1";
+const char * INITIATOR_STEP_1      = "InitiatorStep1";
 const char * RESPONDER_RECONFIGURE = "ResponderReconfigure";
-const char * RESPONDER_STEP_1 = "ResponderStep1";
-const char * RESPONDER_STEP_2 = "ResponderStep2";
-const char * INITIATOR_STEP_2 = "InitiatorStep2";
+const char * RESPONDER_STEP_1      = "ResponderStep1";
+const char * RESPONDER_STEP_2      = "ResponderStep2";
+const char * INITIATOR_STEP_2      = "InitiatorStep2";
 const char * RESPONDER_KEY_CONFIRM = "ResponderKeyConfirm";
 
-#define VerifyOrQuit(TST, MSG) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        exit(-1); \
-    } \
-} while (0)
+#define VerifyOrQuit(TST, MSG)                                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrQuit(ERR, MSG) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        fputs(ErrorStr(ERR), stderr); \
-        fputs("\n", stderr); \
-        exit(-1); \
-    } \
-} while (0)
+#define SuccessOrQuit(ERR, MSG)                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            fputs(ErrorStr(ERR), stderr);                                                                                          \
+            fputs("\n", stderr);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-void MessageMutator::MutateMessage(const char *msgName, PacketBuffer *msgBuf) { }
+void MessageMutator::MutateMessage(const char * msgName, PacketBuffer * msgBuf) { }
 
 static MessageMutator gNullMutator;
 
-MessageExternalFuzzer::MessageExternalFuzzer(const char *msgType)
+MessageExternalFuzzer::MessageExternalFuzzer(const char * msgType)
 {
-    mMsgType = msgType;
+    mMsgType    = msgType;
     mSaveCorpus = false;
 }
-void MessageExternalFuzzer::MutateMessage(const char *msgType, PacketBuffer *msgBuf)
+void MessageExternalFuzzer::MutateMessage(const char * msgType, PacketBuffer * msgBuf)
 {
     if (strcmp(msgType, mMsgType) == 0)
     {
-        uint8_t *msgStart = msgBuf->Start();
+        uint8_t * msgStart = msgBuf->Start();
         if (mSaveCorpus)
         {
             MessageExternalFuzzer::SaveCorpus(msgStart, msgBuf->DataLength(), mMsgType);
@@ -94,76 +95,143 @@ void MessageExternalFuzzer::MutateMessage(const char *msgType, PacketBuffer *msg
     }
 }
 
-void MessageExternalFuzzer::SaveCorpus(const uint8_t *inBuf, size_t size, const char *fileName)
+void MessageExternalFuzzer::SaveCorpus(const uint8_t * inBuf, size_t size, const char * fileName)
 {
-    FILE* file = fopen(fileName, "wb+" );
+    FILE * file = fopen(fileName, "wb+");
     VerifyOrQuit(file != NULL, "Could not open file");
     VerifyOrQuit((fwrite(inBuf, 1, size, file) == size), "Could not write corpus file.");
     fclose(file);
 }
 
-MessageExternalFuzzer& MessageExternalFuzzer::SaveCorpusFile(bool val) { mSaveCorpus = val; return *this; }
-
-MessageExternalFuzzer& MessageExternalFuzzer::FuzzInput(const uint8_t *val, size_t size) { mFuzzInput = val; mFuzzInputSize = size; return *this; }
-
-//Start PASEEngineTest Initialization
-PASEEngineTest::PASEEngineTest(const char *testName)
+MessageExternalFuzzer & MessageExternalFuzzer::SaveCorpusFile(bool val)
 {
-    mTestName = testName;
+    mSaveCorpus = val;
+    return *this;
+}
+
+MessageExternalFuzzer & MessageExternalFuzzer::FuzzInput(const uint8_t * val, size_t size)
+{
+    mFuzzInput     = val;
+    mFuzzInputSize = size;
+    return *this;
+}
+
+// Start PASEEngineTest Initialization
+PASEEngineTest::PASEEngineTest(const char * testName)
+{
+    mTestName       = testName;
     mProposedConfig = mExpectedConfig = kPASEConfig_Unspecified;
-    mInitPW = mRespPW = "TestPassword";
-    mInitiatorAllowedConfigs = mResponderAllowedConfigs = kPASEConfig_Config1|kPASEConfig_Config4;
-    mExpectReconfig = false;
-    mForceRepeatedReconfig = false;
+    mInitPW = mRespPW        = "TestPassword";
+    mInitiatorAllowedConfigs = mResponderAllowedConfigs = kPASEConfig_Config1 | kPASEConfig_Config4;
+    mExpectReconfig                                     = false;
+    mForceRepeatedReconfig                              = false;
     memset(mExpectedErrors, 0, sizeof(mExpectedErrors));
-    mMutator = &gNullMutator;
+    mMutator        = &gNullMutator;
     mLogMessageData = false;
 }
 
-const char *PASEEngineTest::TestName() const { return mTestName; }
+const char * PASEEngineTest::TestName() const
+{
+    return mTestName;
+}
 
-uint32_t PASEEngineTest::ProposedConfig() const { return mProposedConfig; }
-PASEEngineTest& PASEEngineTest::ProposedConfig(uint32_t val) { mProposedConfig = val; return *this; }
+uint32_t PASEEngineTest::ProposedConfig() const
+{
+    return mProposedConfig;
+}
+PASEEngineTest & PASEEngineTest::ProposedConfig(uint32_t val)
+{
+    mProposedConfig = val;
+    return *this;
+}
 
-uint32_t PASEEngineTest::InitiatorAllowedConfigs() const { return mInitiatorAllowedConfigs; }
-PASEEngineTest& PASEEngineTest::InitiatorAllowedConfigs(uint32_t val) { mInitiatorAllowedConfigs = val; return *this; }
+uint32_t PASEEngineTest::InitiatorAllowedConfigs() const
+{
+    return mInitiatorAllowedConfigs;
+}
+PASEEngineTest & PASEEngineTest::InitiatorAllowedConfigs(uint32_t val)
+{
+    mInitiatorAllowedConfigs = val;
+    return *this;
+}
 
-uint32_t PASEEngineTest::ResponderAllowedConfigs() const { return mResponderAllowedConfigs; }
-PASEEngineTest& PASEEngineTest::ResponderAllowedConfigs(uint32_t val) { mResponderAllowedConfigs = val; return *this; }
+uint32_t PASEEngineTest::ResponderAllowedConfigs() const
+{
+    return mResponderAllowedConfigs;
+}
+PASEEngineTest & PASEEngineTest::ResponderAllowedConfigs(uint32_t val)
+{
+    mResponderAllowedConfigs = val;
+    return *this;
+}
 
-const char* PASEEngineTest::InitiatorPassword() const { return mInitPW; }
-PASEEngineTest& PASEEngineTest::InitiatorPassword(const char* val) { mInitPW = val; return *this; }
+const char * PASEEngineTest::InitiatorPassword() const
+{
+    return mInitPW;
+}
+PASEEngineTest & PASEEngineTest::InitiatorPassword(const char * val)
+{
+    mInitPW = val;
+    return *this;
+}
 
-const char* PASEEngineTest::ResponderPassword() const { return mRespPW; }
-PASEEngineTest& PASEEngineTest::ResponderPassword(const char* val) { mRespPW = val; return *this; }
+const char * PASEEngineTest::ResponderPassword() const
+{
+    return mRespPW;
+}
+PASEEngineTest & PASEEngineTest::ResponderPassword(const char * val)
+{
+    mRespPW = val;
+    return *this;
+}
 
-uint32_t PASEEngineTest::ExpectReconfig() const { return mExpectReconfig; }
-PASEEngineTest& PASEEngineTest::ExpectReconfig(uint32_t expectedConfig)
+uint32_t PASEEngineTest::ExpectReconfig() const
+{
+    return mExpectReconfig;
+}
+PASEEngineTest & PASEEngineTest::ExpectReconfig(uint32_t expectedConfig)
 {
     mExpectReconfig = true;
     mExpectedConfig = expectedConfig;
     return *this;
 }
-uint32_t PASEEngineTest::ExpectedConfig() const { return mExpectedConfig != kPASEConfig_Unspecified ? mExpectedConfig : mProposedConfig; }
+uint32_t PASEEngineTest::ExpectedConfig() const
+{
+    return mExpectedConfig != kPASEConfig_Unspecified ? mExpectedConfig : mProposedConfig;
+}
 
-bool PASEEngineTest::PerformReconfig() const { return mForceRepeatedReconfig; }
-PASEEngineTest& PASEEngineTest::PerformReconfig(bool val) { mForceRepeatedReconfig = val; return *this; }
+bool PASEEngineTest::PerformReconfig() const
+{
+    return mForceRepeatedReconfig;
+}
+PASEEngineTest & PASEEngineTest::PerformReconfig(bool val)
+{
+    mForceRepeatedReconfig = val;
+    return *this;
+}
 
-bool PASEEngineTest::ConfirmKey() const { return mConfirmKey; }
-PASEEngineTest& PASEEngineTest::ConfirmKey(bool val) { mConfirmKey = val; return *this; }
+bool PASEEngineTest::ConfirmKey() const
+{
+    return mConfirmKey;
+}
+PASEEngineTest & PASEEngineTest::ConfirmKey(bool val)
+{
+    mConfirmKey = val;
+    return *this;
+}
 
-PASEEngineTest& PASEEngineTest::ExpectError(WEAVE_ERROR err)
+PASEEngineTest & PASEEngineTest::ExpectError(WEAVE_ERROR err)
 {
     return ExpectError(NULL, err);
 }
 
-PASEEngineTest& PASEEngineTest::ExpectError(const char *opName, WEAVE_ERROR err)
+PASEEngineTest & PASEEngineTest::ExpectError(const char * opName, WEAVE_ERROR err)
 {
     for (size_t i = 0; i < kMaxExpectedErrors; i++)
     {
         if (mExpectedErrors[i].Error == WEAVE_NO_ERROR)
         {
-            mExpectedErrors[i].Error = err;
+            mExpectedErrors[i].Error  = err;
             mExpectedErrors[i].OpName = opName;
             break;
         }
@@ -172,7 +240,7 @@ PASEEngineTest& PASEEngineTest::ExpectError(const char *opName, WEAVE_ERROR err)
     return *this;
 }
 
-bool PASEEngineTest::IsExpectedError(const char *opName, WEAVE_ERROR err) const
+bool PASEEngineTest::IsExpectedError(const char * opName, WEAVE_ERROR err) const
 {
     for (size_t i = 0; i < kMaxExpectedErrors && mExpectedErrors[i].Error != WEAVE_NO_ERROR; i++)
     {
@@ -185,47 +253,61 @@ bool PASEEngineTest::IsExpectedError(const char *opName, WEAVE_ERROR err) const
     return false;
 }
 
-bool PASEEngineTest::IsSuccessExpected() const { return mExpectedErrors[0].Error == WEAVE_NO_ERROR; }
+bool PASEEngineTest::IsSuccessExpected() const
+{
+    return mExpectedErrors[0].Error == WEAVE_NO_ERROR;
+}
 
-PASEEngineTest& PASEEngineTest::Mutator(MessageMutator *mutator) { mMutator = mutator; return *this; }
+PASEEngineTest & PASEEngineTest::Mutator(MessageMutator * mutator)
+{
+    mMutator = mutator;
+    return *this;
+}
 
-bool PASEEngineTest::LogMessageData() const { return mLogMessageData; }
-PASEEngineTest& PASEEngineTest::LogMessageData(bool val) { mLogMessageData = val; return *this; }
+bool PASEEngineTest::LogMessageData() const
+{
+    return mLogMessageData;
+}
+PASEEngineTest & PASEEngineTest::LogMessageData(bool val)
+{
+    mLogMessageData = val;
+    return *this;
+}
 
-//private
-void PASEEngineTest::setAllowedResponderConfigs(WeavePASEEngine &responderEng)
+// private
+void PASEEngineTest::setAllowedResponderConfigs(WeavePASEEngine & responderEng)
 {
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
-        if (mResponderAllowedConfigs == kPASEConfig_Config0_TEST_ONLY)
-            responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig0Bit_TEST_ONLY;
-        else
+    if (mResponderAllowedConfigs == kPASEConfig_Config0_TEST_ONLY)
+        responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig0Bit_TEST_ONLY;
+    else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
         if (mResponderAllowedConfigs == kPASEConfig_Config1)
-            responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig1Bit;
-        else
+        responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig1Bit;
+    else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG2
         if (mResponderAllowedConfigs == kPASEConfig_Config2)
-            respEng.AllowedPASEConfigs = kPASEConfig_SupportConfig2Bit;
-        else
+        respEng.AllowedPASEConfigs = kPASEConfig_SupportConfig2Bit;
+    else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG3
         if (mResponderAllowedConfigs == kPASEConfig_Config3)
-            responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig3Bit;
-        else
+        responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig3Bit;
+    else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG4
         if (mResponderAllowedConfigs == kPASEConfig_Config4)
-            responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig4Bit;
-        else
+        responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig4Bit;
+    else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG5
         if (mResponderAllowedConfigs == kPASEConfig_Config5)
-            responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig5Bit;
-        else
+        responderEng.AllowedPASEConfigs = kPASEConfig_SupportConfig5Bit;
+    else
 #endif
-            responderEng.AllowedPASEConfigs = 0x0;
+        responderEng.AllowedPASEConfigs = 0x0;
 }
 
 enum
@@ -233,25 +315,25 @@ enum
     kMaxExpectedErrors = 32
 };
 
-//end PASEEngineTest Initialization
+// end PASEEngineTest Initialization
 void PASEEngineTest::Run()
 {
     WEAVE_ERROR err;
     WeavePASEEngine initiatorEng;
     WeavePASEEngine responderEng;
-    PacketBuffer *msgBuf = NULL;
-    PacketBuffer *msgBuf2 = NULL;
+    PacketBuffer * msgBuf  = NULL;
+    PacketBuffer * msgBuf2 = NULL;
     WeaveFabricState initFabricState;
     WeaveFabricState respFabricState;
-    const WeaveEncryptionKey *initiatorKey;
-    const WeaveEncryptionKey *responderKey;
+    const WeaveEncryptionKey * initiatorKey;
+    const WeaveEncryptionKey * responderKey;
 
-    uint64_t initNodeId = 1;
-    uint64_t respNodeId = 2;
+    uint64_t initNodeId   = 1;
+    uint64_t respNodeId   = 2;
     uint16_t sessionKeyId = sTestDefaultSessionKeyId;
-    uint16_t encType = kWeaveEncryptionType_AES128CTRSHA1;
-    uint16_t pwSrc = kPasswordSource_PairingCode;
-    bool expectSuccess = strcmp(mInitPW, mRespPW) == 0;
+    uint16_t encType      = kWeaveEncryptionType_AES128CTRSHA1;
+    uint16_t pwSrc        = kPasswordSource_PairingCode;
+    bool expectSuccess    = strcmp(mInitPW, mRespPW) == 0;
 
     if (LogMessageData())
     {
@@ -261,8 +343,8 @@ void PASEEngineTest::Run()
     initiatorEng.Init();
     err = initFabricState.Init();
     SuccessOrQuit(err, "initFabricState.Init failed\n");
-    initiatorEng.Pw = (const uint8_t *)mInitPW;
-    initiatorEng.PwLen = (uint16_t)strlen(mInitPW);
+    initiatorEng.Pw    = (const uint8_t *) mInitPW;
+    initiatorEng.PwLen = (uint16_t) strlen(mInitPW);
 
 onReconfig:
     responderEng.Init();
@@ -277,7 +359,8 @@ onReconfig:
     VerifyOrQuit(msgBuf != NULL, "PacketBuffer::New() failed");
 
     // Initiator generates and sends PASE Initiator Step 1 message.
-    err = initiatorEng.GenerateInitiatorStep1(msgBuf, ProposedConfig(), initNodeId, respNodeId, sessionKeyId, encType, pwSrc, &initFabricState, mConfirmKey);
+    err = initiatorEng.GenerateInitiatorStep1(msgBuf, ProposedConfig(), initNodeId, respNodeId, sessionKeyId, encType, pwSrc,
+                                              &initFabricState, mConfirmKey);
 
     if (IsExpectedError("Initiator:GenerateInitiatorStep1", err))
         goto onExpectedError;
@@ -306,12 +389,12 @@ onReconfig:
         // =========== Responder generates PASE ResponderReconfigMessage ==
         {
             msgBuf = PacketBuffer::New();
-            err = responderEng.GenerateResponderReconfigure(msgBuf);
+            err    = responderEng.GenerateResponderReconfigure(msgBuf);
             SuccessOrQuit(err, "WeavePASEEngine::GenerateResponderReconfigure failed\n");
             // Reset PASE Engines
             responderEng.Reset();
         }
-            // ========== Responder sends ResponderReconfig Message ============
+        // ========== Responder sends ResponderReconfig Message ============
         mMutator->MutateMessage(RESPONDER_RECONFIGURE, msgBuf);
 
         if (LogMessageData())
@@ -323,7 +406,7 @@ onReconfig:
         // =========== Initiator processes PASE ResponderReconfig =========
         {
             uint32_t tempProposedConfig = mProposedConfig;
-            err = initiatorEng.ProcessResponderReconfigure(msgBuf, mProposedConfig);
+            err                         = initiatorEng.ProcessResponderReconfigure(msgBuf, mProposedConfig);
             if (IsExpectedError("Initiator:ProcessResponderReconfigure", err))
             {
                 mProposedConfig = tempProposedConfig;
@@ -338,8 +421,9 @@ onReconfig:
         mExpectReconfig = false;
 
         goto onReconfig;
-
-    } else {
+    }
+    else
+    {
         VerifyOrQuit(err != WEAVE_ERROR_PASE_RECONFIGURE_REQUIRED, "Unexpected reconfig!");
     }
 
@@ -350,12 +434,12 @@ onReconfig:
     // =========== Responder Generates ResponderStep1 and ResponderStep2 ==
     {
         msgBuf = PacketBuffer::New();
-        err = responderEng.GenerateResponderStep1(msgBuf);
+        err    = responderEng.GenerateResponderStep1(msgBuf);
         SuccessOrQuit(err, "WeavePASEEngine::GenerateResponderStep1 failed\n");
 
         // Responder generates and sends PASE Responder Step 2 message.
         msgBuf2 = PacketBuffer::New();
-        err = responderEng.GenerateResponderStep2(msgBuf2);
+        err     = responderEng.GenerateResponderStep2(msgBuf2);
         SuccessOrQuit(err, "WeavePASEEngine::GenerateResponderStep2 failed\n");
     }
     // =========== Responder sends ResponderStep1 ==========================
@@ -398,7 +482,7 @@ onReconfig:
     // =========== Initator Generates InitatorStep2 ===========================
     {
         msgBuf = PacketBuffer::New();
-        err = initiatorEng.GenerateInitiatorStep2(msgBuf);
+        err    = initiatorEng.GenerateInitiatorStep2(msgBuf);
         SuccessOrQuit(err, "WeavePASEEngine::GenerateInitiatorStep2 failed\n");
     }
     //=========== Initator Sends InitatorStep2 ============================
@@ -424,7 +508,8 @@ onReconfig:
             SuccessOrQuit(err, "WeavePASEEngine::ProcessInitiatorStep2 failed\n");
         else if (mConfirmKey)
         {
-            VerifyOrQuit(err == WEAVE_ERROR_KEY_CONFIRMATION_FAILED, "Expected error from WeavePASEEngine::ProcessInitiatorStep2\n");
+            VerifyOrQuit(err == WEAVE_ERROR_KEY_CONFIRMATION_FAILED,
+                         "Expected error from WeavePASEEngine::ProcessInitiatorStep2\n");
             return;
         }
     }
@@ -434,7 +519,7 @@ onReconfig:
         // ========== Responder Forms ResponderKeyConfirm =================
         {
             msgBuf = PacketBuffer::New();
-            err = responderEng.GenerateResponderKeyConfirm(msgBuf);
+            err    = responderEng.GenerateResponderKeyConfirm(msgBuf);
             SuccessOrQuit(err, "WeavePASEEngine::GenerateResponderKeyConfirm failed\n");
         }
 
@@ -465,8 +550,10 @@ onReconfig:
     VerifyOrQuit(responderEng.State == WeavePASEEngine::kState_ResponderDone, "Responder state != Done\n");
 
     VerifyOrQuit(initiatorEng.SessionKeyId == responderEng.SessionKeyId, "Initiator SessionKeyId != Responder SessionKeyId\n");
-    VerifyOrQuit(initiatorEng.EncryptionType == responderEng.EncryptionType, "Initiator EncryptionType != Responder EncryptionType\n");
-    VerifyOrQuit(initiatorEng.PerformKeyConfirmation == responderEng.PerformKeyConfirmation, "Initiator SessionKeyId != Responder SessionKeyId\n");
+    VerifyOrQuit(initiatorEng.EncryptionType == responderEng.EncryptionType,
+                 "Initiator EncryptionType != Responder EncryptionType\n");
+    VerifyOrQuit(initiatorEng.PerformKeyConfirmation == responderEng.PerformKeyConfirmation,
+                 "Initiator SessionKeyId != Responder SessionKeyId\n");
 
     err = initiatorEng.GetSessionKey(initiatorKey);
     SuccessOrQuit(err, "WeavePASEEngine::GetSessionKey() failed\n");
@@ -474,9 +561,11 @@ onReconfig:
     err = responderEng.GetSessionKey(responderKey);
     SuccessOrQuit(err, "WeavePASEEngine::GetSessionKey() failed\n");
 
-    VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.DataKey, responderKey->AES128CTRSHA1.DataKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
+    VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.DataKey, responderKey->AES128CTRSHA1.DataKey,
+                        WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
                  "Data key mismatch\n");
-    VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.IntegrityKey, responderKey->AES128CTRSHA1.IntegrityKey, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
+    VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.IntegrityKey, responderKey->AES128CTRSHA1.IntegrityKey,
+                        WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
                  "Integrity key mismatch\n");
 
     // Shutdown the Initiator/Responder FabricState objects

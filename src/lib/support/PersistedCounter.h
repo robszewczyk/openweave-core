@@ -90,7 +90,7 @@ private:
      *
      *  @return true if incrementing aValue started a new epoch, false otherwise.
      */
-    bool GetNextValue(uint32_t &aValue);
+    bool GetNextValue(uint32_t & aValue);
 
     /**
      *  @brief
@@ -120,14 +120,14 @@ private:
      *
      *  @return Any error returned by a read from persistent storage.
      */
-    WEAVE_ERROR ReadStartValue(uint32_t &aStartValue);
+    WEAVE_ERROR ReadStartValue(uint32_t & aStartValue);
 
     nl::Weave::Platform::PersistedStorage::Key mId;
     uint32_t mStartingCounterValue;
     uint32_t mEpoch;
 };
 
-} // Weave
-} // nl
+} // namespace Weave
+} // namespace nl
 
 #endif // PERSISTED_COUNTER_H

@@ -33,7 +33,6 @@
 #include <weave/trait/security/UserNFCTokenMetadataTrait.h>
 #include <weave/trait/security/UserNFCTokensTrait.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -42,8 +41,9 @@ namespace UserNFCTokenManagementTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe10U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe10U
 };
 
 //
@@ -59,58 +59,64 @@ struct UserNFCTokenManagementEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xe10U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xe10U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct UserNFCTokenManagementEvent_array {
+struct UserNFCTokenManagementEvent_array
+{
     uint32_t num;
-    UserNFCTokenManagementEvent *buf;
+    UserNFCTokenManagementEvent * buf;
 };
-
 
 //
 // Commands
 //
 
-enum {
-    kTransferUserNFCTokenRequestId = 0x1,
-    kSetUserNFCTokenEnableStateRequestId = 0x2,
+enum
+{
+    kTransferUserNFCTokenRequestId        = 0x1,
+    kSetUserNFCTokenEnableStateRequestId  = 0x2,
     kAuthUserNFCTokenToStructureRequestId = 0x3,
 };
 
-enum TransferUserNFCTokenRequestParameters {
-    kTransferUserNFCTokenRequestParameter_TargetUserId = 1,
+enum TransferUserNFCTokenRequestParameters
+{
+    kTransferUserNFCTokenRequestParameter_TargetUserId  = 1,
     kTransferUserNFCTokenRequestParameter_TokenDeviceId = 2,
 };
 
-enum SetUserNFCTokenEnableStateRequestParameters {
+enum SetUserNFCTokenEnableStateRequestParameters
+{
     kSetUserNFCTokenEnableStateRequestParameter_TokenDeviceId = 1,
-    kSetUserNFCTokenEnableStateRequestParameter_Enabled = 2,
+    kSetUserNFCTokenEnableStateRequestParameter_Enabled       = 2,
 };
 
-enum AuthUserNFCTokenToStructureRequestParameters {
+enum AuthUserNFCTokenToStructureRequestParameters
+{
     kAuthUserNFCTokenToStructureRequestParameter_TokenDeviceId = 1,
-    kAuthUserNFCTokenToStructureRequestParameter_Authorized = 2,
-    kAuthUserNFCTokenToStructureRequestParameter_StructureId = 3,
+    kAuthUserNFCTokenToStructureRequestParameter_Authorized    = 2,
+    kAuthUserNFCTokenToStructureRequestParameter_StructureId   = 3,
 };
 
 //
 // Enums
 //
 
-enum NFCTokenEvent {
-    NFC_TOKEN_EVENT_PAIRED = 1,
-    NFC_TOKEN_EVENT_UNPAIRED = 2,
-    NFC_TOKEN_EVENT_STRUCTURE_AUTH = 3,
+enum NFCTokenEvent
+{
+    NFC_TOKEN_EVENT_PAIRED           = 1,
+    NFC_TOKEN_EVENT_UNPAIRED         = 2,
+    NFC_TOKEN_EVENT_STRUCTURE_AUTH   = 3,
     NFC_TOKEN_EVENT_STRUCTURE_UNAUTH = 4,
-    NFC_TOKEN_EVENT_TRANSFERRED = 5,
-    NFC_TOKEN_EVENT_DISABLED = 6,
-    NFC_TOKEN_EVENT_ENABLED = 7,
+    NFC_TOKEN_EVENT_TRANSFERRED      = 5,
+    NFC_TOKEN_EVENT_DISABLED         = 6,
+    NFC_TOKEN_EVENT_ENABLED          = 7,
 };
 
 } // namespace UserNFCTokenManagementTrait

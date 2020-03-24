@@ -56,60 +56,51 @@ using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::DataManagement;
 
 #define TOOL_NAME "TestWdmOneWayCommandSender"
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
 uint64_t DestNodeId;
-const char *DestAddr = NULL;
+const char * DestAddr = NULL;
 IPAddress DestIPAddr;
 uint16_t DestPort;
 InterfaceId DestIntf = INET_NULL_INTERFACEID; // only used for UDP
 
-const nl::Weave::Profiles::Time::timesync_t kCommandTimeoutMicroSecs = 3*nl::kMicrosecondsPerSecond;
+const nl::Weave::Profiles::Time::timesync_t kCommandTimeoutMicroSecs = 3 * nl::kMicrosecondsPerSecond;
 
 static void ParseDestAddress();
 
 static TestWdmOneWayCommandSender gWdmOneWayCommandSender;
 
-TestWdmOneWayCommandSender * TestWdmOneWayCommandSender::GetInstance ()
+TestWdmOneWayCommandSender * TestWdmOneWayCommandSender::GetInstance()
 {
     return &gWdmOneWayCommandSender;
 }
 
-TestWdmOneWayCommandSender::TestWdmOneWayCommandSender() :
-    mExchangeMgr(NULL),
-    mEcCommand(NULL),
-    mClientBinding(NULL)
-{
-}
+TestWdmOneWayCommandSender::TestWdmOneWayCommandSender() : mExchangeMgr(NULL), mEcCommand(NULL), mClientBinding(NULL) { }
 
-void TestWdmOneWayCommandSender::BindingEventCallback (void * const apAppState,
-                                                       const Binding::EventType aEvent,
-                                                       const Binding::InEventParam & aInParam,
-                                                       Binding::OutEventParam & aOutParam)
+void TestWdmOneWayCommandSender::BindingEventCallback(void * const apAppState, const Binding::EventType aEvent,
+                                                      const Binding::InEventParam & aInParam, Binding::OutEventParam & aOutParam)
 {
     switch (aEvent)
     {
 
-    default:
-        Binding::DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
+    default: Binding::DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
     }
 }
 
-WEAVE_ERROR TestWdmOneWayCommandSender::Init(WeaveExchangeManager *aExchangeMgr,
-                                             const IPAddress & destAddr,
+WEAVE_ERROR TestWdmOneWayCommandSender::Init(WeaveExchangeManager * aExchangeMgr, const IPAddress & destAddr,
                                              const uint64_t destNodeId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    mExchangeMgr = aExchangeMgr;
+    mExchangeMgr   = aExchangeMgr;
     mClientBinding = mExchangeMgr->NewBinding(BindingEventCallback, this);
     mClientBinding->BeginConfiguration()
-                    .Transport_UDP()
-                    .TargetAddress_IP(destAddr)
-                    .Target_NodeId(destNodeId)
-                    .Security_None()
-                    .PrepareBinding();
+        .Transport_UDP()
+        .TargetAddress_IP(destAddr)
+        .Target_NodeId(destNodeId)
+        .Security_None()
+        .PrepareBinding();
 
     return err;
 }
@@ -129,8 +120,8 @@ WEAVE_ERROR TestWdmOneWayCommandSender::Shutdown(void)
 
 WEAVE_ERROR TestWdmOneWayCommandSender::SendOneWayCommand(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msgBuf = PacketBuffer::New();
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = PacketBuffer::New();
 
     static uint32_t commandType = TEST_COMMAND_TYPE;
 
@@ -143,11 +134,11 @@ WEAVE_ERROR TestWdmOneWayCommandSender::SendOneWayCommand(void)
     err = mClientBinding->NewExchangeContext(mEcCommand);
     SuccessOrExit(err);
 
-    mEcCommand->AppState = this;
+    mEcCommand->AppState          = this;
     mEcCommand->OnMessageReceived = NULL;
     mEcCommand->OnResponseTimeout = NULL;
-    mEcCommand->OnSendError = NULL;
-    mEcCommand->OnAckRcvd = NULL;
+    mEcCommand->OnSendError       = NULL;
+    mEcCommand->OnAckRcvd         = NULL;
 
     {
         nl::Weave::TLV::TLVWriter writer;
@@ -161,7 +152,9 @@ WEAVE_ERROR TestWdmOneWayCommandSender::SendOneWayCommand(void)
         Path::Builder & path = onewayCommand.CreatePathBuilder();
 
         path.ProfileID(Schema::Nest::Test::Trait::TestATrait::kWeaveProfileId,
-                       SchemaVersionRange(TEST_SCHEMA_MAX_VER, TEST_SCHEMA_MIN_VER)).InstanceID(TEST_TRAIT_INSTANCE_ID).EndOfPath();
+                       SchemaVersionRange(TEST_SCHEMA_MAX_VER, TEST_SCHEMA_MIN_VER))
+            .InstanceID(TEST_TRAIT_INSTANCE_ID)
+            .EndOfPath();
 
         SuccessOrExit(path.GetError());
 
@@ -183,10 +176,11 @@ WEAVE_ERROR TestWdmOneWayCommandSender::SendOneWayCommand(void)
 
         // Add arguments here
         {
-            uint32_t dummyUInt = 7;
-            bool dummyBool = false;
+            uint32_t dummyUInt                = 7;
+            bool dummyBool                    = false;
             nl::Weave::TLV::TLVType dummyType = nl::Weave::TLV::kTLVType_NotSpecified;
-            err = writer.StartContainer(nl::Weave::TLV::ContextTag(CustomCommand::kCsTag_Argument), nl::Weave::TLV::kTLVType_Structure, dummyType);
+            err                               = writer.StartContainer(nl::Weave::TLV::ContextTag(CustomCommand::kCsTag_Argument),
+                                        nl::Weave::TLV::kTLVType_Structure, dummyType);
             SuccessOrExit(err);
 
             err = writer.Put(nl::Weave::TLV::ContextTag(1), dummyUInt);
@@ -198,15 +192,13 @@ WEAVE_ERROR TestWdmOneWayCommandSender::SendOneWayCommand(void)
             SuccessOrExit(err);
         }
 
-
         onewayCommand.EndOfCustomCommand();
         SuccessOrExit(err = onewayCommand.GetError());
 
         err = writer.Finalize();
         SuccessOrExit(err);
 
-        err = mEcCommand->SendMessage(nl::Weave::Profiles::kWeaveProfile_WDM, kMsgType_OneWayCommand,
-                                      msgBuf, 0);
+        err    = mEcCommand->SendMessage(nl::Weave::Profiles::kWeaveProfile_WDM, kMsgType_OneWayCommand, msgBuf, 0);
         msgBuf = NULL;
         SuccessOrExit(err);
     }
@@ -228,13 +220,9 @@ exit:
     return err;
 }
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "dest-addr",    kArgumentRequired, 'D' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "dest-addr", kArgumentRequired, 'D' }, { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -D, --dest-addr <host>[:<port>][%<interface>]\n"
     "       Send Echo Requests to a specific address rather than one\n"
     "       derived from the destination node id. <host> can be a hostname,\n"
@@ -245,36 +233,19 @@ static const char *const gToolOptionHelp =
     "\n"
     "       NOTE: When specifying a port with an IPv6 address, the IPv6 address\n"
     "       must be enclosed in brackets, e.g. [fd00:0:1:1::1]:11095.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n"
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Send WDM Oneway Commands.\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%<interface>]]\n" WEAVE_VERSION_STRING
+                                "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Send WDM Oneway Commands.\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWeaveSecurityMode,
-    &gCASEOptions,
-    &gGroupKeyEncOptions,
-    &gHelpOptions,
-    &gGeneralSecurityOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions, &gNetworkOptions,     &gWeaveNodeOptions, &gWeaveSecurityMode,
+                                         &gCASEOptions, &gGroupKeyEncOptions, &gHelpOptions,      &gGeneralSecurityOptions,
+                                         NULL };
 
 void ParseDestAddress()
 {
@@ -282,9 +253,9 @@ void ParseDestAddress()
     // parsing the destination node address for TCP connections.
 
     WEAVE_ERROR err;
-    const char *addr;
+    const char * addr;
     uint16_t addrLen;
-    const char *intfName;
+    const char * intfName;
     uint16_t intfNameLen;
 
     err = ParseHostPortAndInterface(DestAddr, strlen(DestAddr), addr, addrLen, DestPort, intfName, intfNameLen);
@@ -311,7 +282,7 @@ void ParseDestAddress()
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     InitToolCommon();
 
@@ -365,22 +336,18 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'D':
-        DestAddr = arg;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'D': DestAddr = arg; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -390,12 +357,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
             return false;
         }
 
-        const char *nodeId = argv[0];
-        char *p = (char *)strchr(nodeId, '@');
+        const char * nodeId = argv[0];
+        char * p            = (char *) strchr(nodeId, '@');
         if (p != NULL)
         {
-            *p = 0;
-            DestAddr = p+1;
+            *p       = 0;
+            DestAddr = p + 1;
         }
 
         if (!ParseNodeId(nodeId, DestNodeId))

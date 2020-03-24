@@ -453,8 +453,7 @@ EventProcessor::ProcessHeader(const EventHeader & inEventHeader, bool & outIsNew
             {
                 WeaveLogDetail(DataManagement,
                                "EventProcessor found gap for importance: %u (0x%" PRIx32 " -> 0x%" PRIx64 ") NodeId=0x%" PRIx64,
-                               inEventHeader.mImportance, mLargestEventId[index], inEventHeader.mId,
-                               inEventHeader.mSource);
+                               inEventHeader.mImportance, mLargestEventId[index], inEventHeader.mId, inEventHeader.mSource);
                 GapDetected(inEventHeader);
             }
 
@@ -504,8 +503,7 @@ exit:
     return err;
 }
 
-const event_id_t *
-EventProcessor::GetLargestEventIdList(size_t & outSize)
+const event_id_t * EventProcessor::GetLargestEventIdList(size_t & outSize)
 {
     outSize = sizeof(mLargestEventId) / sizeof(mLargestEventId[0]);
     return mLargestEventId;

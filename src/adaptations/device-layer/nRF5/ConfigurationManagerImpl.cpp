@@ -1,4 +1,4 @@
- /*
+/*
  *
  *    Copyright (c) 2018 Nest Labs, Inc.
  *    All rights reserved.
@@ -50,11 +50,9 @@ GroupKeyStoreImpl gGroupKeyStore;
 
 } // unnamed namespace
 
-
 /** Singleton instance of the ConfigurationManager implementation object.
  */
 ConfigurationManagerImpl ConfigurationManagerImpl::sInstance;
-
 
 WEAVE_ERROR ConfigurationManagerImpl::_Init()
 {
@@ -73,8 +71,8 @@ WEAVE_ERROR ConfigurationManagerImpl::_Init()
 
     {
         FactoryProvisioning factoryProv;
-        uint8_t * const kDeviceRAMStart = (uint8_t *)0x20000000;
-        uint8_t * const kDeviceRAMEnd = kDeviceRAMStart + (NRF_FICR->INFO.RAM * 1024) - 1;
+        uint8_t * const kDeviceRAMStart = (uint8_t *) 0x20000000;
+        uint8_t * const kDeviceRAMEnd   = kDeviceRAMStart + (NRF_FICR->INFO.RAM * 1024) - 1;
 
         // Scan device RAM for injected provisioning data and save to persistent storage if found.
         err = factoryProv.ProvisionDeviceFromRAM(kDeviceRAMStart, kDeviceRAMEnd);
@@ -95,7 +93,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor & deviceDesc)
+WEAVE_ERROR
+ConfigurationManagerImpl::_GetDeviceDescriptor(::nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor & deviceDesc)
 {
     WEAVE_ERROR err;
 
@@ -123,7 +122,8 @@ void ConfigurationManagerImpl::_InitiateFactoryReset()
     PlatformMgr().ScheduleWork(DoFactoryReset);
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_ReadPersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey, uint32_t & value)
+WEAVE_ERROR ConfigurationManagerImpl::_ReadPersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey,
+                                                                 uint32_t & value)
 {
     WEAVE_ERROR err;
     uint16_t recordKey = persistedStorageKey + kPersistedCounterRecordKeyBase;
@@ -141,7 +141,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ConfigurationManagerImpl::_WritePersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey, uint32_t value)
+WEAVE_ERROR ConfigurationManagerImpl::_WritePersistedStorageValue(::nl::Weave::Platform::PersistedStorage::Key persistedStorageKey,
+                                                                  uint32_t value)
 {
     WEAVE_ERROR err;
     uint16_t recordKey = persistedStorageKey + kPersistedCounterRecordKeyBase;

@@ -35,8 +35,8 @@ namespace Weave {
 namespace System {
 class PacketBuffer;
 }
-}
-}
+} // namespace Weave
+} // namespace nl
 
 namespace nl {
 namespace Weave {
@@ -57,7 +57,7 @@ enum PublicPlatformSpecificEventTypes
  */
 enum InternalPlatformSpecificEventTypes
 {
-    kSoftDeviceBLEEvent                     = kRange_InternalPlatformSpecific,
+    kSoftDeviceBLEEvent = kRange_InternalPlatformSpecific,
     kWoBLERXCharWriteEvent,
     kWoBLEOutOfBuffersEvent,
 };
@@ -88,6 +88,5 @@ struct WeaveDevicePlatformEvent final
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_DEVICE_PLATFORM_EVENT_H

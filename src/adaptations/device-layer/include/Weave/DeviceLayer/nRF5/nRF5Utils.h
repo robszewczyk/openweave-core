@@ -37,5 +37,4 @@ bool FormatNRFError(char * buf, uint16_t bufSize, int32_t err);
 } // namespace Weave
 } // namespace nl
 
-
 #endif // NRF5_UTILS_H

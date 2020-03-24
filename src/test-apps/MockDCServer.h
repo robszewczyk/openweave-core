@@ -34,17 +34,17 @@
 #include <Weave/Profiles/network-provisioning/NetworkInfo.h>
 
 using nl::Inet::IPAddress;
-using nl::Weave::Profiles::NetworkProvisioning::NetworkInfo;
 using nl::Weave::WeaveExchangeManager;
-using nl::Weave::Profiles::DeviceControl::DeviceControlServer;
 using nl::Weave::Profiles::DeviceControl::DeviceControlDelegate;
+using nl::Weave::Profiles::DeviceControl::DeviceControlServer;
+using nl::Weave::Profiles::NetworkProvisioning::NetworkInfo;
 
-class MockDeviceControlServer: private DeviceControlServer, private DeviceControlDelegate
+class MockDeviceControlServer : private DeviceControlServer, private DeviceControlDelegate
 {
 public:
     MockDeviceControlServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
 protected:
@@ -61,8 +61,8 @@ protected:
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
     virtual WEAVE_ERROR OnSystemTestStarted(uint32_t profileId, uint32_t testId);
     virtual WEAVE_ERROR OnSystemTestStopped();
-    virtual void EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result);
     virtual bool IsPairedToAccount() const;
 };
 

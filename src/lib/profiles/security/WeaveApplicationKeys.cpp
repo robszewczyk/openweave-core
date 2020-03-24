@@ -74,7 +74,7 @@ const uint8_t kWeaveAppIntermediateKeyDiversifier[] = { 0xBC, 0xAA, 0x95, 0xAD }
  *                               key store APIs.
  *
  */
-WEAVE_ERROR GetAppGroupMasterKeyId(uint32_t groupGlobalId, GroupKeyStoreBase *groupKeyStore, uint32_t& groupMasterKeyId)
+WEAVE_ERROR GetAppGroupMasterKeyId(uint32_t groupGlobalId, GroupKeyStoreBase * groupKeyStore, uint32_t & groupMasterKeyId)
 {
     WEAVE_ERROR err;
     uint32_t groupMasterKeyIds[WEAVE_CONFIG_MAX_APPLICATION_GROUPS];
@@ -85,7 +85,8 @@ WEAVE_ERROR GetAppGroupMasterKeyId(uint32_t groupGlobalId, GroupKeyStoreBase *gr
     VerifyOrExit(groupKeyStore != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Enumerate all application group master keys.
-    err = groupKeyStore->EnumerateGroupKeys(WeaveKeyId::kType_AppGroupMasterKey, groupMasterKeyIds, sizeof(groupMasterKeyIds) / sizeof(uint32_t), groupMasterKeyCount);
+    err = groupKeyStore->EnumerateGroupKeys(WeaveKeyId::kType_AppGroupMasterKey, groupMasterKeyIds,
+                                            sizeof(groupMasterKeyIds) / sizeof(uint32_t), groupMasterKeyCount);
     SuccessOrExit(err);
 
     for (int i = 0; i < groupMasterKeyCount; i++)
@@ -116,7 +117,10 @@ WEAVE_ERROR LogGroupKeys(GroupKeyStoreBase * groupKeyStore)
 
     WEAVE_ERROR err;
     Profiles::Security::AppKeys::WeaveGroupKey key;
-    enum { kKeyIdListSize = 32 };
+    enum
+    {
+        kKeyIdListSize = 32
+    };
     uint32_t keyIds[kKeyIdListSize];
     uint8_t keyCount;
 
@@ -153,11 +157,11 @@ WEAVE_ERROR LogGroupKeys(GroupKeyStoreBase * groupKeyStore)
         }
 
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
-        WeaveLogProgress(SecurityManager, "  Key %" PRId8 ": id 0x%08" PRIX32 " (%s), len %" PRId8 ", data 0x%02" PRIX8 "...%s",
-                i, key.KeyId, WeaveKeyId::DescribeKey(key.KeyId), key.KeyLen, key.Key[0], extraKeyInfo);
+        WeaveLogProgress(SecurityManager, "  Key %" PRId8 ": id 0x%08" PRIX32 " (%s), len %" PRId8 ", data 0x%02" PRIX8 "...%s", i,
+                         key.KeyId, WeaveKeyId::DescribeKey(key.KeyId), key.KeyLen, key.Key[0], extraKeyInfo);
 #else
-        WeaveLogProgress(SecurityManager, "  Key %" PRId8 ": id 0x%08" PRIX32 " (%s), len %" PRId8 "%s",
-                i, key.KeyId, WeaveKeyId::DescribeKey(key.KeyId), key.KeyLen, extraKeyInfo);
+        WeaveLogProgress(SecurityManager, "  Key %" PRId8 ": id 0x%08" PRIX32 " (%s), len %" PRId8 "%s", i, key.KeyId,
+                         WeaveKeyId::DescribeKey(key.KeyId), key.KeyLen, extraKeyInfo);
 #endif
     }
 
@@ -176,7 +180,7 @@ exit:
  */
 void GroupKeyStoreBase::Init(void)
 {
-    LastUsedEpochKeyId = WeaveKeyId::kNone;
+    LastUsedEpochKeyId    = WeaveKeyId::kNone;
     NextEpochKeyStartTime = UINT32_MAX;
 }
 
@@ -189,7 +193,7 @@ void GroupKeyStoreBase::Init(void)
  */
 void GroupKeyStoreBase::OnEpochKeysChange(void)
 {
-    LastUsedEpochKeyId = WeaveKeyId::kNone;
+    LastUsedEpochKeyId    = WeaveKeyId::kNone;
     NextEpochKeyStartTime = UINT32_MAX;
 }
 
@@ -206,12 +210,12 @@ void GroupKeyStoreBase::OnEpochKeysChange(void)
  *                                   an accurate time source.
  * @retval other                     Other Weave or platform error codes.
  */
-WEAVE_ERROR GroupKeyStoreBase::GetCurrentUTCTime(uint32_t& utcTime)
+WEAVE_ERROR GroupKeyStoreBase::GetCurrentUTCTime(uint32_t & utcTime)
 {
     WEAVE_ERROR err;
     uint64_t utcTimeMS;
 
-    err = System::Layer::GetClock_RealTimeMS(utcTimeMS);
+    err     = System::Layer::GetClock_RealTimeMS(utcTimeMS);
     utcTime = ::nl::Weave::Platform::DivideBy1000(utcTimeMS);
     return err;
 }
@@ -234,7 +238,7 @@ WEAVE_ERROR GroupKeyStoreBase::GetCurrentUTCTime(uint32_t& utcTime)
  *                               key store APIs.
  *
  */
-WEAVE_ERROR GroupKeyStoreBase::GetCurrentAppKeyId(uint32_t keyId, uint32_t& curKeyId)
+WEAVE_ERROR GroupKeyStoreBase::GetCurrentAppKeyId(uint32_t keyId, uint32_t & curKeyId)
 {
     WEAVE_ERROR err;
     uint32_t epochKeyIds[WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS];
@@ -260,7 +264,7 @@ WEAVE_ERROR GroupKeyStoreBase::GetCurrentAppKeyId(uint32_t keyId, uint32_t& curK
         if (err != WEAVE_NO_ERROR)
         {
             LastUsedEpochKeyId = WeaveKeyId::kNone;
-            err = WEAVE_NO_ERROR;
+            err                = WEAVE_NO_ERROR;
         }
     }
 
@@ -271,7 +275,7 @@ WEAVE_ERROR GroupKeyStoreBase::GetCurrentAppKeyId(uint32_t keyId, uint32_t& curK
     if (err == WEAVE_SYSTEM_ERROR_NOT_SUPPORTED || err == WEAVE_SYSTEM_ERROR_REAL_TIME_NOT_SYNCED)
     {
         curUTCTime = 0;
-        err = WEAVE_NO_ERROR;
+        err        = WEAVE_NO_ERROR;
     }
     SuccessOrExit(err);
 
@@ -357,7 +361,7 @@ exit:
  *                               key store APIs.
  *
  */
-WEAVE_ERROR GroupKeyStoreBase::GetGroupKey(uint32_t keyId, WeaveGroupKey& groupKey)
+WEAVE_ERROR GroupKeyStoreBase::GetGroupKey(uint32_t keyId, WeaveGroupKey & groupKey)
 {
     WEAVE_ERROR err;
     uint32_t rootKeyId;
@@ -391,8 +395,7 @@ WEAVE_ERROR GroupKeyStoreBase::GetGroupKey(uint32_t keyId, WeaveGroupKey& groupK
         err = DeriveIntermediateKey(keyId, groupKey);
         break;
 
-    default:
-        ExitNow(err = WEAVE_ERROR_INVALID_KEY_ID);
+    default: ExitNow(err = WEAVE_ERROR_INVALID_KEY_ID);
     }
     SuccessOrExit(err);
 
@@ -402,8 +405,7 @@ WEAVE_ERROR GroupKeyStoreBase::GetGroupKey(uint32_t keyId, WeaveGroupKey& groupK
         expectedKeyLen = kWeaveAppGroupKeySize;
 
     // Verify correct key length and key id.
-    VerifyOrExit(groupKey.KeyLen == expectedKeyLen &&
-                 groupKey.KeyId == keyId, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(groupKey.KeyLen == expectedKeyLen && groupKey.KeyId == keyId, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
 exit:
     return err;
@@ -426,11 +428,11 @@ exit:
  *                               key store APIs.
  *
  */
-WEAVE_ERROR GroupKeyStoreBase::DeriveFabricOrClientRootKey(uint32_t rootKeyId, WeaveGroupKey& rootKey)
+WEAVE_ERROR GroupKeyStoreBase::DeriveFabricOrClientRootKey(uint32_t rootKeyId, WeaveGroupKey & rootKey)
 {
     WEAVE_ERROR err;
     WeaveGroupKey fabricSecret;
-    const uint8_t *rootKeyDiversifier;
+    const uint8_t * rootKeyDiversifier;
 
     // Set group root key id.
     rootKey.KeyId = rootKeyId;
@@ -452,11 +454,8 @@ WEAVE_ERROR GroupKeyStoreBase::DeriveFabricOrClientRootKey(uint32_t rootKeyId, W
     VerifyOrExit(fabricSecret.KeyLen == kWeaveFabricSecretSize, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Derive fabric/client root key.
-    err = HKDFSHA1::DeriveKey(NULL, 0,
-                              fabricSecret.Key, fabricSecret.KeyLen,
-                              NULL, 0,
-                              rootKeyDiversifier, kWeaveAppFabricRootKeyDiversifierSize,
-                              rootKey.Key, sizeof(rootKey.Key), kWeaveAppRootKeySize);
+    err = HKDFSHA1::DeriveKey(NULL, 0, fabricSecret.Key, fabricSecret.KeyLen, NULL, 0, rootKeyDiversifier,
+                              kWeaveAppFabricRootKeyDiversifierSize, rootKey.Key, sizeof(rootKey.Key), kWeaveAppRootKeySize);
     SuccessOrExit(err);
 
 exit:
@@ -480,7 +479,7 @@ exit:
  *                               key store APIs.
  *
  */
-WEAVE_ERROR GroupKeyStoreBase::DeriveIntermediateKey(uint32_t keyId, WeaveGroupKey& intermediateKey)
+WEAVE_ERROR GroupKeyStoreBase::DeriveIntermediateKey(uint32_t keyId, WeaveGroupKey & intermediateKey)
 {
     WEAVE_ERROR err;
     WeaveGroupKey rootKey;
@@ -505,14 +504,12 @@ WEAVE_ERROR GroupKeyStoreBase::DeriveIntermediateKey(uint32_t keyId, WeaveGroupK
 
     // Set intermediate key length and Id.
     intermediateKey.KeyLen = kWeaveAppIntermediateKeySize;
-    intermediateKey.KeyId = keyId;
+    intermediateKey.KeyId  = keyId;
 
     // Derive intermediate key.
-    err = HKDFSHA1::DeriveKey(NULL, 0,
-                              rootKey.Key, rootKey.KeyLen,
-                              epochKey.Key, epochKey.KeyLen,
-                              kWeaveAppIntermediateKeyDiversifier, kWeaveAppIntermediateKeyDiversifierSize,
-                              intermediateKey.Key, sizeof(intermediateKey.Key), intermediateKey.KeyLen);
+    err = HKDFSHA1::DeriveKey(NULL, 0, rootKey.Key, rootKey.KeyLen, epochKey.Key, epochKey.KeyLen,
+                              kWeaveAppIntermediateKeyDiversifier, kWeaveAppIntermediateKeyDiversifierSize, intermediateKey.Key,
+                              sizeof(intermediateKey.Key), intermediateKey.KeyLen);
     SuccessOrExit(err);
 
 exit:
@@ -554,11 +551,9 @@ exit:
  *                                  key store APIs.
  *
  */
-WEAVE_ERROR GroupKeyStoreBase::DeriveApplicationKey(uint32_t& keyId,
-                                                    const uint8_t *keySalt, uint8_t saltLen,
-                                                    const uint8_t *keyDiversifier, uint8_t diversifierLen,
-                                                    uint8_t *appKey, uint8_t keyBufSize, uint8_t keyLen,
-                                                    uint32_t& appGroupGlobalId)
+WEAVE_ERROR GroupKeyStoreBase::DeriveApplicationKey(uint32_t & keyId, const uint8_t * keySalt, uint8_t saltLen,
+                                                    const uint8_t * keyDiversifier, uint8_t diversifierLen, uint8_t * appKey,
+                                                    uint8_t keyBufSize, uint8_t keyLen, uint32_t & appGroupGlobalId)
 {
     WEAVE_ERROR err;
     WeaveGroupKey intermediateKey;
@@ -579,7 +574,7 @@ WEAVE_ERROR GroupKeyStoreBase::DeriveApplicationKey(uint32_t& keyId,
     if (WeaveKeyId::IsAppRotatingKey(keyId))
     {
         uint32_t epochKeyId = WeaveKeyId::GetEpochKeyId(keyId);
-        localKeyId = WeaveKeyId::MakeAppIntermediateKeyId(localKeyId, epochKeyId, false);
+        localKeyId          = WeaveKeyId::MakeAppIntermediateKeyId(localKeyId, epochKeyId, false);
     }
 
     // Get root or intermediate key material.
@@ -597,11 +592,8 @@ WEAVE_ERROR GroupKeyStoreBase::DeriveApplicationKey(uint32_t& keyId,
     VerifyOrExit(groupMasterKey.KeyLen == kWeaveAppGroupMasterKeySize, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Derive application key material.
-    err = HKDFSHA1::DeriveKey(keySalt, saltLen,
-                              intermediateKey.Key, intermediateKey.KeyLen,
-                              groupMasterKey.Key, groupMasterKey.KeyLen,
-                              keyDiversifier, diversifierLen,
-                              appKey, keyBufSize, keyLen);
+    err = HKDFSHA1::DeriveKey(keySalt, saltLen, intermediateKey.Key, intermediateKey.KeyLen, groupMasterKey.Key,
+                              groupMasterKey.KeyLen, keyDiversifier, diversifierLen, appKey, keyBufSize, keyLen);
     SuccessOrExit(err);
 
     // Return the global id of the associated application group.

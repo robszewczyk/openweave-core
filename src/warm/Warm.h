@@ -100,10 +100,11 @@ namespace Warm {
  *  An enum of possible platform API return values.
  *
  */
-typedef enum {
-    kPlatformResultSuccess = 0,  /**< The API completed successfully. */
-    kPlatformResultFailure,      /**< The API execution failed. */
-    kPlatformResultInProgress    /**< The operation is in-progress and will complete asynchronously. */
+typedef enum
+{
+    kPlatformResultSuccess = 0, /**< The API completed successfully. */
+    kPlatformResultFailure,     /**< The API execution failed. */
+    kPlatformResultInProgress   /**< The operation is in-progress and will complete asynchronously. */
 } PlatformResult;
 
 /**
@@ -114,12 +115,13 @@ typedef enum {
  *    Products will typically support a subset of these possible interfaces.
  *
  */
-typedef enum {
-    kInterfaceTypeLegacy6LoWPAN = 0,    /**< Thread alarm interface. */
-    kInterfaceTypeThread,               /**< Thread interface. */
-    kInterfaceTypeWiFi,                 /**< The WiFi interface. */
-    kInterfaceTypeTunnel,               /**< The Tunnel interface. */
-    kInterfaceTypeCellular,             /**< The Cellular interface. */
+typedef enum
+{
+    kInterfaceTypeLegacy6LoWPAN = 0, /**< Thread alarm interface. */
+    kInterfaceTypeThread,            /**< Thread interface. */
+    kInterfaceTypeWiFi,              /**< The WiFi interface. */
+    kInterfaceTypeTunnel,            /**< The Tunnel interface. */
+    kInterfaceTypeCellular,          /**< The Cellular interface. */
 
     kInterfaceTypeMax
 } InterfaceType;
@@ -128,7 +130,8 @@ typedef enum {
  *  An enum of possible route priorities so that one route can be given priority over another.
  *
  */
-typedef enum {
+typedef enum
+{
     kRoutePriorityLow = 0,
     kRoutePriorityMedium,
     kRoutePriorityHigh
@@ -138,7 +141,8 @@ typedef enum {
  *  An enum of possible Interface State values.
  *
  */
-typedef enum {
+typedef enum
+{
     kInterfaceStateUp   = true,
     kInterfaceStateDown = false
 } InterfaceState;
@@ -151,8 +155,7 @@ typedef enum {
  *    An instance of this class (namely sWarmFabricStateDelegate), is set as the delegate of
  *    WeaveFabricState. Warm uses this to be notified of Fabric state changes.
  */
-class WarmFabricStateDelegate
-    : public FabricStateDelegate
+class WarmFabricStateDelegate : public FabricStateDelegate
 {
 public:
     /**
@@ -162,7 +165,7 @@ public:
      *  @param[in] newFabricId   The new fabric id.
      *
      */
-    virtual void DidJoinFabric(WeaveFabricState *fabricState, uint64_t newFabricId);
+    virtual void DidJoinFabric(WeaveFabricState * fabricState, uint64_t newFabricId);
 
     /**
      *  This method is invoked by WeaveFabricState when leaving/clearing a fabric.
@@ -171,7 +174,7 @@ public:
      *  @param[in] oldFabricId   The old/previous fabric id.
      *
      */
-    virtual void DidLeaveFabric(WeaveFabricState *fabricState, uint64_t oldFabricId);
+    virtual void DidLeaveFabric(WeaveFabricState * fabricState, uint64_t oldFabricId);
 };
 
 /**
@@ -184,183 +187,186 @@ public:
  *
  */
 namespace Platform {
-    /**
-     *  A platform API that Warm will call as part of nl::Warm::Init execution.
-     *
-     *  @note
-     *    Any Platform specific initialization for Warm should be performed by this function.
-     *    Initializing an object to support CriticalSectionEnter is one expected action of this API.
-     *
-     *  @param[in]  inFabricStateDelegate    A pointer to the fabricStateDelegate object used by Warm
-     *                                       to receive updates for the fabric state.
-     *
-     *  @return WEAVE_NO_ERROR on success, error code otherwise.
-     *
-     */
-    extern WEAVE_ERROR  Init(WarmFabricStateDelegate *inFabricStateDelegate);
+/**
+ *  A platform API that Warm will call as part of nl::Warm::Init execution.
+ *
+ *  @note
+ *    Any Platform specific initialization for Warm should be performed by this function.
+ *    Initializing an object to support CriticalSectionEnter is one expected action of this API.
+ *
+ *  @param[in]  inFabricStateDelegate    A pointer to the fabricStateDelegate object used by Warm
+ *                                       to receive updates for the fabric state.
+ *
+ *  @return WEAVE_NO_ERROR on success, error code otherwise.
+ *
+ */
+extern WEAVE_ERROR Init(WarmFabricStateDelegate * inFabricStateDelegate);
 
-    /**
-     *  A platform API that Warm will call to protect access to internal State.
-     *
-     *  @note
-     *    Compliments CriticalSectionExit.
-     *    If all Warm execution occurs in a single Task context this API can be stubbed.
-     *
-     */
-    extern void CriticalSectionEnter(void);
+/**
+ *  A platform API that Warm will call to protect access to internal State.
+ *
+ *  @note
+ *    Compliments CriticalSectionExit.
+ *    If all Warm execution occurs in a single Task context this API can be stubbed.
+ *
+ */
+extern void CriticalSectionEnter(void);
 
-    /**
-     *  A platform API that Warm will call to release protected access to internal State.
-     *
-     *  @note
-     *    Compliments CriticalSectionEnter.
-     *    If all Warm execution occurs in a single Task context this API can be stubbed.
-     *
-     */
-    extern void CriticalSectionExit(void);
+/**
+ *  A platform API that Warm will call to release protected access to internal State.
+ *
+ *  @note
+ *    Compliments CriticalSectionEnter.
+ *    If all Warm execution occurs in a single Task context this API can be stubbed.
+ *
+ */
+extern void CriticalSectionExit(void);
 
-    /**
-     *  A platform API that Warm will call to announce that the platform should call InvokeActions.
-     *
-     *  @note
-     *    In order to allow Platform API's to be called from a dedicated task, Warm will call this
-     *    API when it desires the Platform to call InvokeActions.  If no multi-task concerns exist,
-     *    the Platform can call InvokeActions directly.
-     *
-     */
-    extern void RequestInvokeActions(void);
+/**
+ *  A platform API that Warm will call to announce that the platform should call InvokeActions.
+ *
+ *  @note
+ *    In order to allow Platform API's to be called from a dedicated task, Warm will call this
+ *    API when it desires the Platform to call InvokeActions.  If no multi-task concerns exist,
+ *    the Platform can call InvokeActions directly.
+ *
+ */
+extern void RequestInvokeActions(void);
 
-    /**
-     *  A platform API that Warm will call to add / remove a host IP address to the specified interface on the Host TCP/IP stack.
-     *  After completion, the platform must call ReportActionComplete with the
-     *  final result.
-     *
-     *  @note
-     *    This function must be able to acquire access to the specified interface.
-     *
-     *  @param[in]  inInterfaceType    The Interface to be modified.
-     *
-     *  @param[in]  inAddress          The IP address to be added/removed.
-     *
-     *  @param[in]  inPrefixLength     The Prefix length of the inAddress.
-     *
-     *  @param[in]  inAdd              true to add the address, false to remove the address.
-     *
-     *  @retval kPlatformResultSuccess     The operation completed successfully.
-     *  @retval kPlatformResultFailure     The operation failed.
-     *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
-     *
-     */
-    extern PlatformResult AddRemoveHostAddress           (InterfaceType inInterfaceType, const Inet::IPAddress &inAddress, uint8_t inPrefixLength, bool inAdd);
+/**
+ *  A platform API that Warm will call to add / remove a host IP address to the specified interface on the Host TCP/IP stack.
+ *  After completion, the platform must call ReportActionComplete with the
+ *  final result.
+ *
+ *  @note
+ *    This function must be able to acquire access to the specified interface.
+ *
+ *  @param[in]  inInterfaceType    The Interface to be modified.
+ *
+ *  @param[in]  inAddress          The IP address to be added/removed.
+ *
+ *  @param[in]  inPrefixLength     The Prefix length of the inAddress.
+ *
+ *  @param[in]  inAdd              true to add the address, false to remove the address.
+ *
+ *  @retval kPlatformResultSuccess     The operation completed successfully.
+ *  @retval kPlatformResultFailure     The operation failed.
+ *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
+ *
+ */
+extern PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, uint8_t inPrefixLength,
+                                           bool inAdd);
 
-    /**
-     *  A platform API that Warm will call to add / remove a IP address to the specified interface on the Thread TCP/IP stack.
-     *  After completion, the platform must call ReportActionComplete with the
-     *  final result.
-     *
-     *  @note
-     *    This function must be able to acquire access to the specified interface.
-     *
-     *  @param[in]  inInterfaceType    The Interface to be modified.
-     *
-     *  @param[in]  inAddress          The IP address to be added/removed.
-     *
-     *  @param[in]  inAdd              true to add the address, false to remove the address.
-     *
-     *  @retval kPlatformResultSuccess     The operation completed successfully.
-     *  @retval kPlatformResultFailure     The operation failed.
-     *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
-     *
-     */
-    extern PlatformResult AddRemoveThreadAddress         (InterfaceType inInterfaceType, const Inet::IPAddress &inAddress, bool inAdd);
+/**
+ *  A platform API that Warm will call to add / remove a IP address to the specified interface on the Thread TCP/IP stack.
+ *  After completion, the platform must call ReportActionComplete with the
+ *  final result.
+ *
+ *  @note
+ *    This function must be able to acquire access to the specified interface.
+ *
+ *  @param[in]  inInterfaceType    The Interface to be modified.
+ *
+ *  @param[in]  inAddress          The IP address to be added/removed.
+ *
+ *  @param[in]  inAdd              true to add the address, false to remove the address.
+ *
+ *  @retval kPlatformResultSuccess     The operation completed successfully.
+ *  @retval kPlatformResultFailure     The operation failed.
+ *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
+ *
+ */
+extern PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, bool inAdd);
 
-    /**
-     *  A platform API that Warm will call to start / stop advertisement of a IP prefix on the Thread interface.
-     *  After completion, the platform must call ReportActionComplete with the
-     *  final result.
-     *
-     *  @note
-     *    This function must be able to acquire access to the specified interface.
-     *
-     *  @param[in]  inInterfaceType    The Interface to be modified.
-     *
-     *  @param[in]  inPrefix           The IP prefix for which advertising should be started / stopped.
-     *
-     *  @param[in]  inStart            true to start advertising, false to stop advertising.
-     *
-     *  @retval kPlatformResultSuccess     The operation completed successfully.
-     *  @retval kPlatformResultFailure     The operation failed.
-     *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
-     *
-     */
-    extern PlatformResult StartStopThreadAdvertisement   (InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, bool inStart);
+/**
+ *  A platform API that Warm will call to start / stop advertisement of a IP prefix on the Thread interface.
+ *  After completion, the platform must call ReportActionComplete with the
+ *  final result.
+ *
+ *  @note
+ *    This function must be able to acquire access to the specified interface.
+ *
+ *  @param[in]  inInterfaceType    The Interface to be modified.
+ *
+ *  @param[in]  inPrefix           The IP prefix for which advertising should be started / stopped.
+ *
+ *  @param[in]  inStart            true to start advertising, false to stop advertising.
+ *
+ *  @retval kPlatformResultSuccess     The operation completed successfully.
+ *  @retval kPlatformResultFailure     The operation failed.
+ *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
+ *
+ */
+extern PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, bool inStart);
 
-    /**
-     *  A platform API that Warm will call to add / remove a IP route for the specified interface on the host TCP/IP stack.
-     *  After completion, the platform must call ReportActionComplete with the
-     *  final result.
-     *
-     *  @note
-     *    This function must be able to acquire access to the specified interface.
-     *
-     *  @param[in]  inInterfaceType    The Interface to be modified.
-     *
-     *  @param[in]  inPrefix           The IP prefix to add / remove.
-     *
-     *  @param[in]  inPriority         The priority to use when the route is assigned.
-     *
-     *  @param[in]  inAdd              true to add the prefix as a route, false to remove the prefix as a route.
-     *
-     *  @retval kPlatformResultSuccess     The operation completed successfully.
-     *  @retval kPlatformResultFailure     The operation failed.
-     *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
-     *
-     */
-    extern PlatformResult AddRemoveHostRoute             (InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority, bool inAdd);
+/**
+ *  A platform API that Warm will call to add / remove a IP route for the specified interface on the host TCP/IP stack.
+ *  After completion, the platform must call ReportActionComplete with the
+ *  final result.
+ *
+ *  @note
+ *    This function must be able to acquire access to the specified interface.
+ *
+ *  @param[in]  inInterfaceType    The Interface to be modified.
+ *
+ *  @param[in]  inPrefix           The IP prefix to add / remove.
+ *
+ *  @param[in]  inPriority         The priority to use when the route is assigned.
+ *
+ *  @param[in]  inAdd              true to add the prefix as a route, false to remove the prefix as a route.
+ *
+ *  @retval kPlatformResultSuccess     The operation completed successfully.
+ *  @retval kPlatformResultFailure     The operation failed.
+ *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
+ *
+ */
+extern PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority,
+                                         bool inAdd);
 
-    /**
-     *  A platform API that Warm will call to add / remove a IP route for the specified interface on the Thread TCP/IP stack.
-     *  After completion, the platform must call ReportActionComplete with the
-     *  final result.
-     *
-     *  @note
-     *    This function must be able to acquire access to the specified interface.
-     *
-     *  @param[in]  inInterfaceType    The Interface to be modified.
-     *
-     *  @param[in]  inPrefix           The IP prefix to assign / remove.
-     *
-     *  @param[in]  inPriority         The priority to use when the route is assigned.
-     *
-     *  @param[in]  inAdd              true to add the prefix as a route, false to remove the prefix as a route.
-     *
-     *  @retval kPlatformResultSuccess     The operation completed successfully.
-     *  @retval kPlatformResultFailure     The operation failed.
-     *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
-     *
-     */
-    extern PlatformResult AddRemoveThreadRoute           (InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority, bool inAdd);
+/**
+ *  A platform API that Warm will call to add / remove a IP route for the specified interface on the Thread TCP/IP stack.
+ *  After completion, the platform must call ReportActionComplete with the
+ *  final result.
+ *
+ *  @note
+ *    This function must be able to acquire access to the specified interface.
+ *
+ *  @param[in]  inInterfaceType    The Interface to be modified.
+ *
+ *  @param[in]  inPrefix           The IP prefix to assign / remove.
+ *
+ *  @param[in]  inPriority         The priority to use when the route is assigned.
+ *
+ *  @param[in]  inAdd              true to add the prefix as a route, false to remove the prefix as a route.
+ *
+ *  @retval kPlatformResultSuccess     The operation completed successfully.
+ *  @retval kPlatformResultFailure     The operation failed.
+ *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
+ *
+ */
+extern PlatformResult AddRemoveThreadRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority,
+                                           bool inAdd);
 
-    /**
-     *  A platform API that Warm will call to change the priority of an existing IP route for the specified interface on the Thread TCP/IP stack.
-     *  After completion, the platform must call ReportActionComplete with the
-     *  final result.
-     *
-     *  @note
-     *    This function must be able to acquire access to the specified interface.
-     *
-     *  @param[in]  inInterfaceType    The Interface to be modified.
-     *
-     *  @param[in]  inPrefix           The IP prefix to modify.
-     *
-     *  @param[in]  inPriority         The new priority to apply to the route.
-     *
-     *  @retval kPlatformResultSuccess     The operation completed successfully.
-     *  @retval kPlatformResultFailure     The operation failed.
-     *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
-     *
-     */
-    extern PlatformResult SetThreadRoutePriority   (InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority);
+/**
+ *  A platform API that Warm will call to change the priority of an existing IP route for the specified interface on the Thread
+ * TCP/IP stack. After completion, the platform must call ReportActionComplete with the final result.
+ *
+ *  @note
+ *    This function must be able to acquire access to the specified interface.
+ *
+ *  @param[in]  inInterfaceType    The Interface to be modified.
+ *
+ *  @param[in]  inPrefix           The IP prefix to modify.
+ *
+ *  @param[in]  inPriority         The new priority to apply to the route.
+ *
+ *  @retval kPlatformResultSuccess     The operation completed successfully.
+ *  @retval kPlatformResultFailure     The operation failed.
+ *  @retval kPlatformResultInProgress  The operation will complete asynchronously.
+ *
+ */
+extern PlatformResult SetThreadRoutePriority(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix,
+                                             RoutePriority inPriority);
 
 }; // namespace Platform
 
@@ -375,7 +381,7 @@ namespace Platform {
  *  @return WEAVE_NO_ERROR on success, error code otherwise.
  *
  */
-WEAVE_ERROR Init(WeaveFabricState &inFabricState);
+WEAVE_ERROR Init(WeaveFabricState & inFabricState);
 
 /**
  *  A WARM API called by a dedicated task to perform various platform API actions.
@@ -487,7 +493,7 @@ void BorderRouterStateChange(InterfaceState inState);
  *  @retval WEAVE_ERROR_INVALID_ARGUMENT  If this API is called with an invalid Interface Type.
  *
  */
-WEAVE_ERROR GetULA(InterfaceType inInterfaceType, Inet::IPAddress &outAddress);
+WEAVE_ERROR GetULA(InterfaceType inInterfaceType, Inet::IPAddress & outAddress);
 
 /**
  *  A WARM API to acquire the FabricState object that was provided to Warm during Init.
@@ -503,7 +509,7 @@ WEAVE_ERROR GetULA(InterfaceType inInterfaceType, Inet::IPAddress &outAddress);
  *                                        has been initialized.
  *
  */
-WEAVE_ERROR GetFabricState(const WeaveFabricState *&outFabricState);
+WEAVE_ERROR GetFabricState(const WeaveFabricState *& outFabricState);
 
 } /* namespace Warm */
 } /* namespace Weave */

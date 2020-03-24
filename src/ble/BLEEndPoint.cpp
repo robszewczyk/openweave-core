@@ -765,17 +765,17 @@ BLE_ERROR BLEEndPoint::SendNextMessage()
     data = NULL; // Ownership passed to fragmenter's tx buf on PrepareNextFragment success.
 
     // Send first message fragment over the air.
-    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_WOBLESend,
-            {
-                if (mRole == kBleRole_Central)
-                {
-                    err = BLE_ERROR_GATT_WRITE_FAILED;
-                } else {
-                    err = BLE_ERROR_GATT_INDICATE_FAILED;
-                }
-                ExitNow();
-            }
-            );
+    WEAVE_FAULT_INJECT(nl::Weave::FaultInjection::kFault_WOBLESend, {
+        if (mRole == kBleRole_Central)
+        {
+            err = BLE_ERROR_GATT_WRITE_FAILED;
+        }
+        else
+        {
+            err = BLE_ERROR_GATT_INDICATE_FAILED;
+        }
+        ExitNow();
+    });
     err = SendCharacteristic(mWoBle.TxPacket());
     SuccessOrExit(err);
 
@@ -930,7 +930,7 @@ BLE_ERROR BLEEndPoint::HandleFragmentConfirmationReceived()
     // the stand-alone ack, and also the case where a window size < the immediate ack threshold was detected in
     // Receive(), but the stand-alone ack was deferred due to a pending outbound message fragment.
     if (mLocalReceiveWindowSize <= BLE_CONFIG_IMMEDIATE_ACK_WINDOW_THRESHOLD &&
-        !(mSendQueue != NULL || mWoBle.TxState() == WoBle::kState_InProgress) )
+        !(mSendQueue != NULL || mWoBle.TxState() == WoBle::kState_InProgress))
     {
         err = DriveStandAloneAck(); // Encode stand-alone ack and drive sending.
         SuccessOrExit(err);
@@ -1419,7 +1419,8 @@ BLE_ERROR BLEEndPoint::Receive(PacketBuffer * data)
             SuccessOrExit(err);
         }
 
-        WeaveLogDebugBleEndPoint(Ble, "about to adjust remote rx window; got ack num = %u, newest unacked sent seq num = %u, \
+        WeaveLogDebugBleEndPoint(Ble,
+                                 "about to adjust remote rx window; got ack num = %u, newest unacked sent seq num = %u, \
                 old window size = %u, max window size = %u",
                                  receivedAck, mWoBle.GetNewestUnackedSentSequenceNumber(), mRemoteReceiveWindowSize,
                                  mReceiveWindowMaxSize);

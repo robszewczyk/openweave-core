@@ -56,7 +56,7 @@ WEAVE_ERROR FabricProvisioningServer::HandleCreateFabric(void)
 
     {
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kFabricMembershipChange;
+        event.Type                                    = DeviceEventType::kFabricMembershipChange;
         event.FabricMembershipChange.IsMemberOfFabric = true;
         PlatformMgr().PostEvent(&event);
     }
@@ -75,11 +75,12 @@ WEAVE_ERROR FabricProvisioningServer::HandleJoinExistingFabric(void)
     err = ConfigurationMgr().StoreFabricId(::nl::Weave::DeviceLayer::FabricState.FabricId);
     SuccessOrExit(err);
 
-    WeaveLogProgress(DeviceLayer, "Join existing Weave fabric; fabric id %016" PRIX64, ::nl::Weave::DeviceLayer::FabricState.FabricId);
+    WeaveLogProgress(DeviceLayer, "Join existing Weave fabric; fabric id %016" PRIX64,
+                     ::nl::Weave::DeviceLayer::FabricState.FabricId);
 
     {
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kFabricMembershipChange;
+        event.Type                                    = DeviceEventType::kFabricMembershipChange;
         event.FabricMembershipChange.IsMemberOfFabric = true;
         PlatformMgr().PostEvent(&event);
     }
@@ -102,7 +103,7 @@ WEAVE_ERROR FabricProvisioningServer::HandleLeaveFabric(void)
 
     {
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kFabricMembershipChange;
+        event.Type                                    = DeviceEventType::kFabricMembershipChange;
         event.FabricMembershipChange.IsMemberOfFabric = false;
         PlatformMgr().PostEvent(&event);
     }
@@ -130,7 +131,7 @@ WEAVE_ERROR FabricProvisioningServer::LeaveFabric(void)
         // Post a FabricMembershipChange event.
         {
             WeaveDeviceEvent event;
-            event.Type = DeviceEventType::kFabricMembershipChange;
+            event.Type                                    = DeviceEventType::kFabricMembershipChange;
             event.FabricMembershipChange.IsMemberOfFabric = false;
             PlatformMgr().PostEvent(&event);
         }
@@ -155,7 +156,6 @@ void FabricProvisioningServer::OnPlatformEvent(const WeaveDeviceEvent * event)
 {
     // Nothing to do so far.
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

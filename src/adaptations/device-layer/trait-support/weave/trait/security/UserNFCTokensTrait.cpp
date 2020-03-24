@@ -47,69 +47,54 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor UserNFCTokenDataFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(UserNFCTokenData, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1
-    },
+const nl::FieldDescriptor UserNFCTokenDataFieldDescriptors[] = {
+    { NULL, offsetof(UserNFCTokenData, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1 },
 
-    {
-        NULL, offsetof(UserNFCTokenData, tokenDeviceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 2
-    },
+    { NULL, offsetof(UserNFCTokenData, tokenDeviceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 2 },
 
-    {
-        NULL, offsetof(UserNFCTokenData, enabled), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 3
-    },
+    { NULL, offsetof(UserNFCTokenData, enabled), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 3 },
 
-    {
-        NULL, offsetof(UserNFCTokenData, structureIds) + offsetof(nl::SerializedFieldTypeUInt64_array, num), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 4
-    },
-    {
-        NULL, offsetof(UserNFCTokenData, structureIds) + offsetof(nl::SerializedFieldTypeUInt64_array, buf), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 4
-    },
+    { NULL, offsetof(UserNFCTokenData, structureIds) + offsetof(nl::SerializedFieldTypeUInt64_array, num),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 4 },
+    { NULL, offsetof(UserNFCTokenData, structureIds) + offsetof(nl::SerializedFieldTypeUInt64_array, buf),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 4 },
 
-    {
-        NULL, offsetof(UserNFCTokenData, label), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 5
-    },
+    { NULL, offsetof(UserNFCTokenData, label), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 5 },
 
-    {
-        &Schema::Weave::Trait::Security::UserNFCTokenMetadataTrait::Metadata::FieldSchema, offsetof(UserNFCTokenData, metadata), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 6
-    },
+    { &Schema::Weave::Trait::Security::UserNFCTokenMetadataTrait::Metadata::FieldSchema, offsetof(UserNFCTokenData, metadata),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 6 },
 
 };
 
-const nl::SchemaFieldDescriptor UserNFCTokenData::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(UserNFCTokenDataFieldDescriptors)/sizeof(UserNFCTokenDataFieldDescriptors[0]),
-    .mFields = UserNFCTokenDataFieldDescriptors,
-    .mSize = sizeof(UserNFCTokenData)
+const nl::SchemaFieldDescriptor UserNFCTokenData::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(UserNFCTokenDataFieldDescriptors) / sizeof(UserNFCTokenDataFieldDescriptors[0]),
+    .mFields                     = UserNFCTokenDataFieldDescriptors,
+    .mSize                       = sizeof(UserNFCTokenData)
 };
 
 } // namespace UserNFCTokensTrait

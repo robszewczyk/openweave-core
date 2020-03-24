@@ -46,52 +46,50 @@ using namespace nl::Weave::Profiles::Security;
 using namespace nl::Weave::Profiles::Security::CASE;
 using namespace nl::Weave::ASN1;
 
-using nl::Weave::Crypto::EncodedECPublicKey;
 using nl::Weave::Crypto::EncodedECPrivateKey;
+using nl::Weave::Crypto::EncodedECPublicKey;
 
 #define TOOL_NAME "TestCASE"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
-const char *gCurTest = NULL;
+const char * gCurTest = NULL;
 
-#define VerifyOrQuit(TST, MSG) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stdout, "%s FAILED: ", (gCurTest != NULL) ? gCurTest : __FUNCTION__); \
-        fputs(MSG, stdout); \
-        fputs("\n", stdout); \
-        exit(-1); \
-    } \
-} while (0)
+#define VerifyOrQuit(TST, MSG)                                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stdout, "%s FAILED: ", (gCurTest != NULL) ? gCurTest : __FUNCTION__);                                          \
+            fputs(MSG, stdout);                                                                                                    \
+            fputs("\n", stdout);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrQuit(ERR, MSG) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stdout, "%s FAILED: ", (gCurTest != NULL) ? gCurTest : __FUNCTION__); \
-        fputs(MSG, stdout); \
-        fputs(": ", stdout); \
-        fputs(ErrorStr(ERR), stdout); \
-        fputs("\n", stdout); \
-        exit(-1); \
-    } \
-} while (0)
+#define SuccessOrQuit(ERR, MSG)                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stdout, "%s FAILED: ", (gCurTest != NULL) ? gCurTest : __FUNCTION__);                                          \
+            fputs(MSG, stdout);                                                                                                    \
+            fputs(": ", stdout);                                                                                                   \
+            fputs(ErrorStr(ERR), stdout);                                                                                          \
+            fputs("\n", stdout);                                                                                                   \
+            exit(-1);                                                                                                              \
+        }                                                                                                                          \
+    } while (0)
 
-extern WEAVE_ERROR MakeCertInfo(uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen,
-                                const uint8_t *entityCert, uint16_t entityCertLen,
-                                const uint8_t *intermediateCert, uint16_t intermediateCertLen);
+extern WEAVE_ERROR MakeCertInfo(uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen, const uint8_t * entityCert,
+                                uint16_t entityCertLen, const uint8_t * intermediateCert, uint16_t intermediateCertLen);
 
 class TestAuthDelegate : public WeaveCASEAuthDelegate
 {
 public:
     bool IsInitiator;
 
-    TestAuthDelegate(bool isInitiator)
-    : IsInitiator(isInitiator)
-    {
-    }
+    TestAuthDelegate(bool isInitiator) : IsInitiator(isInitiator) { }
 
 #if !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
@@ -102,27 +100,28 @@ public:
         VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::EncodeNodeCertInfo(): initiator/responder mismatch");
 
         const uint8_t * nodeCert = (IsInitiator) ? TestDevice1_Cert : TestDevice2_Cert;
-        uint16_t nodeCertLen = (IsInitiator) ? TestDevice1_CertLength : TestDevice2_CertLength;
+        uint16_t nodeCertLen     = (IsInitiator) ? TestDevice1_CertLength : TestDevice2_CertLength;
 
         const uint8_t * intermediateCert = (!IsInitiator) ? nl::NestCerts::Development::DeviceCA::Cert : NULL;
-        uint16_t intermediateCertLen = (!IsInitiator) ? nl::NestCerts::Development::DeviceCA::CertLength : 0;
+        uint16_t intermediateCertLen     = (!IsInitiator) ? nl::NestCerts::Development::DeviceCA::CertLength : 0;
 
         return EncodeCASECertInfo(writer, nodeCert, nodeCertLen, intermediateCert, intermediateCertLen);
     }
 
-    WEAVE_ERROR GenerateNodeSignature(const BeginSessionContext & msgCtx,
-            const uint8_t * msgHash, uint8_t msgHashLen, TLVWriter & writer, uint64_t tag) __OVERRIDE
+    WEAVE_ERROR GenerateNodeSignature(const BeginSessionContext & msgCtx, const uint8_t * msgHash, uint8_t msgHashLen,
+                                      TLVWriter & writer, uint64_t tag) __OVERRIDE
     {
-        VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::GenerateNodeSignature(): initiator/responder mismatch");
+        VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator,
+                     "TestAuthDelegate::GenerateNodeSignature(): initiator/responder mismatch");
 
         const uint8_t * privKey = (IsInitiator) ? TestDevice1_PrivateKey : TestDevice2_PrivateKey;
-        uint16_t privKeyLen = (IsInitiator) ? TestDevice1_PrivateKeyLength : TestDevice2_PrivateKeyLength;
+        uint16_t privKeyLen     = (IsInitiator) ? TestDevice1_PrivateKeyLength : TestDevice2_PrivateKeyLength;
 
         return GenerateAndEncodeWeaveECDSASignature(writer, tag, msgHash, msgHashLen, privKey, privKeyLen);
     }
 
-    WEAVE_ERROR EncodeNodePayload(const BeginSessionContext & msgCtx,
-            uint8_t * payloadBuf, uint16_t payloadBufSize, uint16_t & payloadLen) __OVERRIDE
+    WEAVE_ERROR EncodeNodePayload(const BeginSessionContext & msgCtx, uint8_t * payloadBuf, uint16_t payloadBufSize,
+                                  uint16_t & payloadLen) __OVERRIDE
     {
         VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::GetLocalPayload(): initiator/responder mismatch");
         payloadLen = 0;
@@ -130,11 +129,11 @@ public:
     }
 
     WEAVE_ERROR BeginValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE
+                                WeaveCertificateSet & certSet) __OVERRIDE
     {
         WEAVE_ERROR err;
         ASN1UniversalTime validTime;
-        WeaveCertificateData *cert;
+        WeaveCertificateData * cert;
 
         VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::BeginValidation(): initiator/responder mismatch");
 
@@ -146,91 +145,89 @@ public:
 
         if (!IsInitiator)
         {
-            err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert,
-                    nl::NestCerts::Development::DeviceCA::CertLength,
-                    kDecodeFlag_GenerateTBSHash, cert);
+            err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength,
+                                   kDecodeFlag_GenerateTBSHash, cert);
             SuccessOrExit(err);
         }
 
         memset(&validCtx, 0, sizeof(validCtx));
-        validTime.Year = 2013;
+        validTime.Year  = 2013;
         validTime.Month = 11;
-        validTime.Day = 20;
+        validTime.Day   = 20;
         validTime.Hour = validTime.Minute = validTime.Second = 0;
-        err = PackCertTime(validTime, validCtx.EffectiveTime);
+        err                                                  = PackCertTime(validTime, validCtx.EffectiveTime);
         SuccessOrExit(err);
 
-        validCtx.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+        validCtx.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
         validCtx.RequiredKeyPurposes = (IsInitiator) ? kKeyPurposeFlag_ServerAuth : kKeyPurposeFlag_ClientAuth;
 
     exit:
         return err;
     }
 
-    WEAVE_ERROR OnPeerCertsLoaded(const BeginSessionContext & msgCtx,
-            WeaveDN & subjectDN, CertificateKeyId & subjectKeyId, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE
+    WEAVE_ERROR OnPeerCertsLoaded(const BeginSessionContext & msgCtx, WeaveDN & subjectDN, CertificateKeyId & subjectKeyId,
+                                  ValidationContext & validCtx, WeaveCertificateSet & certSet) __OVERRIDE
     {
         VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::OnPeerCertsLoaded(): initiator/responder mismatch");
         return WEAVE_NO_ERROR;
     }
 
     WEAVE_ERROR HandleValidationResult(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet, WEAVE_ERROR & validRes) __OVERRIDE
+                                       WeaveCertificateSet & certSet, WEAVE_ERROR & validRes) __OVERRIDE
     {
-        VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::HandleValidationResult(): initiator/responder mismatch");
+        VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator,
+                     "TestAuthDelegate::HandleValidationResult(): initiator/responder mismatch");
         return WEAVE_NO_ERROR;
     }
 
-    void EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE
+    void EndValidation(const BeginSessionContext & msgCtx, ValidationContext & validCtx, WeaveCertificateSet & certSet) __OVERRIDE
     {
         VerifyOrQuit(msgCtx.IsInitiator() == IsInitiator, "TestAuthDelegate::EndValidation(): initiator/responder mismatch");
     }
 
 #else // !WEAVE_CONFIG_LEGACY_CASE_AUTH_DELEGATE
 
-    WEAVE_ERROR GetNodeCertInfo(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& certInfoLen) __OVERRIDE
+    WEAVE_ERROR GetNodeCertInfo(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & certInfoLen) __OVERRIDE
     {
         VerifyOrQuit(isInitiator == IsInitiator, "TestAuthDelegate::EncodeNodeCertInfo(): initiator/responder mismatch");
 
         const uint8_t * nodeCert = (IsInitiator) ? TestDevice1_Cert : TestDevice2_Cert;
-        uint16_t nodeCertLen = (IsInitiator) ? TestDevice1_CertLength : TestDevice2_CertLength;
+        uint16_t nodeCertLen     = (IsInitiator) ? TestDevice1_CertLength : TestDevice2_CertLength;
 
         const uint8_t * intermediateCert = (!IsInitiator) ? nl::NestCerts::Development::DeviceCA::Cert : NULL;
-        uint16_t intermediateCertLen = (!IsInitiator) ? nl::NestCerts::Development::DeviceCA::CertLength : 0;
+        uint16_t intermediateCertLen     = (!IsInitiator) ? nl::NestCerts::Development::DeviceCA::CertLength : 0;
 
         return EncodeCASECertInfo(buf, bufSize, certInfoLen, nodeCert, nodeCertLen, intermediateCert, intermediateCertLen);
     }
 
-    WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t& weavePrivKeyLen) __OVERRIDE
+    WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen) __OVERRIDE
     {
         VerifyOrQuit(isInitiator == IsInitiator, "TestAuthDelegate::GetNodePrivateKey(): initiator/responder mismatch");
 
-        weavePrivKey = (IsInitiator) ? TestDevice1_PrivateKey : TestDevice2_PrivateKey;
+        weavePrivKey    = (IsInitiator) ? TestDevice1_PrivateKey : TestDevice2_PrivateKey;
         weavePrivKeyLen = (IsInitiator) ? TestDevice1_PrivateKeyLength : TestDevice2_PrivateKeyLength;
 
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR ReleaseNodePrivateKey(const uint8_t *weavePrivKey) __OVERRIDE
+    WEAVE_ERROR ReleaseNodePrivateKey(const uint8_t * weavePrivKey) __OVERRIDE
     {
         // Nothing to do
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR GetNodePayload(bool isInitiator, uint8_t *buf, uint16_t bufSize, uint16_t& payloadLen) __OVERRIDE
+    WEAVE_ERROR GetNodePayload(bool isInitiator, uint8_t * buf, uint16_t bufSize, uint16_t & payloadLen) __OVERRIDE
     {
         VerifyOrQuit(isInitiator == IsInitiator, "TestAuthDelegate::GetNodePayload(): initiator/responder mismatch");
         payloadLen = 0;
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext) __OVERRIDE
+    WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext) __OVERRIDE
     {
         WEAVE_ERROR err;
         ASN1UniversalTime validTime;
-        WeaveCertificateData *cert;
+        WeaveCertificateData * cert;
 
         VerifyOrQuit(isInitiator == IsInitiator, "TestAuthDelegate::BeginCertValidation(): initiator/responder mismatch");
 
@@ -242,33 +239,35 @@ public:
 
         if (!IsInitiator)
         {
-            err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength, kDecodeFlag_GenerateTBSHash, cert);
+            err = certSet.LoadCert(nl::NestCerts::Development::DeviceCA::Cert, nl::NestCerts::Development::DeviceCA::CertLength,
+                                   kDecodeFlag_GenerateTBSHash, cert);
             SuccessOrExit(err);
         }
 
         memset(&validContext, 0, sizeof(validContext));
-        validTime.Year = 2013;
+        validTime.Year  = 2013;
         validTime.Month = 11;
-        validTime.Day = 20;
+        validTime.Day   = 20;
         validTime.Hour = validTime.Minute = validTime.Second = 0;
-        err = PackCertTime(validTime, validContext.EffectiveTime);
+        err                                                  = PackCertTime(validTime, validContext.EffectiveTime);
         SuccessOrExit(err);
 
-        validContext.RequiredKeyUsages = kKeyUsageFlag_DigitalSignature;
+        validContext.RequiredKeyUsages   = kKeyUsageFlag_DigitalSignature;
         validContext.RequiredKeyPurposes = (IsInitiator) ? kKeyPurposeFlag_ServerAuth : kKeyPurposeFlag_ClientAuth;
 
     exit:
         return err;
     }
 
-    WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WEAVE_ERROR& validRes, WeaveCertificateData *peerCert,
-            uint64_t peerNodeId, WeaveCertificateSet& certSet, ValidationContext& validContext) __OVERRIDE
+    WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WEAVE_ERROR & validRes, WeaveCertificateData * peerCert,
+                                           uint64_t peerNodeId, WeaveCertificateSet & certSet,
+                                           ValidationContext & validContext) __OVERRIDE
     {
         VerifyOrQuit(isInitiator == IsInitiator, "TestAuthDelegate::HandleCertValidationResult(): initiator/responder mismatch");
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR EndCertValidation(WeaveCertificateSet& certSet, ValidationContext& validContext) __OVERRIDE
+    WEAVE_ERROR EndCertValidation(WeaveCertificateSet & certSet, ValidationContext & validContext) __OVERRIDE
     {
         return WEAVE_NO_ERROR;
     }
@@ -280,16 +279,19 @@ class MessageMutator
 {
 public:
     virtual ~MessageMutator() { }
-    virtual void Reset() = 0;
-    virtual void MutateMessage(const char *msgName, PacketBuffer *msgBuf, WeaveCASEEngine& initiatorEng, WeaveCASEEngine& responderEng) = 0;
-    virtual bool IsComplete() = 0;
+    virtual void Reset()                                       = 0;
+    virtual void MutateMessage(const char * msgName, PacketBuffer * msgBuf, WeaveCASEEngine & initiatorEng,
+                               WeaveCASEEngine & responderEng) = 0;
+    virtual bool IsComplete()                                  = 0;
 };
 
 class NullMutator : public MessageMutator
 {
 public:
     virtual void Reset() { }
-    virtual void MutateMessage(const char *msgName, PacketBuffer *msgBuf, WeaveCASEEngine& initiatorEng, WeaveCASEEngine& responderEng) { }
+    virtual void MutateMessage(const char * msgName, PacketBuffer * msgBuf, WeaveCASEEngine & initiatorEng,
+                               WeaveCASEEngine & responderEng)
+    { }
     virtual bool IsComplete() { return true; }
 };
 
@@ -298,24 +300,29 @@ static NullMutator gNullMutator;
 class MessageFuzzer : public MessageMutator
 {
 public:
-    MessageFuzzer(const char *msgType)
+    MessageFuzzer(const char * msgType)
     {
-        mMsgType = msgType;
-        mIndex = 0;
+        mMsgType   = msgType;
+        mIndex     = 0;
         mSkipStart = 0;
-        mSkipLen = 0;
-        mComplete = false;
+        mSkipLen   = 0;
+        mComplete  = false;
         mTimeLimit = 0;
     }
 
-    virtual void Reset() { mIndex = 0; mComplete = false; }
+    virtual void Reset()
+    {
+        mIndex    = 0;
+        mComplete = false;
+    }
 
-    virtual void MutateMessage(const char *msgType, PacketBuffer *msgBuf, WeaveCASEEngine& initiatorEng, WeaveCASEEngine& responderEng)
+    virtual void MutateMessage(const char * msgType, PacketBuffer * msgBuf, WeaveCASEEngine & initiatorEng,
+                               WeaveCASEEngine & responderEng)
     {
         if (strcmp(msgType, mMsgType) == 0)
         {
-            uint8_t *msgStart = msgBuf->Start();
-            uint16_t msgLen = msgBuf->DataLength();
+            uint8_t * msgStart = msgBuf->Start();
+            uint16_t msgLen    = msgBuf->DataLength();
             uint8_t fuzzMask;
 
             VerifyOrQuit(msgLen > 0, "Unexpected packet length");
@@ -330,7 +337,8 @@ public:
                 fuzzMask = GetRandU8();
             while (fuzzMask == 0);
 
-            printf("MessageFuzzer: %s message mutated (offset %u, fuzz mask 0x%02X, orig value 0x%02X)\n", msgType, mIndex, fuzzMask, msgStart[mIndex]);
+            printf("MessageFuzzer: %s message mutated (offset %u, fuzz mask 0x%02X, orig value 0x%02X)\n", msgType, mIndex,
+                   fuzzMask, msgStart[mIndex]);
 
             msgStart[mIndex] ^= fuzzMask;
 
@@ -356,12 +364,21 @@ public:
         return false;
     }
 
-    MessageFuzzer& Skip(uint16_t start, uint16_t len) { mSkipStart = start; mSkipLen = len; return *this; }
+    MessageFuzzer & Skip(uint16_t start, uint16_t len)
+    {
+        mSkipStart = start;
+        mSkipLen   = len;
+        return *this;
+    }
 
-    MessageFuzzer& TimeLimit(time_t timeLimit) { mTimeLimit = timeLimit; return *this; }
+    MessageFuzzer & TimeLimit(time_t timeLimit)
+    {
+        mTimeLimit = timeLimit;
+        return *this;
+    }
 
 private:
-    const char *mMsgType;
+    const char * mMsgType;
     uint16_t mIndex;
     uint16_t mSkipStart;
     uint16_t mSkipLen;
@@ -372,81 +389,115 @@ private:
 class CASEEngineTest
 {
 public:
-    CASEEngineTest(const char *testName)
+    CASEEngineTest(const char * testName)
     {
-        mTestName = testName;
+        mTestName       = testName;
         mProposedConfig = mExpectedConfig = kCASEConfig_NotSpecified;
         mProposedCurve = mExpectedCurve = kWeaveCurveId_NotSpecified;
-        mInitiatorAllowedConfigs = mResponderAllowedConfigs = kCASEAllowedConfig_Config1|kCASEAllowedConfig_Config2;
-        mInitiatorAllowedCurves = mResponderAllowedCurves = kWeaveCurveSet_prime192v1|kWeaveCurveSet_secp160r1|kWeaveCurveSet_secp224r1|kWeaveCurveSet_prime256v1;
-        mInitiatorRequestKeyConfirm = true;
+        mInitiatorAllowedConfigs = mResponderAllowedConfigs = kCASEAllowedConfig_Config1 | kCASEAllowedConfig_Config2;
+        mInitiatorAllowedCurves                             = mResponderAllowedCurves =
+            kWeaveCurveSet_prime192v1 | kWeaveCurveSet_secp160r1 | kWeaveCurveSet_secp224r1 | kWeaveCurveSet_prime256v1;
+        mInitiatorRequestKeyConfirm  = true;
         mResponderRequiresKeyConfirm = false;
-        mExpectReconfig = false;
-        mExpectedConfig = kCASEConfig_NotSpecified;
-        mExpectedCurve = kWeaveCurveId_NotSpecified;
-        mForceRepeatedReconfig = false;
+        mExpectReconfig              = false;
+        mExpectedConfig              = kCASEConfig_NotSpecified;
+        mExpectedCurve               = kWeaveCurveId_NotSpecified;
+        mForceRepeatedReconfig       = false;
         memset(mExpectedErrors, 0, sizeof(mExpectedErrors));
-        mMutator = &gNullMutator;
+        mMutator        = &gNullMutator;
         mLogMessageData = false;
     }
 
-    const char *TestName() const { return mTestName; }
+    const char * TestName() const { return mTestName; }
 
     uint32_t ProposedConfig() const { return mProposedConfig; }
-    CASEEngineTest& ProposedConfig(uint32_t val) { mProposedConfig = val; return *this; }
+    CASEEngineTest & ProposedConfig(uint32_t val)
+    {
+        mProposedConfig = val;
+        return *this;
+    }
 
     uint32_t ProposedCurve() const { return mProposedCurve; }
-    CASEEngineTest& ProposedCurve(uint32_t val) { mProposedCurve = val; return *this; }
+    CASEEngineTest & ProposedCurve(uint32_t val)
+    {
+        mProposedCurve = val;
+        return *this;
+    }
 
     uint32_t InitiatorAllowedConfigs() const { return mInitiatorAllowedConfigs; }
-    CASEEngineTest& InitiatorAllowedConfigs(uint8_t val) { mInitiatorAllowedConfigs = val; return *this; }
+    CASEEngineTest & InitiatorAllowedConfigs(uint8_t val)
+    {
+        mInitiatorAllowedConfigs = val;
+        return *this;
+    }
 
     uint32_t ResponderAllowedConfigs() const { return mResponderAllowedConfigs; }
-    CASEEngineTest& ResponderAllowedConfigs(uint8_t val) { mResponderAllowedConfigs = val; return *this; }
+    CASEEngineTest & ResponderAllowedConfigs(uint8_t val)
+    {
+        mResponderAllowedConfigs = val;
+        return *this;
+    }
 
     uint8_t InitiatorAllowedCurves() const { return mInitiatorAllowedCurves; }
-    CASEEngineTest& InitiatorAllowedCurves(uint8_t val) { mInitiatorAllowedCurves = val; return *this; }
+    CASEEngineTest & InitiatorAllowedCurves(uint8_t val)
+    {
+        mInitiatorAllowedCurves = val;
+        return *this;
+    }
 
     uint8_t ResponderAllowedCurves() const { return mResponderAllowedCurves; }
-    CASEEngineTest& ResponderAllowedCurves(uint8_t val) { mResponderAllowedCurves = val; return *this; }
+    CASEEngineTest & ResponderAllowedCurves(uint8_t val)
+    {
+        mResponderAllowedCurves = val;
+        return *this;
+    }
 
     bool InitiatorRequestKeyConfirm() const { return mInitiatorRequestKeyConfirm; }
-    CASEEngineTest& InitiatorRequestKeyConfirm(bool val) { mInitiatorRequestKeyConfirm = val; return *this; }
+    CASEEngineTest & InitiatorRequestKeyConfirm(bool val)
+    {
+        mInitiatorRequestKeyConfirm = val;
+        return *this;
+    }
 
     bool ResponderRequiresKeyConfirm() const { return mResponderRequiresKeyConfirm; }
-    CASEEngineTest& ResponderRequiresKeyConfirm(bool val) { mResponderRequiresKeyConfirm = val; return *this; }
+    CASEEngineTest & ResponderRequiresKeyConfirm(bool val)
+    {
+        mResponderRequiresKeyConfirm = val;
+        return *this;
+    }
 
     uint32_t ExpectReconfig() const { return mExpectReconfig; }
-    CASEEngineTest& ExpectReconfig(uint32_t expectedConfig)
+    CASEEngineTest & ExpectReconfig(uint32_t expectedConfig)
     {
         mExpectReconfig = true;
         mExpectedConfig = expectedConfig;
         return *this;
     }
-    CASEEngineTest& ExpectReconfigCurve(uint32_t expectedCurve)
+    CASEEngineTest & ExpectReconfigCurve(uint32_t expectedCurve)
     {
         mExpectReconfig = true;
-        mExpectedCurve = expectedCurve;
+        mExpectedCurve  = expectedCurve;
         return *this;
     }
     uint32_t ExpectedConfig() const { return mExpectedConfig != kCASEConfig_NotSpecified ? mExpectedConfig : mProposedConfig; }
     uint32_t ExpectedCurve() const { return mExpectedCurve != kWeaveCurveId_NotSpecified ? mExpectedCurve : mProposedCurve; }
 
     bool ForceRepeatedReconfig() const { return mForceRepeatedReconfig; }
-    CASEEngineTest& ForceRepeatedReconfig(bool val) { mForceRepeatedReconfig = val; return *this; }
-
-    CASEEngineTest& ExpectError(WEAVE_ERROR err)
+    CASEEngineTest & ForceRepeatedReconfig(bool val)
     {
-        return ExpectError(NULL, err);
+        mForceRepeatedReconfig = val;
+        return *this;
     }
 
-    CASEEngineTest& ExpectError(const char *opName, WEAVE_ERROR err)
+    CASEEngineTest & ExpectError(WEAVE_ERROR err) { return ExpectError(NULL, err); }
+
+    CASEEngineTest & ExpectError(const char * opName, WEAVE_ERROR err)
     {
         for (size_t i = 0; i < kMaxExpectedErrors; i++)
         {
             if (mExpectedErrors[i].Error == WEAVE_NO_ERROR)
             {
-                mExpectedErrors[i].Error = err;
+                mExpectedErrors[i].Error  = err;
                 mExpectedErrors[i].OpName = opName;
                 break;
             }
@@ -455,7 +506,7 @@ public:
         return *this;
     }
 
-    bool IsExpectedError(const char *opName, WEAVE_ERROR err) const
+    bool IsExpectedError(const char * opName, WEAVE_ERROR err) const
     {
         for (size_t i = 0; i < kMaxExpectedErrors && mExpectedErrors[i].Error != WEAVE_NO_ERROR; i++)
         {
@@ -468,10 +519,18 @@ public:
 
     bool IsSuccessExpected() const { return mExpectedErrors[0].Error == WEAVE_NO_ERROR; }
 
-    CASEEngineTest& Mutator(MessageMutator *mutator) { mMutator = mutator; return *this; }
+    CASEEngineTest & Mutator(MessageMutator * mutator)
+    {
+        mMutator = mutator;
+        return *this;
+    }
 
     bool LogMessageData() const { return mLogMessageData; }
-    CASEEngineTest& LogMessageData(bool val) { mLogMessageData = val; return *this; }
+    CASEEngineTest & LogMessageData(bool val)
+    {
+        mLogMessageData = val;
+        return *this;
+    }
 
     void Run() const;
 
@@ -483,11 +542,11 @@ private:
 
     struct ExpectedError
     {
-        const char *OpName;
+        const char * OpName;
         WEAVE_ERROR Error;
     };
 
-    const char *mTestName;
+    const char * mTestName;
     uint32_t mProposedConfig;
     uint32_t mProposedCurve;
     uint8_t mInitiatorAllowedConfigs;
@@ -501,7 +560,7 @@ private:
     uint32_t mExpectedCurve;
     bool mForceRepeatedReconfig;
     ExpectedError mExpectedErrors[kMaxExpectedErrors];
-    MessageMutator *mMutator;
+    MessageMutator * mMutator;
     bool mLogMessageData;
 };
 
@@ -510,12 +569,12 @@ void CASEEngineTest::Run() const
     WEAVE_ERROR err;
     WeaveCASEEngine initiatorEng;
     WeaveCASEEngine responderEng;
-    PacketBuffer *msgBuf = NULL;
-    PacketBuffer *msgBuf2 = NULL;
+    PacketBuffer * msgBuf  = NULL;
+    PacketBuffer * msgBuf2 = NULL;
     TestAuthDelegate initiatorDelegate(true);
     TestAuthDelegate responderDelegate(false);
-    const WeaveEncryptionKey *initiatorKey;
-    const WeaveEncryptionKey *responderKey;
+    const WeaveEncryptionKey * initiatorKey;
+    const WeaveEncryptionKey * responderKey;
 
     printf("========== Starting Test: %s\n", TestName());
 
@@ -526,8 +585,8 @@ void CASEEngineTest::Run() const
     do
     {
         bool reconfigPerformed = false;
-        uint32_t config = ProposedConfig();
-        uint32_t curveId = ProposedCurve();
+        uint32_t config        = ProposedConfig();
+        uint32_t curveId       = ProposedCurve();
 
         initiatorEng.Init();
         initiatorEng.AuthDelegate = &initiatorDelegate;
@@ -552,7 +611,7 @@ void CASEEngineTest::Run() const
             req.CurveId = curveId;
             initiatorEng.SetAlternateCurves(req);
             req.SetPerformKeyConfirm(InitiatorRequestKeyConfirm());
-            req.SessionKeyId = sTestDefaultSessionKeyId;
+            req.SessionKeyId   = sTestDefaultSessionKeyId;
             req.EncryptionType = kWeaveEncryptionType_AES128CTRSHA1;
 
             msgBuf = PacketBuffer::New();
@@ -595,8 +654,10 @@ void CASEEngineTest::Run() const
             {
                 VerifyOrQuit(err == WEAVE_ERROR_CASE_RECONFIG_REQUIRED, "WEAVE_ERROR_CASE_RECONFIG_REQUIRED error expected");
 
-                VerifyOrQuit(ExpectedConfig() == kCASEConfig_NotSpecified || reconf.ProtocolConfig == ExpectedConfig(), "Unexpected config proposed in ReconfigureContext");
-                VerifyOrQuit(ExpectedCurve() == kWeaveCurveId_NotSpecified || reconf.CurveId == ExpectedCurve(), "Unexpected curve proposed in ReconfigureContext");
+                VerifyOrQuit(ExpectedConfig() == kCASEConfig_NotSpecified || reconf.ProtocolConfig == ExpectedConfig(),
+                             "Unexpected config proposed in ReconfigureContext");
+                VerifyOrQuit(ExpectedCurve() == kWeaveCurveId_NotSpecified || reconf.CurveId == ExpectedCurve(),
+                             "Unexpected curve proposed in ReconfigureContext");
 
                 PacketBuffer::Free(msgBuf);
                 msgBuf = NULL;
@@ -636,7 +697,7 @@ void CASEEngineTest::Run() const
                 {
                     reconfigPerformed = true;
 
-                    config = reconf.ProtocolConfig;
+                    config  = reconf.ProtocolConfig;
                     curveId = reconf.CurveId;
                 }
 
@@ -657,7 +718,7 @@ void CASEEngineTest::Run() const
             BeginSessionResponseContext resp;
             resp.Reset();
             resp.ProtocolConfig = req.ProtocolConfig;
-            resp.CurveId = req.CurveId;
+            resp.CurveId        = req.CurveId;
 
             msgBuf2 = PacketBuffer::New();
             VerifyOrQuit(msgBuf2 != NULL, "PacketBuffer::New() failed");
@@ -769,10 +830,12 @@ void CASEEngineTest::Run() const
         err = responderEng.GetSessionKey(responderKey);
         SuccessOrQuit(err, "WeaveCASEEngine::GetSessionKey() failed");
 
-        VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.DataKey, responderKey->AES128CTRSHA1.DataKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
+        VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.DataKey, responderKey->AES128CTRSHA1.DataKey,
+                            WeaveEncryptionKey_AES128CTRSHA1::DataKeySize) == 0,
                      "Data key mismatch");
 
-        VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.IntegrityKey, responderKey->AES128CTRSHA1.IntegrityKey, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
+        VerifyOrQuit(memcmp(initiatorKey->AES128CTRSHA1.IntegrityKey, responderKey->AES128CTRSHA1.IntegrityKey,
+                            WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize) == 0,
                      "Integrity key mismatch");
 
         VerifyOrQuit(IsSuccessExpected(), "Test succeeded unexpectedly");
@@ -798,8 +861,7 @@ void CASEEngineTest::Run() const
 void CASEEngineTests_BasicTests()
 {
     // Basic sanity test with standard parameters
-    CASEEngineTest("Sanity test")
-        .Run();
+    CASEEngineTest("Sanity test").Run();
 }
 
 void CASEEngineTests_EllipticCurveTests()
@@ -867,10 +929,7 @@ void CASEEngineTests_ConfigNegotiationTests()
         .Run();
 
     // Initiator proposes Config1 but supports Config2, Responder supports Config1 and Config2, expect reconfig to Config2
-    CASEEngineTest("Reconfig to Config2")
-        .ProposedConfig(kCASEConfig_Config1)
-        .ExpectReconfig(kCASEConfig_Config2)
-        .Run();
+    CASEEngineTest("Reconfig to Config2").ProposedConfig(kCASEConfig_Config1).ExpectReconfig(kCASEConfig_Config2).Run();
 
     // Initiator proposes Config2 but supports Config1, Responder only supports Config1, expect reconfig to Config1
     CASEEngineTest("Reconfig to Config1")
@@ -908,13 +967,15 @@ void CASEEngineTests_ConfigNegotiationTests()
 
 void CASEEngineTests_CurveNegotiationTests()
 {
-#if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1 && WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1 && WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
+#if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1 && WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1 &&                              \
+    WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
 
-    // Initiator proposes prime192v1 and supports secp224r1, responder supports secp224r1 and prime256v1, expect reconfig to secp224r1
+    // Initiator proposes prime192v1 and supports secp224r1, responder supports secp224r1 and prime256v1, expect reconfig to
+    // secp224r1
     CASEEngineTest("Reconfig to common curve")
         .ProposedCurve(kWeaveCurveId_prime192v1)
-        .InitiatorAllowedCurves(kWeaveCurveSet_prime192v1|kWeaveCurveSet_secp224r1)
-        .ResponderAllowedCurves(kWeaveCurveSet_secp224r1|kWeaveCurveSet_prime256v1)
+        .InitiatorAllowedCurves(kWeaveCurveSet_prime192v1 | kWeaveCurveSet_secp224r1)
+        .ResponderAllowedCurves(kWeaveCurveSet_secp224r1 | kWeaveCurveSet_prime256v1)
         .ExpectReconfigCurve(kWeaveCurveId_secp224r1)
         .Run();
 
@@ -932,15 +993,10 @@ void CASEEngineTests_CurveNegotiationTests()
 void CASEEngineTests_KeyConfirmationTests()
 {
     // Initiator does not request key confirmation.
-    CASEEngineTest("No initiator key confirm")
-        .InitiatorRequestKeyConfirm(false)
-        .Run();
+    CASEEngineTest("No initiator key confirm").InitiatorRequestKeyConfirm(false).Run();
 
     // Initiator does not request key confirmation, but responder requires it.
-    CASEEngineTest("Responder requires key confirm")
-        .InitiatorRequestKeyConfirm(false)
-        .ResponderRequiresKeyConfirm(true)
-        .Run();
+    CASEEngineTest("Responder requires key confirm").InitiatorRequestKeyConfirm(false).ResponderRequiresKeyConfirm(true).Run();
 }
 
 uint32_t gFuzzTestDurationSecs = 5;
@@ -961,10 +1017,10 @@ void CASEEngineTests_FuzzTests()
         // Fuzz contents of BeginSessionRequest message, verify protocol error.
         {
             MessageFuzzer fuzzer = MessageFuzzer("BeginSessionRequest")
-                .Skip(8, 8)  // Avoid mutating the proposed protocol config or ECDH curve fields
-                             // in the BeginSessionRequest, as doing so will elicit a reconfigure
-                             // rather than an error.
-                .TimeLimit(endTime);
+                                       .Skip(8, 8) // Avoid mutating the proposed protocol config or ECDH curve fields
+                                                   // in the BeginSessionRequest, as doing so will elicit a reconfigure
+                                                   // rather than an error.
+                                       .TimeLimit(endTime);
             CASEEngineTest("Mutate BeginSessionRequest")
                 .Mutator(&fuzzer)
                 .ExpectError("Responder:ProcessBeginSessionRequest", WEAVE_ERROR_WRONG_TLV_TYPE)
@@ -989,8 +1045,7 @@ void CASEEngineTests_FuzzTests()
 
         // Fuzz contents of BeginSessionResponse message, verify protocol error.
         {
-            MessageFuzzer fuzzer = MessageFuzzer("BeginSessionResponse")
-                .TimeLimit(endTime);
+            MessageFuzzer fuzzer = MessageFuzzer("BeginSessionResponse").TimeLimit(endTime);
             CASEEngineTest("Mutate BeginSessionResponse")
                 .Mutator(&fuzzer)
                 .ExpectError("Initiator:ProcessBeginSessionResponse", WEAVE_ERROR_WRONG_TLV_TYPE)
@@ -1016,8 +1071,7 @@ void CASEEngineTests_FuzzTests()
 
         // Fuzz contents of InitiatorKeyConfirm message, verify protocol error.
         {
-            MessageFuzzer fuzzer = MessageFuzzer("InitiatorKeyConfirm")
-                .TimeLimit(endTime);
+            MessageFuzzer fuzzer = MessageFuzzer("InitiatorKeyConfirm").TimeLimit(endTime);
             CASEEngineTest("Mutate InitiatorKeyConfirm")
                 .Mutator(&fuzzer)
                 .InitiatorRequestKeyConfirm(true)
@@ -1025,43 +1079,23 @@ void CASEEngineTests_FuzzTests()
                 .Run();
         }
     }
-
 }
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "fuzz-duration", kArgumentRequired, 'f' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "fuzz-duration", kArgumentRequired, 'f' }, { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -f, --fuzz-duration <seconds>\n"
     "       Fuzzing duration in seconds.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Unit tests for Weave CASE engine.\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Unit tests for Weave CASE engine.\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions, &gHelpOptions, NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -1089,7 +1123,7 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
 }
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -1100,9 +1134,7 @@ static bool HandleOption(const char *progName, OptionSet *optSet, int id, const 
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

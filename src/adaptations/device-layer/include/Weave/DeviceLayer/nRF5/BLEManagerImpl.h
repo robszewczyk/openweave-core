@@ -38,25 +38,22 @@ namespace Internal {
 /**
  * Concrete implementation of the NetworkProvisioningServer singleton object for the nRF5 platforms.
  */
-class BLEManagerImpl final
-    : public BLEManager,
-      private ::nl::Ble::BleLayer,
-      private BlePlatformDelegate,
-      private BleApplicationDelegate
+class BLEManagerImpl final : public BLEManager,
+                             private ::nl::Ble::BleLayer,
+                             private BlePlatformDelegate,
+                             private BleApplicationDelegate
 {
     // Allow the BLEManager interface class to delegate method calls to
     // the implementation methods provided by this class.
     friend BLEManager;
 
 public:
-
     // ===== Platform-specific members available for use by the application.
 
     uint8_t GetAdvertisingHandle(void);
     void SetAdvertisingHandle(uint8_t handle);
 
 private:
-
     // ===== Members that implement the BLEManager internal interface.
 
     WEAVE_ERROR _Init(void);
@@ -79,10 +76,14 @@ private:
     bool UnsubscribeCharacteristic(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId) override;
     bool CloseConnection(BLE_CONNECTION_OBJECT conId) override;
     uint16_t GetMTU(BLE_CONNECTION_OBJECT conId) const override;
-    bool SendIndication(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId, PacketBuffer * pBuf) override;
-    bool SendWriteRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId, PacketBuffer * pBuf) override;
-    bool SendReadRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId, PacketBuffer * pBuf) override;
-    bool SendReadResponse(BLE_CONNECTION_OBJECT conId, BLE_READ_REQUEST_CONTEXT requestContext, const WeaveBleUUID * svcId, const WeaveBleUUID * charId) override;
+    bool SendIndication(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                        PacketBuffer * pBuf) override;
+    bool SendWriteRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                          PacketBuffer * pBuf) override;
+    bool SendReadRequest(BLE_CONNECTION_OBJECT conId, const WeaveBleUUID * svcId, const WeaveBleUUID * charId,
+                         PacketBuffer * pBuf) override;
+    bool SendReadResponse(BLE_CONNECTION_OBJECT conId, BLE_READ_REQUEST_CONTEXT requestContext, const WeaveBleUUID * svcId,
+                          const WeaveBleUUID * charId) override;
 
     // ===== Members that implement virtual methods on BleApplicationDelegate.
 
@@ -99,18 +100,19 @@ private:
 
     enum
     {
-        kFlag_AsyncInitCompleted                = 0x0001, /**< One-time asynchronous initialization actions have been performed. */
-        kFlag_AdvertisingEnabled                = 0x0002, /**< The application has enabled WoBLE advertising. */
-        kFlag_FastAdvertisingEnabled            = 0x0004, /**< The application has enabled fast advertising. */
-        kFlag_Advertising                       = 0x0008, /**< The system is currently WoBLE advertising. */
-        kFlag_AdvertisingRefreshNeeded          = 0x0010, /**< The advertising state/configuration has changed, but the SoftDevice has yet to be updated. */
+        kFlag_AsyncInitCompleted     = 0x0001, /**< One-time asynchronous initialization actions have been performed. */
+        kFlag_AdvertisingEnabled     = 0x0002, /**< The application has enabled WoBLE advertising. */
+        kFlag_FastAdvertisingEnabled = 0x0004, /**< The application has enabled fast advertising. */
+        kFlag_Advertising            = 0x0008, /**< The system is currently WoBLE advertising. */
+        kFlag_AdvertisingRefreshNeeded =
+            0x0010, /**< The advertising state/configuration has changed, but the SoftDevice has yet to be updated. */
     };
 
     enum
     {
-        kMaxConnections = MIN(BLE_LAYER_NUM_BLE_ENDPOINTS, NRF_SDH_BLE_PERIPHERAL_LINK_COUNT),
-        kMaxDeviceNameLength = 20, // TODO: right-size this
-        kMaxAdvertismentDataSetSize = 31 // TODO: verify this
+        kMaxConnections             = MIN(BLE_LAYER_NUM_BLE_ENDPOINTS, NRF_SDH_BLE_PERIPHERAL_LINK_COUNT),
+        kMaxDeviceNameLength        = 20, // TODO: right-size this
+        kMaxAdvertismentDataSetSize = 31  // TODO: verify this
     };
 
     ble_gatts_char_handles_t mWoBLECharHandle_RX;
@@ -176,7 +178,7 @@ inline void BLEManagerImpl::SetAdvertisingHandle(uint8_t handle)
 
 inline ::nl::Ble::BleLayer * BLEManagerImpl::_GetBleLayer() const
 {
-    return (BleLayer *)(this);
+    return (BleLayer *) (this);
 }
 
 inline BLEManager::WoBLEServiceMode BLEManagerImpl::_GetWoBLEServiceMode(void)

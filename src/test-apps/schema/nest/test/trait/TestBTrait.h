@@ -33,7 +33,6 @@
 #include <nest/test/trait/TestATrait.h>
 #include <nest/test/trait/TestCommon.h>
 
-
 namespace Schema {
 namespace Nest {
 namespace Test {
@@ -42,15 +41,17 @@ namespace TestBTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0xfe01U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0xfe01U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -108,7 +109,7 @@ enum {
     kPropertyHandle_TaI = 11,
 
     //
-    //  ta_j                                map <uint32,nest.test.trait.TestATrait.StructA> map <uint16, structure>NO              NO
+    //  ta_j                                map <uint32,nest.test.trait.TestATrait.StructA> map <uint16, structure>NO NO
     //
     kPropertyHandle_TaJ = 12,
 
@@ -258,12 +259,12 @@ struct StructB
     uint32_t sbB;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct StructB_array {
+struct StructB_array
+{
     uint32_t num;
-    StructB *buf;
+    StructB * buf;
 };
 
 struct StructEA
@@ -276,15 +277,15 @@ struct StructEA
 #endif
     bool saB;
     const char * seaC;
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct StructEA_array {
+struct StructEA_array
+{
     uint32_t num;
-    StructEA *buf;
+    StructEA * buf;
 };
 
 inline void StructEA::SetSaANull(void)

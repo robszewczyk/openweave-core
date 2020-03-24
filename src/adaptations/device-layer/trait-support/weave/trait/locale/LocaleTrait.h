@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace LocaleTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x11U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x11U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -75,9 +75,10 @@ enum {
 // Enums
 //
 
-enum LocaleStatus {
+enum LocaleStatus
+{
     LOCALE_STATUS_NOT_SUPPORTED_OR_UNKNOWN = 1,
-    LOCALE_STATUS_IMPROPERLY_FORMATTED = 2,
+    LOCALE_STATUS_IMPROPERLY_FORMATTED     = 2,
 };
 
 } // namespace LocaleTrait

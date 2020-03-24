@@ -48,11 +48,9 @@ namespace Internal {
  * }
  * ```
  */
-template<class ImplClass>
-class GenericConnectivityManagerImpl_NoBLE
+template <class ImplClass> class GenericConnectivityManagerImpl_NoBLE
 {
 public:
-
     // ===== Methods that implement the ConnectivityManager abstract interface.
 
     ConnectivityManager::WoBLEServiceMode _GetWoBLEServiceMode(void);
@@ -67,66 +65,62 @@ public:
     static const char * _WoBLEServiceModeToStr(ConnectivityManager::WoBLEServiceMode mode);
 
 private:
-
     ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 };
 
-template<class ImplClass>
+template <class ImplClass>
 inline ConnectivityManager::WoBLEServiceMode GenericConnectivityManagerImpl_NoBLE<ImplClass>::_GetWoBLEServiceMode(void)
 {
     return ConnectivityManager::kWoBLEServiceMode_NotSupported;
 }
 
-template<class ImplClass>
+template <class ImplClass>
 inline WEAVE_ERROR GenericConnectivityManagerImpl_NoBLE<ImplClass>::_SetWoBLEServiceMode(ConnectivityManager::WoBLEServiceMode val)
 {
     return WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE;
 }
 
-template<class ImplClass>
-inline bool GenericConnectivityManagerImpl_NoBLE<ImplClass>::_IsBLEAdvertisingEnabled(void)
+template <class ImplClass> inline bool GenericConnectivityManagerImpl_NoBLE<ImplClass>::_IsBLEAdvertisingEnabled(void)
 {
     return false;
 }
 
-template<class ImplClass>
-inline WEAVE_ERROR GenericConnectivityManagerImpl_NoBLE<ImplClass>::_SetBLEAdvertisingEnabled(bool val)
+template <class ImplClass> inline WEAVE_ERROR GenericConnectivityManagerImpl_NoBLE<ImplClass>::_SetBLEAdvertisingEnabled(bool val)
 {
     return WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE;
 }
 
-template<class ImplClass>
-inline bool GenericConnectivityManagerImpl_NoBLE<ImplClass>::_IsBLEFastAdvertisingEnabled(void)
+template <class ImplClass> inline bool GenericConnectivityManagerImpl_NoBLE<ImplClass>::_IsBLEFastAdvertisingEnabled(void)
 {
     return false;
 }
 
-template<class ImplClass>
+template <class ImplClass>
 inline WEAVE_ERROR GenericConnectivityManagerImpl_NoBLE<ImplClass>::_SetBLEFastAdvertisingEnabled(bool val)
 {
     return WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE;
 }
 
-template<class ImplClass>
+template <class ImplClass>
 inline WEAVE_ERROR GenericConnectivityManagerImpl_NoBLE<ImplClass>::_GetBLEDeviceName(char * buf, size_t bufSize)
 {
     return WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE;
 }
 
-template<class ImplClass>
+template <class ImplClass>
 inline WEAVE_ERROR GenericConnectivityManagerImpl_NoBLE<ImplClass>::_SetBLEDeviceName(const char * deviceName)
 {
     return WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE;
 }
 
-template<class ImplClass>
-inline uint16_t GenericConnectivityManagerImpl_NoBLE<ImplClass>::_NumBLEConnections(void)
+template <class ImplClass> inline uint16_t GenericConnectivityManagerImpl_NoBLE<ImplClass>::_NumBLEConnections(void)
 {
     return false;
 }
 
-template<class ImplClass>
-inline const char * GenericConnectivityManagerImpl_NoBLE<ImplClass>::_WoBLEServiceModeToStr(ConnectivityManager::WoBLEServiceMode mode)
+template <class ImplClass>
+inline const char *
+GenericConnectivityManagerImpl_NoBLE<ImplClass>::_WoBLEServiceModeToStr(ConnectivityManager::WoBLEServiceMode mode)
 {
     return NULL;
 }

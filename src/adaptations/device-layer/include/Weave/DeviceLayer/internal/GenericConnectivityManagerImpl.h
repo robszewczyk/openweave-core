@@ -27,7 +27,6 @@
 
 #include <Weave/DeviceLayer/internal/DeviceDescriptionServer.h>
 
-
 namespace nl {
 namespace Weave {
 namespace DeviceLayer {
@@ -41,11 +40,9 @@ namespace Internal {
  * or indirectly) by the ConfigurationManagerImpl class, which also appears as the template's ImplClass
  * parameter.
  */
-template<class ImplClass>
-class GenericConnectivityManagerImpl
+template <class ImplClass> class GenericConnectivityManagerImpl
 {
 public:
-
     // ===== Methods that implement the ConnectivityManager abstract interface.
 
     bool _IsUserSelectedModeActive(void);
@@ -54,34 +51,28 @@ public:
     void _SetUserSelectedModeTimeout(uint16_t val);
 
 private:
-
     ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 };
 
-template<class ImplClass>
-inline bool GenericConnectivityManagerImpl<ImplClass>::_IsUserSelectedModeActive(void)
+template <class ImplClass> inline bool GenericConnectivityManagerImpl<ImplClass>::_IsUserSelectedModeActive(void)
 {
     return DeviceDescriptionSvr().IsUserSelectedModeActive();
 }
 
-template<class ImplClass>
-inline void GenericConnectivityManagerImpl<ImplClass>::_SetUserSelectedMode(bool val)
+template <class ImplClass> inline void GenericConnectivityManagerImpl<ImplClass>::_SetUserSelectedMode(bool val)
 {
     DeviceDescriptionSvr().SetUserSelectedMode(val);
 }
 
-template<class ImplClass>
-inline uint16_t GenericConnectivityManagerImpl<ImplClass>::_GetUserSelectedModeTimeout(void)
+template <class ImplClass> inline uint16_t GenericConnectivityManagerImpl<ImplClass>::_GetUserSelectedModeTimeout(void)
 {
     return DeviceDescriptionSvr().GetUserSelectedModeTimeout();
 }
 
-template<class ImplClass>
-inline void GenericConnectivityManagerImpl<ImplClass>::_SetUserSelectedModeTimeout(uint16_t val)
+template <class ImplClass> inline void GenericConnectivityManagerImpl<ImplClass>::_SetUserSelectedModeTimeout(uint16_t val)
 {
     DeviceDescriptionSvr().SetUserSelectedModeTimeout(val);
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

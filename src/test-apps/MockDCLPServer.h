@@ -31,18 +31,18 @@
 using nl::Weave::WeaveExchangeManager;
 using namespace nl::Weave::Profiles::Vendor::Nestlabs::DropcamLegacyPairing;
 
-class MockDropcamLegacyPairingServer: private DropcamLegacyPairingServer, private DropcamLegacyPairingDelegate
+class MockDropcamLegacyPairingServer : private DropcamLegacyPairingServer, private DropcamLegacyPairingDelegate
 {
 public:
     MockDropcamLegacyPairingServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
     virtual WEAVE_ERROR GetCameraSecret(uint8_t (&secret)[CAMERA_SECRET_LEN]);
     virtual WEAVE_ERROR GetCameraMACAddress(uint8_t (&macAddress)[EUI48_LEN]);
-    virtual void EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result);
 };
 
 #endif /* MOCKDCLPSERVER_H_ */

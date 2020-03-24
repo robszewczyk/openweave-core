@@ -27,24 +27,18 @@
 #ifndef _WEAVE_TRAIT_HEARTBEAT__LIVENESS_SIGNAL_TRAIT_C_H_
 #define _WEAVE_TRAIT_HEARTBEAT__LIVENESS_SIGNAL_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // LivenessSignalType
-    typedef enum
-    {
+// LivenessSignalType
+typedef enum
+{
     LIVENESS_SIGNAL_TYPE_MUTUAL_SUBSCRIPTION_ESTABLISHED = 1,
-    LIVENESS_SIGNAL_TYPE_SUBSCRIPTION_HEARTBEAT = 2,
-    LIVENESS_SIGNAL_TYPE_NON_SUBSCRIPTION_HEARTBEAT = 3,
-    LIVENESS_SIGNAL_TYPE_NOTIFY_REQUEST_UNDELIVERED = 4,
-    LIVENESS_SIGNAL_TYPE_COMMAND_REQUEST_UNDELIVERED = 5,
-    } schema_weave_heartbeat_liveness_signal_trait_liveness_signal_type_t;
-
-
-
+    LIVENESS_SIGNAL_TYPE_SUBSCRIPTION_HEARTBEAT          = 2,
+    LIVENESS_SIGNAL_TYPE_NON_SUBSCRIPTION_HEARTBEAT      = 3,
+    LIVENESS_SIGNAL_TYPE_NOTIFY_REQUEST_UNDELIVERED      = 4,
+    LIVENESS_SIGNAL_TYPE_COMMAND_REQUEST_UNDELIVERED     = 5,
+} schema_weave_heartbeat_liveness_signal_trait_liveness_signal_type_t;
 
 #endif // _WEAVE_TRAIT_HEARTBEAT__LIVENESS_SIGNAL_TRAIT_C_H_

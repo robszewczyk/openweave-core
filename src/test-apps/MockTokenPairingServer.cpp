@@ -42,12 +42,9 @@ using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::TokenPairing;
 
-MockTokenPairingServer::MockTokenPairingServer() :
-    mIsPaired(false)
-{
-}
+MockTokenPairingServer::MockTokenPairingServer() : mIsPaired(false) { }
 
-WEAVE_ERROR MockTokenPairingServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockTokenPairingServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -68,12 +65,13 @@ WEAVE_ERROR MockTokenPairingServer::Shutdown()
     return this->TokenPairingServer::Shutdown();
 }
 
-WEAVE_ERROR MockTokenPairingServer::OnPairTokenRequest(TokenPairingServer *server, uint8_t *pairingToken, uint32_t pairingTokenLength)
+WEAVE_ERROR MockTokenPairingServer::OnPairTokenRequest(TokenPairingServer * server, uint8_t * pairingToken,
+                                                       uint32_t pairingTokenLength)
 {
-    WEAVE_ERROR     err             = WEAVE_NO_ERROR;
-    uint8_t*        p;
-    PacketBuffer*   certificateBuf  = NULL;
-    PacketBuffer*   tokenBundleBuf  = NULL;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    uint8_t * p;
+    PacketBuffer * certificateBuf = NULL;
+    PacketBuffer * tokenBundleBuf = NULL;
 
     printf("Pair Token request received.  Pairing token:");
     for (size_t i = 0; i < pairingTokenLength; i++)
@@ -88,7 +86,7 @@ WEAVE_ERROR MockTokenPairingServer::OnPairTokenRequest(TokenPairingServer *serve
     certificateBuf = PacketBuffer::New();
     VerifyOrExit(certificateBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    p = certificateBuf->Start();
+    p    = certificateBuf->Start();
     p[0] = 1;
     p[1] = 2;
     p[2] = 3;
@@ -103,7 +101,7 @@ WEAVE_ERROR MockTokenPairingServer::OnPairTokenRequest(TokenPairingServer *serve
     tokenBundleBuf = PacketBuffer::New();
     VerifyOrExit(tokenBundleBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    p = tokenBundleBuf->Start();
+    p    = tokenBundleBuf->Start();
     p[0] = 'a';
     p[1] = 'b';
     p[2] = 'c';
@@ -131,7 +129,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR MockTokenPairingServer::OnUnpairTokenRequest(TokenPairingServer *server)
+WEAVE_ERROR MockTokenPairingServer::OnUnpairTokenRequest(TokenPairingServer * server)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -151,8 +149,8 @@ exit:
     return err;
 }
 
-void MockTokenPairingServer::EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void MockTokenPairingServer::EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                  const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     if (sSuppressAccessControls)
     {

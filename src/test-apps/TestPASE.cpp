@@ -42,126 +42,123 @@ using System::PacketBuffer;
 
 void PASEEngineTests_BasicTests()
 {
-    //Fails
-    PASEEngineTest("Sanity")
-            .Run();
+    // Fails
+    PASEEngineTest("Sanity").Run();
 }
 
 void PASEEngine_ConfigTest1()
 {
     PASEEngineTest("Config 1 Confirm Key")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config1)
-            .ConfirmKey(true)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config1)
+        .ConfirmKey(true)
+        .Run();
 
     PASEEngineTest("Config 1 No Confirm Key")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config1)
-            .ConfirmKey(false)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config1)
+        .ConfirmKey(false)
+        .Run();
 
     PASEEngineTest("Config 1 Test Bad Password")
-             .InitiatorPassword("TestPassword")
-             .ResponderPassword("TestwordPass")
-             .ProposedConfig(kPASEConfig_Config1)
-             .ResponderAllowedConfigs(kPASEConfig_Config1)
-             .ConfirmKey(true)
-             .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestwordPass")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config1)
+        .ConfirmKey(true)
+        .Run();
 }
 
 void PASEEngine_ConfigTest4()
 {
     PASEEngineTest("Config 4 Confirm Key")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config4)
-            .ResponderAllowedConfigs(kPASEConfig_Config4)
-            .ConfirmKey(true)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config4)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ConfirmKey(true)
+        .Run();
 
     PASEEngineTest("Config 4 No Confirm Key")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config4)
-            .ResponderAllowedConfigs(kPASEConfig_Config4)
-            .ConfirmKey(false)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config4)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ConfirmKey(false)
+        .Run();
 
     PASEEngineTest("Config 4 Test Bad Password")
-             .InitiatorPassword("TestPassword")
-             .ResponderPassword("TestwordPass")
-             .ProposedConfig(kPASEConfig_Config4)
-             .ResponderAllowedConfigs(kPASEConfig_Config4)
-             .ConfirmKey(true)
-             .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestwordPass")
+        .ProposedConfig(kPASEConfig_Config4)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ConfirmKey(true)
+        .Run();
 }
 
 void PASEEngineTest_MixedConfigs()
 {
     PASEEngineTest("Different Configs 1/4")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config4)
-            .ExpectReconfig(kPASEConfig_Config4)
-            .ConfirmKey(true)
-            .LogMessageData(false)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ExpectReconfig(kPASEConfig_Config4)
+        .ConfirmKey(true)
+        .LogMessageData(false)
+        .Run();
 
     PASEEngineTest("Different Config Force Reconfig 1/4")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config4)
-            .ExpectReconfig(kPASEConfig_Config4)
-            .ConfirmKey(true)
-            .LogMessageData(false)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ExpectReconfig(kPASEConfig_Config4)
+        .ConfirmKey(true)
+        .LogMessageData(false)
+        .Run();
 
     PASEEngineTest("Different Configs 1/4")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config4)
-            .ExpectReconfig(kPASEConfig_Config4)
-            .ConfirmKey(true)
-            .LogMessageData(false)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ExpectReconfig(kPASEConfig_Config4)
+        .ConfirmKey(true)
+        .LogMessageData(false)
+        .Run();
 
     PASEEngineTest("Different Config Force Reconfig 1/4")
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config4)
-            .ExpectReconfig(kPASEConfig_Config4)
-            .ConfirmKey(true)
-            .LogMessageData(false)
-            .Run();
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config4)
+        .ExpectReconfig(kPASEConfig_Config4)
+        .ConfirmKey(true)
+        .LogMessageData(false)
+        .Run();
 }
 
-void PASEEngine_ExternalFuzzingEngine(const char *fuzzLocation, const uint8_t *fuzzInput, size_t fuzzInputSize)
+void PASEEngine_ExternalFuzzingEngine(const char * fuzzLocation, const uint8_t * fuzzInput, size_t fuzzInputSize)
 {
-    MessageExternalFuzzer fuzzer = MessageExternalFuzzer(fuzzLocation)
-        .FuzzInput(fuzzInput, fuzzInputSize);
+    MessageExternalFuzzer fuzzer = MessageExternalFuzzer(fuzzLocation).FuzzInput(fuzzInput, fuzzInputSize);
 
     PASEEngineTest("Message Substitution Fuzzing")
-            .Mutator(&fuzzer)
-            .InitiatorPassword("TestPassword")
-            .ResponderPassword("TestPassword")
-            .ProposedConfig(kPASEConfig_Config1)
-            .ResponderAllowedConfigs(kPASEConfig_Config1)
-            .ConfirmKey(true)
-            .LogMessageData(false)
-            .Run();
-
+        .Mutator(&fuzzer)
+        .InitiatorPassword("TestPassword")
+        .ResponderPassword("TestPassword")
+        .ProposedConfig(kPASEConfig_Config1)
+        .ResponderAllowedConfigs(kPASEConfig_Config1)
+        .ConfirmKey(true)
+        .LogMessageData(false)
+        .Run();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP

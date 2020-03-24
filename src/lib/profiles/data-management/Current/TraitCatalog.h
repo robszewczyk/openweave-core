@@ -84,8 +84,7 @@ typedef void (*IteratorCallback)(void * aTraitInstance, TraitDataHandle aHandle,
  *  @brief A catalog interface that all concrete catalogs need to adhere to.
  *
  */
-template <typename T>
-class TraitCatalogBase
+template <typename T> class TraitCatalogBase
 {
 public:
     /**
@@ -118,10 +117,10 @@ public:
 
     virtual void Iterate(IteratorCallback aCallback, void * aContext) = 0;
 
-#if    WEAVE_CONFIG_ENABLE_WDM_UPDATE
-    virtual WEAVE_ERROR GetInstanceId(TraitDataHandle aHandle, uint64_t &aInstanceId) const = 0;
+#if WEAVE_CONFIG_ENABLE_WDM_UPDATE
+    virtual WEAVE_ERROR GetInstanceId(TraitDataHandle aHandle, uint64_t & aInstanceId) const = 0;
 
-    virtual WEAVE_ERROR GetResourceId(TraitDataHandle aHandle, ResourceIdentifier &aResourceId) const = 0;
+    virtual WEAVE_ERROR GetResourceId(TraitDataHandle aHandle, ResourceIdentifier & aResourceId) const = 0;
 #endif // WEAVE_CONFIG_ENABLE_WDM_UPDATE
 };
 

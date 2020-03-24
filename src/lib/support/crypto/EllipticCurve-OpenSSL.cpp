@@ -60,14 +60,12 @@ using namespace nl::Weave::Encoding;
 #if WEAVE_CONFIG_USE_OPENSSL_ECC
 
 // Generate an ECDSA signature given a message hash and a EC private key.
-NL_DLL_EXPORT WEAVE_ERROR GenerateECDSASignature(OID curveOID,
-                                   const uint8_t *msgHash, uint8_t msgHashLen,
-                                   const EncodedECPrivateKey& encodedPrivKey,
-                                   EncodedECDSASignature& encodedSig)
+NL_DLL_EXPORT WEAVE_ERROR GenerateECDSASignature(OID curveOID, const uint8_t * msgHash, uint8_t msgHashLen,
+                                                 const EncodedECPrivateKey & encodedPrivKey, EncodedECDSASignature & encodedSig)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_KEY *key = NULL;
-    ECDSA_SIG *ecSig = NULL;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    EC_KEY * key      = NULL;
+    ECDSA_SIG * ecSig = NULL;
 
     // Decode the private key into a EC_KEY object.
     err = DecodeECKey(curveOID, &encodedPrivKey, NULL, key);
@@ -89,14 +87,12 @@ exit:
 }
 
 // Generate an ECDSA signature given a message hash and a EC private key.
-WEAVE_ERROR GenerateECDSASignature(OID curveOID,
-                                   const uint8_t *msgHash, uint8_t msgHashLen,
-                                   const EncodedECPrivateKey& encodedPrivKey,
-                                   uint8_t *fixedLenSig)
+WEAVE_ERROR GenerateECDSASignature(OID curveOID, const uint8_t * msgHash, uint8_t msgHashLen,
+                                   const EncodedECPrivateKey & encodedPrivKey, uint8_t * fixedLenSig)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_KEY *key = NULL;
-    ECDSA_SIG *ecSig = NULL;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    EC_KEY * key      = NULL;
+    ECDSA_SIG * ecSig = NULL;
 
     // Decode the private key into a EC_KEY object.
     err = DecodeECKey(curveOID, &encodedPrivKey, NULL, key);
@@ -118,14 +114,12 @@ exit:
 }
 
 // Verify an ECDSA signature.
-NL_DLL_EXPORT WEAVE_ERROR VerifyECDSASignature(OID curveOID,
-                                 const uint8_t *msgHash, uint8_t msgHashLen,
-                                 const EncodedECDSASignature& encodedSig,
-                                 const EncodedECPublicKey& encodedPubKey)
+NL_DLL_EXPORT WEAVE_ERROR VerifyECDSASignature(OID curveOID, const uint8_t * msgHash, uint8_t msgHashLen,
+                                               const EncodedECDSASignature & encodedSig, const EncodedECPublicKey & encodedPubKey)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_KEY *pubKey = NULL;
-    ECDSA_SIG *sig = NULL;
+    EC_KEY * pubKey = NULL;
+    ECDSA_SIG * sig = NULL;
     int res;
 
     // Decode the public key into a EC_KEY object.
@@ -146,14 +140,12 @@ exit:
 }
 
 // Verify an ECDSA signature.
-WEAVE_ERROR VerifyECDSASignature(OID curveOID,
-                                 const uint8_t *msgHash, uint8_t msgHashLen,
-                                 const uint8_t *fixedLenSig,
-                                 const EncodedECPublicKey& encodedPubKey)
+WEAVE_ERROR VerifyECDSASignature(OID curveOID, const uint8_t * msgHash, uint8_t msgHashLen, const uint8_t * fixedLenSig,
+                                 const EncodedECPublicKey & encodedPubKey)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_KEY *pubKey = NULL;
-    ECDSA_SIG *sig = NULL;
+    EC_KEY * pubKey = NULL;
+    ECDSA_SIG * sig = NULL;
     int res;
 
     // Decode the public key into a EC_KEY object.
@@ -176,12 +168,12 @@ exit:
 }
 
 // Generate a public/private key pair suitable for Elliptic Curve Diffie-Hellman.
-WEAVE_ERROR GenerateECDHKey(OID curveOID, EncodedECPublicKey& encodedPubKey, EncodedECPrivateKey& encodedPrivKey)
+WEAVE_ERROR GenerateECDHKey(OID curveOID, EncodedECPublicKey & encodedPubKey, EncodedECPrivateKey & encodedPrivKey)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_GROUP *ecGroup = NULL;
-    EC_KEY *key = NULL;
-    const BIGNUM *privKey;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    EC_GROUP * ecGroup = NULL;
+    EC_KEY * key       = NULL;
+    const BIGNUM * privKey;
     int res, privKeyLen;
 
     err = GetECGroupForCurve(curveOID, ecGroup);
@@ -196,10 +188,11 @@ WEAVE_ERROR GenerateECDHKey(OID curveOID, EncodedECPublicKey& encodedPubKey, Enc
     res = EC_KEY_generate_key(key);
     VerifyOrExit(res, err = WEAVE_ERROR_NO_MEMORY); // TODO: map OpenSSL error
 
-    err = EncodeX962ECPoint(curveOID, ecGroup, EC_KEY_get0_public_key(key), encodedPubKey.ECPoint, encodedPubKey.ECPointLen, encodedPubKey.ECPointLen);
+    err = EncodeX962ECPoint(curveOID, ecGroup, EC_KEY_get0_public_key(key), encodedPubKey.ECPoint, encodedPubKey.ECPointLen,
+                            encodedPubKey.ECPointLen);
     SuccessOrExit(err);
 
-    privKey = EC_KEY_get0_private_key(key);
+    privKey    = EC_KEY_get0_private_key(key);
     privKeyLen = BN_num_bytes(privKey);
     VerifyOrExit(encodedPrivKey.PrivKeyLen >= privKeyLen, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
@@ -213,13 +206,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ECDHComputeSharedSecret(OID curveOID, const EncodedECPublicKey& encodedPubKey, const EncodedECPrivateKey& encodedPrivKey,
-                                    uint8_t *sharedSecretBuf, uint16_t sharedSecretBufSize, uint16_t& sharedSecretLen)
+WEAVE_ERROR ECDHComputeSharedSecret(OID curveOID, const EncodedECPublicKey & encodedPubKey,
+                                    const EncodedECPrivateKey & encodedPrivKey, uint8_t * sharedSecretBuf,
+                                    uint16_t sharedSecretBufSize, uint16_t & sharedSecretLen)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *pubKey = NULL;
-    BIGNUM *privKey = NULL;
+    EC_GROUP * ecGroup = NULL;
+    EC_POINT * pubKey  = NULL;
+    BIGNUM * privKey   = NULL;
 
     err = GetECGroupForCurve(curveOID, ecGroup);
     SuccessOrExit(err);
@@ -243,8 +237,8 @@ exit:
 
 int GetCurveSize(const OID curveOID)
 {
-    int curveSize = 0;
-    EC_GROUP *ecGroup = NULL;
+    int curveSize      = 0;
+    EC_GROUP * ecGroup = NULL;
 
     if (GetECGroupForCurve(curveOID, ecGroup) == WEAVE_NO_ERROR)
         curveSize = GetCurveSize(curveOID, ecGroup);
@@ -254,15 +248,16 @@ int GetCurveSize(const OID curveOID)
     return curveSize;
 }
 
-WEAVE_ERROR GetCurveG(OID curveOID, EncodedECPublicKey& encodedG)
+WEAVE_ERROR GetCurveG(OID curveOID, EncodedECPublicKey & encodedG)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
+    EC_GROUP * ecGroup = NULL;
 
     err = GetECGroupForCurve(curveOID, ecGroup);
     SuccessOrExit(err);
 
-    err = EncodeX962ECPoint(curveOID, ecGroup, EC_GROUP_get0_generator(ecGroup), encodedG.ECPoint, encodedG.ECPointLen, encodedG.ECPointLen);
+    err = EncodeX962ECPoint(curveOID, ecGroup, EC_GROUP_get0_generator(ecGroup), encodedG.ECPoint, encodedG.ECPointLen,
+                            encodedG.ECPointLen);
     SuccessOrExit(err);
 
 exit:
@@ -273,7 +268,6 @@ exit:
 
 #endif // WEAVE_CONFIG_USE_OPENSSL_ECC
 
-
 // ============================================================
 // OpenSSL-specific elliptic curve utility functions.
 // ============================================================
@@ -282,7 +276,7 @@ exit:
 // version 1.1.0; for older versions of OpenSSL these methods are defined here.
 #if (OPENSSL_VERSION_NUMBER < 0x10100000L)
 
-static void ECDSA_SIG_get0(const ECDSA_SIG *sig, const BIGNUM **pr, const BIGNUM **ps)
+static void ECDSA_SIG_get0(const ECDSA_SIG * sig, const BIGNUM ** pr, const BIGNUM ** ps)
 {
     if (pr != NULL)
         *pr = sig->r;
@@ -290,7 +284,7 @@ static void ECDSA_SIG_get0(const ECDSA_SIG *sig, const BIGNUM **pr, const BIGNUM
         *ps = sig->s;
 }
 
-static int ECDSA_SIG_set0(ECDSA_SIG *sig, BIGNUM *r, BIGNUM *s)
+static int ECDSA_SIG_set0(ECDSA_SIG * sig, BIGNUM * r, BIGNUM * s)
 {
     if (r == NULL || s == NULL)
         return 0;
@@ -303,7 +297,7 @@ static int ECDSA_SIG_set0(ECDSA_SIG *sig, BIGNUM *r, BIGNUM *s)
 
 #endif // (OPENSSL_VERSION_NUMBER < 0x10100000L)
 
-int GetCurveSize(const OID curveOID, const EC_GROUP *ecGroup)
+int GetCurveSize(const OID curveOID, const EC_GROUP * ecGroup)
 {
     return ((EC_GROUP_get_degree(ecGroup) + 7) / 8);
 }
@@ -315,36 +309,25 @@ NL_DLL_EXPORT WEAVE_ERROR GetECGroupForCurve(OID curveOID, EC_GROUP *& ecGroup)
 
     switch (curveOID)
     {
-    case kOID_EllipticCurve_secp160r1:
-        curveNID = NID_secp160r1;
-        break;
-    case kOID_EllipticCurve_prime192v1:
-        curveNID = NID_X9_62_prime192v1;
-        break;
-    case kOID_EllipticCurve_secp224r1:
-        curveNID = NID_secp224r1;
-        break;
-    case kOID_EllipticCurve_prime256v1:
-        curveNID = NID_X9_62_prime256v1;
-        break;
+    case kOID_EllipticCurve_secp160r1: curveNID = NID_secp160r1; break;
+    case kOID_EllipticCurve_prime192v1: curveNID = NID_X9_62_prime192v1; break;
+    case kOID_EllipticCurve_secp224r1: curveNID = NID_secp224r1; break;
+    case kOID_EllipticCurve_prime256v1: curveNID = NID_X9_62_prime256v1; break;
     default:
 #if WEAVE_CONFIG_ALLOW_NON_STANDARD_ELLIPTIC_CURVES
     {
-        ASN1_OBJECT *curveASN1Obj;
-        const uint8_t *encodedOID;
+        ASN1_OBJECT * curveASN1Obj;
+        const uint8_t * encodedOID;
         uint16_t encodedOIDLen;
         if (!GetEncodedObjectID(curveOID, encodedOID, encodedOIDLen))
             ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
         curveASN1Obj = c2i_ASN1_OBJECT(&curveASN1Obj, &encodedOID, encodedOIDLen);
         VerifyOrExit(curveASN1Obj != NULL, err = WEAVE_ERROR_NO_MEMORY);
         curveNID = OBJ_obj2nid(curveASN1Obj);
-        ASN1_OBJECT_free(curveASN1Obj)
-        VerifyOrExit(curveNID != NID_undef, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
+        ASN1_OBJECT_free(curveASN1Obj) VerifyOrExit(curveNID != NID_undef, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
     }
 #endif
-    case kOID_Unknown:
-        ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
-        break;
+    case kOID_Unknown: ExitNow(err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE); break;
     }
 
     ecGroup = EC_GROUP_new_by_curve_name(curveNID);
@@ -359,15 +342,15 @@ exit:
 
 // Perform the Elliptic Curve Diffie-Hellman computation to generate a shared secret
 // from a EC public key and a private key.
-NL_DLL_EXPORT WEAVE_ERROR ECDHComputeSharedSecret(OID curveOID, const EC_GROUP *ecGroup,
-                                    const EC_POINT *pubKeyPoint, const BIGNUM *privKeyBN,
-                                    uint8_t *sharedSecretBuf, uint16_t sharedSecretBufSize, uint16_t& sharedSecretLen)
+NL_DLL_EXPORT WEAVE_ERROR ECDHComputeSharedSecret(OID curveOID, const EC_GROUP * ecGroup, const EC_POINT * pubKeyPoint,
+                                                  const BIGNUM * privKeyBN, uint8_t * sharedSecretBuf, uint16_t sharedSecretBufSize,
+                                                  uint16_t & sharedSecretLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_KEY *ecKey = NULL;
-    EC_POINT *sharedSecretPoint = NULL;
-    BIGNUM *sharedSecretX = NULL;
-    BIGNUM *sharedSecretY = NULL;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    EC_KEY * ecKey               = NULL;
+    EC_POINT * sharedSecretPoint = NULL;
+    BIGNUM * sharedSecretX       = NULL;
+    BIGNUM * sharedSecretY       = NULL;
     int sharedSecretXLen;
     int res;
 
@@ -411,12 +394,12 @@ NL_DLL_EXPORT WEAVE_ERROR ECDHComputeSharedSecret(OID curveOID, const EC_GROUP *
 
     // Determine the size in bytes of the shared key X coordinate.
     sharedSecretXLen = BN_num_bytes(sharedSecretX);
-    VerifyOrExit(sharedSecretXLen <= (int)sharedSecretLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(sharedSecretXLen <= (int) sharedSecretLen, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Convert the shared key X coordinate to a big-endian byte array, padded on the left with 0s
     // to the shared key output size.
     memset(sharedSecretBuf, 0, sharedSecretLen);
-    if (sharedSecretXLen != (int)BN_bn2bin(sharedSecretX, sharedSecretBuf + sharedSecretLen - sharedSecretXLen))
+    if (sharedSecretXLen != (int) BN_bn2bin(sharedSecretX, sharedSecretBuf + sharedSecretLen - sharedSecretXLen))
         ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT); // TODO: translate OpenSSL error
 
 exit:
@@ -428,11 +411,12 @@ exit:
     return err;
 }
 
-NL_DLL_EXPORT WEAVE_ERROR EncodeX962ECPoint(OID curveOID, EC_GROUP *ecGroup, const EC_POINT *point, uint8_t *buf, uint16_t bufSize, uint16_t& encodedPointLen)
+NL_DLL_EXPORT WEAVE_ERROR EncodeX962ECPoint(OID curveOID, EC_GROUP * ecGroup, const EC_POINT * point, uint8_t * buf,
+                                            uint16_t bufSize, uint16_t & encodedPointLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BIGNUM *x = NULL;
-    BIGNUM *y = NULL;
+    BIGNUM * x      = NULL;
+    BIGNUM * y      = NULL;
     int fieldLen, valLen;
 
     // Encoding point at infinity not supported.
@@ -482,11 +466,12 @@ exit:
     return err;
 }
 
-NL_DLL_EXPORT WEAVE_ERROR DecodeX962ECPoint(const uint8_t *encodedPoint, uint16_t encodedPointLen, EC_GROUP *group, EC_POINT *& point)
+NL_DLL_EXPORT WEAVE_ERROR DecodeX962ECPoint(const uint8_t * encodedPoint, uint16_t encodedPointLen, EC_GROUP * group,
+                                            EC_POINT *& point)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BIGNUM *x = NULL;
-    BIGNUM *y = NULL;
+    BIGNUM * x      = NULL;
+    BIGNUM * y      = NULL;
 
     point = NULL;
 
@@ -513,7 +498,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DecodeX962ECPoint(const uint8_t *encodedPoint, uint16_t encodedPointLen, BIGNUM *& x, BIGNUM *& y)
+WEAVE_ERROR DecodeX962ECPoint(const uint8_t * encodedPoint, uint16_t encodedPointLen, BIGNUM *& x, BIGNUM *& y)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t fieldSize;
@@ -550,12 +535,13 @@ exit:
 }
 
 // Decode an elliptic curve private key or/and public key in X9.62 format, and return an EC_KEY object.
-NL_DLL_EXPORT WEAVE_ERROR DecodeECKey(OID curveOID, const EncodedECPrivateKey *encodedPrivKey, const EncodedECPublicKey *encodedPubKey, EC_KEY *& ecKey)
+NL_DLL_EXPORT WEAVE_ERROR DecodeECKey(OID curveOID, const EncodedECPrivateKey * encodedPrivKey,
+                                      const EncodedECPublicKey * encodedPubKey, EC_KEY *& ecKey)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    EC_GROUP *ecGroup = NULL;
-    EC_POINT *pubKeyPoint = NULL;
-    BIGNUM *privKeyBN = NULL;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    EC_GROUP * ecGroup     = NULL;
+    EC_POINT * pubKeyPoint = NULL;
+    BIGNUM * privKeyBN     = NULL;
     int res;
 
     ecKey = NULL;
@@ -610,11 +596,11 @@ exit:
 }
 
 // Encode an OpenSSL ECDSA signature into a pair of buffers.
-WEAVE_ERROR EncodeECDSASignature(const ECDSA_SIG *sig, EncodedECDSASignature& encodedSig)
+WEAVE_ERROR EncodeECDSASignature(const ECDSA_SIG * sig, EncodedECDSASignature & encodedSig)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const BIGNUM *sigR;
-    const BIGNUM *sigS;
+    const BIGNUM * sigR;
+    const BIGNUM * sigS;
     int valLen;
 
     ECDSA_SIG_get0(sig, &sigR, &sigS);
@@ -654,11 +640,11 @@ exit:
 }
 
 // Decode an ECDSA signature consisting of r and s values encoded as a big-endian sequences of bytes.
-WEAVE_ERROR DecodeECDSASignature(const EncodedECDSASignature& encodedSig, ECDSA_SIG *& sig)
+WEAVE_ERROR DecodeECDSASignature(const EncodedECDSASignature & encodedSig, ECDSA_SIG *& sig)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BIGNUM *sigR = NULL;
-    BIGNUM *sigS = NULL;
+    BIGNUM * sigR   = NULL;
+    BIGNUM * sigS   = NULL;
     int retVal;
 
     sig = ECDSA_SIG_new();
@@ -684,11 +670,11 @@ exit:
 }
 
 // Convert an OpenSSL ECDSA signature into a fixed-length signature.
-WEAVE_ERROR ECDSASigToFixedLenSig(OID curveOID, const ECDSA_SIG *ecSig, uint8_t *fixedLenSig)
+WEAVE_ERROR ECDSASigToFixedLenSig(OID curveOID, const ECDSA_SIG * ecSig, uint8_t * fixedLenSig)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const BIGNUM *sigR;
-    const BIGNUM *sigS;
+    const BIGNUM * sigR;
+    const BIGNUM * sigS;
     uint16_t fieldLen;
     int valLen;
 
@@ -718,11 +704,11 @@ exit:
 }
 
 // Convert a fixed-length signature into an OpenSSL ECDSA signature format.
-extern WEAVE_ERROR FixedLenSigToECDSASig(OID curveOID, const uint8_t *fixedLenSig, ECDSA_SIG *& ecSig)
+extern WEAVE_ERROR FixedLenSigToECDSASig(OID curveOID, const uint8_t * fixedLenSig, ECDSA_SIG *& ecSig)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BIGNUM *sigR = NULL;
-    BIGNUM *sigS = NULL;
+    BIGNUM * sigR   = NULL;
+    BIGNUM * sigS   = NULL;
     int retVal;
     uint16_t fieldLen;
 
@@ -751,37 +737,32 @@ exit:
     return err;
 }
 
-
 // ============================================================
 // Elliptic Curve JPAKE Class Functions
 // ============================================================
 
 #if WEAVE_IS_ECJPAKE_ENABLED && WEAVE_CONFIG_USE_OPENSSL_ECC
 
-static int GetCurveWordCount(const EC_GROUP *ecGroup)
+static int GetCurveWordCount(const EC_GROUP * ecGroup)
 {
     int curveNID = EC_GROUP_get_curve_name(ecGroup);
 
     switch (curveNID)
     {
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP160R1
-    case NID_secp160r1:
-        return 5;
+    case NID_secp160r1: return 5;
 #endif
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1
-    case NID_X9_62_prime192v1:
-        return 6;
+    case NID_X9_62_prime192v1: return 6;
 #endif
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1
-    case NID_secp224r1:
-        return 7;
+    case NID_secp224r1: return 7;
 #endif
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
-    case NID_X9_62_prime256v1:
-        return 8;
+    case NID_X9_62_prime256v1: return 8;
 #endif
 
     default:
@@ -793,38 +774,36 @@ static int GetCurveWordCount(const EC_GROUP *ecGroup)
     }
 }
 
-static int GetOrderWordCount(const EC_GROUP *ecGroup)
+static int GetOrderWordCount(const EC_GROUP * ecGroup)
 {
     int curveNID = EC_GROUP_get_curve_name(ecGroup);
 
     switch (curveNID)
     {
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP160R1
-    case NID_secp160r1:
-        return 6;
+    case NID_secp160r1: return 6;
 #endif
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP192R1
-    case NID_X9_62_prime192v1:
-        return 6;
+    case NID_X9_62_prime192v1: return 6;
 #endif
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP224R1
-    case NID_secp224r1:
-        return 7;
+    case NID_secp224r1: return 7;
 #endif
 
 #if WEAVE_CONFIG_SUPPORT_ELLIPTIC_CURVE_SECP256R1
-    case NID_X9_62_prime256v1:
-        return 8;
+    case NID_X9_62_prime256v1: return 8;
 #endif
 
     default:
 #if WEAVE_CONFIG_ALLOW_NON_STANDARD_ELLIPTIC_CURVES
-        BIGNUM *order = NULL;
-        int ret = 0;
-        if ((order = BN_new()) == NULL) goto err;
-        if (!EC_GROUP_get_order(ecGroup, order, NULL)) goto err;
+        BIGNUM * order = NULL;
+        int ret        = 0;
+        if ((order = BN_new()) == NULL)
+            goto err;
+        if (!EC_GROUP_get_order(ecGroup, order, NULL))
+            goto err;
         ret = order->top;
 
     err:
@@ -836,11 +815,11 @@ static int GetOrderWordCount(const EC_GROUP *ecGroup)
     }
 }
 
-static WEAVE_ERROR EncodeECPointValue(const EC_GROUP *ecGroup, const EC_POINT *ecPoint, const uint8_t wordCount, uint8_t *& p)
+static WEAVE_ERROR EncodeECPointValue(const EC_GROUP * ecGroup, const EC_POINT * ecPoint, const uint8_t wordCount, uint8_t *& p)
 {
     WEAVE_ERROR err;
-    BIGNUM *ecPointX = NULL;
-    BIGNUM *ecPointY = NULL;
+    BIGNUM * ecPointX = NULL;
+    BIGNUM * ecPointY = NULL;
 
     ecPointX = BN_new();
     VerifyOrExit(ecPointX != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -861,11 +840,11 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeECPointValue(const EC_GROUP *ecGroup, EC_POINT *ecPoint, const uint8_t wordCount, const uint8_t *& p)
+static WEAVE_ERROR DecodeECPointValue(const EC_GROUP * ecGroup, EC_POINT * ecPoint, const uint8_t wordCount, const uint8_t *& p)
 {
     WEAVE_ERROR err;
-    BIGNUM *ecPointX = NULL;
-    BIGNUM *ecPointY = NULL;
+    BIGNUM * ecPointX = NULL;
+    BIGNUM * ecPointY = NULL;
 
     ecPointX = BN_new();
     VerifyOrExit(ecPointX != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -886,11 +865,12 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR EncodeStepPartFields(const ECJPAKE_CTX *ctx, const ECJPAKE_STEP_PART *stepPart, const uint8_t *buf, const uint16_t bufSize, uint16_t& stepDataLen)
+static WEAVE_ERROR EncodeStepPartFields(const ECJPAKE_CTX * ctx, const ECJPAKE_STEP_PART * stepPart, const uint8_t * buf,
+                                        const uint16_t bufSize, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     uint8_t gWordCount, bWordCount;
-    uint8_t *p = (uint8_t *)buf + stepDataLen;
+    uint8_t * p = (uint8_t *) buf + stepDataLen;
 
     gWordCount = GetCurveWordCount(ECJPAKE_get_ecGroup(ctx));
     VerifyOrExit(gWordCount != 0, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
@@ -912,11 +892,12 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR DecodeStepPartFields(const ECJPAKE_CTX *ctx, ECJPAKE_STEP_PART *stepPart, const uint8_t *buf, const uint16_t bufSize, uint16_t& stepDataLen)
+static WEAVE_ERROR DecodeStepPartFields(const ECJPAKE_CTX * ctx, ECJPAKE_STEP_PART * stepPart, const uint8_t * buf,
+                                        const uint16_t bufSize, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     uint8_t gWordCount, bWordCount;
-    const uint8_t *p = buf + stepDataLen;
+    const uint8_t * p = buf + stepDataLen;
 
     gWordCount = GetCurveWordCount(ECJPAKE_get_ecGroup(ctx));
     VerifyOrExit(gWordCount != 0, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
@@ -939,29 +920,30 @@ exit:
 }
 
 /* This function will be used by ECJPAKE to calculate SHA256 hash of Elliptic Curve Point */
-static int ECJPAKE_HashECPoint(ECJPAKE_CTX *ctx, SHA256_CTX *sha, const EC_POINT *ecPoint)
+static int ECJPAKE_HashECPoint(ECJPAKE_CTX * ctx, SHA256_CTX * sha, const EC_POINT * ecPoint)
 {
     WEAVE_ERROR err;
     uint8_t fieldWordCount;
-    uint8_t *ecPointEncoded = NULL;
-    uint8_t *p = NULL;
-    int ret = 1;
+    uint8_t * ecPointEncoded = NULL;
+    uint8_t * p              = NULL;
+    int ret                  = 1;
 
     fieldWordCount = GetCurveWordCount(ECJPAKE_get_ecGroup(ctx));
     VerifyOrExit(fieldWordCount != 0, ret = 0);
 
-    ecPointEncoded = (uint8_t *)OPENSSL_malloc(2 * sizeof(uint32_t) * fieldWordCount);
+    ecPointEncoded = (uint8_t *) OPENSSL_malloc(2 * sizeof(uint32_t) * fieldWordCount);
     VerifyOrExit(ecPointEncoded != NULL, ret = 0);
 
     // Assign another pointer because the value is updated by EncodeECPointValue function
-    p = ecPointEncoded;
+    p   = ecPointEncoded;
     err = EncodeECPointValue(ECJPAKE_get_ecGroup(ctx), ecPoint, fieldWordCount, p);
     VerifyOrExit(err == WEAVE_NO_ERROR, ret = 0);
 
     SHA256_Update(sha, ecPointEncoded, 2 * sizeof(uint32_t) * fieldWordCount);
 
 exit:
-    if (ecPointEncoded != NULL) OPENSSL_free(ecPointEncoded);
+    if (ecPointEncoded != NULL)
+        OPENSSL_free(ecPointEncoded);
     return ret;
 }
 
@@ -981,7 +963,7 @@ void EllipticCurveJPAKE::Reset()
 {
     if (ECJPAKECtx != NULL)
     {
-        EC_GROUP *ecGroup = (EC_GROUP *)ECJPAKE_get_ecGroup(ECJPAKECtx);
+        EC_GROUP * ecGroup = (EC_GROUP *) ECJPAKE_get_ecGroup(ECJPAKECtx);
 
         if (ecGroup != NULL)
         {
@@ -994,13 +976,12 @@ void EllipticCurveJPAKE::Reset()
 }
 
 /* Init JPAKE CTX Struct */
-WEAVE_ERROR EllipticCurveJPAKE::Init(const OID curveOID, const uint8_t *pw, const uint16_t pwLen,
-                                                         const uint8_t *localName, const uint16_t localNameLen,
-                                                         const uint8_t *peerName, const uint16_t peerNameLen)
+WEAVE_ERROR EllipticCurveJPAKE::Init(const OID curveOID, const uint8_t * pw, const uint16_t pwLen, const uint8_t * localName,
+                                     const uint16_t localNameLen, const uint8_t * peerName, const uint16_t peerNameLen)
 {
     WEAVE_ERROR err;
-    EC_GROUP *ecGroup = NULL;
-    BIGNUM *secret = NULL;
+    EC_GROUP * ecGroup = NULL;
+    BIGNUM * secret    = NULL;
 
     // TODO: should we limit MAX length and check these inputs: pwLen, localNameLen, peerNameLen ?
 
@@ -1023,7 +1004,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EllipticCurveJPAKE::GenerateStep1(const uint8_t *buf, const uint16_t bufSize, uint16_t& stepDataLen)
+WEAVE_ERROR EllipticCurveJPAKE::GenerateStep1(const uint8_t * buf, const uint16_t bufSize, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     ECJPAKE_STEP1 step1Data;
@@ -1046,7 +1027,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EllipticCurveJPAKE::ProcessStep1(const uint8_t *buf, const uint16_t bufSize, uint16_t& stepDataLen)
+WEAVE_ERROR EllipticCurveJPAKE::ProcessStep1(const uint8_t * buf, const uint16_t bufSize, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     ECJPAKE_STEP1 step1Data;
@@ -1069,7 +1050,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EllipticCurveJPAKE::GenerateStep2(const uint8_t *buf, const uint16_t bufSize, uint16_t& stepDataLen)
+WEAVE_ERROR EllipticCurveJPAKE::GenerateStep2(const uint8_t * buf, const uint16_t bufSize, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     ECJPAKE_STEP2 step2Data;
@@ -1089,7 +1070,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR EllipticCurveJPAKE::ProcessStep2(const uint8_t *buf, const uint16_t bufSize, uint16_t& stepDataLen)
+WEAVE_ERROR EllipticCurveJPAKE::ProcessStep2(const uint8_t * buf, const uint16_t bufSize, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     ECJPAKE_STEP2 step2Data;
@@ -1109,9 +1090,9 @@ exit:
     return err;
 }
 
-uint8_t *EllipticCurveJPAKE::GetSharedSecret()
+uint8_t * EllipticCurveJPAKE::GetSharedSecret()
 {
-    return (uint8_t *)ECJPAKE_get_shared_key(ECJPAKECtx);
+    return (uint8_t *) ECJPAKE_get_shared_key(ECJPAKECtx);
 }
 
 int EllipticCurveJPAKE::GetCurveSize()

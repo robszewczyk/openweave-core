@@ -53,44 +53,38 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsOptional Table
 //
 
-uint8_t IsOptionalHandleBitfield[] = {
-        0xa
-};
+uint8_t IsOptionalHandleBitfield[] = { 0xa };
 
 //
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0xa
-};
+uint8_t IsNullableHandleBitfield[] = { 0xa };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        &IsOptionalHandleBitfield[0],
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    &IsOptionalHandleBitfield[0],
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 } // namespace PowerSourceCapabilitiesTrait
 } // namespace Power

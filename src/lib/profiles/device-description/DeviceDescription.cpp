@@ -78,10 +78,10 @@ enum
 class TextDescriptorWriter
 {
 public:
-    TextDescriptorWriter(char *buf, uint32_t bufSize)
+    TextDescriptorWriter(char * buf, uint32_t bufSize)
     {
         mBuf = mWritePoint = buf;
-        mBufEnd = buf + bufSize;
+        mBufEnd            = buf + bufSize;
     }
 
     WEAVE_ERROR WriteHex(char fieldId, uint16_t val)
@@ -117,7 +117,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR WriteHex(char fieldId, const uint8_t *val, uint32_t valLen)
+    WEAVE_ERROR WriteHex(char fieldId, const uint8_t * val, uint32_t valLen)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -138,7 +138,7 @@ public:
         return err;
     }
 
-    WEAVE_ERROR WriteString(char fieldId, const char *val)
+    WEAVE_ERROR WriteString(char fieldId, const char * val)
     {
         WEAVE_ERROR err = WEAVE_NO_ERROR;
         uint32_t len;
@@ -210,29 +210,23 @@ public:
         return WEAVE_NO_ERROR;
     }
 
-    uint32_t GetLengthWritten()
-    {
-        return mWritePoint - mBuf;
-    }
+    uint32_t GetLengthWritten() { return mWritePoint - mBuf; }
 
 private:
-    char *mBuf;
-    char *mWritePoint;
-    char *mBufEnd;
+    char * mBuf;
+    char * mWritePoint;
+    char * mBufEnd;
 
-    char HexDigit(uint8_t val)
-    {
-        return (val < 10) ? '0' + val : 'A' + (val - 10);
-    }
+    char HexDigit(uint8_t val) { return (val < 10) ? '0' + val : 'A' + (val - 10); }
 };
 
 class TextDescriptorReader
 {
 public:
-    TextDescriptorReader(const char *val, uint32_t valLen)
+    TextDescriptorReader(const char * val, uint32_t valLen)
     {
-        mVal = val;
-        mValEnd = val + valLen;
+        mVal       = val;
+        mValEnd    = val + valLen;
         mReadPoint = val;
 
         while (mReadPoint < mValEnd && isspace(*mReadPoint))
@@ -241,7 +235,7 @@ public:
         mFieldEnd = val;
 
         Version = (mReadPoint < mValEnd) ? *mReadPoint : 0;
-        Key = 0;
+        Key     = 0;
     }
 
     char Version;
@@ -260,14 +254,14 @@ public:
             return WEAVE_END_OF_INPUT;
         }
 
-        mFieldEnd = (const char *)memchr(mReadPoint, '$', mValEnd - mReadPoint);
+        mFieldEnd = (const char *) memchr(mReadPoint, '$', mValEnd - mReadPoint);
         if (mFieldEnd == NULL)
             return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
         Key = *mReadPoint;
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR ReadString(char *buf, uint32_t bufSize)
+    WEAVE_ERROR ReadString(char * buf, uint32_t bufSize)
     {
         if (Key == 0)
             return WEAVE_ERROR_INCORRECT_STATE;
@@ -279,12 +273,12 @@ public:
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR ReadHex(uint16_t& val)
+    WEAVE_ERROR ReadHex(uint16_t & val)
     {
         val = 0;
         if (Key == 0)
             return WEAVE_ERROR_INCORRECT_STATE;
-        const char *p = mReadPoint + 2;
+        const char * p = mReadPoint + 2;
         if (p >= mFieldEnd)
             return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
         for (; p < mFieldEnd; p++)
@@ -297,17 +291,17 @@ public:
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR ReadHex(uint8_t *buf, uint32_t bufLen)
+    WEAVE_ERROR ReadHex(uint8_t * buf, uint32_t bufLen)
     {
         if (Key == 0)
             return WEAVE_ERROR_INCORRECT_STATE;
         uint32_t len = mFieldEnd - mReadPoint - 2;
         if ((len & 1) != 0 || len / 2 != bufLen)
             return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
-        for (const char *p = mReadPoint + 2; p < mFieldEnd; p += 2, buf++)
+        for (const char * p = mReadPoint + 2; p < mFieldEnd; p += 2, buf++)
         {
             int8_t highDigitVal = HexDigitValue(p[0]);
-            int8_t lowDigitVal = HexDigitValue(p[1]);
+            int8_t lowDigitVal  = HexDigitValue(p[1]);
             if (highDigitVal < 0 || lowDigitVal < 0)
                 return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
             *buf = (uint8_t)((highDigitVal << 4) | lowDigitVal);
@@ -315,7 +309,7 @@ public:
         return WEAVE_NO_ERROR;
     }
 
-    WEAVE_ERROR ReadDate(uint16_t& year, uint8_t& month, uint8_t& day)
+    WEAVE_ERROR ReadDate(uint16_t & year, uint8_t & month, uint8_t & day)
     {
         if (Key == 0)
             return WEAVE_ERROR_INCORRECT_STATE;
@@ -326,7 +320,7 @@ public:
         if (v < 0)
             return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
         year = 2000 + v;
-        v = DecimalDigitPairValue(mReadPoint[4], mReadPoint[5]);
+        v    = DecimalDigitPairValue(mReadPoint[4], mReadPoint[5]);
         if (v < 1 || v > 12)
             return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
         month = v;
@@ -343,10 +337,10 @@ public:
     }
 
 private:
-    const char *mVal;
-    const char *mValEnd;
-    const char *mReadPoint;
-    const char *mFieldEnd;
+    const char * mVal;
+    const char * mValEnd;
+    const char * mReadPoint;
+    const char * mFieldEnd;
 
     inline int8_t HexDigitValue(char digit)
     {
@@ -366,7 +360,6 @@ private:
         return (digit1 - '0') * 10 + (digit2 - '0');
     }
 };
-
 
 WeaveDeviceDescriptor::WeaveDeviceDescriptor()
 {
@@ -395,7 +388,8 @@ void WeaveDeviceDescriptor::Clear()
  * @retval #WEAVE_ERROR_INVALID_ARGUMENT    If a descriptor field is invalid.
  * @retval #WEAVE_NO_ERROR                  On success.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::EncodeText(const WeaveDeviceDescriptor& desc, char *buf, uint32_t bufLen, uint32_t& outEncodedLen)
+WEAVE_ERROR WeaveDeviceDescriptor::EncodeText(const WeaveDeviceDescriptor & desc, char * buf, uint32_t bufLen,
+                                              uint32_t & outEncodedLen)
 {
     WEAVE_ERROR err;
     TextDescriptorWriter writer(buf, bufLen);
@@ -423,7 +417,8 @@ WEAVE_ERROR WeaveDeviceDescriptor::EncodeText(const WeaveDeviceDescriptor& desc,
 
     if (desc.ManufacturingDate.Year != 0 && desc.ManufacturingDate.Month != 0)
     {
-        err = writer.WriteDate(kTextKey_ManufacturingDate, desc.ManufacturingDate.Year, desc.ManufacturingDate.Month, desc.ManufacturingDate.Day);
+        err = writer.WriteDate(kTextKey_ManufacturingDate, desc.ManufacturingDate.Year, desc.ManufacturingDate.Month,
+                               desc.ManufacturingDate.Day);
         SuccessOrExit(err);
     }
 
@@ -436,7 +431,7 @@ WEAVE_ERROR WeaveDeviceDescriptor::EncodeText(const WeaveDeviceDescriptor& desc,
     if (desc.DeviceId != 0)
     {
         uint64_t val = BigEndian::HostSwap64(desc.DeviceId);
-        err = writer.WriteHex(kTextKey_DeviceId, (const uint8_t *)&val, sizeof(val));
+        err          = writer.WriteHex(kTextKey_DeviceId, (const uint8_t *) &val, sizeof(val));
         SuccessOrExit(err);
     }
 
@@ -454,9 +449,8 @@ WEAVE_ERROR WeaveDeviceDescriptor::EncodeText(const WeaveDeviceDescriptor& desc,
 
     if (desc.RendezvousWiFiESSID[0] != 0)
     {
-        const char fieldId = ((desc.Flags & kFlag_IsRendezvousWiFiESSIDSuffix) != 0)
-                ? kTextKey_RendezvousWiFiESSIDSuffix
-                : kTextKey_RendezvousWiFiESSID;
+        const char fieldId = ((desc.Flags & kFlag_IsRendezvousWiFiESSIDSuffix) != 0) ? kTextKey_RendezvousWiFiESSIDSuffix
+                                                                                     : kTextKey_RendezvousWiFiESSID;
 
         err = writer.WriteString(fieldId, desc.RendezvousWiFiESSID);
         SuccessOrExit(err);
@@ -502,7 +496,8 @@ exit:
  * @retval other            Other Weave or platform-specific error codes indicating that an error
  *                          occurred preventing the encoding of the TLV.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::EncodeTLV(const WeaveDeviceDescriptor& desc, uint8_t *buf, uint32_t bufLen, uint32_t& outEncodedLen)
+WEAVE_ERROR WeaveDeviceDescriptor::EncodeTLV(const WeaveDeviceDescriptor & desc, uint8_t * buf, uint32_t bufLen,
+                                             uint32_t & outEncodedLen)
 {
     WEAVE_ERROR err;
     TLVWriter writer;
@@ -533,12 +528,13 @@ exit:
  * @retval other            Other Weave or platform-specific error codes indicating that an error
  *                          occurred preventing the encoding of the TLV.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::EncodeTLV(const WeaveDeviceDescriptor& desc, nl::Weave::TLV::TLVWriter& writer)
+WEAVE_ERROR WeaveDeviceDescriptor::EncodeTLV(const WeaveDeviceDescriptor & desc, nl::Weave::TLV::TLVWriter & writer)
 {
     WEAVE_ERROR err;
     TLVType outerContainer;
 
-    err = writer.StartContainer(ProfileTag(kWeaveProfile_DeviceDescription, kTag_WeaveDeviceDescriptor), kTLVType_Structure, outerContainer);
+    err = writer.StartContainer(ProfileTag(kWeaveProfile_DeviceDescription, kTag_WeaveDeviceDescriptor), kTLVType_Structure,
+                                outerContainer);
     SuccessOrExit(err);
 
     if (desc.VendorId != 0)
@@ -562,7 +558,8 @@ WEAVE_ERROR WeaveDeviceDescriptor::EncodeTLV(const WeaveDeviceDescriptor& desc, 
     if (desc.ManufacturingDate.Year != 0 && desc.ManufacturingDate.Month != 0)
     {
         uint16_t encodedDate;
-        err = EncodeManufacturingDate(desc.ManufacturingDate.Year, desc.ManufacturingDate.Month, desc.ManufacturingDate.Day, encodedDate);
+        err = EncodeManufacturingDate(desc.ManufacturingDate.Year, desc.ManufacturingDate.Month, desc.ManufacturingDate.Day,
+                                      encodedDate);
         SuccessOrExit(err);
         err = writer.Put(ContextTag(kTag_ManufacturingDate), encodedDate);
         SuccessOrExit(err);
@@ -576,21 +573,22 @@ WEAVE_ERROR WeaveDeviceDescriptor::EncodeTLV(const WeaveDeviceDescriptor& desc, 
 
     if (!IsZeroBytes(desc.Primary802154MACAddress, sizeof(desc.Primary802154MACAddress)))
     {
-        err = writer.PutBytes(ContextTag(kTag_Primary802154MACAddress), desc.Primary802154MACAddress, sizeof(desc.Primary802154MACAddress));
+        err = writer.PutBytes(ContextTag(kTag_Primary802154MACAddress), desc.Primary802154MACAddress,
+                              sizeof(desc.Primary802154MACAddress));
         SuccessOrExit(err);
     }
 
     if (!IsZeroBytes(desc.PrimaryWiFiMACAddress, sizeof(desc.PrimaryWiFiMACAddress)))
     {
-        err = writer.PutBytes(ContextTag(kTag_PrimaryWiFiMACAddress), desc.PrimaryWiFiMACAddress, sizeof(desc.PrimaryWiFiMACAddress));
+        err =
+            writer.PutBytes(ContextTag(kTag_PrimaryWiFiMACAddress), desc.PrimaryWiFiMACAddress, sizeof(desc.PrimaryWiFiMACAddress));
         SuccessOrExit(err);
     }
 
     if (desc.RendezvousWiFiESSID[0] != 0)
     {
-        const uint64_t tag = ((desc.Flags & kFlag_IsRendezvousWiFiESSIDSuffix) != 0)
-                ? ContextTag(kTag_RendezvousWiFiESSIDSuffix)
-                : ContextTag(kTag_RendezvousWiFiESSID);
+        const uint64_t tag = ((desc.Flags & kFlag_IsRendezvousWiFiESSIDSuffix) != 0) ? ContextTag(kTag_RendezvousWiFiESSIDSuffix)
+                                                                                     : ContextTag(kTag_RendezvousWiFiESSID);
 
         err = writer.PutString(tag, desc.RendezvousWiFiESSID);
         SuccessOrExit(err);
@@ -664,7 +662,7 @@ exit:
  * @retval other                                    Other Weave or platform-specific error codes indicating that an error
  *                                                  occurred preventing the decoding of the TLV.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::Decode(const uint8_t *data, uint32_t dataLen, WeaveDeviceDescriptor& outDesc)
+WEAVE_ERROR WeaveDeviceDescriptor::Decode(const uint8_t * data, uint32_t dataLen, WeaveDeviceDescriptor & outDesc)
 {
     if (dataLen == 0)
         return WEAVE_ERROR_INVALID_DEVICE_DESCRIPTOR;
@@ -677,11 +675,12 @@ WEAVE_ERROR WeaveDeviceDescriptor::Decode(const uint8_t *data, uint32_t dataLen,
     //     Implicit:        95 01 00
     //
     if ((dataLen > 3 && data[0] == 0x95 && data[1] == 0x01 && data[2] == 0x00) ||
-        (dataLen > 7 && data[0] == 0xD5 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x0E && data[4] == 0x00 && data[5] == 0x01 && data[6] == 0x00))
+        (dataLen > 7 && data[0] == 0xD5 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x0E && data[4] == 0x00 &&
+         data[5] == 0x01 && data[6] == 0x00))
         return DecodeTLV(data, dataLen, outDesc);
 
     // If the descriptor is not TLV-encoded, assume its in text format.
-    return DecodeText((const char *)data, dataLen, outDesc);
+    return DecodeText((const char *) data, dataLen, outDesc);
 }
 
 /**
@@ -701,12 +700,12 @@ WEAVE_ERROR WeaveDeviceDescriptor::Decode(const uint8_t *data, uint32_t dataLen,
  *                                                  decoding.
  * @retval #WEAVE_NO_ERROR                          On success.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::DecodeText(const char *data, uint32_t dataLen, WeaveDeviceDescriptor& outDesc)
+WEAVE_ERROR WeaveDeviceDescriptor::DecodeText(const char * data, uint32_t dataLen, WeaveDeviceDescriptor & outDesc)
 {
     WEAVE_ERROR err;
     TextDescriptorReader reader(data, dataLen);
-    bool vendorIdIncluded = false;
-    bool mfgDateIncluded = false;
+    bool vendorIdIncluded  = false;
+    bool mfgDateIncluded   = false;
     bool serialNumIncluded = false;
 
     outDesc.Clear();
@@ -744,7 +743,7 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeText(const char *data, uint32_t dataLen
         case kTextKey_DeviceId:
         {
             uint64_t val;
-            err = reader.ReadHex((uint8_t *)&val, sizeof(val));
+            err = reader.ReadHex((uint8_t *) &val, sizeof(val));
             SuccessOrExit(err);
             outDesc.DeviceId = BigEndian::HostSwap64(val);
             break;
@@ -757,9 +756,7 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeText(const char *data, uint32_t dataLen
             err = reader.ReadHex(outDesc.PrimaryWiFiMACAddress, sizeof(outDesc.PrimaryWiFiMACAddress));
             SuccessOrExit(err);
             break;
-        case kTextKey_RendezvousWiFiESSID:
-            outDesc.Flags &= ~kFlag_IsRendezvousWiFiESSIDSuffix;
-            goto readRendezvousWiFiESSID;
+        case kTextKey_RendezvousWiFiESSID: outDesc.Flags &= ~kFlag_IsRendezvousWiFiESSIDSuffix; goto readRendezvousWiFiESSID;
         case kTextKey_RendezvousWiFiESSIDSuffix:
             outDesc.Flags |= kFlag_IsRendezvousWiFiESSIDSuffix;
         readRendezvousWiFiESSID:
@@ -800,7 +797,7 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeText(const char *data, uint32_t dataLen
     //
     if (outDesc.VendorId == nl::Weave::kWeaveVendor_NestLabs && !mfgDateIncluded && serialNumIncluded)
         ExtractManufacturingDateFromSerialNumber(outDesc.SerialNumber, outDesc.ManufacturingDate.Year,
-            outDesc.ManufacturingDate.Month, outDesc.ManufacturingDate.Day);
+                                                 outDesc.ManufacturingDate.Month, outDesc.ManufacturingDate.Day);
 
 exit:
     return err;
@@ -821,7 +818,7 @@ exit:
  * @retval other                                Other Weave or platform-specific error codes indicating that an error
  *                                              occurred preventing the encoding of the TLV.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(const uint8_t *data, uint32_t dataLen, WeaveDeviceDescriptor& outDesc)
+WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(const uint8_t * data, uint32_t dataLen, WeaveDeviceDescriptor & outDesc)
 {
     WEAVE_ERROR err;
     TLVReader reader;
@@ -836,7 +833,8 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(const uint8_t *data, uint32_t dataL
     err = reader.Next();
     SuccessOrExit(err);
 
-    VerifyOrExit(reader.GetTag() == ProfileTag(kWeaveProfile_DeviceDescription, kTag_WeaveDeviceDescriptor), err = WEAVE_ERROR_WRONG_TLV_TYPE);
+    VerifyOrExit(reader.GetTag() == ProfileTag(kWeaveProfile_DeviceDescription, kTag_WeaveDeviceDescriptor),
+                 err = WEAVE_ERROR_WRONG_TLV_TYPE);
 
     err = DecodeTLV(reader, outDesc);
     SuccessOrExit(err);
@@ -861,7 +859,7 @@ exit:
  * @retval other                                Other Weave or platform-specific error codes indicating that an error
  *                                              occurred that prevented the decoding of the TLV.
  */
-WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(nl::Weave::TLV::TLVReader& reader, WeaveDeviceDescriptor& outDesc)
+WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(nl::Weave::TLV::TLVReader & reader, WeaveDeviceDescriptor & outDesc)
 {
     WEAVE_ERROR err;
     TLVType outerContainer;
@@ -897,7 +895,8 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(nl::Weave::TLV::TLVReader& reader, 
             uint16_t encodedDate;
             err = reader.Get(encodedDate);
             SuccessOrExit(err);
-            err = DecodeManufacturingDate(encodedDate, outDesc.ManufacturingDate.Year, outDesc.ManufacturingDate.Month, outDesc.ManufacturingDate.Day);
+            err = DecodeManufacturingDate(encodedDate, outDesc.ManufacturingDate.Year, outDesc.ManufacturingDate.Month,
+                                          outDesc.ManufacturingDate.Day);
             SuccessOrExit(err);
         }
         else if (tag == ContextTag(kTag_SerialNumber))
@@ -940,9 +939,9 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(nl::Weave::TLV::TLVReader& reader, 
         }
         else if (tag == ContextTag(kTag_SoftwareVersion))
         {
-            const uint8_t *swVer;
+            const uint8_t * swVer;
             uint32_t swVerLen = reader.GetLength();
-            err = reader.GetDataPtr(swVer);
+            err               = reader.GetDataPtr(swVer);
             SuccessOrExit(err);
             if (swVerLen > kMaxSoftwareVersionLength)
                 swVerLen = kMaxSoftwareVersionLength;
@@ -971,7 +970,8 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeTLV(nl::Weave::TLV::TLVReader& reader, 
             SuccessOrExit(err);
             VerifyOrExit(outDesc.PairingCompatibilityVersionMinor != 0, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
         }
-        else {
+        else
+        {
             uint32_t flag;
             if (tag == ContextTag(kTag_DeviceFeature_HomeAlarmLinkCapable))
                 flag = kFeature_HomeAlarmLinkCapable;
@@ -1000,21 +1000,20 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveDeviceDescriptor::EncodeManufacturingDate(uint16_t year, uint8_t month, uint8_t day, uint16_t& outEncodedDate)
+WEAVE_ERROR WeaveDeviceDescriptor::EncodeManufacturingDate(uint16_t year, uint8_t month, uint8_t day, uint16_t & outEncodedDate)
 {
     if (year < 2001 || year > 2099 || month < 1 || month > 12 || day > 31)
         return WEAVE_ERROR_INVALID_ARGUMENT;
-    outEncodedDate =   (year - 2000)
-                     + ((month - 1) * 100)
-                     + (day * 12 * 100);
+    outEncodedDate = (year - 2000) + ((month - 1) * 100) + (day * 12 * 100);
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveDeviceDescriptor::DecodeManufacturingDate(uint16_t encodedDate, uint16_t& outYear, uint8_t& outMonth, uint8_t& outDay)
+WEAVE_ERROR WeaveDeviceDescriptor::DecodeManufacturingDate(uint16_t encodedDate, uint16_t & outYear, uint8_t & outMonth,
+                                                           uint8_t & outDay)
 {
-    outYear = (encodedDate % 100) + 2000;
+    outYear  = (encodedDate % 100) + 2000;
     outMonth = ((encodedDate / 100) % 12) + 1;
-    outDay = (encodedDate / 1200);
+    outDay   = (encodedDate / 1200);
     if (outDay > 31)
         return WEAVE_ERROR_INVALID_ARGUMENT;
     return WEAVE_NO_ERROR;
@@ -1029,7 +1028,7 @@ WEAVE_ERROR WeaveDeviceDescriptor::DecodeManufacturingDate(uint16_t encodedDate,
  * @retval  TRUE    If the buffer contains only zeros.
  * @retval  FALSE   If the buffer contains any non-zero values.
  */
-bool WeaveDeviceDescriptor::IsZeroBytes(const uint8_t *buf, uint32_t len)
+bool WeaveDeviceDescriptor::IsZeroBytes(const uint8_t * buf, uint32_t len)
 {
     for (; len > 0; len--, buf++)
         if (*buf != 0)
@@ -1045,9 +1044,9 @@ bool WeaveDeviceDescriptor::IsZeroBytes(const uint8_t *buf, uint32_t len)
  *
  * @retval  #WEAVE_NO_ERROR unconditionally.
  */
-WEAVE_ERROR IdentifyRequestMessage::Encode(PacketBuffer *msgBuf) const
+WEAVE_ERROR IdentifyRequestMessage::Encode(PacketBuffer * msgBuf) const
 {
-    uint8_t *p;
+    uint8_t * p;
 
     p = msgBuf->Start();
     LittleEndian::Write64(p, TargetFabricId);
@@ -1071,20 +1070,20 @@ WEAVE_ERROR IdentifyRequestMessage::Encode(PacketBuffer *msgBuf) const
  * @retval #WEAVE_ERROR_INVALID_MESSAGE_LENGTH  If the provided buffer is an invalid length.
  * @retval #WEAVE_NO_ERROR                      On success.
  */
-WEAVE_ERROR IdentifyRequestMessage::Decode(PacketBuffer *msgBuf, uint64_t msgDestNodeId, IdentifyRequestMessage& msg)
+WEAVE_ERROR IdentifyRequestMessage::Decode(PacketBuffer * msgBuf, uint64_t msgDestNodeId, IdentifyRequestMessage & msg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const uint8_t *p;
+    const uint8_t * p;
 
     VerifyOrExit(msgBuf->DataLength() == 16, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
-    msg = IdentifyRequestMessage();
-    p = msgBuf->Start();
-    msg.TargetFabricId = LittleEndian::Read64(p);
-    msg.TargetModes = LittleEndian::Read32(p);
-    msg.TargetVendorId = LittleEndian::Read16(p);
+    msg                 = IdentifyRequestMessage();
+    p                   = msgBuf->Start();
+    msg.TargetFabricId  = LittleEndian::Read64(p);
+    msg.TargetModes     = LittleEndian::Read32(p);
+    msg.TargetVendorId  = LittleEndian::Read16(p);
     msg.TargetProductId = LittleEndian::Read16(p);
-    msg.TargetDeviceId = msgDestNodeId;
+    msg.TargetDeviceId  = msgDestNodeId;
 
 exit:
     return err;
@@ -1100,7 +1099,7 @@ exit:
  * @retval other            Other Weave or platform-specific error codes indicating that an error
  *                          occurred preventing the encoding of the IdentifyResponseMessage.
  */
-WEAVE_ERROR IdentifyResponseMessage::Encode(PacketBuffer *msgBuf)
+WEAVE_ERROR IdentifyResponseMessage::Encode(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err;
     uint32_t msgLen;
@@ -1127,7 +1126,7 @@ WEAVE_ERROR IdentifyResponseMessage::Encode(PacketBuffer *msgBuf)
  * @retval other                                Other Weave or platform-specific error codes indicating that an error
  *                                              occurred preventing the decoding of the IdentifyResponseMessage.
  */
-WEAVE_ERROR IdentifyResponseMessage::Decode(PacketBuffer *msgBuf, IdentifyResponseMessage& msg)
+WEAVE_ERROR IdentifyResponseMessage::Decode(PacketBuffer * msgBuf, IdentifyResponseMessage & msg)
 {
     return WeaveDeviceDescriptor::DecodeTLV(msgBuf->Start(), msgBuf->DataLength(), msg.DeviceDesc);
 }
@@ -1143,11 +1142,11 @@ IdentifyDeviceCriteria::IdentifyDeviceCriteria()
  */
 void IdentifyDeviceCriteria::Reset()
 {
-    TargetFabricId = kTargetFabricId_Any;
-    TargetModes = kTargetDeviceMode_Any;
-    TargetVendorId = 0xFFFF; // Any vendor
+    TargetFabricId  = kTargetFabricId_Any;
+    TargetModes     = kTargetDeviceMode_Any;
+    TargetVendorId  = 0xFFFF; // Any vendor
     TargetProductId = 0xFFFF; // Any product
-    TargetDeviceId = kAnyNodeId;
+    TargetDeviceId  = kAnyNodeId;
 }
 
 /**
@@ -1172,7 +1171,6 @@ NL_DLL_EXPORT bool MatchTargetFabricId(uint64_t fabricId, uint64_t targetFabricI
 
     return (targetFabricId == fabricId);
 }
-
 
 } // namespace DeviceDescription
 } // namespace Profiles

@@ -33,10 +33,10 @@ using namespace nl::ArgParser;
 
 enum
 {
-    kToolOpt_WdmPublisherNodeId         = 1000,  // Specify the node ID of the WDM Publisher we should connect to
-    kToolOpt_WdmUseSubnetId,                     // True if the publisher is within the specified subnet
-    //kToolOpt_WdmSimpleViewClient,
-    //kToolOpt_WdmSimpleViewServer,
+    kToolOpt_WdmPublisherNodeId = 1000, // Specify the node ID of the WDM Publisher we should connect to
+    kToolOpt_WdmUseSubnetId,            // True if the publisher is within the specified subnet
+    // kToolOpt_WdmSimpleViewClient,
+    // kToolOpt_WdmSimpleViewServer,
     kToolOpt_WdmSubscriptionClient,
     kToolOpt_WdmSubscriptionPublisher,
     kToolOpt_WdmInitMutualSubscription,
@@ -73,7 +73,8 @@ enum
 class MockWdmNodeOptions : public OptionSetBase
 {
 public:
-    enum WdmUpdateConditionality {
+    enum WdmUpdateConditionality
+    {
         kConditionality_Conditional = 0,
         kConditionality_Unconditional,
         kConditionality_Mixed,
@@ -82,9 +83,10 @@ public:
         kConditionality_NumItems
     };
 
-    static const char **GetConditionalityStrings(void);
+    static const char ** GetConditionalityStrings(void);
 
-    enum WdmUpdateTiming {
+    enum WdmUpdateTiming
+    {
         kTiming_BeforeSub = 0,
         kTiming_DuringSub,
         kTiming_AfterSub,
@@ -92,9 +94,10 @@ public:
         kTiming_NumItems
     };
 
-    static const char **GetUpdateTimingStrings(void);
+    static const char ** GetUpdateTimingStrings(void);
 
-    enum WdmUpdateMutation {
+    enum WdmUpdateMutation
+    {
         kMutation_OneLeaf = 0,
         kMutation_SameLevelLeaves,
         kMutation_DiffLevelLeaves,
@@ -111,9 +114,10 @@ public:
         kMutation_NumItems
     };
 
-    static const char **GetMutationStrings(void);
+    static const char ** GetMutationStrings(void);
 
-    enum EventGeneratorType {
+    enum EventGeneratorType
+    {
         kGenerator_None = 0,
         kGenerator_TestDebug,
         kGenerator_TestLiveness,
@@ -124,7 +128,7 @@ public:
         kGenerator_NumItems
     };
 
-    static const char **GetGeneratorStrings(void);
+    static const char ** GetGeneratorStrings(void);
 
     MockWdmNodeOptions();
 
@@ -157,7 +161,7 @@ public:
 
     uint32_t mWdmUpdateMaxNumberOfTraits;
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern MockWdmNodeOptions gMockWdmNodeOptions;
@@ -165,7 +169,6 @@ extern MockWdmNodeOptions gMockWdmNodeOptions;
 class TestWdmNextOptions : public OptionSetBase
 {
 public:
-
     TestWdmNextOptions();
 
     bool mEnableMockTimestampInitialCounter;
@@ -174,7 +177,7 @@ public:
     bool mSavePerfData;
     bool mClearDataSinkState;
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 };
 
 extern TestWdmNextOptions gTestWdmNextOptions;

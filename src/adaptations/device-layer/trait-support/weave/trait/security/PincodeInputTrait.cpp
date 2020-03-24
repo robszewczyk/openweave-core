@@ -47,92 +47,73 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor KeypadEntryEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(KeypadEntryEvent, pincodeCredentialEnabled), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1), 1
-    },
+const nl::FieldDescriptor KeypadEntryEventFieldDescriptors[] = {
+    { NULL, offsetof(KeypadEntryEvent, pincodeCredentialEnabled), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1), 1 },
 
-    {
-        NULL, offsetof(KeypadEntryEvent, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 1), 2
-    },
+    { NULL, offsetof(KeypadEntryEvent, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 1), 2 },
 
-    {
-        NULL, offsetof(KeypadEntryEvent, invalidEntryCount), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 3
-    },
+    { NULL, offsetof(KeypadEntryEvent, invalidEntryCount), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 3 },
 
-    {
-        NULL, offsetof(KeypadEntryEvent, pincodeEntryResult), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 4
-    },
+    { NULL, offsetof(KeypadEntryEvent, pincodeEntryResult), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 4 },
 
 };
 
-const nl::SchemaFieldDescriptor KeypadEntryEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(KeypadEntryEventFieldDescriptors)/sizeof(KeypadEntryEventFieldDescriptors[0]),
-    .mFields = KeypadEntryEventFieldDescriptors,
-    .mSize = sizeof(KeypadEntryEvent)
+const nl::SchemaFieldDescriptor KeypadEntryEvent::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(KeypadEntryEventFieldDescriptors) / sizeof(KeypadEntryEventFieldDescriptors[0]),
+    .mFields                     = KeypadEntryEventFieldDescriptors,
+    .mSize                       = sizeof(KeypadEntryEvent)
 };
-const nl::Weave::Profiles::DataManagement::EventSchema KeypadEntryEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::ProductionCritical,
-    .mDataSchemaVersion = 1,
+const nl::Weave::Profiles::DataManagement::EventSchema KeypadEntryEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::ProductionCritical,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 
-const nl::FieldDescriptor PincodeInputStateChangeEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(PincodeInputStateChangeEvent, pincodeInputState), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1
-    },
+const nl::FieldDescriptor PincodeInputStateChangeEventFieldDescriptors[] = {
+    { NULL, offsetof(PincodeInputStateChangeEvent, pincodeInputState), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1 },
 
-    {
-        NULL, offsetof(PincodeInputStateChangeEvent, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 1), 2
-    },
+    { NULL, offsetof(PincodeInputStateChangeEvent, userId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 1), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor PincodeInputStateChangeEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(PincodeInputStateChangeEventFieldDescriptors)/sizeof(PincodeInputStateChangeEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor PincodeInputStateChangeEvent::FieldSchema = {
+    .mNumFieldDescriptorElements =
+        sizeof(PincodeInputStateChangeEventFieldDescriptors) / sizeof(PincodeInputStateChangeEventFieldDescriptors[0]),
     .mFields = PincodeInputStateChangeEventFieldDescriptors,
-    .mSize = sizeof(PincodeInputStateChangeEvent)
+    .mSize   = sizeof(PincodeInputStateChangeEvent)
 };
-const nl::Weave::Profiles::DataManagement::EventSchema PincodeInputStateChangeEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x2,
-    .mImportance = nl::Weave::Profiles::DataManagement::ProductionCritical,
-    .mDataSchemaVersion = 1,
+const nl::Weave::Profiles::DataManagement::EventSchema PincodeInputStateChangeEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x2,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::ProductionCritical,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

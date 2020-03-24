@@ -27,36 +27,30 @@
 #ifndef _WEAVE_TRAIT_SECURITY__SECURITY_TRAIT_C_H_
 #define _WEAVE_TRAIT_SECURITY__SECURITY_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // ArmState
-    typedef enum
-    {
+// ArmState
+typedef enum
+{
     ARM_STATE_DISARMED = 1,
-    ARM_STATE_ARMING = 2,
-    ARM_STATE_ARMED = 3,
-    } schema_weave_security_security_trait_arm_state_t;
-    // ArmMode
-    typedef enum
-    {
-    ARM_MODE_DISARMED = 1,
-    ARM_MODE_PERIMETER = 2,
+    ARM_STATE_ARMING   = 2,
+    ARM_STATE_ARMED    = 3,
+} schema_weave_security_security_trait_arm_state_t;
+// ArmMode
+typedef enum
+{
+    ARM_MODE_DISARMED             = 1,
+    ARM_MODE_PERIMETER            = 2,
     ARM_MODE_PERIMETER_AND_MOTION = 3,
-    } schema_weave_security_security_trait_arm_mode_t;
-    // AlarmState
-    typedef enum
-    {
+} schema_weave_security_security_trait_arm_mode_t;
+// AlarmState
+typedef enum
+{
     ALARM_STATE_NOT_ALARMING = 1,
-    ALARM_STATE_PREALARMING = 2,
-    ALARM_STATE_ALARMING = 3,
-    } schema_weave_security_security_trait_alarm_state_t;
-
-
-
+    ALARM_STATE_PREALARMING  = 2,
+    ALARM_STATE_ALARMING     = 3,
+} schema_weave_security_security_trait_alarm_state_t;
 
 #endif // _WEAVE_TRAIT_SECURITY__SECURITY_TRAIT_C_H_

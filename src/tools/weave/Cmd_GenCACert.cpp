@@ -41,24 +41,21 @@ using namespace nl::Weave::ASN1;
 
 #define CMD_NAME "weave gen-ca-cert"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "id",         kArgumentRequired, 'i' },
-    { "key",        kArgumentRequired, 'k' },
-    { "ca-cert",    kArgumentRequired, 'C' },
-    { "ca-key",     kArgumentRequired, 'K' },
-    { "self",       kNoArgument,       's' },
-    { "out",        kArgumentRequired, 'o' },
-    { "valid-from", kArgumentRequired, 'V' },
-    { "lifetime",   kArgumentRequired, 'l' },
-    { "sha1",       kNoArgument,       '1'  },
-    { "sha256",     kNoArgument,       '2'  },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "id", kArgumentRequired, 'i' },
+                                      { "key", kArgumentRequired, 'k' },
+                                      { "ca-cert", kArgumentRequired, 'C' },
+                                      { "ca-key", kArgumentRequired, 'K' },
+                                      { "self", kNoArgument, 's' },
+                                      { "out", kArgumentRequired, 'o' },
+                                      { "valid-from", kArgumentRequired, 'V' },
+                                      { "lifetime", kArgumentRequired, 'l' },
+                                      { "sha1", kNoArgument, '1' },
+                                      { "sha256", kNoArgument, '2' },
+                                      { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "   -i, --id <hex-digits>\n"
     "\n"
     "       An EUI-64 (given in hex) that identifies the CA.\n"
@@ -104,57 +101,41 @@ static const char *const gCmdOptionHelp =
     "   -2, --sha256\n"
     "\n"
     "       Sign the certificate using a SHA-256 hash.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
-{
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ]\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Generate a Weave CA certificate"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ]\n", WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Generate a Weave CA certificate");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
 
-static uint64_t gCertId = 0;
-static const char *gCACertFileName = NULL;
-static const char *gCAKeyFileName = NULL;
-static const char *gNewCertFileName = NULL;
-static const char *gNewCertKeyFileName = NULL;
-static int32_t gValidDays = 0;
-static bool gSelfSign = false;
-static const EVP_MD *gSigHashAlgo = NULL;
+static uint64_t gCertId                 = 0;
+static const char * gCACertFileName     = NULL;
+static const char * gCAKeyFileName      = NULL;
+static const char * gNewCertFileName    = NULL;
+static const char * gNewCertKeyFileName = NULL;
+static int32_t gValidDays               = 0;
+static bool gSelfSign                   = false;
+static const EVP_MD * gSigHashAlgo      = NULL;
 static struct tm gValidFrom;
 
-bool Cmd_GenCACert(int argc, char *argv[])
+bool Cmd_GenCACert(int argc, char * argv[])
 {
-    bool res = true;
-    X509 *caCert = NULL;
-    X509 *newCert = NULL;
-    EVP_PKEY *caKey = NULL;
-    EVP_PKEY *newCertKey = NULL;
-    FILE *newCertFile = NULL;
-    bool certFileCreated = false;
+    bool res              = true;
+    X509 * caCert         = NULL;
+    X509 * newCert        = NULL;
+    EVP_PKEY * caKey      = NULL;
+    EVP_PKEY * newCertKey = NULL;
+    FILE * newCertFile    = NULL;
+    bool certFileCreated  = false;
 
     {
-        time_t now = time(NULL);
-        gValidFrom = *gmtime(&now);
+        time_t now         = time(NULL);
+        gValidFrom         = *gmtime(&now);
         gValidFrom.tm_hour = 0;
-        gValidFrom.tm_min = 0;
-        gValidFrom.tm_sec = 0;
+        gValidFrom.tm_min  = 0;
+        gValidFrom.tm_sec  = 0;
     }
 
     if (argc == 1)
@@ -176,15 +157,17 @@ bool Cmd_GenCACert(int argc, char *argv[])
 
     if (gNewCertKeyFileName == NULL)
     {
-        fprintf(stderr, "Please use the --key option to specify the public/private key file for the\n"
-                        "new certificate.\n");
+        fprintf(stderr,
+                "Please use the --key option to specify the public/private key file for the\n"
+                "new certificate.\n");
         ExitNow(res = false);
     }
 
     if (gCACertFileName == NULL && !gSelfSign)
     {
-        fprintf(stderr, "Please specify a CA certificate to be used to sign the new certificate (using\n"
-                        "the --ca-cert option) or --self to generate a self-signed certificate.\n");
+        fprintf(stderr,
+                "Please specify a CA certificate to be used to sign the new certificate (using\n"
+                "the --ca-cert option) or --self to generate a self-signed certificate.\n");
         ExitNow(res = false);
     }
 
@@ -196,8 +179,9 @@ bool Cmd_GenCACert(int argc, char *argv[])
 
     if (gCACertFileName != NULL && gCAKeyFileName == NULL)
     {
-        fprintf(stderr, "Please use the the --ca-key option to specify the key file for the CA\n"
-                        "certificate that will be used to sign the new certificate.\n");
+        fprintf(stderr,
+                "Please use the the --ca-key option to specify the key file for the CA\n"
+                "certificate that will be used to sign the new certificate.\n");
         ExitNow(res = false);
     }
 
@@ -221,9 +205,10 @@ bool Cmd_GenCACert(int argc, char *argv[])
 
     if (strcmp(gNewCertFileName, "-") != 0 && access(gNewCertFileName, R_OK) == 0)
     {
-        fprintf(stderr, "weave: ERROR: Output file already exists (%s)\n"
-                        "To replace the file, please remove it and re-run the command.\n",
-                        gNewCertFileName);
+        fprintf(stderr,
+                "weave: ERROR: Output file already exists (%s)\n"
+                "To replace the file, please remove it and re-run the command.\n",
+                gNewCertFileName);
         ExitNow(res = false);
     }
 
@@ -235,10 +220,10 @@ bool Cmd_GenCACert(int argc, char *argv[])
         newCertFile = fopen(gNewCertFileName, "w+");
         if (newCertFile == NULL)
         {
-            fprintf(stderr, "weave: ERROR: Unable to create output file (%s)\n"
-                            "%s.\n",
-                            gNewCertFileName,
-                            strerror(errno));
+            fprintf(stderr,
+                    "weave: ERROR: Unable to create output file (%s)\n"
+                    "%s.\n",
+                    gNewCertFileName, strerror(errno));
             ExitNow(res = false);
         }
         certFileCreated = true;
@@ -266,14 +251,14 @@ bool Cmd_GenCACert(int argc, char *argv[])
     if (!PEM_write_X509(newCertFile, newCert))
         ReportOpenSSLErrorAndExit("PEM_write_X509", res = false);
 
-    res = (newCertFile == stdout || fclose(newCertFile) != EOF);
+    res         = (newCertFile == stdout || fclose(newCertFile) != EOF);
     newCertFile = NULL;
     if (!res)
     {
-        fprintf(stderr, "weave: ERROR: Unable to write CA certificate file (%s)\n"
-                        "%s.\n",
-                        gNewCertFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to write CA certificate file (%s)\n"
+                "%s.\n",
+                gNewCertFileName, strerror(errno));
         ExitNow();
     }
 
@@ -293,7 +278,7 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -304,21 +289,11 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'C':
-        gCACertFileName = arg;
-        break;
-    case 'K':
-        gCAKeyFileName = arg;
-        break;
-    case 'o':
-        gNewCertFileName = arg;
-        break;
-    case 'k':
-        gNewCertKeyFileName = arg;
-        break;
-    case 's':
-        gSelfSign = true;
-        break;
+    case 'C': gCACertFileName = arg; break;
+    case 'K': gCAKeyFileName = arg; break;
+    case 'o': gNewCertFileName = arg; break;
+    case 'k': gNewCertKeyFileName = arg; break;
+    case 's': gSelfSign = true; break;
     case 'V':
         if (!ParseDateTime(arg, gValidFrom))
         {
@@ -333,15 +308,9 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case '1':
-        gSigHashAlgo = EVP_sha1();
-        break;
-    case '2':
-        gSigHashAlgo = EVP_sha256();
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case '1': gSigHashAlgo = EVP_sha1(); break;
+    case '2': gSigHashAlgo = EVP_sha256(); break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

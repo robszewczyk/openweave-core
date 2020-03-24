@@ -41,17 +41,9 @@ namespace nl {
  */
 static char sErrorStr[WEAVE_CONFIG_ERROR_STR_SIZE];
 
-static const ErrorFormatter sASN1ErrorFormatter =
-{
-    nl::Weave::ASN1::FormatASN1Error,
-    NULL
-};
+static const ErrorFormatter sASN1ErrorFormatter = { nl::Weave::ASN1::FormatASN1Error, NULL };
 
-static const ErrorFormatter sWeaveErrorFormatter =
-{
-    nl::Weave::FormatWeaveError,
-    &sASN1ErrorFormatter
-};
+static const ErrorFormatter sWeaveErrorFormatter = { nl::Weave::FormatWeaveError, &sASN1ErrorFormatter };
 
 /**
  * Linked-list of error formatter functions.
@@ -76,9 +68,7 @@ NL_DLL_EXPORT const char * ErrorStr(int32_t err)
 
     // Search the registered error formatter for one that will format the given
     // error code.
-    for (const ErrorFormatter * errFormatter = sErrorFormatterList;
-         errFormatter != NULL;
-         errFormatter = errFormatter->Next)
+    for (const ErrorFormatter * errFormatter = sErrorFormatterList; errFormatter != NULL; errFormatter = errFormatter->Next)
     {
         if (errFormatter->FormatError(sErrorStr, sizeof(sErrorStr), err))
         {
@@ -104,9 +94,8 @@ NL_DLL_EXPORT const char * ErrorStr(int32_t err)
 NL_DLL_EXPORT void RegisterErrorFormatter(ErrorFormatter * errFormatter)
 {
     // Do nothing if a formatter with the same format function is already in the list.
-    for (const ErrorFormatter * existingFormatter = sErrorFormatterList;
-         existingFormatter != NULL;
-         existingFormatter = existingFormatter->Next)
+    for (const ErrorFormatter * existingFormatter = sErrorFormatterList; existingFormatter != NULL;
+         existingFormatter                        = existingFormatter->Next)
     {
         if (existingFormatter->FormatError == errFormatter->FormatError)
         {
@@ -115,10 +104,9 @@ NL_DLL_EXPORT void RegisterErrorFormatter(ErrorFormatter * errFormatter)
     }
 
     // Add the formatter to the global list.
-    errFormatter->Next = sErrorFormatterList;
+    errFormatter->Next  = sErrorFormatterList;
     sErrorFormatterList = errFormatter;
 }
-
 
 #if !WEAVE_CONFIG_CUSTOM_ERROR_FORMATTER
 
@@ -141,11 +129,11 @@ NL_DLL_EXPORT void FormatError(char * buf, uint16_t bufSize, const char * subsys
 
     if (subsys == NULL)
     {
-        (void)snprintf(buf, bufSize, "Error " WEAVE_CONFIG_SHORT_FORM_ERROR_VALUE_FORMAT, err);
+        (void) snprintf(buf, bufSize, "Error " WEAVE_CONFIG_SHORT_FORM_ERROR_VALUE_FORMAT, err);
     }
     else
     {
-        (void)snprintf(buf, bufSize, "Error %s:" WEAVE_CONFIG_SHORT_FORM_ERROR_VALUE_FORMAT, subsys, err);
+        (void) snprintf(buf, bufSize, "Error %s:" WEAVE_CONFIG_SHORT_FORM_ERROR_VALUE_FORMAT, subsys, err);
     }
 
 #else // WEAVE_CONFIG_SHORT_ERROR_STR
@@ -157,11 +145,11 @@ NL_DLL_EXPORT void FormatError(char * buf, uint16_t bufSize, const char * subsys
         len = snprintf(buf, bufSize, "%s ", subsys);
     }
 
-    len += snprintf(buf + len, bufSize - len, "Error %" PRId32 " (0x%08" PRIX32 ")", err, (uint32_t)err);
+    len += snprintf(buf + len, bufSize - len, "Error %" PRId32 " (0x%08" PRIX32 ")", err, (uint32_t) err);
 
     if (desc != NULL)
     {
-        (void)snprintf(buf + len, bufSize - len, ": %s", desc);
+        (void) snprintf(buf + len, bufSize - len, ": %s", desc);
     }
 
 #endif // WEAVE_CONFIG_SHORT_ERROR_STR

@@ -38,11 +38,9 @@ namespace Internal {
  * or indirectly) by the PlatformManagerImpl class, which also appears as the template's ImplClass
  * parameter.
  */
-template<class ImplClass>
-class GenericPlatformManagerImpl
+template <class ImplClass> class GenericPlatformManagerImpl
 {
 protected:
-
     struct AppEventHandler
     {
         AppEventHandler * Next;
@@ -65,14 +63,14 @@ protected:
     void DispatchEventToSystemLayer(const WeaveDeviceEvent * event);
     void DispatchEventToDeviceLayer(const WeaveDeviceEvent * event);
     void DispatchEventToApplication(const WeaveDeviceEvent * event);
-    static void HandleSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con,
-            void * reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
+    static void HandleSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                         uint64_t peerNodeId, uint8_t encType);
     static void HandleMessageLayerActivityChanged(bool messageLayerIsActive);
 
 private:
     bool mMsgLayerWasActive;
 
-    ImplClass * Impl() { return static_cast<ImplClass*>(this); }
+    ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 };
 
 // Instruct the compiler to instantiate the template only when explicitly told to do so.

@@ -40,224 +40,198 @@ namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Legacy) {
 
-    /**
-     *  @class DMPublisher
-     *
-     *  @brief
-     *    The abstract base class for application-specific WDM publishers.
-     *
-     *  DMPublisher is the standard WDM publisher base class. It is a
-     *  mix of the DM ProtocolEngine class, which handles the comms
-     *  crank-turning, and the wholly abstract PublisherDataManager
-     *  class. Support for subscription and notification are optional
-     *  and may be suppressed simply by configuring a subscription table
-     *  with no entries.
+/**
+ *  @class DMPublisher
+ *
+ *  @brief
+ *    The abstract base class for application-specific WDM publishers.
+ *
+ *  DMPublisher is the standard WDM publisher base class. It is a
+ *  mix of the DM ProtocolEngine class, which handles the comms
+ *  crank-turning, and the wholly abstract PublisherDataManager
+ *  class. Support for subscription and notification are optional
+ *  and may be suppressed simply by configuring a subscription table
+ *  with no entries.
+ */
+
+class DMPublisher :
+
+    public ProtocolEngine,
+
+    public PublisherDataManager
+{
+public:
+    DMPublisher(void);
+
+    virtual ~DMPublisher(void);
+
+    virtual WEAVE_ERROR Init(WeaveExchangeManager * aExchangeMgr, uint32_t aResponseTimeout);
+
+    inline WEAVE_ERROR Init(WeaveExchangeManager * aExchangeMgr) { return Init(aExchangeMgr, kResponseTimeoutNotSpecified); };
+
+    virtual void Clear(void);
+
+    virtual void Finalize(void);
+
+    virtual void IncompleteIndication(Binding * aBinding, StatusReport & aReport);
+
+    WEAVE_ERROR ViewResponse(ExchangeContext * aResponseCtx, StatusReport & aStatus, ReferencedTLVData * aDataList);
+
+    WEAVE_ERROR UpdateResponse(ExchangeContext * aResponseCtx, StatusReport & aStatus);
+
+    WEAVE_ERROR CancelTransactionRequest(uint16_t aTxnId, WEAVE_ERROR aError);
+
+    void OnMsgReceived(ExchangeContext * aResponseCtx, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aMsg);
+
+    /*
+     * everything from here down is related to subscription and
+     * notification and, in cases where the publisher can just get
+     * by with servicing view and update requests, can be omitted.
      */
-
-    class DMPublisher :
-
-        public ProtocolEngine,
-
-        public PublisherDataManager
-    {
-    public:
-
-        DMPublisher(void);
-
-        virtual ~DMPublisher(void);
-
-        virtual WEAVE_ERROR Init(WeaveExchangeManager *aExchangeMgr, uint32_t aResponseTimeout);
-
-        inline WEAVE_ERROR Init(WeaveExchangeManager *aExchangeMgr)
-        {
-            return Init(aExchangeMgr, kResponseTimeoutNotSpecified);
-        };
-
-        virtual void Clear(void);
-
-        virtual void Finalize(void);
-
-        virtual void IncompleteIndication(Binding *aBinding, StatusReport &aReport);
-
-        WEAVE_ERROR ViewResponse(ExchangeContext *aResponseCtx, StatusReport &aStatus, ReferencedTLVData *aDataList);
-
-        WEAVE_ERROR UpdateResponse(ExchangeContext *aResponseCtx, StatusReport &aStatus);
-
-        WEAVE_ERROR CancelTransactionRequest(uint16_t aTxnId, WEAVE_ERROR aError);
-
-        void OnMsgReceived(ExchangeContext *aResponseCtx, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aMsg);
-
-        /*
-         * everything from here down is related to subscription and
-         * notification and, in cases where the publisher can just get
-         * by with servicing view and update requests, can be omitted.
-         */
 
 #if WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
 
-        WEAVE_ERROR BeginSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId);
+    WEAVE_ERROR BeginSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId);
 
-        WEAVE_ERROR EndSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId);
+    WEAVE_ERROR EndSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId);
 
-        void ClearSubscriptionTable(void);
+    void ClearSubscriptionTable(void);
 
-        bool SubscriptionTableEmpty(void) const;
+    bool SubscriptionTableEmpty(void) const;
 
-        WEAVE_ERROR SubscribeResponse(ExchangeContext *aResponseCtx,
-                                      StatusReport &aStatus,
-                                      const TopicIdentifier &aTopicId,
-                                      ReferencedTLVData *aDataList);
+    WEAVE_ERROR SubscribeResponse(ExchangeContext * aResponseCtx, StatusReport & aStatus, const TopicIdentifier & aTopicId,
+                                  ReferencedTLVData * aDataList);
 
-        virtual WEAVE_ERROR CancelSubscriptionIndication(ExchangeContext *aResponseCtxconst, const TopicIdentifier &aTopicId);
+    virtual WEAVE_ERROR CancelSubscriptionIndication(ExchangeContext * aResponseCtxconst, const TopicIdentifier & aTopicId);
 
-        virtual WEAVE_ERROR NotifyRequest(const uint64_t &aDestinationId,
-                                          const TopicIdentifier &aTopicId,
-                                          ReferencedTLVData &aDataList,
-                                          uint16_t aTxnId,
-                                          uint32_t aTimeout);
+    virtual WEAVE_ERROR NotifyRequest(const uint64_t & aDestinationId, const TopicIdentifier & aTopicId,
+                                      ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout);
 
-        virtual WEAVE_ERROR NotifyRequest(const TopicIdentifier &aTopicId,
-                                          ReferencedTLVData &aDataList,
-                                          uint16_t aTxnId,
-                                          uint32_t aTimeout);
+    virtual WEAVE_ERROR NotifyRequest(const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList, uint16_t aTxnId,
+                                      uint32_t aTimeout);
 
-        virtual WEAVE_ERROR NotifyRequest(ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout);
+    virtual WEAVE_ERROR NotifyRequest(ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout);
 
-        virtual WEAVE_ERROR NotifyConfirm(const uint64_t &aResponderId, const TopicIdentifier &aTopicId, StatusReport &aStatus, uint16_t aTxnId);
+    virtual WEAVE_ERROR NotifyConfirm(const uint64_t & aResponderId, const TopicIdentifier & aTopicId, StatusReport & aStatus,
+                                      uint16_t aTxnId);
 
+    /*
+     * this inner Subscription class contains the information that
+     * the publisher requires to maintain a map of topics onto
+     * clients wishing to receive the data of interest. even
+     * though it is, in principal, not part of the published
+     * interface it needs to be public so that the various handlers
+     * can get at it.
+     */
+
+    class Subscription
+    {
+    public:
         /*
-         * this inner Subscription class contains the information that
-         * the publisher requires to maintain a map of topics onto
-         * clients wishing to receive the data of interest. even
-         * though it is, in principal, not part of the published
-         * interface it needs to be public so that the various handlers
-         * can get at it.
+         * subscriptions on the publisher may be allocated and
+         * activated separately. the following bit flags are used
+         * in this regard.
          */
 
-        class Subscription
+        enum
         {
-        public:
-            /*
-             * subscriptions on the publisher may be allocated and
-             * activated separately. the following bit flags are used
-             * in this regard.
-             */
-
-            enum
-            {
-                kSubscriptionFlags_Active =      2,
-                kSubscriptionFlags_Allocated =   1,
-                kSubscriptionFlags_Free =        0
-            };
-
-            Subscription(void);
-
-            ~Subscription(void);
-
-            WEAVE_ERROR Init(const TopicIdentifier &aTopicId, const TopicIdentifier &aRequestedTopicId, const uint64_t &aClientId);
-
-            void Free(void);
-
-            inline bool IsFree(void)
-            {
-                return !(mFlags & kSubscriptionFlags_Allocated);
-            }
-
-            inline bool IsActive(void)
-            {
-                return (mFlags & kSubscriptionFlags_Allocated) && (mFlags & kSubscriptionFlags_Active);
-            }
-
-            inline void Activate(void)
-            {
-                mFlags |= kSubscriptionFlags_Active;
-            }
-
-            inline void Deactivate(void)
-            {
-                mFlags &= ~kSubscriptionFlags_Active;
-            }
-
-            inline bool MatchSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId) const
-            {
-                return ((aTopicId == kTopicIdNotSpecified || mAssignedId == aTopicId || mRequestedId == aTopicId) &&
-                        (aClientId == kAnyNodeId || mClientId == aClientId));
-            }
-
-            TopicIdentifier mAssignedId;
-            TopicIdentifier mRequestedId;
-            uint64_t        mClientId;
-            ExchangeContext *mSubscriptionCtx;
-            uint8_t         mFlags;
+            kSubscriptionFlags_Active    = 2,
+            kSubscriptionFlags_Allocated = 1,
+            kSubscriptionFlags_Free      = 0
         };
 
-    protected:
-        /*
-         * this method, as distinct from BeginSubscription above,
-         * simply adds a subscription to the table without activating
-         * it and returns a pointer to the subscription object.
-         */
+        Subscription(void);
 
-        Subscription *AddSubscription(const TopicIdentifier &aTopicId, const TopicIdentifier &aRequestedTopicId, const uint64_t &aClientId);
+        ~Subscription(void);
 
-        /*
-         * and this one removes a subscription (or possibly many
-         * subscriptions).
-         */
+        WEAVE_ERROR Init(const TopicIdentifier & aTopicId, const TopicIdentifier & aRequestedTopicId, const uint64_t & aClientId);
 
-        void RemoveSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId);
+        void Free(void);
 
-        /*
-         * this one does the same but also calls the failure indicatio
-         * on the data manager object.
-         */
+        inline bool IsFree(void) { return !(mFlags & kSubscriptionFlags_Allocated); }
 
-        void FailSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId, StatusReport &aReport);
+        inline bool IsActive(void) { return (mFlags & kSubscriptionFlags_Allocated) && (mFlags & kSubscriptionFlags_Active); }
 
-        /*
-         * the inner transaction class for the Notify transactions is
-         * derived from the ProtocolEngine::Transaction object and
-         * contains whatever additional information is required to
-         * make the notification work.
-         */
+        inline void Activate(void) { mFlags |= kSubscriptionFlags_Active; }
 
-        class Notify :
-            public DMTransaction
+        inline void Deactivate(void) { mFlags &= ~kSubscriptionFlags_Active; }
+
+        inline bool MatchSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId) const
         {
+            return ((aTopicId == kTopicIdNotSpecified || mAssignedId == aTopicId || mRequestedId == aTopicId) &&
+                    (aClientId == kAnyNodeId || mClientId == aClientId));
+        }
 
-        public:
-            WEAVE_ERROR Init(DMPublisher *aPublisher,
-                             const TopicIdentifier &aTopicId,
-                             ReferencedTLVData &aDataList,
-                             uint16_t aTxnId,
-                             uint32_t aTimeout);
-            void Free(void);
-
-            WEAVE_ERROR SendRequest(PacketBuffer *aBuffer, uint16_t aSendFlags);
-
-            // transaction-specific handlers
-
-            WEAVE_ERROR OnStatusReceived(const uint64_t &aResponderId, StatusReport &aStatus);
-
-            ReferencedTLVData mDataList;
-            TopicIdentifier mTopicId;
-        };
-
-        Notify *NewNotify(void);
-
-        // data members
-
-        Subscription mSubscriptionTable[kSubscriptionMgrTableSize];
-
-        Notify       mNotifyPool[kNotifyPoolSize];
-
-#endif // WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
-
+        TopicIdentifier mAssignedId;
+        TopicIdentifier mRequestedId;
+        uint64_t mClientId;
+        ExchangeContext * mSubscriptionCtx;
+        uint8_t mFlags;
     };
 
-}; // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Legacy)
-}; // Profiles
-}; // Weave
-}; // nl
+protected:
+    /*
+     * this method, as distinct from BeginSubscription above,
+     * simply adds a subscription to the table without activating
+     * it and returns a pointer to the subscription object.
+     */
+
+    Subscription * AddSubscription(const TopicIdentifier & aTopicId, const TopicIdentifier & aRequestedTopicId,
+                                   const uint64_t & aClientId);
+
+    /*
+     * and this one removes a subscription (or possibly many
+     * subscriptions).
+     */
+
+    void RemoveSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId);
+
+    /*
+     * this one does the same but also calls the failure indicatio
+     * on the data manager object.
+     */
+
+    void FailSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId, StatusReport & aReport);
+
+    /*
+     * the inner transaction class for the Notify transactions is
+     * derived from the ProtocolEngine::Transaction object and
+     * contains whatever additional information is required to
+     * make the notification work.
+     */
+
+    class Notify : public DMTransaction
+    {
+
+    public:
+        WEAVE_ERROR Init(DMPublisher * aPublisher, const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList, uint16_t aTxnId,
+                         uint32_t aTimeout);
+        void Free(void);
+
+        WEAVE_ERROR SendRequest(PacketBuffer * aBuffer, uint16_t aSendFlags);
+
+        // transaction-specific handlers
+
+        WEAVE_ERROR OnStatusReceived(const uint64_t & aResponderId, StatusReport & aStatus);
+
+        ReferencedTLVData mDataList;
+        TopicIdentifier mTopicId;
+    };
+
+    Notify * NewNotify(void);
+
+    // data members
+
+    Subscription mSubscriptionTable[kSubscriptionMgrTableSize];
+
+    Notify mNotifyPool[kNotifyPoolSize];
+
+#endif // WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
+};
+
+}; // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Legacy)
+}; // namespace Profiles
+}; // namespace Weave
+}; // namespace nl
 
 #endif // _WEAVE_DATA_MANAGEMENT_DM_PUBLISHER_LEGACY_H

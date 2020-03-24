@@ -27,21 +27,15 @@
 #ifndef _WEAVE_TRAIT_LOCALE__LOCALE_TRAIT_C_H_
 #define _WEAVE_TRAIT_LOCALE__LOCALE_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // LocaleStatus
-    typedef enum
-    {
+// LocaleStatus
+typedef enum
+{
     LOCALE_STATUS_NOT_SUPPORTED_OR_UNKNOWN = 1,
-    LOCALE_STATUS_IMPROPERLY_FORMATTED = 2,
-    } schema_weave_locale_locale_trait_locale_status_t;
-
-
-
+    LOCALE_STATUS_IMPROPERLY_FORMATTED     = 2,
+} schema_weave_locale_locale_trait_locale_status_t;
 
 #endif // _WEAVE_TRAIT_LOCALE__LOCALE_TRAIT_C_H_

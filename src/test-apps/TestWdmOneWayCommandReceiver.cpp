@@ -61,17 +61,17 @@ nl::Weave::Profiles::DataManagement::SubscriptionEngine * nl::Weave::Profiles::D
     return &gWdmSubscriptionEngine;
 }
 
-TestWdmOneWayCommandReceiver * TestWdmOneWayCommandReceiver::GetInstance ()
+TestWdmOneWayCommandReceiver * TestWdmOneWayCommandReceiver::GetInstance()
 {
     return &gWdmOneWayCommandReceiver;
 }
 
 TestWdmOneWayCommandReceiver::TestWdmOneWayCommandReceiver() :
-    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore, sizeof(mSourceCatalogStore) / sizeof(mSourceCatalogStore[0]))
-{
-}
+    mSourceCatalog(ResourceIdentifier(ResourceIdentifier::SELF_NODE_ID), mSourceCatalogStore,
+                   sizeof(mSourceCatalogStore) / sizeof(mSourceCatalogStore[0]))
+{ }
 
-WEAVE_ERROR TestWdmOneWayCommandReceiver::Init (nl::Weave::WeaveExchangeManager *aExchangeMgr)
+WEAVE_ERROR TestWdmOneWayCommandReceiver::Init(nl::Weave::WeaveExchangeManager * aExchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -93,19 +93,17 @@ exit:
     return err;
 }
 
-void TestWdmOneWayCommandReceiver::EngineEventCallback (void * const aAppState,
-    SubscriptionEngine::EventID aEvent,
-    const SubscriptionEngine::InEventParam & aInParam, SubscriptionEngine::OutEventParam & aOutParam)
+void TestWdmOneWayCommandReceiver::EngineEventCallback(void * const aAppState, SubscriptionEngine::EventID aEvent,
+                                                       const SubscriptionEngine::InEventParam & aInParam,
+                                                       SubscriptionEngine::OutEventParam & aOutParam)
 {
     switch (aEvent)
     {
-    default:
-        SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam);
-        break;
+    default: SubscriptionEngine::DefaultEventHandler(aEvent, aInParam, aOutParam); break;
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     InitSystemLayer();
     InitNetwork();
@@ -116,11 +114,10 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
-
     }
 
     ShutdownWeaveStack();

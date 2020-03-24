@@ -44,8 +44,7 @@ namespace Weave {
 namespace Profiles {
 namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current) {
 
-
-TraitUpdatableDataSink *Locate(TraitDataHandle aTraitDataHandle, const TraitCatalogBase<TraitDataSink> * aDataSinkCatalog);
+TraitUpdatableDataSink * Locate(TraitDataHandle aTraitDataHandle, const TraitCatalogBase<TraitDataSink> * aDataSinkCatalog);
 
 /**
  * This object encodes WDM UpdateRequest and PartialUpdateRequest payloads.
@@ -67,30 +66,30 @@ public:
      */
     struct Context
     {
-        Context()
-            : mBuf(NULL), mMaxPayloadSize(0), mUpdateRequestIndex(0), mExpiryTimeMicroSecond(0),
-                    mItemInProgress(0), mInProgressUpdateList(NULL), mNextDictionaryElementPathHandle(kNullPropertyPathHandle),
-                    mDataSinkCatalog(NULL), mNumDataElementsAddedToPayload(0)
-        {  }
+        Context() :
+            mBuf(NULL), mMaxPayloadSize(0), mUpdateRequestIndex(0), mExpiryTimeMicroSecond(0), mItemInProgress(0),
+            mInProgressUpdateList(NULL), mNextDictionaryElementPathHandle(kNullPropertyPathHandle), mDataSinkCatalog(NULL),
+            mNumDataElementsAddedToPayload(0)
+        { }
 
         // Destination buffer
-        PacketBuffer *mBuf;                      /**< The output buffer. In case of failure the PacketBuffer's data length
-                                                      is not updated, but the buffer contents are not preserved. */
-        uint32_t mMaxPayloadSize;                /**< The maximum number of bytes to write. */
+        PacketBuffer * mBuf;      /**< The output buffer. In case of failure the PacketBuffer's data length
+                                       is not updated, but the buffer contents are not preserved. */
+        uint32_t mMaxPayloadSize; /**< The maximum number of bytes to write. */
 
         // Other fields of the payload
-        uint32_t mUpdateRequestIndex;            /**< The value of the UpdateRequestIndex field for this request. */
-        utc_timestamp_t mExpiryTimeMicroSecond;  /**< The value of the ExpiryTimeMicroSecond field for this request.
-                                                      It is encoded only if different than 0 */
+        uint32_t mUpdateRequestIndex;           /**< The value of the UpdateRequestIndex field for this request. */
+        utc_timestamp_t mExpiryTimeMicroSecond; /**< The value of the ExpiryTimeMicroSecond field for this request.
+                                                     It is encoded only if different than 0 */
 
         // What to encode
-        size_t mItemInProgress;                  /**< Input: the index of the item of mInProgressUpdateList to start
-                                                      encoding from.
-                                                      Output: Upon returning, if the whole path list fit in the payload,
-                                                      this field equals mInProgressUpdateList->GetPathStoreSize().
-                                                      Otherwise, the index of the item to start the next payload from.*/
+        size_t mItemInProgress; /**< Input: the index of the item of mInProgressUpdateList to start
+                                     encoding from.
+                                     Output: Upon returning, if the whole path list fit in the payload,
+                                     this field equals mInProgressUpdateList->GetPathStoreSize().
+                                     Otherwise, the index of the item to start the next payload from.*/
 
-        TraitPathStore *mInProgressUpdateList;   /**< The list of TraitPaths to encode. */
+        TraitPathStore * mInProgressUpdateList;              /**< The list of TraitPaths to encode. */
         PropertyPathHandle mNextDictionaryElementPathHandle; /**< Input: if the encoding starts with a dictionary being
                                                                  resumed, this field holds the property path of the next
                                                                  dictionary item to encode. Otherwise, this field should be
@@ -99,37 +98,34 @@ public:
                                                                  not all items fit in the payload, this field holds the property
                                                                  path handle of the item to start from for the next payload. */
 
-
         const TraitCatalogBase<TraitDataSink> * mDataSinkCatalog; /**< Input: The catalog of TraitDataSinks which the
                                                                        TraitPaths refer to. */
 
         // Other
-        size_t mNumDataElementsAddedToPayload;    /**< Output: The number of items encoded in the payload. */
+        size_t mNumDataElementsAddedToPayload; /**< Output: The number of items encoded in the payload. */
     };
 
-    WEAVE_ERROR EncodeRequest(Context &aContext);
+    WEAVE_ERROR EncodeRequest(Context & aContext);
 
-    WEAVE_ERROR InsertInProgressUpdateItem(const TraitPath &aItem);
+    WEAVE_ERROR InsertInProgressUpdateItem(const TraitPath & aItem);
 
 private:
-
     /**
      * The context used to encode the path of a DataElement.
      */
     struct DataElementPathContext
     {
-        DataElementPathContext()
-            : mProfileId(0), mResourceId(0), mInstanceId(0), mNumTags(0),
-              mTags(NULL), mSchemaVersionRange(NULL)
+        DataElementPathContext() :
+            mProfileId(0), mResourceId(0), mInstanceId(0), mNumTags(0), mTags(NULL), mSchemaVersionRange(NULL)
         { }
 
-        uint32_t mProfileId;                    /**< Profile ID of the data sink. */
-        ResourceIdentifier mResourceId;         /**< Resource ID of the data sink; if 0 it is not encoded
-                                                     and defaults to the resource ID of the publisher. */
-        uint64_t mInstanceId;                   /**< Instance ID of the data sink; if 0 it is not encoded
-                                                     and defaults to the first instance of the trait in the publisher. */
-        uint32_t mNumTags;                      /**< Number of tags in the tags array mTags. */
-        uint64_t *mTags;                        /**< Array of tags to be encoded in the path. */
+        uint32_t mProfileId;                            /**< Profile ID of the data sink. */
+        ResourceIdentifier mResourceId;                 /**< Resource ID of the data sink; if 0 it is not encoded
+                                                             and defaults to the resource ID of the publisher. */
+        uint64_t mInstanceId;                           /**< Instance ID of the data sink; if 0 it is not encoded
+                                                             and defaults to the first instance of the trait in the publisher. */
+        uint32_t mNumTags;                              /**< Number of tags in the tags array mTags. */
+        uint64_t * mTags;                               /**< Array of tags to be encoded in the path. */
         const SchemaVersionRange * mSchemaVersionRange; /**< Schema version range. */
     };
 
@@ -140,11 +136,11 @@ private:
     {
         DataElementDataContext() { memset(this, 0, sizeof(*this)); }
 
-        TraitPath mTraitPath;                   /**< The TraitPath to encode. */
-        DataVersion mUpdateRequiredVersion;     /**< If the update is conditional, the version the update is based off. */
-        bool mForceMerge;                       /**< True if the property is a dictionary and should be encoded as a merge. */
-        TraitUpdatableDataSink *mDataSink;      /**< DataSink the TraitPath refers to. */
-        const TraitSchemaEngine *mSchemaEngine; /**< The TraitSchemaEngine of the data sink. */
+        TraitPath mTraitPath;                    /**< The TraitPath to encode. */
+        DataVersion mUpdateRequiredVersion;      /**< If the update is conditional, the version the update is based off. */
+        bool mForceMerge;                        /**< True if the property is a dictionary and should be encoded as a merge. */
+        TraitUpdatableDataSink * mDataSink;      /**< DataSink the TraitPath refers to. */
+        const TraitSchemaEngine * mSchemaEngine; /**< The TraitSchemaEngine of the data sink. */
         PropertyPathHandle mNextDictionaryElementPathHandle; /**< See @UpdateEncoder::Context */
     };
 
@@ -152,20 +148,19 @@ private:
     WEAVE_ERROR EncodeDataList(void);
     WEAVE_ERROR EncodeDataElements();
     WEAVE_ERROR EncodeDataElement();
-    static WEAVE_ERROR EncodeElementPath(const DataElementPathContext &aElementContext, TLV::TLVWriter &aWriter);
-    static WEAVE_ERROR EncodeElementData(DataElementDataContext &aElementContext, TLV::TLVWriter &aWriter);
+    static WEAVE_ERROR EncodeElementPath(const DataElementPathContext & aElementContext, TLV::TLVWriter & aWriter);
+    static WEAVE_ERROR EncodeElementData(DataElementDataContext & aElementContext, TLV::TLVWriter & aWriter);
     WEAVE_ERROR EndUpdateRequest(void);
 
-    void Checkpoint(TLV::TLVWriter &aWriter) { aWriter = mWriter; }
-    void Rollback(TLV::TLVWriter &aWriter) { mWriter = aWriter; }
+    void Checkpoint(TLV::TLVWriter & aWriter) { aWriter = mWriter; }
+    void Rollback(TLV::TLVWriter & aWriter) { mWriter = aWriter; }
 
-    static void RemoveInProgressPrivateItemsAfter(TraitPathStore &aList, size_t aItemInProgress);
+    static void RemoveInProgressPrivateItemsAfter(TraitPathStore & aList, size_t aItemInProgress);
 
-    Context *mContext;
+    Context * mContext;
 
     TLV::TLVWriter mWriter;
     nl::Weave::TLV::TLVType mPayloadOuterContainerType, mDataListOuterContainerType, mDataElementOuterContainerType;
-
 };
 
 }; // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)

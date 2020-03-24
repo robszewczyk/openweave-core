@@ -32,7 +32,6 @@
 
 #include <weave/trait/telemetry/tunnel/TelemetryTunnelTrait.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -42,8 +41,9 @@ namespace TelemetryTunnelFailoverTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1702U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1702U
 };
 
 //
@@ -76,19 +76,20 @@ struct TelemetryTunnelFailoverStatsEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x1702U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x1702U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TelemetryTunnelFailoverStatsEvent_array {
+struct TelemetryTunnelFailoverStatsEvent_array
+{
     uint32_t num;
-    TelemetryTunnelFailoverStatsEvent *buf;
+    TelemetryTunnelFailoverStatsEvent * buf;
 };
-
 
 } // namespace TelemetryTunnelFailoverTrait
 } // namespace Tunnel

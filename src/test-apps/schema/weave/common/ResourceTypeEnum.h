@@ -30,17 +30,18 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
-enum ResourceType {
-    RESOURCE_TYPE_DEVICE = 1,
-    RESOURCE_TYPE_USER = 2,
-    RESOURCE_TYPE_ACCOUNT = 3,
-    RESOURCE_TYPE_AREA = 4,
-    RESOURCE_TYPE_FIXTURE = 5,
-    RESOURCE_TYPE_GROUP = 6,
+enum ResourceType
+{
+    RESOURCE_TYPE_DEVICE     = 1,
+    RESOURCE_TYPE_USER       = 2,
+    RESOURCE_TYPE_ACCOUNT    = 3,
+    RESOURCE_TYPE_AREA       = 4,
+    RESOURCE_TYPE_FIXTURE    = 5,
+    RESOURCE_TYPE_GROUP      = 6,
     RESOURCE_TYPE_ANNOTATION = 7,
-    RESOURCE_TYPE_STRUCTURE = 8,
-    RESOURCE_TYPE_GUEST = 9,
-    RESOURCE_TYPE_SERVICE = 10,
+    RESOURCE_TYPE_STRUCTURE  = 8,
+    RESOURCE_TYPE_GUEST      = 9,
+    RESOURCE_TYPE_SERVICE    = 10,
 };
 
 } // namespace Common

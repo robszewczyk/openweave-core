@@ -52,7 +52,7 @@ namespace PASE {
 
 #undef PASE_PRINT_CRYPTO_DATA
 #ifdef PASE_PRINT_CRYPTO_DATA
-static void PrintHex(const uint8_t *data, uint16_t len)
+static void PrintHex(const uint8_t * data, uint16_t len)
 {
     for (uint16_t i = 0; i < len; i++)
         printf("%02X", data[i]);
@@ -123,13 +123,14 @@ static BIGNUM * PASEConfig1_JPAKE_G()
 // clang-format on
 
 // Utility function for initializing a JPAKE_CTX for PASE Config1
-static WEAVE_ERROR NewPASEConfig1JPAKECTX(const uint8_t *pw, uint16_t pwLen, const char *localContextStr, const char *peerContextStr, struct JPAKE_CTX *& ctx)
+static WEAVE_ERROR NewPASEConfig1JPAKECTX(const uint8_t * pw, uint16_t pwLen, const char * localContextStr,
+                                          const char * peerContextStr, struct JPAKE_CTX *& ctx)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    BIGNUM *secret = NULL;
-    BIGNUM *P = NULL;
-    BIGNUM *G = NULL;
-    BIGNUM *Q = NULL;
+    BIGNUM * secret = NULL;
+    BIGNUM * P      = NULL;
+    BIGNUM * G      = NULL;
+    BIGNUM * Q      = NULL;
 
     secret = BN_bin2bn(pw, pwLen, NULL);
     VerifyOrExit(secret != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -157,7 +158,7 @@ exit:
 #endif /* WEAVE_CONFIG_SUPPORT_PASE_CONFIG1 */
 
 #if WEAVE_CONFIG_PASE_MESSAGE_PAYLOAD_ALIGNMENT
-static WEAVE_ERROR AlignMessagePayload(PacketBuffer *buf)
+static WEAVE_ERROR AlignMessagePayload(PacketBuffer * buf)
 {
     // Align message payload on 4-byte boundary
     if (buf->AlignPayload(4))
@@ -166,23 +167,24 @@ static WEAVE_ERROR AlignMessagePayload(PacketBuffer *buf)
     return WEAVE_ERROR_BUFFER_TOO_SMALL;
 }
 #else
-static inline WEAVE_ERROR AlignMessagePayload(PacketBuffer *buf)
+static inline WEAVE_ERROR AlignMessagePayload(PacketBuffer * buf)
 {
     return WEAVE_NO_ERROR;
 }
 #endif // WEAVE_CONFIG_PASE_MESSAGE_PAYLOAD_ALIGNMENT
 
-static WEAVE_ERROR PackControlHeader(uint8_t pwSrc, uint8_t encType, uint16_t sessionKeyId, bool performKeyConfirm, uint32_t& controlHeader)
+static WEAVE_ERROR PackControlHeader(uint8_t pwSrc, uint8_t encType, uint16_t sessionKeyId, bool performKeyConfirm,
+                                     uint32_t & controlHeader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit(pwSrc < 16, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    controlHeader = (((uint32_t)pwSrc) << kPASEHeader_PasswordSourceShift) & kPASEHeader_PasswordSourceMask;
+    controlHeader = (((uint32_t) pwSrc) << kPASEHeader_PasswordSourceShift) & kPASEHeader_PasswordSourceMask;
 
     VerifyOrExit(encType < 16, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    controlHeader |= (((uint32_t)encType) << kPASEHeader_EncryptionTypeShift) & kPASEHeader_EncryptionTypeMask;
+    controlHeader |= (((uint32_t) encType) << kPASEHeader_EncryptionTypeShift) & kPASEHeader_EncryptionTypeMask;
 
-    controlHeader |= (((uint32_t)sessionKeyId) << kPASEHeader_SessionKeyShift) & kPASEHeader_SessionKeyMask;
+    controlHeader |= (((uint32_t) sessionKeyId) << kPASEHeader_SessionKeyShift) & kPASEHeader_SessionKeyMask;
 
     if (performKeyConfirm)
         controlHeader |= kPASEHeader_PerformKeyConfirmFlag;
@@ -191,15 +193,16 @@ exit:
     return err;
 }
 
-static WEAVE_ERROR UnpackControlHeader(uint32_t controlHeader, uint8_t& pwSrc, uint8_t& encType, uint16_t& sessionKeyId, bool& performKeyConfirm)
+static WEAVE_ERROR UnpackControlHeader(uint32_t controlHeader, uint8_t & pwSrc, uint8_t & encType, uint16_t & sessionKeyId,
+                                       bool & performKeyConfirm)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit((controlHeader & kPASEHeader_ControlHeaderUnusedBits) == 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    pwSrc = (uint8_t)((controlHeader & kPASEHeader_PasswordSourceMask) >> kPASEHeader_PasswordSourceShift);
-    encType = (uint8_t)((controlHeader & kPASEHeader_EncryptionTypeMask) >> kPASEHeader_EncryptionTypeShift);
-    sessionKeyId = (uint16_t)((controlHeader & kPASEHeader_SessionKeyMask) >> kPASEHeader_SessionKeyShift);
+    pwSrc             = (uint8_t)((controlHeader & kPASEHeader_PasswordSourceMask) >> kPASEHeader_PasswordSourceShift);
+    encType           = (uint8_t)((controlHeader & kPASEHeader_EncryptionTypeMask) >> kPASEHeader_EncryptionTypeShift);
+    sessionKeyId      = (uint16_t)((controlHeader & kPASEHeader_SessionKeyMask) >> kPASEHeader_SessionKeyShift);
     performKeyConfirm = (controlHeader & kPASEHeader_PerformKeyConfirmFlag) != 0;
 
 exit:
@@ -218,7 +221,7 @@ uint32_t WeavePASEEngine::PackSizeHeader(uint8_t altConfigCount)
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         sizeHeader = kPASESizeHeader_MaxConstantSizesConfig1;
     }
@@ -230,18 +233,18 @@ uint32_t WeavePASEEngine::PackSizeHeader(uint8_t altConfigCount)
         uint8_t zkpxbWordCount;
 
         zkpxbWordCount = mEllipticCurveJPAKE.GetCurveSize() / 4;
-        gxWordCount = 2 * zkpxbWordCount;
+        gxWordCount    = 2 * zkpxbWordCount;
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG2
         if (ProtocolConfig == kPASEConfig_Config2)
             zkpxbWordCount++;
 #endif
 
-        sizeHeader  = (gxWordCount << kPASEHeader_GXWordCountShift) & kPASEHeader_GXWordCountMask;
+        sizeHeader = (gxWordCount << kPASEHeader_GXWordCountShift) & kPASEHeader_GXWordCountMask;
         sizeHeader |= (gxWordCount << kPASEHeader_ZKPXGRWordCountShift) & kPASEHeader_ZKPXGRWordCountMask;
         sizeHeader |= (zkpxbWordCount << kPASEHeader_ZKPXBWordCountShift) & kPASEHeader_ZKPXBWordCountMask;
     }
-#else // WEAVE_IS_EC_PASE_ENABLED
+#else  // WEAVE_IS_EC_PASE_ENABLED
     {
         // Die if ProtocolConfig has an invalid value.
         WeaveDie();
@@ -253,15 +256,15 @@ uint32_t WeavePASEEngine::PackSizeHeader(uint8_t altConfigCount)
     return sizeHeader;
 }
 
-static void UnpackSizeHeader(uint32_t sizeHeader, uint8_t& gx, uint8_t& zkpxgr, uint8_t& zkpxb, uint8_t& altConfigCount)
+static void UnpackSizeHeader(uint32_t sizeHeader, uint8_t & gx, uint8_t & zkpxgr, uint8_t & zkpxb, uint8_t & altConfigCount)
 {
-    gx = (sizeHeader & kPASEHeader_GXWordCountMask) >> kPASEHeader_GXWordCountShift;
-    zkpxgr = (sizeHeader & kPASEHeader_ZKPXGRWordCountMask) >> kPASEHeader_ZKPXGRWordCountShift;
-    zkpxb = (sizeHeader & kPASEHeader_ZKPXBWordCountMask) >> kPASEHeader_ZKPXBWordCountShift;
+    gx             = (sizeHeader & kPASEHeader_GXWordCountMask) >> kPASEHeader_GXWordCountShift;
+    zkpxgr         = (sizeHeader & kPASEHeader_ZKPXGRWordCountMask) >> kPASEHeader_ZKPXGRWordCountShift;
+    zkpxb          = (sizeHeader & kPASEHeader_ZKPXBWordCountMask) >> kPASEHeader_ZKPXBWordCountShift;
     altConfigCount = (sizeHeader & kPASEHeader_AlternateConfigCountMask) >> kPASEHeader_AlternateConfigCountShift;
 }
 
-static WEAVE_ERROR UnpackSizeHeader(uint32_t sizeHeader, uint8_t& gx, uint8_t& zkpxgr, uint8_t& zkpxb)
+static WEAVE_ERROR UnpackSizeHeader(uint32_t sizeHeader, uint8_t & gx, uint8_t & zkpxgr, uint8_t & zkpxb)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t unused;
@@ -275,8 +278,8 @@ exit:
 
 enum
 {
-    kMaxContextStringSize         = 64 + kMaxAlternateProtocolConfigs * 9,
-    kMaxContextDataSize           = 27 + kMaxAlternateProtocolConfigs * 4
+    kMaxContextStringSize = 64 + kMaxAlternateProtocolConfigs * 9,
+    kMaxContextDataSize   = 27 + kMaxAlternateProtocolConfigs * 4
 };
 
 // The FormProtocolContextString() function is used to create a string that encodes the context
@@ -302,35 +305,38 @@ enum
 // that the responder has seen the full list of configurations supported by the initiator.
 //
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-WEAVE_ERROR WeavePASEEngine::FormProtocolContextString(uint64_t localNodeId, uint64_t peerNodeId, uint8_t pwSource, uint32_t *altConfigs, uint8_t altConfigsCount, bool isInitiator, char *buf, size_t bufSize)
+WEAVE_ERROR WeavePASEEngine::FormProtocolContextString(uint64_t localNodeId, uint64_t peerNodeId, uint8_t pwSource,
+                                                       uint32_t * altConfigs, uint8_t altConfigsCount, bool isInitiator, char * buf,
+                                                       size_t bufSize)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     char roleChar, confirmKeyChar;
     int res;
 
-    VerifyOrExit(EncryptionType <= (kPASEHeader_EncryptionTypeMask >> kPASEHeader_EncryptionTypeShift), err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(pwSource <= (kPASEHeader_PasswordSourceMask >> kPASEHeader_PasswordSourceShift), err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(EncryptionType <= (kPASEHeader_EncryptionTypeMask >> kPASEHeader_EncryptionTypeShift),
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(pwSource <= (kPASEHeader_PasswordSourceMask >> kPASEHeader_PasswordSourceShift),
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    roleChar = (isInitiator) ? 'I' : 'R';
+    roleChar       = (isInitiator) ? 'I' : 'R';
     confirmKeyChar = (PerformKeyConfirmation) ? 'T' : 'F';
 
     // !!! IMPORTANT !!!  The format of the context strings CANNOT change without introducing a protocol
     // incompatibility. In practice this means that any change to the string format MUST introduce a new
     // PASE configuration type.
     //
-    res = snprintf(buf, bufSize, "%c,%016llX,%016llX,%04X,%X,%X,%c,%08lX,%02X",
-                   roleChar, (unsigned long long)localNodeId, (unsigned long long)peerNodeId,
-                   SessionKeyId, EncryptionType, pwSource,
-                   confirmKeyChar, (unsigned long)ProtocolConfig, altConfigsCount);
-    VerifyOrExit(res < (int)bufSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
+    res = snprintf(buf, bufSize, "%c,%016llX,%016llX,%04X,%X,%X,%c,%08lX,%02X", roleChar, (unsigned long long) localNodeId,
+                   (unsigned long long) peerNodeId, SessionKeyId, EncryptionType, pwSource, confirmKeyChar,
+                   (unsigned long) ProtocolConfig, altConfigsCount);
+    VerifyOrExit(res < (int) bufSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     buf += res;
     bufSize -= res;
 
     for (uint8_t i = 0; i < altConfigsCount; i++)
     {
-        res = snprintf(buf, bufSize, ",%08lX", (unsigned long)altConfigs[i]);
-        VerifyOrExit(res < (int)bufSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
+        res = snprintf(buf, bufSize, ",%08lX", (unsigned long) altConfigs[i]);
+        VerifyOrExit(res < (int) bufSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
         buf += res;
         bufSize -= res;
     }
@@ -341,13 +347,17 @@ exit:
 #endif // WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY || WEAVE_IS_EC_PASE_ENABLED
-WEAVE_ERROR WeavePASEEngine::FormProtocolContextData(uint64_t localNodeId, uint64_t peerNodeId, uint8_t pwSource, uint32_t *altConfigs, uint8_t altConfigsCount, bool isInitiator, uint8_t *buf, size_t bufSize, uint16_t &contextLen)
+WEAVE_ERROR WeavePASEEngine::FormProtocolContextData(uint64_t localNodeId, uint64_t peerNodeId, uint8_t pwSource,
+                                                     uint32_t * altConfigs, uint8_t altConfigsCount, bool isInitiator,
+                                                     uint8_t * buf, size_t bufSize, uint16_t & contextLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t roleByte, confirmKeyByte;
 
-    VerifyOrExit(EncryptionType <= (kPASEHeader_EncryptionTypeMask >> kPASEHeader_EncryptionTypeShift), err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(pwSource <= (kPASEHeader_PasswordSourceMask >> kPASEHeader_PasswordSourceShift), err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(EncryptionType <= (kPASEHeader_EncryptionTypeMask >> kPASEHeader_EncryptionTypeShift),
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(pwSource <= (kPASEHeader_PasswordSourceMask >> kPASEHeader_PasswordSourceShift),
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // !!! IMPORTANT !!!  The format of the context data CANNOT change without introducing a protocol
     // incompatibility. In practice this means that any change to the format MUST introduce a new
@@ -368,7 +378,7 @@ WEAVE_ERROR WeavePASEEngine::FormProtocolContextData(uint64_t localNodeId, uint6
     contextLen = 27 + 4 * altConfigsCount;
     VerifyOrExit(contextLen <= bufSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
-    roleByte = (uint8_t)((isInitiator) ? 'I' : 'R');
+    roleByte       = (uint8_t)((isInitiator) ? 'I' : 'R');
     confirmKeyByte = (uint8_t)((PerformKeyConfirmation) ? 'T' : 'F');
 
     memset(buf++, roleByte, 1);
@@ -389,13 +399,12 @@ exit:
 }
 #endif // WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY || WEAVE_IS_EC_PASE_ENABLED
 
-
-void WeavePASEEngine::ProtocolHash(const uint8_t *data, const uint16_t dataLen, uint8_t *h)
+void WeavePASEEngine::ProtocolHash(const uint8_t * data, const uint16_t dataLen, uint8_t * h)
 {
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
     if (ProtocolConfig == kPASEConfig_Config1)
     {
-        SHA1   hash;
+        SHA1 hash;
         hash.Begin();
         hash.AddData(data, dataLen);
         hash.Finish(h);
@@ -431,33 +440,33 @@ static uint8_t GetPASEConfigSecurityStrength(uint32_t config)
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (config == kPASEConfig_Config1)
+        if (config == kPASEConfig_Config1)
         return kPASEConfig_Config1SecurityStrength;
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG2
-    if (config == kPASEConfig_Config2)
+        if (config == kPASEConfig_Config2)
         return kPASEConfig_Config2SecurityStrength;
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG3
-    if (config == kPASEConfig_Config3)
+        if (config == kPASEConfig_Config3)
         return kPASEConfig_Config3SecurityStrength;
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG4
-    if (config == kPASEConfig_Config4)
+        if (config == kPASEConfig_Config4)
         return kPASEConfig_Config4SecurityStrength;
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG5
-    if (config == kPASEConfig_Config5)
+        if (config == kPASEConfig_Config5)
         return kPASEConfig_Config5SecurityStrength;
 #endif
-        return 0;
+    return 0;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateAltConfigsList(uint32_t *altConfigs, uint8_t &altConfigsCount)
+WEAVE_ERROR WeavePASEEngine::GenerateAltConfigsList(uint32_t * altConfigs, uint8_t & altConfigsCount)
 {
     // Generate alternate config list in the following priority order
     //   1 - Config5
@@ -467,9 +476,9 @@ WEAVE_ERROR WeavePASEEngine::GenerateAltConfigsList(uint32_t *altConfigs, uint8_
     //   5 - Config1
     //   6 - Config0
 
-    uint32_t config = kPASEConfig_ConfigLast;
+    uint32_t config              = kPASEConfig_ConfigLast;
     bool protocolConfigIsAllowed = IsAllowedPASEConfig(ProtocolConfig);
-    altConfigsCount = 0;
+    altConfigsCount              = 0;
 
     // check configs in the priority order specified above
     while (config >= kPASEConfig_Config0_TEST_ONLY && altConfigsCount < kMaxAlternateProtocolConfigs)
@@ -483,11 +492,11 @@ WEAVE_ERROR WeavePASEEngine::GenerateAltConfigsList(uint32_t *altConfigs, uint8_
                 {
                     altConfigs[altConfigsCount] = config;
                     altConfigsCount++;
-                 }
+                }
                 // update ProtocolConfig if it wasn't valid
                 else
                 {
-                    ProtocolConfig = config;
+                    ProtocolConfig          = config;
                     protocolConfigIsAllowed = true;
                 }
             }
@@ -502,7 +511,7 @@ WEAVE_ERROR WeavePASEEngine::GenerateAltConfigsList(uint32_t *altConfigs, uint8_
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeavePASEEngine::FindStrongerAltConfig(uint32_t *altConfigs, uint8_t altConfigsCount)
+WEAVE_ERROR WeavePASEEngine::FindStrongerAltConfig(uint32_t * altConfigs, uint8_t altConfigsCount)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t securityStrength;
@@ -545,20 +554,21 @@ WEAVE_ERROR WeavePASEEngine::FindStrongerAltConfig(uint32_t *altConfigs, uint8_t
         securityStrength = GetPASEConfigSecurityStrength(altConfigs[i]);
         if (IsAllowedPASEConfig(altConfigs[i]) && securityStrength > highSecurityStrength)
         {
-            ProtocolConfig = altConfigs[i];
+            ProtocolConfig       = altConfigs[i];
             highSecurityStrength = securityStrength;
-            err = WEAVE_ERROR_PASE_RECONFIGURE_REQUIRED;
+            err                  = WEAVE_ERROR_PASE_RECONFIGURE_REQUIRED;
         }
     }
 
     // Check that ProtocolConfig is allowed
     if (highSecurityStrength == 0)
-        err =  WEAVE_ERROR_NO_COMMON_PASE_CONFIGURATIONS;
+        err = WEAVE_ERROR_NO_COMMON_PASE_CONFIGURATIONS;
 
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId, uint8_t pwSource, WeaveFabricState *FabricState, uint32_t *altConfigs, uint8_t altConfigsCount, bool isInitiator)
+WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId, uint8_t pwSource, WeaveFabricState * FabricState,
+                                       uint32_t * altConfigs, uint8_t altConfigsCount, bool isInitiator)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -566,10 +576,10 @@ WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId
     // fetch it from the fabric state.
     if (Pw == NULL)
     {
-        const char *pwChar;
+        const char * pwChar;
         err = FabricState->GetPassword(pwSource, pwChar, PwLen);
         SuccessOrExit(err);
-        Pw = (const uint8_t *)pwChar;
+        Pw = (const uint8_t *) pwChar;
     }
 
     // Make sure we have a password to authenticate with.
@@ -579,17 +589,17 @@ WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId
     PwSource = pwSource;
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if ( ProtocolConfig == kPASEConfig_Config1 )
+    if (ProtocolConfig == kPASEConfig_Config1)
     {
         char localContextStr[kMaxContextStringSize];
         char peerContextStr[kMaxContextStringSize];
 
         // Create the local and peer protocol context strings.
-        err = FormProtocolContextString(localNodeId, peerNodeId, pwSource, altConfigs, altConfigsCount,
-                                        isInitiator, localContextStr, sizeof(localContextStr));
+        err = FormProtocolContextString(localNodeId, peerNodeId, pwSource, altConfigs, altConfigsCount, isInitiator,
+                                        localContextStr, sizeof(localContextStr));
         SuccessOrExit(err);
-        err = FormProtocolContextString(peerNodeId, localNodeId, pwSource, altConfigs, altConfigsCount,
-                                        !isInitiator, peerContextStr, sizeof(peerContextStr));
+        err = FormProtocolContextString(peerNodeId, localNodeId, pwSource, altConfigs, altConfigsCount, !isInitiator,
+                                        peerContextStr, sizeof(peerContextStr));
         SuccessOrExit(err);
 
         // Initialize a J-PAKE context with the domain parameters for Config1
@@ -606,11 +616,11 @@ WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId
         uint16_t peerContextLen;
 
         // Create the local and peer protocol context data
-        err = FormProtocolContextData(localNodeId, peerNodeId, pwSource, altConfigs, altConfigsCount,
-                                      isInitiator, localContextData, sizeof(localContextData), localContextLen);
+        err = FormProtocolContextData(localNodeId, peerNodeId, pwSource, altConfigs, altConfigsCount, isInitiator, localContextData,
+                                      sizeof(localContextData), localContextLen);
         SuccessOrExit(err);
-        err = FormProtocolContextData(peerNodeId, localNodeId, pwSource, altConfigs, altConfigsCount,
-                                      !isInitiator, peerContextData, sizeof(peerContextData), peerContextLen);
+        err = FormProtocolContextData(peerNodeId, localNodeId, pwSource, altConfigs, altConfigsCount, !isInitiator, peerContextData,
+                                      sizeof(peerContextData), peerContextLen);
         SuccessOrExit(err);
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
@@ -643,17 +653,17 @@ WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId
             else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG3
-            if (ProtocolConfig == kPASEConfig_Config3)
+                if (ProtocolConfig == kPASEConfig_Config3)
                 curveOID = kOID_EllipticCurve_prime192v1;
             else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG4
-            if (ProtocolConfig == kPASEConfig_Config4)
+                if (ProtocolConfig == kPASEConfig_Config4)
                 curveOID = kOID_EllipticCurve_secp224r1;
             else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG5
-            if (ProtocolConfig == kPASEConfig_Config5)
+                if (ProtocolConfig == kPASEConfig_Config5)
                 curveOID = kOID_EllipticCurve_prime256v1;
             else
 #endif
@@ -664,14 +674,15 @@ WEAVE_ERROR WeavePASEEngine::InitState(uint64_t localNodeId, uint64_t peerNodeId
             err = mEllipticCurveJPAKE.Init(curveOID, Pw, PwLen, localContextData, localContextLen, peerContextData, peerContextLen);
             SuccessOrExit(err);
         }
-#else /* WEAVE_IS_EC_PASE_ENABLED */
+#else  /* WEAVE_IS_EC_PASE_ENABLED */
         {
             err = WEAVE_ERROR_INVALID_PASE_PARAMETER;
         }
 #endif /* WEAVE_IS_EC_PASE_ENABLED */
     }
 #endif /* WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY || WEAVE_IS_EC_PASE_ENABLED */
-    { }
+    {
+    }
 
 exit:
     return err;
@@ -679,9 +690,9 @@ exit:
 
 void WeavePASEEngine::Init()
 {
-    State = kState_Reset;
-    Pw = NULL;
-    PwSource = kPasswordSource_NotSpecified;
+    State              = kState_Reset;
+    Pw                 = NULL;
+    PwSource           = kPasswordSource_NotSpecified;
     AllowedPASEConfigs = kPASEConfig_SupportedConfigs;
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
     JPAKECtx = NULL;
@@ -708,17 +719,17 @@ void WeavePASEEngine::Reset()
 #if WEAVE_IS_EC_PASE_ENABLED
     mEllipticCurveJPAKE.Reset();
 #endif
-    State = kState_Reset;
-    ProtocolConfig = kPASEConfig_Unspecified;
-    Pw = NULL;
-    PwLen = 0;
-    PwSource = kPasswordSource_NotSpecified;
-    SessionKeyId = WeaveKeyId::kNone;
-    EncryptionType = 0;
-    AllowedPASEConfigs = kPASEConfig_SupportedConfigs;
+    State                  = kState_Reset;
+    ProtocolConfig         = kPASEConfig_Unspecified;
+    Pw                     = NULL;
+    PwLen                  = 0;
+    PwSource               = kPasswordSource_NotSpecified;
+    SessionKeyId           = WeaveKeyId::kNone;
+    EncryptionType         = 0;
+    AllowedPASEConfigs     = kPASEConfig_SupportedConfigs;
     PerformKeyConfirmation = 0;
-    ClearSecretData((uint8_t *)&EncryptionKey, sizeof(EncryptionKey));
-    ClearSecretData((uint8_t *)&ResponderStep2ZKPXGRHash, sizeof(ResponderStep2ZKPXGRHash));
+    ClearSecretData((uint8_t *) &EncryptionKey, sizeof(EncryptionKey));
+    ClearSecretData((uint8_t *) &ResponderStep2ZKPXGRHash, sizeof(ResponderStep2ZKPXGRHash));
 }
 
 bool WeavePASEEngine::IsInitiator() const
@@ -731,7 +742,9 @@ bool WeavePASEEngine::IsResponder() const
     return (State >= kState_ResponderStatesBase && State <= kState_ResponderStatesEnd);
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep1(PacketBuffer *buf, uint32_t proposedPASEConfig, uint64_t localNodeId, uint64_t peerNodeId, uint16_t sessionKeyId, uint8_t encType, uint8_t pwSrc, WeaveFabricState *FabricState, bool confirmKey)
+WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep1(PacketBuffer * buf, uint32_t proposedPASEConfig, uint64_t localNodeId,
+                                                    uint64_t peerNodeId, uint16_t sessionKeyId, uint8_t encType, uint8_t pwSrc,
+                                                    WeaveFabricState * FabricState, bool confirmKey)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     union
@@ -741,16 +754,15 @@ WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep1(PacketBuffer *buf, uint32_t 
     };
     uint32_t altConfigs[kMaxAlternateProtocolConfigs];
     uint8_t altConfigsCount;
-    uint8_t *p;
+    uint8_t * p;
     uint16_t stepDataLen;
 
     // Verify correct state. Three options are possible:
     //     kState_Reset                       - Initial Step1 Message Generation
     //     kState_ResponderReconfigProcessed  - Responder generated reconfigure request
     //     kState_InitiatorStep1Generated     - Responder supports only Config1
-    VerifyOrExit(State == kState_Reset ||
-                 State == kState_ResponderReconfigProcessed ||
-                 State == kState_InitiatorStep1Generated, err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(State == kState_Reset || State == kState_ResponderReconfigProcessed || State == kState_InitiatorStep1Generated,
+                 err = WEAVE_ERROR_INCORRECT_STATE);
 
     // Align payload on 4-byte boundary if needed
     err = AlignMessagePayload(buf);
@@ -778,9 +790,9 @@ WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep1(PacketBuffer *buf, uint32_t 
     }
 
     // Init Parameters
-    ProtocolConfig = proposedPASEConfig;
-    SessionKeyId = sessionKeyId;
-    EncryptionType = encType;
+    ProtocolConfig         = proposedPASEConfig;
+    SessionKeyId           = sessionKeyId;
+    EncryptionType         = encType;
     PerformKeyConfirmation = confirmKey;
 
     // Generate list of alternate configs
@@ -818,7 +830,7 @@ WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep1(PacketBuffer *buf, uint32_t 
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = GenerateStep1Data_Config1(buf, stepDataLen);
     }
@@ -845,12 +857,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateResponderStep1(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::GenerateResponderStep1(PacketBuffer * buf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t sizeHeader;
     uint16_t stepDataLen;
-    uint8_t *p;
+    uint8_t * p;
 
     // Verify correct state
     VerifyOrExit(State == kState_InitiatorStep1Processed, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -877,7 +889,7 @@ WEAVE_ERROR WeavePASEEngine::GenerateResponderStep1(PacketBuffer *buf)
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = GenerateStep1Data_Config1(buf, stepDataLen);
     }
@@ -904,7 +916,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep1(PacketBuffer *buf, uint64_t localNodeId, uint64_t peerNodeId, WeaveFabricState *FabricState)
+WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep1(PacketBuffer * buf, uint64_t localNodeId, uint64_t peerNodeId,
+                                                   WeaveFabricState * FabricState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     union
@@ -917,7 +930,7 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep1(PacketBuffer *buf, uint64_t l
     uint8_t gxWordCount, zkpxgrWordCount, zkpxbWordCount;
     uint8_t pwSrc;
     uint16_t stepDataLen;
-    const uint8_t *p;
+    const uint8_t * p;
     const uint16_t bufSize = buf->DataLength();
 
     // Verify correct state
@@ -935,7 +948,7 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep1(PacketBuffer *buf, uint64_t l
 
     // Read and decode the control header field.
     controlHeader = LittleEndian::Read32(p);
-    err = UnpackControlHeader(controlHeader, pwSrc, EncryptionType, SessionKeyId, PerformKeyConfirmation);
+    err           = UnpackControlHeader(controlHeader, pwSrc, EncryptionType, SessionKeyId, PerformKeyConfirmation);
     SuccessOrExit(err);
 
     // Verify the requested key type.
@@ -979,7 +992,7 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep1(PacketBuffer *buf, uint64_t l
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = ProcessStep1Data_Config1(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount);
     }
@@ -1006,14 +1019,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessResponderStep1(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::ProcessResponderStep1(PacketBuffer * buf)
 {
     WEAVE_ERROR err;
     uint32_t sizeHeader;
     uint8_t gxWordCount, zkpxgrWordCount, zkpxbWordCount;
     uint16_t stepDataLen;
     const uint16_t bufSize = buf->DataLength();
-    const uint8_t *p;
+    const uint8_t * p;
 
     // Verify correct state
     VerifyOrExit(State == kState_InitiatorStep1Generated, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -1029,7 +1042,7 @@ WEAVE_ERROR WeavePASEEngine::ProcessResponderStep1(PacketBuffer *buf)
     stepDataLen = 4;
     VerifyOrExit(stepDataLen <= bufSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
     sizeHeader = LittleEndian::Read32(p);
-    err = UnpackSizeHeader(sizeHeader, gxWordCount, zkpxgrWordCount, zkpxbWordCount);
+    err        = UnpackSizeHeader(sizeHeader, gxWordCount, zkpxgrWordCount, zkpxbWordCount);
     SuccessOrExit(err);
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
@@ -1040,7 +1053,7 @@ WEAVE_ERROR WeavePASEEngine::ProcessResponderStep1(PacketBuffer *buf)
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = ProcessStep1Data_Config1(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount);
     }
@@ -1067,12 +1080,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateResponderStep2(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::GenerateResponderStep2(PacketBuffer * buf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t sizeHeader;
     uint16_t stepDataLen;
-    uint8_t *p;
+    uint8_t * p;
 
     // Verify correct state
     VerifyOrExit(State == kState_ResponderStep1Generated, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -1099,7 +1112,7 @@ WEAVE_ERROR WeavePASEEngine::GenerateResponderStep2(PacketBuffer *buf)
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = GenerateStep2Data_Config1(buf, stepDataLen, ResponderStep2ZKPXGRHash);
     }
@@ -1126,14 +1139,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessResponderStep2(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::ProcessResponderStep2(PacketBuffer * buf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t sizeHeader;
     uint8_t gxWordCount, zkpxgrWordCount, zkpxbWordCount;
     uint16_t stepDataLen;
     const uint16_t bufSize = buf->DataLength();
-    const uint8_t *p;
+    const uint8_t * p;
 
     // Verify correct state
     VerifyOrExit(State == kState_ResponderStep1Processed, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -1149,18 +1162,19 @@ WEAVE_ERROR WeavePASEEngine::ProcessResponderStep2(PacketBuffer *buf)
     stepDataLen = 4;
     VerifyOrExit(stepDataLen <= bufSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
     sizeHeader = LittleEndian::Read32(p);
-    err = UnpackSizeHeader(sizeHeader, gxWordCount, zkpxgrWordCount, zkpxbWordCount);
+    err        = UnpackSizeHeader(sizeHeader, gxWordCount, zkpxgrWordCount, zkpxbWordCount);
     SuccessOrExit(err);
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
     if (ProtocolConfig == kPASEConfig_Config0_TEST_ONLY)
     {
-        err = ProcessStep2Data_Config0_TEST_ONLY(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount, ResponderStep2ZKPXGRHash);
+        err = ProcessStep2Data_Config0_TEST_ONLY(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount,
+                                                 ResponderStep2ZKPXGRHash);
     }
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = ProcessStep2Data_Config1(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount, ResponderStep2ZKPXGRHash);
     }
@@ -1187,18 +1201,18 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep2(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep2(PacketBuffer * buf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t sizeHeader;
     uint16_t stepDataLen;
     uint8_t keyConfirmKey[kKeyConfirmKeyLengthMax];
     uint8_t initiatorStep2ZKPXGRHash[kStep2ZKPXGRHashLengthMax];
-    uint8_t *keyConfirmHash = NULL;
+    uint8_t * keyConfirmHash      = NULL;
     uint8_t step2ZKPXGRHashLength = kStep2ZKPXGRHashLength_Config0_EC;
-    uint8_t keyConfirmKeyLength = 0;
-    uint8_t keyConfirmHashLength = 0;
-    uint8_t *p;
+    uint8_t keyConfirmKeyLength   = 0;
+    uint8_t keyConfirmHashLength  = 0;
+    uint8_t * p;
 
     // Verify correct state
     VerifyOrExit(State == kState_ResponderStep2Processed, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -1220,14 +1234,14 @@ WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep2(PacketBuffer *buf)
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
         if (ProtocolConfig == kPASEConfig_Config1)
         {
-            keyConfirmKeyLength = kKeyConfirmKeyLength_Config1;
+            keyConfirmKeyLength  = kKeyConfirmKeyLength_Config1;
             keyConfirmHashLength = kKeyConfirmHashLength_Config1;
         }
         else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY || WEAVE_IS_EC_PASE_ENABLED
         {
-            keyConfirmKeyLength = kKeyConfirmKeyLength_Config0_EC;
+            keyConfirmKeyLength  = kKeyConfirmKeyLength_Config0_EC;
             keyConfirmHashLength = kKeyConfirmHashLength_Config0_EC;
         }
 #else
@@ -1241,7 +1255,7 @@ WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep2(PacketBuffer *buf)
     VerifyOrExit(stepDataLen < buf->AvailableDataLength(), err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     // Write the size header.
-    sizeHeader = PackSizeHeader( keyConfirmHashLength / 4 );
+    sizeHeader = PackSizeHeader(keyConfirmHashLength / 4);
     LittleEndian::Write32(p, sizeHeader);
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
@@ -1252,7 +1266,7 @@ WEAVE_ERROR WeavePASEEngine::GenerateInitiatorStep2(PacketBuffer *buf)
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = GenerateStep2Data_Config1(buf, stepDataLen, initiatorStep2ZKPXGRHash);
     }
@@ -1296,7 +1310,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep2(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep2(PacketBuffer * buf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t sizeHeader;
@@ -1305,11 +1319,11 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep2(PacketBuffer *buf)
     uint8_t keyConfirmKey[kKeyConfirmKeyLengthMax];
     uint8_t expectedInitiatorKeyConfirmHash[kKeyConfirmHashLengthMax];
     uint8_t initiatorStep2ZKPXGRHash[kStep2ZKPXGRHashLengthMax];
-    uint8_t *keyConfirmHash = NULL;
+    uint8_t * keyConfirmHash      = NULL;
     uint8_t step2ZKPXGRHashLength = kStep2ZKPXGRHashLength_Config0_EC;
-    uint8_t keyConfirmKeyLength = 0;
-    uint8_t keyConfirmHashLength = 0;
-    const uint8_t *p;
+    uint8_t keyConfirmKeyLength   = 0;
+    uint8_t keyConfirmHashLength  = 0;
+    const uint8_t * p;
 
     // Verify correct state
     VerifyOrExit(State == kState_ResponderStep2Generated, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -1331,14 +1345,14 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep2(PacketBuffer *buf)
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
         if (ProtocolConfig == kPASEConfig_Config1)
         {
-            keyConfirmKeyLength = kKeyConfirmKeyLength_Config1;
+            keyConfirmKeyLength  = kKeyConfirmKeyLength_Config1;
             keyConfirmHashLength = kKeyConfirmHashLength_Config1;
         }
         else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY || WEAVE_IS_EC_PASE_ENABLED
         {
-            keyConfirmKeyLength = kKeyConfirmKeyLength_Config0_EC;
+            keyConfirmKeyLength  = kKeyConfirmKeyLength_Config0_EC;
             keyConfirmHashLength = kKeyConfirmHashLength_Config0_EC;
         }
 #else
@@ -1359,12 +1373,13 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep2(PacketBuffer *buf)
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
     if (ProtocolConfig == kPASEConfig_Config0_TEST_ONLY)
     {
-        err = ProcessStep2Data_Config0_TEST_ONLY(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount, initiatorStep2ZKPXGRHash);
+        err = ProcessStep2Data_Config0_TEST_ONLY(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount,
+                                                 initiatorStep2ZKPXGRHash);
     }
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
         err = ProcessStep2Data_Config1(buf, stepDataLen, gxWordCount, zkpxgrWordCount, zkpxbWordCount, initiatorStep2ZKPXGRHash);
     }
@@ -1390,7 +1405,8 @@ WEAVE_ERROR WeavePASEEngine::ProcessInitiatorStep2(PacketBuffer *buf)
 
     if (PerformKeyConfirmation)
     {
-        GenerateKeyConfirmHashes(keyConfirmKey, keyConfirmKeyLength, expectedInitiatorKeyConfirmHash, ResponderKeyConfirmHash, keyConfirmHashLength);
+        GenerateKeyConfirmHashes(keyConfirmKey, keyConfirmKeyLength, expectedInitiatorKeyConfirmHash, ResponderKeyConfirmHash,
+                                 keyConfirmHashLength);
 
         if (!ConstantTimeCompare(keyConfirmHash, expectedInitiatorKeyConfirmHash, keyConfirmHashLength))
             ExitNow(err = WEAVE_ERROR_KEY_CONFIRMATION_FAILED);
@@ -1408,9 +1424,9 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateResponderKeyConfirm(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::GenerateResponderKeyConfirm(PacketBuffer * buf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
     uint8_t keyConfirmHashLength = kKeyConfirmHashLength_Config0_EC;
 
     // Verify correct state
@@ -1437,9 +1453,9 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessResponderKeyConfirm(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::ProcessResponderKeyConfirm(PacketBuffer * buf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
     uint8_t keyConfirmHashLength = kKeyConfirmHashLength_Config0_EC;
 
     // Verify correct state
@@ -1464,10 +1480,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateResponderReconfigure(PacketBuffer *buf)
+WEAVE_ERROR WeavePASEEngine::GenerateResponderReconfigure(PacketBuffer * buf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = buf->Start();
+    WEAVE_ERROR err            = WEAVE_NO_ERROR;
+    uint8_t * p                = buf->Start();
     const uint16_t stepDataLen = 4;
 
     // Verify correct state
@@ -1492,10 +1508,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessResponderReconfigure(PacketBuffer *buf, uint32_t & proposedPASEConfig)
+WEAVE_ERROR WeavePASEEngine::ProcessResponderReconfigure(PacketBuffer * buf, uint32_t & proposedPASEConfig)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = buf->Start();
+    WEAVE_ERROR err            = WEAVE_NO_ERROR;
+    uint8_t * p                = buf->Start();
     const uint16_t stepDataLen = 4;
 
     // Verify correct state
@@ -1532,10 +1548,10 @@ exit:
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY
 
-WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_Config0_TEST_ONLY(PacketBuffer *buf, uint16_t &stepDataLen)
+WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_Config0_TEST_ONLY(PacketBuffer * buf, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = buf->Start() + stepDataLen;
+    uint8_t * p     = buf->Start() + stepDataLen;
 
     stepDataLen += 2 * (kPASEConfig0_GXByteCount + kPASEConfig0_ZKPXGRByteCount + kPASEConfig0_ZKPXBByteCount);
 
@@ -1557,15 +1573,16 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessStep1Data_Config0_TEST_ONLY(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t gxWordCount, uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount)
+WEAVE_ERROR WeavePASEEngine::ProcessStep1Data_Config0_TEST_ONLY(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t gxWordCount,
+                                                                uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = buf->Start() + stepDataLen;
+    uint8_t * p     = buf->Start() + stepDataLen;
     uint8_t res;
 
-    VerifyOrExit( gxWordCount == kPASEHeader_GXWordCountMaxConfig0 &&
-                  zkpxgrWordCount == kPASEHeader_ZKPXGRWordCountMaxConfig0 &&
-                  zkpxbWordCount == kPASEHeader_ZKPXBWordCountMaxConfig0, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(gxWordCount == kPASEHeader_GXWordCountMaxConfig0 && zkpxgrWordCount == kPASEHeader_ZKPXGRWordCountMaxConfig0 &&
+                     zkpxbWordCount == kPASEHeader_ZKPXBWordCountMaxConfig0,
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     stepDataLen += 2 * (kPASEConfig0_GXByteCount + kPASEConfig0_ZKPXGRByteCount + kPASEConfig0_ZKPXBByteCount);
 
@@ -1623,10 +1640,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_Config0_TEST_ONLY(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t *step2ZKPXGRHash)
+WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_Config0_TEST_ONLY(PacketBuffer * buf, uint16_t & stepDataLen,
+                                                                 uint8_t * step2ZKPXGRHash)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = buf->Start() + stepDataLen;
+    uint8_t * p     = buf->Start() + stepDataLen;
 
     stepDataLen += kPASEConfig0_GXByteCount + kPASEConfig0_ZKPXGRByteCount + kPASEConfig0_ZKPXBByteCount;
 
@@ -1647,15 +1665,17 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_Config0_TEST_ONLY(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t gxWordCount, uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount, uint8_t *step2ZKPXGRHash)
+WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_Config0_TEST_ONLY(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t gxWordCount,
+                                                                uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount,
+                                                                uint8_t * step2ZKPXGRHash)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = buf->Start() + stepDataLen;
+    uint8_t * p     = buf->Start() + stepDataLen;
     uint8_t res;
 
-    VerifyOrExit( gxWordCount == kPASEHeader_GXWordCountMaxConfig0 &&
-                  zkpxgrWordCount == kPASEHeader_ZKPXGRWordCountMaxConfig0 &&
-                  zkpxbWordCount == kPASEHeader_ZKPXBWordCountMaxConfig0, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(gxWordCount == kPASEHeader_GXWordCountMaxConfig0 && zkpxgrWordCount == kPASEHeader_ZKPXGRWordCountMaxConfig0 &&
+                     zkpxbWordCount == kPASEHeader_ZKPXBWordCountMaxConfig0,
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     stepDataLen += kPASEConfig0_GXByteCount + kPASEConfig0_ZKPXGRByteCount + kPASEConfig0_ZKPXBByteCount;
 
@@ -1693,22 +1713,21 @@ exit:
 }
 #endif /* WEAVE_CONFIG_SUPPORT_PASE_CONFIG0_TEST_ONLY */
 
-
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
 
-static void BigNumHash(const BIGNUM& point, uint8_t *h)
+static void BigNumHash(const BIGNUM & point, uint8_t * h)
 {
-    SHA1   hash;
+    SHA1 hash;
     hash.Begin();
     hash.AddData(point);
     hash.Finish(h);
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_Config1(PacketBuffer *buf, uint16_t &stepDataLen)
+WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_Config1(PacketBuffer * buf, uint16_t & stepDataLen)
 {
     WEAVE_ERROR err;
     JPAKE_STEP1 step1;
-    uint8_t *p = buf->Start() + stepDataLen;
+    uint8_t * p = buf->Start() + stepDataLen;
 
     // Generate the J-PAKE step 1 information to be sent to the peer.
     //
@@ -1727,29 +1746,27 @@ WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_Config1(PacketBuffer *buf, uint16
     JPAKE_STEP1_init(&step1);
 
     // Verify space in output buffer.
-    const size_t fieldDataLen = (kPASEHeader_GXWordCountMaxConfig1 +
-                                 kPASEHeader_GXWordCountMaxConfig1 +
-                                 kPASEHeader_ZKPXGRWordCountMaxConfig1 +
-                                 kPASEHeader_ZKPXBWordCountMaxConfig1 +
-                                 kPASEHeader_ZKPXGRWordCountMaxConfig1 +
-                                 kPASEHeader_ZKPXBWordCountMaxConfig1) * sizeof(uint32_t);
+    const size_t fieldDataLen =
+        (kPASEHeader_GXWordCountMaxConfig1 + kPASEHeader_GXWordCountMaxConfig1 + kPASEHeader_ZKPXGRWordCountMaxConfig1 +
+         kPASEHeader_ZKPXBWordCountMaxConfig1 + kPASEHeader_ZKPXGRWordCountMaxConfig1 + kPASEHeader_ZKPXBWordCountMaxConfig1) *
+        sizeof(uint32_t);
     VerifyOrExit(stepDataLen + fieldDataLen <= buf->AvailableDataLength(), err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     // Generate STEP1 data struct
     JPAKE_STEP1_generate(&step1, JPAKECtx);
 
     // Encode STEP1 Fields
-    err = EncodeBIGNUMValueLE(*step1.p1.gx, kPASEHeader_GXWordCountMaxConfig1 * sizeof(uint32_t), p);           // GXa
+    err = EncodeBIGNUMValueLE(*step1.p1.gx, kPASEHeader_GXWordCountMaxConfig1 * sizeof(uint32_t), p); // GXa
     SuccessOrExit(err);
-    err = EncodeBIGNUMValueLE(*step1.p2.gx, kPASEHeader_GXWordCountMaxConfig1 * sizeof(uint32_t), p);           // GXb
+    err = EncodeBIGNUMValueLE(*step1.p2.gx, kPASEHeader_GXWordCountMaxConfig1 * sizeof(uint32_t), p); // GXb
     SuccessOrExit(err);
-    err = EncodeBIGNUMValueLE(*step1.p1.zkpx.gr, kPASEHeader_ZKPXGRWordCountMaxConfig1 * sizeof(uint32_t), p);  // ZKPXaGR
+    err = EncodeBIGNUMValueLE(*step1.p1.zkpx.gr, kPASEHeader_ZKPXGRWordCountMaxConfig1 * sizeof(uint32_t), p); // ZKPXaGR
     SuccessOrExit(err);
-    err = EncodeBIGNUMValueLE(*step1.p1.zkpx.b, kPASEHeader_ZKPXBWordCountMaxConfig1 * sizeof(uint32_t), p);    // ZKPXaB
+    err = EncodeBIGNUMValueLE(*step1.p1.zkpx.b, kPASEHeader_ZKPXBWordCountMaxConfig1 * sizeof(uint32_t), p); // ZKPXaB
     SuccessOrExit(err);
-    err = EncodeBIGNUMValueLE(*step1.p2.zkpx.gr, kPASEHeader_ZKPXGRWordCountMaxConfig1 * sizeof(uint32_t), p);  // ZKPXbGR
+    err = EncodeBIGNUMValueLE(*step1.p2.zkpx.gr, kPASEHeader_ZKPXGRWordCountMaxConfig1 * sizeof(uint32_t), p); // ZKPXbGR
     SuccessOrExit(err);
-    err = EncodeBIGNUMValueLE(*step1.p2.zkpx.b, kPASEHeader_ZKPXBWordCountMaxConfig1 * sizeof(uint32_t), p);    // ZKPXbB
+    err = EncodeBIGNUMValueLE(*step1.p2.zkpx.b, kPASEHeader_ZKPXBWordCountMaxConfig1 * sizeof(uint32_t), p); // ZKPXbB
     SuccessOrExit(err);
 
     stepDataLen = (uint16_t)(p - buf->Start());
@@ -1759,37 +1776,34 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessStep1Data_Config1(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t gxWordCount, uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount)
+WEAVE_ERROR WeavePASEEngine::ProcessStep1Data_Config1(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t gxWordCount,
+                                                      uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount)
 {
     WEAVE_ERROR err;
     int res;
     JPAKE_STEP1 step1;
-    const uint8_t *p = buf->Start() + stepDataLen;
+    const uint8_t * p = buf->Start() + stepDataLen;
 
     // Init STEP1 data struct
     JPAKE_STEP1_init(&step1);
 
     // Verify the input buffer contains the expected amount of data.
-    const size_t expectedFieldDataLen = (gxWordCount +
-                                         gxWordCount +
-                                         zkpxgrWordCount +
-                                         zkpxbWordCount +
-                                         zkpxgrWordCount +
-                                         zkpxbWordCount) * sizeof(uint32_t);
+    const size_t expectedFieldDataLen =
+        (gxWordCount + gxWordCount + zkpxgrWordCount + zkpxbWordCount + zkpxgrWordCount + zkpxbWordCount) * sizeof(uint32_t);
     VerifyOrExit(buf->DataLength() >= stepDataLen + expectedFieldDataLen, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
     // Decode STEP1 data fields
-    err = DecodeBIGNUMValueLE(*step1.p1.gx, gxWordCount * sizeof(uint32_t), p);           // GXa
+    err = DecodeBIGNUMValueLE(*step1.p1.gx, gxWordCount * sizeof(uint32_t), p); // GXa
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step1.p2.gx, gxWordCount * sizeof(uint32_t), p);           // GXb
+    err = DecodeBIGNUMValueLE(*step1.p2.gx, gxWordCount * sizeof(uint32_t), p); // GXb
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step1.p1.zkpx.gr, zkpxgrWordCount * sizeof(uint32_t), p);  // ZKPXaGR
+    err = DecodeBIGNUMValueLE(*step1.p1.zkpx.gr, zkpxgrWordCount * sizeof(uint32_t), p); // ZKPXaGR
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step1.p1.zkpx.b, zkpxbWordCount * sizeof(uint32_t), p);    // ZKPXaB
+    err = DecodeBIGNUMValueLE(*step1.p1.zkpx.b, zkpxbWordCount * sizeof(uint32_t), p); // ZKPXaB
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step1.p2.zkpx.gr, zkpxgrWordCount * sizeof(uint32_t), p);  // ZKPXbGR
+    err = DecodeBIGNUMValueLE(*step1.p2.zkpx.gr, zkpxgrWordCount * sizeof(uint32_t), p); // ZKPXbGR
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step1.p2.zkpx.b, zkpxbWordCount * sizeof(uint32_t), p);    // ZKPXbB
+    err = DecodeBIGNUMValueLE(*step1.p2.zkpx.b, zkpxbWordCount * sizeof(uint32_t), p); // ZKPXbB
     SuccessOrExit(err);
 
     stepDataLen = (uint16_t)(p - buf->Start());
@@ -1803,11 +1817,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_Config1(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t *step2ZKPXGRHash)
+WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_Config1(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t * step2ZKPXGRHash)
 {
     WEAVE_ERROR err;
     JPAKE_STEP2 step2;
-    uint8_t *p = buf->Start() + stepDataLen;
+    uint8_t * p = buf->Start() + stepDataLen;
 
     // Generate the J-PAKE step 2 information to be sent to the peer.
     //
@@ -1824,20 +1838,20 @@ WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_Config1(PacketBuffer *buf, uint16
     JPAKE_STEP2_init(&step2);
 
     // Verify space in output buffer.
-    const size_t fieldDataLen = (kPASEHeader_GXWordCountMaxConfig1 +
-                                 kPASEHeader_ZKPXGRWordCountMaxConfig1 +
-                                 kPASEHeader_ZKPXBWordCountMaxConfig1) * sizeof(uint32_t);
+    const size_t fieldDataLen =
+        (kPASEHeader_GXWordCountMaxConfig1 + kPASEHeader_ZKPXGRWordCountMaxConfig1 + kPASEHeader_ZKPXBWordCountMaxConfig1) *
+        sizeof(uint32_t);
     VerifyOrExit(stepDataLen + fieldDataLen <= buf->AvailableDataLength(), err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     // Generate STEP2 data struct
     JPAKE_STEP2_generate(&step2, JPAKECtx);
 
     // Encode STEP2 data fields
-    err = EncodeBIGNUMValueLE(*step2.gx, kPASEHeader_GXWordCountMaxConfig1 * sizeof(uint32_t), p);          // GX
+    err = EncodeBIGNUMValueLE(*step2.gx, kPASEHeader_GXWordCountMaxConfig1 * sizeof(uint32_t), p); // GX
     SuccessOrExit(err);
     err = EncodeBIGNUMValueLE(*step2.zkpx.gr, kPASEHeader_ZKPXGRWordCountMaxConfig1 * sizeof(uint32_t), p); // ZKPXGR
     SuccessOrExit(err);
-    err = EncodeBIGNUMValueLE(*step2.zkpx.b, kPASEHeader_ZKPXBWordCountMaxConfig1 * sizeof(uint32_t), p);   // ZKPXB
+    err = EncodeBIGNUMValueLE(*step2.zkpx.b, kPASEHeader_ZKPXBWordCountMaxConfig1 * sizeof(uint32_t), p); // ZKPXB
     SuccessOrExit(err);
 
     stepDataLen = (uint16_t)(p - buf->Start());
@@ -1851,28 +1865,27 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_Config1(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t gxWordCount, uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount, uint8_t *step2ZKPXGRHash)
+WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_Config1(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t gxWordCount,
+                                                      uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount, uint8_t * step2ZKPXGRHash)
 {
     WEAVE_ERROR err;
     int res;
     JPAKE_STEP2 step2;
-    const uint8_t *p = buf->Start() + stepDataLen;
+    const uint8_t * p = buf->Start() + stepDataLen;
 
     // Init STEP2 data struct
     JPAKE_STEP2_init(&step2);
 
     // Verify the input buffer contains the expected amount of data.
-    const size_t expectedFieldDataLen = (gxWordCount +
-                                         zkpxgrWordCount +
-                                         zkpxbWordCount) * sizeof(uint32_t);
+    const size_t expectedFieldDataLen = (gxWordCount + zkpxgrWordCount + zkpxbWordCount) * sizeof(uint32_t);
     VerifyOrExit(buf->DataLength() >= stepDataLen + expectedFieldDataLen, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
     // Decode STEP2 data fields
-    err = DecodeBIGNUMValueLE(*step2.gx, gxWordCount * sizeof(uint32_t), p);           // GX
+    err = DecodeBIGNUMValueLE(*step2.gx, gxWordCount * sizeof(uint32_t), p); // GX
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step2.zkpx.gr, zkpxgrWordCount * sizeof(uint32_t), p);  // ZKPXGR
+    err = DecodeBIGNUMValueLE(*step2.zkpx.gr, zkpxgrWordCount * sizeof(uint32_t), p); // ZKPXGR
     SuccessOrExit(err);
-    err = DecodeBIGNUMValueLE(*step2.zkpx.b, zkpxbWordCount * sizeof(uint32_t), p);    // ZKPXB
+    err = DecodeBIGNUMValueLE(*step2.zkpx.b, zkpxbWordCount * sizeof(uint32_t), p); // ZKPXB
     SuccessOrExit(err);
 
     // Process the J-PAKE STEP2 parameters sent to us from the peer.
@@ -1892,30 +1905,30 @@ exit:
 }
 #endif /* WEAVE_CONFIG_SUPPORT_PASE_CONFIG1 */
 
-
 #if WEAVE_IS_EC_PASE_ENABLED
-WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_ConfigEC(PacketBuffer *buf, uint16_t &stepDataLen)
+WEAVE_ERROR WeavePASEEngine::GenerateStep1Data_ConfigEC(PacketBuffer * buf, uint16_t & stepDataLen)
 {
     return mEllipticCurveJPAKE.GenerateStep1(buf->Start(), buf->AvailableDataLength(), stepDataLen);
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessStep1Data_ConfigEC(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t gxWordCount, uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount)
+WEAVE_ERROR WeavePASEEngine::ProcessStep1Data_ConfigEC(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t gxWordCount,
+                                                       uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount)
 {
     WEAVE_ERROR err;
     uint8_t ecjpakeScalarWordCount;
     uint8_t ecjpakePointWordCount;
 
     ecjpakeScalarWordCount = mEllipticCurveJPAKE.GetCurveSize() / 4;
-    ecjpakePointWordCount = 2 * ecjpakeScalarWordCount;
+    ecjpakePointWordCount  = 2 * ecjpakeScalarWordCount;
 
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG2
     if (ProtocolConfig == kPASEConfig_Config2)
         ecjpakeScalarWordCount++;
 #endif
 
-    VerifyOrExit( gxWordCount == ecjpakePointWordCount &&
-                  zkpxgrWordCount == ecjpakePointWordCount &&
-                  zkpxbWordCount == ecjpakeScalarWordCount, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(gxWordCount == ecjpakePointWordCount && zkpxgrWordCount == ecjpakePointWordCount &&
+                     zkpxbWordCount == ecjpakeScalarWordCount,
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     err = mEllipticCurveJPAKE.ProcessStep1(buf->Start(), buf->DataLength(), stepDataLen);
 
@@ -1923,7 +1936,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_ConfigEC(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t *step2ZKPXGRHash)
+WEAVE_ERROR WeavePASEEngine::GenerateStep2Data_ConfigEC(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t * step2ZKPXGRHash)
 {
     WEAVE_ERROR err;
     uint16_t ecjpakePointByteCount;
@@ -1941,7 +1954,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_ConfigEC(PacketBuffer *buf, uint16_t &stepDataLen, uint8_t gxWordCount, uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount, uint8_t *step2ZKPXGRHash)
+WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_ConfigEC(PacketBuffer * buf, uint16_t & stepDataLen, uint8_t gxWordCount,
+                                                       uint8_t zkpxgrWordCount, uint8_t zkpxbWordCount, uint8_t * step2ZKPXGRHash)
 {
     WEAVE_ERROR err;
     uint8_t ecjpakeScalarWordCount;
@@ -1949,8 +1963,8 @@ WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_ConfigEC(PacketBuffer *buf, uint16
     uint16_t ecjpakePointByteCount;
 
     ecjpakeScalarWordCount = mEllipticCurveJPAKE.GetCurveSize() / 4;
-    ecjpakePointWordCount = 2 * ecjpakeScalarWordCount;
-    ecjpakePointByteCount = 4 * ecjpakePointWordCount;
+    ecjpakePointWordCount  = 2 * ecjpakeScalarWordCount;
+    ecjpakePointByteCount  = 4 * ecjpakePointWordCount;
 
     VerifyOrExit(ecjpakePointByteCount != 0, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
 
@@ -1959,9 +1973,9 @@ WEAVE_ERROR WeavePASEEngine::ProcessStep2Data_ConfigEC(PacketBuffer *buf, uint16
         ecjpakeScalarWordCount++;
 #endif
 
-    VerifyOrExit( gxWordCount == ecjpakePointWordCount &&
-                  zkpxgrWordCount == ecjpakePointWordCount &&
-                  zkpxbWordCount == ecjpakeScalarWordCount, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(gxWordCount == ecjpakePointWordCount && zkpxgrWordCount == ecjpakePointWordCount &&
+                     zkpxbWordCount == ecjpakeScalarWordCount,
+                 err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     err = mEllipticCurveJPAKE.ProcessStep2(buf->Start(), buf->DataLength(), stepDataLen);
     SuccessOrExit(err);
@@ -1975,8 +1989,8 @@ exit:
 }
 #endif /* WEAVE_IS_EC_PASE_ENABLED */
 
-
-WEAVE_ERROR WeavePASEEngine::DeriveKeys(const uint8_t *initiatorStep2ZKPXGRHash, const uint8_t step2ZKPXGRHashLength, uint8_t *keyConfirmKey, const uint8_t keyConfirmKeyLength)
+WEAVE_ERROR WeavePASEEngine::DeriveKeys(const uint8_t * initiatorStep2ZKPXGRHash, const uint8_t step2ZKPXGRHashLength,
+                                        uint8_t * keyConfirmKey, const uint8_t keyConfirmKeyLength)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     HKDFSHA1 hkdf;
@@ -2011,9 +2025,9 @@ WEAVE_ERROR WeavePASEEngine::DeriveKeys(const uint8_t *initiatorStep2ZKPXGRHash,
     else
 #endif
 #if WEAVE_CONFIG_SUPPORT_PASE_CONFIG1
-    if (ProtocolConfig == kPASEConfig_Config1)
+        if (ProtocolConfig == kPASEConfig_Config1)
     {
-        const BIGNUM *keyMaterial = JPAKE_get_shared_key(JPAKECtx);
+        const BIGNUM * keyMaterial = JPAKE_get_shared_key(JPAKECtx);
         VerifyOrExit(keyMaterial != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
         hkdf.AddKeyMaterial(*keyMaterial);
@@ -2022,7 +2036,7 @@ WEAVE_ERROR WeavePASEEngine::DeriveKeys(const uint8_t *initiatorStep2ZKPXGRHash,
 #endif
 #if WEAVE_IS_EC_PASE_ENABLED
     {
-        const uint8_t *keyMaterial = mEllipticCurveJPAKE.GetSharedSecret();
+        const uint8_t * keyMaterial = mEllipticCurveJPAKE.GetSharedSecret();
         VerifyOrExit(keyMaterial != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
         hkdf.AddKeyMaterial(keyMaterial, kKeyMaterialLength_Config0_EC);
@@ -2038,7 +2052,9 @@ WEAVE_ERROR WeavePASEEngine::DeriveKeys(const uint8_t *initiatorStep2ZKPXGRHash,
     SuccessOrExit(err);
 
 #ifdef PASE_PRINT_CRYPTO_DATA
-        printf("Master PRK: "); PrintHex(hkdf.PseudoRandomKey, HKDFSHA1::kPseudoRandomKeyLength); printf("\n");
+    printf("Master PRK: ");
+    PrintHex(hkdf.PseudoRandomKey, HKDFSHA1::kPseudoRandomKeyLength);
+    printf("\n");
 #endif
 
     // Derive the session keys from the master key...
@@ -2051,19 +2067,17 @@ WEAVE_ERROR WeavePASEEngine::DeriveKeys(const uint8_t *initiatorStep2ZKPXGRHash,
     SuccessOrExit(err);
 
 #ifdef PASE_PRINT_CRYPTO_DATA
-        printf("Session Key Data: "); PrintHex(sessionKeyData, keyLen); printf("\n");
+    printf("Session Key Data: ");
+    PrintHex(sessionKeyData, keyLen);
+    printf("\n");
 #endif
 
     // Copy the generated key data to the appropriate destinations.
-    memcpy(EncryptionKey.AES128CTRSHA1.DataKey,
-           sessionKeyData,
-           WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
-    memcpy(EncryptionKey.AES128CTRSHA1.IntegrityKey,
-           sessionKeyData + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
+    memcpy(EncryptionKey.AES128CTRSHA1.DataKey, sessionKeyData, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
+    memcpy(EncryptionKey.AES128CTRSHA1.IntegrityKey, sessionKeyData + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
            WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
     memcpy(keyConfirmKey,
-           sessionKeyData + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize
-                          + WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize,
+           sessionKeyData + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize + WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize,
            keyConfirmKeyLength);
 
     ClearSecretData(sessionKeyData, keyLen);
@@ -2072,7 +2086,8 @@ exit:
     return err;
 }
 
-void WeavePASEEngine::GenerateKeyConfirmHashes(const uint8_t *keyConfirmKey, const uint8_t keyConfirmKeyLength, uint8_t *initiatorHash, uint8_t *responderHash, const uint8_t keyConfirmHashLength)
+void WeavePASEEngine::GenerateKeyConfirmHashes(const uint8_t * keyConfirmKey, const uint8_t keyConfirmKeyLength,
+                                               uint8_t * initiatorHash, uint8_t * responderHash, const uint8_t keyConfirmHashLength)
 {
     // Generate a single hash of the key confirmation key to use as the responder's key confirmation hash.
     ProtocolHash(keyConfirmKey, keyConfirmKeyLength, responderHash);
@@ -2080,7 +2095,6 @@ void WeavePASEEngine::GenerateKeyConfirmHashes(const uint8_t *keyConfirmKey, con
     // Generate a double hash of the key confirmation key to use as the initiators's key confirmation hash.
     ProtocolHash(responderHash, keyConfirmHashLength, initiatorHash);
 }
-
 
 } // namespace PASE
 } // namespace Security

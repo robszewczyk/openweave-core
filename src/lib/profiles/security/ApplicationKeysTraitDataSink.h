@@ -48,21 +48,22 @@ class ApplicationKeysTraitDataSink : public nl::Weave::Profiles::DataManagement:
 public:
     ApplicationKeysTraitDataSink(void);
 
-    void SetGroupKeyStore(nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase *groupKeyStore);
+    void SetGroupKeyStore(nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase * groupKeyStore);
 
-    WEAVE_ERROR OnEvent(uint16_t aType, void *aInEventParam) __OVERRIDE;
+    WEAVE_ERROR OnEvent(uint16_t aType, void * aInEventParam) __OVERRIDE;
 
 protected:
-    nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase *GroupKeyStore;
+    nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase * GroupKeyStore;
 
 private:
-    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle, nl::Weave::TLV::TLVReader &aReader) __OVERRIDE;
+    WEAVE_ERROR SetLeafData(nl::Weave::Profiles::DataManagement::PropertyPathHandle aLeafHandle,
+                            nl::Weave::TLV::TLVReader & aReader) __OVERRIDE;
 };
 
-} // ApplicationKeysTrait
-} // Auth
-} // Trait
-} // Weave
-} // Schema
+} // namespace ApplicationKeysTrait
+} // namespace Auth
+} // namespace Trait
+} // namespace Weave
+} // namespace Schema
 
 #endif // APPLICATION_KEYS_TRAIT_DATA_SINK_H_

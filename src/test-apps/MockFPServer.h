@@ -39,7 +39,7 @@ class MockFabricProvisioningServer : private FabricProvisioningServer, private F
 public:
     MockFabricProvisioningServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
     void Preconfig();
@@ -51,8 +51,8 @@ protected:
     virtual WEAVE_ERROR HandleJoinExistingFabric();
     virtual WEAVE_ERROR HandleLeaveFabric();
     virtual WEAVE_ERROR HandleGetFabricConfig();
-    virtual void EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result);
     virtual bool IsPairedToAccount() const;
 };
 

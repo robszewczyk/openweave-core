@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace SecurityTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe06U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe06U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -85,22 +85,25 @@ enum {
 // Enums
 //
 
-enum ArmState {
+enum ArmState
+{
     ARM_STATE_DISARMED = 1,
-    ARM_STATE_ARMING = 2,
-    ARM_STATE_ARMED = 3,
+    ARM_STATE_ARMING   = 2,
+    ARM_STATE_ARMED    = 3,
 };
 
-enum ArmMode {
-    ARM_MODE_DISARMED = 1,
-    ARM_MODE_PERIMETER = 2,
+enum ArmMode
+{
+    ARM_MODE_DISARMED             = 1,
+    ARM_MODE_PERIMETER            = 2,
     ARM_MODE_PERIMETER_AND_MOTION = 3,
 };
 
-enum AlarmState {
+enum AlarmState
+{
     ALARM_STATE_NOT_ALARMING = 1,
-    ALARM_STATE_PREALARMING = 2,
-    ALARM_STATE_ALARMING = 3,
+    ALARM_STATE_PREALARMING  = 2,
+    ALARM_STATE_ALARMING     = 3,
 };
 
 } // namespace SecurityTrait

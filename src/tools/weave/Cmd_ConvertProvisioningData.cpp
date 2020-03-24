@@ -44,38 +44,37 @@ struct CSVValue
 
 #define CMD_NAME "weave convert-provisioning-data"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void TrimSpace(const char * & p, size_t & len);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void TrimSpace(const char *& p, size_t & len);
 static bool ParseCSVLine(const char * input, size_t inputLen, char sep, CSVValue * values, size_t maxValues, size_t & numValues);
 static bool ReadCSVLine(FILE * inFile, char * buf, size_t bufSize, CSVValue * values, size_t maxValues, size_t & numValues);
 static bool WriteCSVLine(FILE * outFile, CSVValue * values, size_t numValues);
-static bool ConvertCertificate(const char * inCertB64, size_t inCertB64Len, CertFormat outCertFormat, char * & outCertB64, size_t & outCertB64Len);
-static bool ConvertPrivateKey(const char * inKeyB64, size_t inKeyB64Len, KeyFormat keyFormat, char * & outKeyB64, size_t & outKeyB64Len);
+static bool ConvertCertificate(const char * inCertB64, size_t inCertB64Len, CertFormat outCertFormat, char *& outCertB64,
+                               size_t & outCertB64Len);
+static bool ConvertPrivateKey(const char * inKeyB64, size_t inKeyB64Len, KeyFormat keyFormat, char *& outKeyB64,
+                              size_t & outKeyB64Len);
 static size_t FindColumnByPrefix(const CSVValue * colNames, size_t numCols, const char * prefix, size_t prefixLen);
 
 enum
 {
-    kToolOpt_WeaveCert  = 1000,
-    kToolOpt_DERCert    = 1001,
-    kToolOpt_WeaveKey   = 1002,
-    kToolOpt_DERKey     = 1003,
-    kToolOpt_PKCS8Key   = 1004,
+    kToolOpt_WeaveCert = 1000,
+    kToolOpt_DERCert   = 1001,
+    kToolOpt_WeaveKey  = 1002,
+    kToolOpt_DERKey    = 1003,
+    kToolOpt_PKCS8Key  = 1004,
 };
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "weave",             kNoArgument,       'w'                   },
-    { "der",               kNoArgument,       'x'                   },
-    { "weave-cert",        kNoArgument,       kToolOpt_WeaveCert    },
-    { "der-cert",          kNoArgument,       kToolOpt_DERCert      },
-    { "weave-key",         kNoArgument,       kToolOpt_WeaveKey     },
-    { "der-key",           kNoArgument,       kToolOpt_DERKey       },
-    { "pkcs8-key",         kNoArgument,       kToolOpt_PKCS8Key     },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "weave", kNoArgument, 'w' },
+                                      { "der", kNoArgument, 'x' },
+                                      { "weave-cert", kNoArgument, kToolOpt_WeaveCert },
+                                      { "der-cert", kNoArgument, kToolOpt_DERCert },
+                                      { "weave-key", kNoArgument, kToolOpt_WeaveKey },
+                                      { "der-key", kNoArgument, kToolOpt_DERKey },
+                                      { "pkcs8-key", kNoArgument, kToolOpt_PKCS8Key },
+                                      { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "   -w, --weave\n"
     "\n"
     "       Convert the certificate and private key to Weave TLV format.\n"
@@ -105,76 +104,61 @@ static const char *const gCmdOptionHelp =
     "   --pkcs8-key\n"
     "\n"
     "       Convert the private key to PKCS#8 DER format.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
-{
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ] <in-file> <out-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Perform various conversions on a device provisioning data file.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "   <in-file>\n"
-    "\n"
-    "       A CSV file containing provisioning data to be converted, or - to read from\n"
-    "       stdin.  The first line of this file must contain names for each of the CSV\n"
-    "       columns.  Depending on which conversions are requested, the following columns\n"
-    "       must be present:\n"
-    "\n"
-    "           Certificate        - Certificate in Weave TLV form, base-64 encoded\n"
-    "           Certificate DER    - Certificate in X.509 DER form, base-64 encoded\n"
-    "           Private Key        - Private key in Weave TLV form, base-64 encoded\n"
-    "           Private Key DER    - Private key in SEC1/RFC-5915 DER form, base-64 encoded\n"
-    "           Private Key PKCS8  - Private key in PKCS8 DER form, base-64 encoded\n"
-    "\n"
-    "       Any additional columns present in the input will be passed through to the output\n"
-    "       without modification.\n"
-    "\n"
-    "   <out-file>\n"
-    "\n"
-    "       The CSV file to which the converted provisioning data should be written, or\n"
-    "       - to write to stdout.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ] <in-file> <out-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Perform various conversions on a device provisioning data file.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "   <in-file>\n"
+                                "\n"
+                                "       A CSV file containing provisioning data to be converted, or - to read from\n"
+                                "       stdin.  The first line of this file must contain names for each of the CSV\n"
+                                "       columns.  Depending on which conversions are requested, the following columns\n"
+                                "       must be present:\n"
+                                "\n"
+                                "           Certificate        - Certificate in Weave TLV form, base-64 encoded\n"
+                                "           Certificate DER    - Certificate in X.509 DER form, base-64 encoded\n"
+                                "           Private Key        - Private key in Weave TLV form, base-64 encoded\n"
+                                "           Private Key DER    - Private key in SEC1/RFC-5915 DER form, base-64 encoded\n"
+                                "           Private Key PKCS8  - Private key in PKCS8 DER form, base-64 encoded\n"
+                                "\n"
+                                "       Any additional columns present in the input will be passed through to the output\n"
+                                "       without modification.\n"
+                                "\n"
+                                "   <out-file>\n"
+                                "\n"
+                                "       The CSV file to which the converted provisioning data should be written, or\n"
+                                "       - to write to stdout.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
 
-static const char *gInFileName;
-static const char *gOutFileName;
+static const char * gInFileName;
+static const char * gOutFileName;
 static CertFormat gCertFormat = kCertFormat_Unknown;
-static KeyFormat gKeyFormat = kKeyFormat_Unknown;
+static KeyFormat gKeyFormat   = kKeyFormat_Unknown;
 
-static const char gColumnName_Certificate[] = "Certificate";
+static const char gColumnName_Certificate[]    = "Certificate";
 static const size_t gColumnName_CertificateLen = sizeof(gColumnName_Certificate) - 1;
 
-static const char gColumnName_CertificateDER[] = "Certificate DER";
+static const char gColumnName_CertificateDER[]    = "Certificate DER";
 static const size_t gColumnName_CertificateDERLen = sizeof(gColumnName_CertificateDER) - 1;
 
-static const char gColumnName_PrivateKey[] = "Private Key";
+static const char gColumnName_PrivateKey[]    = "Private Key";
 static const size_t gColumnName_PrivateKeyLen = sizeof(gColumnName_PrivateKey) - 1;
 
-static const char gColumnName_PrivateKeyDER[] = "Private Key DER";
+static const char gColumnName_PrivateKeyDER[]    = "Private Key DER";
 static const size_t gColumnName_PrivateKeyDERLen = sizeof(gColumnName_PrivateKeyDER) - 1;
 
-static const char gColumnName_PrivateKeyPKCS8[] = "Private Key PKCS8";
+static const char gColumnName_PrivateKeyPKCS8[]    = "Private Key PKCS8";
 static const size_t gColumnName_PrivateKeyPKCS8Len = sizeof(gColumnName_PrivateKeyPKCS8) - 1;
 
-bool Cmd_ConvertProvisioningData(int argc, char *argv[])
+bool Cmd_ConvertProvisioningData(int argc, char * argv[])
 {
     enum
     {
@@ -185,13 +169,13 @@ bool Cmd_ConvertProvisioningData(int argc, char *argv[])
     static char inBuf[kMaxLineLength];
     static CSVValue inValues[kMaxCSVColumns];
 
-    bool res = true;
-    FILE * inFile = NULL;
-    FILE * outFile = NULL;
-    char * convertedCert = NULL;
+    bool res                = true;
+    FILE * inFile           = NULL;
+    FILE * outFile          = NULL;
+    char * convertedCert    = NULL;
     size_t convertedCertLen = 0;
-    char * convertedKey = NULL;
-    size_t convertedKeyLen = 0;
+    char * convertedKey     = NULL;
+    size_t convertedKeyLen  = 0;
     size_t numCols;
     size_t certCol, privKeyCol;
     bool outFileCreated = false;
@@ -265,39 +249,33 @@ bool Cmd_ConvertProvisioningData(int argc, char *argv[])
     // columns being converted.
     switch (gCertFormat)
     {
-    case kCertFormat_Unknown:
-        break;
+    case kCertFormat_Unknown: break;
     case kCertFormat_Weave_Base64:
-        inValues[certCol].Data = gColumnName_Certificate;
+        inValues[certCol].Data   = gColumnName_Certificate;
         inValues[certCol].Length = gColumnName_CertificateLen;
         break;
     case kCertFormat_X509_DER:
-        inValues[certCol].Data = gColumnName_CertificateDER;
+        inValues[certCol].Data   = gColumnName_CertificateDER;
         inValues[certCol].Length = gColumnName_CertificateDERLen;
         break;
-    default:
-        fprintf(stderr, "INTERNAL ERROR: Invalid certificate format\n");
-        ExitNow(res = false);
+    default: fprintf(stderr, "INTERNAL ERROR: Invalid certificate format\n"); ExitNow(res = false);
     }
     switch (gKeyFormat)
     {
-    case kKeyFormat_Unknown:
-        break;
+    case kKeyFormat_Unknown: break;
     case kKeyFormat_Weave_Base64:
-        inValues[privKeyCol].Data = gColumnName_PrivateKey;
+        inValues[privKeyCol].Data   = gColumnName_PrivateKey;
         inValues[privKeyCol].Length = gColumnName_PrivateKeyLen;
         break;
     case kKeyFormat_DER:
-        inValues[privKeyCol].Data = gColumnName_PrivateKeyDER;
+        inValues[privKeyCol].Data   = gColumnName_PrivateKeyDER;
         inValues[privKeyCol].Length = gColumnName_PrivateKeyDERLen;
         break;
     case kKeyFormat_DER_PKCS8:
-        inValues[privKeyCol].Data = gColumnName_PrivateKeyPKCS8;
+        inValues[privKeyCol].Data   = gColumnName_PrivateKeyPKCS8;
         inValues[privKeyCol].Length = gColumnName_PrivateKeyPKCS8Len;
         break;
-    default:
-        fprintf(stderr, "INTERNAL ERROR: Invalid key format\n");
-        ExitNow(res = false);
+    default: fprintf(stderr, "INTERNAL ERROR: Invalid key format\n"); ExitNow(res = false);
     }
     if (!WriteCSVLine(outFile, inValues, numCols))
     {
@@ -324,18 +302,19 @@ bool Cmd_ConvertProvisioningData(int argc, char *argv[])
                 ExitNow(res = false);
             }
 
-            inValues[certCol].Data = convertedCert;
+            inValues[certCol].Data   = convertedCert;
             inValues[certCol].Length = convertedCertLen;
         }
 
         if (gKeyFormat != kKeyFormat_Unknown && numCols > privKeyCol)
         {
-            if (!ConvertPrivateKey(inValues[privKeyCol].Data, inValues[privKeyCol].Length, gKeyFormat, convertedKey, convertedKeyLen))
+            if (!ConvertPrivateKey(inValues[privKeyCol].Data, inValues[privKeyCol].Length, gKeyFormat, convertedKey,
+                                   convertedKeyLen))
             {
                 ExitNow(res = false);
             }
 
-            inValues[privKeyCol].Data = convertedKey;
+            inValues[privKeyCol].Data   = convertedKey;
             inValues[privKeyCol].Length = convertedKeyLen;
         }
 
@@ -377,30 +356,18 @@ bool HandleOption(const char * progName, OptionSet * optSet, int id, const char 
     {
     case 'w':
         gCertFormat = kCertFormat_Weave_Base64;
-        gKeyFormat = kKeyFormat_Weave_Base64;
+        gKeyFormat  = kKeyFormat_Weave_Base64;
         break;
     case 'x':
         gCertFormat = kCertFormat_X509_DER;
-        gKeyFormat = kKeyFormat_DER;
+        gKeyFormat  = kKeyFormat_DER;
         break;
-    case kToolOpt_WeaveCert:
-        gCertFormat = kCertFormat_Weave_Base64;
-        break;
-    case kToolOpt_DERCert:
-        gCertFormat = kCertFormat_X509_DER;
-        break;
-    case kToolOpt_WeaveKey:
-        gKeyFormat = kKeyFormat_Weave_Base64;
-        break;
-    case kToolOpt_DERKey:
-        gKeyFormat = kKeyFormat_DER;
-        break;
-    case kToolOpt_PKCS8Key:
-        gKeyFormat = kKeyFormat_DER_PKCS8;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case kToolOpt_WeaveCert: gCertFormat = kCertFormat_Weave_Base64; break;
+    case kToolOpt_DERCert: gCertFormat = kCertFormat_X509_DER; break;
+    case kToolOpt_WeaveKey: gKeyFormat = kKeyFormat_Weave_Base64; break;
+    case kToolOpt_DERKey: gKeyFormat = kKeyFormat_DER; break;
+    case kToolOpt_PKCS8Key: gKeyFormat = kKeyFormat_DER_PKCS8; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -426,13 +393,13 @@ bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
         return false;
     }
 
-    gInFileName = argv[0];
+    gInFileName  = argv[0];
     gOutFileName = argv[1];
 
     return true;
 }
 
-void TrimSpace(const char * & p, size_t & len)
+void TrimSpace(const char *& p, size_t & len)
 {
     while (len > 0 && isspace(*p))
     {
@@ -454,17 +421,17 @@ bool ParseCSVLine(const char * input, size_t inputLen, char sep, CSVValue * valu
 
         value.Data = input;
 
-        char * valueEnd = (char *)memchr(input, sep, inputLen);
+        char * valueEnd = (char *) memchr(input, sep, inputLen);
         if (valueEnd != NULL)
         {
             value.Length = valueEnd - input;
-            input = valueEnd + 1;
+            input        = valueEnd + 1;
             inputLen -= value.Length + 1;
         }
         else
         {
             value.Length = inputLen;
-            inputLen = 0;
+            inputLen     = 0;
         }
 
         TrimSpace(value.Data, value.Length);
@@ -531,7 +498,8 @@ exit:
     return res;
 }
 
-bool ConvertCertificate(const char * inCertB64, size_t inCertB64Len, CertFormat outCertFormat, char * & outCertB64, size_t & outCertB64Len)
+bool ConvertCertificate(const char * inCertB64, size_t inCertB64Len, CertFormat outCertFormat, char *& outCertB64,
+                        size_t & outCertB64Len)
 {
     bool res = true;
     WEAVE_ERROR err;
@@ -541,7 +509,7 @@ bool ConvertCertificate(const char * inCertB64, size_t inCertB64Len, CertFormat 
     uint32_t outCertLen;
     CertFormat inCertFormat;
 
-    inCert = Base64Decode((const uint8_t *)inCertB64, (uint32_t)inCertB64Len, NULL, 0, inCertLen);
+    inCert = Base64Decode((const uint8_t *) inCertB64, (uint32_t) inCertB64Len, NULL, 0, inCertLen);
     if (inCert == NULL)
     {
         ExitNow(res = false);
@@ -551,12 +519,12 @@ bool ConvertCertificate(const char * inCertB64, size_t inCertB64Len, CertFormat 
 
     if (inCertFormat != kCertFormat_Weave_Raw && inCertFormat != kCertFormat_X509_DER)
     {
-        fprintf(stderr, "weave: Unrecognized certificate format: %*s\n", (int)inCertB64Len, inCertB64);
+        fprintf(stderr, "weave: Unrecognized certificate format: %*s\n", (int) inCertB64Len, inCertB64);
         ExitNow(res = false);
     }
 
     outCertLen = inCertLen * 100;
-    outCert = (uint8_t *)malloc(outCertLen);
+    outCert    = (uint8_t *) malloc(outCertLen);
     if (outCert == NULL)
     {
         fprintf(stderr, "weave: Memory allocation failure\n");
@@ -609,16 +577,16 @@ exit:
     return res;
 }
 
-bool ConvertPrivateKey(const char * inKeyB64, size_t inKeyB64Len, KeyFormat keyFormat, char * & outKeyB64, size_t & outKeyB64Len)
+bool ConvertPrivateKey(const char * inKeyB64, size_t inKeyB64Len, KeyFormat keyFormat, char *& outKeyB64, size_t & outKeyB64Len)
 {
-    bool res = true;
+    bool res        = true;
     uint8_t * inKey = NULL;
     uint32_t inKeyLen;
-    EVP_PKEY *inKeyDecoded = NULL;
-    uint8_t *outKey = NULL;
+    EVP_PKEY * inKeyDecoded = NULL;
+    uint8_t * outKey        = NULL;
     uint32_t outKeyLen;
 
-    inKey = Base64Decode((const uint8_t *)inKeyB64, (uint32_t)inKeyB64Len, NULL, 0, inKeyLen);
+    inKey = Base64Decode((const uint8_t *) inKeyB64, (uint32_t) inKeyB64Len, NULL, 0, inKeyLen);
     if (inKey == NULL)
     {
         ExitNow(res = false);
@@ -672,8 +640,7 @@ size_t FindColumnByPrefix(const CSVValue * colNames, size_t numCols, const char 
     // Search for a column whose name matches prefix.
     for (i = 0; i < numCols; i++)
     {
-        if (colNames[i].Length >= prefixLen &&
-            memcmp(colNames[i].Data, prefix, prefixLen) == 0)
+        if (colNames[i].Length >= prefixLen && memcmp(colNames[i].Data, prefix, prefixLen) == 0)
         {
             break;
         }

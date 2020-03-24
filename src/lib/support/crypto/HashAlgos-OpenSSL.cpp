@@ -37,25 +37,21 @@ namespace Security {
 
 #if WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL
 
-SHA1::SHA1()
-{
-}
+SHA1::SHA1() { }
 
-SHA1::~SHA1()
-{
-}
+SHA1::~SHA1() { }
 
 void SHA1::Begin()
 {
     SHA1_Init(&mSHACtx);
 }
 
-void SHA1::AddData(const uint8_t *data, uint16_t dataLen)
+void SHA1::AddData(const uint8_t * data, uint16_t dataLen)
 {
     SHA1_Update(&mSHACtx, data, dataLen);
 }
 
-void SHA1::Finish(uint8_t *hashBuf)
+void SHA1::Finish(uint8_t * hashBuf)
 {
     SHA1_Final(hashBuf, &mSHACtx);
 }
@@ -65,25 +61,21 @@ void SHA1::Reset()
     memset(this, 0, sizeof(*this));
 }
 
-SHA256::SHA256()
-{
-}
+SHA256::SHA256() { }
 
-SHA256::~SHA256()
-{
-}
+SHA256::~SHA256() { }
 
 void SHA256::Begin()
 {
     SHA256_Init(&mSHACtx);
 }
 
-void SHA256::AddData(const uint8_t *data, uint16_t dataLen)
+void SHA256::AddData(const uint8_t * data, uint16_t dataLen)
 {
     SHA256_Update(&mSHACtx, data, dataLen);
 }
 
-void SHA256::Finish(uint8_t *hashBuf)
+void SHA256::Finish(uint8_t * hashBuf)
 {
     SHA256_Final(hashBuf, &mSHACtx);
 }
@@ -106,7 +98,7 @@ void SHA256::Reset()
  *   number, encoded big endian, in the minimum number of bytes.
  *
  */
-void SHA1::AddData(const BIGNUM& num)
+void SHA1::AddData(const BIGNUM & num)
 {
     if (BN_is_zero(&num))
     {
@@ -117,8 +109,8 @@ void SHA1::AddData(const BIGNUM& num)
     }
     else
     {
-        int bnSize = BN_num_bytes(&num);
-        uint8_t *encodedNum = (uint8_t *)OPENSSL_malloc(bnSize + 1);
+        int bnSize           = BN_num_bytes(&num);
+        uint8_t * encodedNum = (uint8_t *) OPENSSL_malloc(bnSize + 1);
 
         encodedNum[0] = (BN_is_negative(&num)) ? 0xFF : 0x00;
 
@@ -139,7 +131,7 @@ void SHA1::AddData(const BIGNUM& num)
  *   number, encoded big endian, in the minimum number of bytes.
  *
  */
-void SHA256::AddData(const BIGNUM& num)
+void SHA256::AddData(const BIGNUM & num)
 {
     if (BN_is_zero(&num))
     {
@@ -150,8 +142,8 @@ void SHA256::AddData(const BIGNUM& num)
     }
     else
     {
-        int bnSize = BN_num_bytes(&num);
-        uint8_t *encodedNum = (uint8_t *)OPENSSL_malloc(bnSize + 1);
+        int bnSize           = BN_num_bytes(&num);
+        uint8_t * encodedNum = (uint8_t *) OPENSSL_malloc(bnSize + 1);
 
         encodedNum[0] = (BN_is_negative(&num)) ? 0xFF : 0x00;
 

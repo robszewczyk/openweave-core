@@ -42,11 +42,9 @@ namespace Internal {
  * or indirectly) by the ConfigurationManagerImpl class, which also appears as the template's ImplClass
  * parameter.
  */
-template<class ImplClass>
-class GenericConfigurationManagerImpl
+template <class ImplClass> class GenericConfigurationManagerImpl
 {
 public:
-
     // ===== Methods that implement the ConfigurationManager abstract interface.
 
     WEAVE_ERROR _Init();
@@ -56,8 +54,8 @@ public:
     WEAVE_ERROR _GetProductRevision(uint16_t & productRev);
     WEAVE_ERROR _StoreProductRevision(uint16_t productRev);
     WEAVE_ERROR _GetFirmwareRevision(char * buf, size_t bufSize, size_t & outLen);
-    WEAVE_ERROR _GetFirmwareBuildTime(uint16_t & year, uint8_t & month, uint8_t & dayOfMonth,
-            uint8_t & hour, uint8_t & minute, uint8_t & second);
+    WEAVE_ERROR _GetFirmwareBuildTime(uint16_t & year, uint8_t & month, uint8_t & dayOfMonth, uint8_t & hour, uint8_t & minute,
+                                      uint8_t & second);
     WEAVE_ERROR _GetSerialNumber(char * buf, size_t bufSize, size_t & serialNumLen);
     WEAVE_ERROR _StoreSerialNumber(const char * serialNum, size_t serialNumLen);
     WEAVE_ERROR _GetPrimaryWiFiMACAddress(uint8_t * buf);
@@ -94,8 +92,8 @@ public:
     WEAVE_ERROR _StoreServiceConfig(const uint8_t * serviceConfig, size_t serviceConfigLen);
     WEAVE_ERROR _GetPairedAccountId(char * buf, size_t bufSize, size_t & accountIdLen);
     WEAVE_ERROR _StorePairedAccountId(const char * accountId, size_t accountIdLen);
-    WEAVE_ERROR _StoreServiceProvisioningData(uint64_t serviceId, const uint8_t * serviceConfig,
-            size_t serviceConfigLen, const char * accountId, size_t accountIdLen);
+    WEAVE_ERROR _StoreServiceProvisioningData(uint64_t serviceId, const uint8_t * serviceConfig, size_t serviceConfigLen,
+                                              const char * accountId, size_t accountIdLen);
     WEAVE_ERROR _ClearServiceProvisioningData();
     WEAVE_ERROR _GetFailSafeArmed(bool & val);
     WEAVE_ERROR _SetFailSafeArmed(bool val);
@@ -115,7 +113,6 @@ public:
 #endif
 
 protected:
-
     enum
     {
         kFlag_IsServiceProvisioned                    = 0x01,
@@ -131,7 +128,6 @@ protected:
     WEAVE_ERROR PersistProvisioningData(ProvisioningDataSet & provData);
 
 private:
-
     ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 
     static void HashLengthAndBase64Value(Platform::Security::SHA256 & hash, const uint8_t * val, uint16_t valLen);
@@ -144,22 +140,17 @@ private:
 // Instruct the compiler to instantiate the template only when explicitly told to do so.
 extern template class Internal::GenericConfigurationManagerImpl<ConfigurationManagerImpl>;
 
-template<class ImplClass>
-inline WEAVE_ERROR GenericConfigurationManagerImpl<ImplClass>::_GetVendorId(uint16_t & vendorId)
+template <class ImplClass> inline WEAVE_ERROR GenericConfigurationManagerImpl<ImplClass>::_GetVendorId(uint16_t & vendorId)
 {
-    vendorId = (uint16_t)WEAVE_DEVICE_CONFIG_DEVICE_VENDOR_ID;
+    vendorId = (uint16_t) WEAVE_DEVICE_CONFIG_DEVICE_VENDOR_ID;
     return WEAVE_NO_ERROR;
 }
 
-template<class ImplClass>
-inline WEAVE_ERROR GenericConfigurationManagerImpl<ImplClass>::_GetProductId(uint16_t & productId)
+template <class ImplClass> inline WEAVE_ERROR GenericConfigurationManagerImpl<ImplClass>::_GetProductId(uint16_t & productId)
 {
-    productId = (uint16_t)WEAVE_DEVICE_CONFIG_DEVICE_PRODUCT_ID;
+    productId = (uint16_t) WEAVE_DEVICE_CONFIG_DEVICE_PRODUCT_ID;
     return WEAVE_NO_ERROR;
 }
-
-
-
 
 } // namespace Internal
 } // namespace DeviceLayer

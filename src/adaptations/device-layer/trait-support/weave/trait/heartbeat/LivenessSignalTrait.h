@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,8 +38,9 @@ namespace LivenessSignalTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x25U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x25U
 };
 
 //
@@ -56,22 +55,24 @@ struct LivenessSignalEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsWdmSubscriptionIdPresent(void);
 #endif
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x25U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x25U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct LivenessSignalEvent_array {
+struct LivenessSignalEvent_array
+{
     uint32_t num;
-    LivenessSignalEvent *buf;
+    LivenessSignalEvent * buf;
 };
 
 inline void LivenessSignalEvent::SetWdmSubscriptionIdNull(void)
@@ -95,12 +96,13 @@ inline bool LivenessSignalEvent::IsWdmSubscriptionIdPresent(void)
 // Enums
 //
 
-enum LivenessSignalType {
+enum LivenessSignalType
+{
     LIVENESS_SIGNAL_TYPE_MUTUAL_SUBSCRIPTION_ESTABLISHED = 1,
-    LIVENESS_SIGNAL_TYPE_SUBSCRIPTION_HEARTBEAT = 2,
-    LIVENESS_SIGNAL_TYPE_NON_SUBSCRIPTION_HEARTBEAT = 3,
-    LIVENESS_SIGNAL_TYPE_NOTIFY_REQUEST_UNDELIVERED = 4,
-    LIVENESS_SIGNAL_TYPE_COMMAND_REQUEST_UNDELIVERED = 5,
+    LIVENESS_SIGNAL_TYPE_SUBSCRIPTION_HEARTBEAT          = 2,
+    LIVENESS_SIGNAL_TYPE_NON_SUBSCRIPTION_HEARTBEAT      = 3,
+    LIVENESS_SIGNAL_TYPE_NOTIFY_REQUEST_UNDELIVERED      = 4,
+    LIVENESS_SIGNAL_TYPE_COMMAND_REQUEST_UNDELIVERED     = 5,
 };
 
 } // namespace LivenessSignalTrait

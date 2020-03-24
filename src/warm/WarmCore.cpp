@@ -34,72 +34,85 @@ namespace Warm {
 
 // Internal Types
 
-typedef enum {
-        kInitStateNotInitialized = 0,   /**< This must be 0 so that mInitState's initial value will be kInitStateNotInitialized. */
-        kInitStateInitialized
+typedef enum
+{
+    kInitStateNotInitialized = 0, /**< This must be 0 so that mInitState's initial value will be kInitStateNotInitialized. */
+    kInitStateInitialized
 } InitState;
 
-typedef enum {
-    kPlatformActionExecutionContinue                      = false,  /**< continue action execution. */
-    kPlatformActionExecutionSuspendForAsynchOpCompletion  = true    /**< suspend action execution for asynchronous operation to complete. */
+typedef enum
+{
+    kPlatformActionExecutionContinue = false, /**< continue action execution. */
+    kPlatformActionExecutionSuspendForAsynchOpCompletion =
+        true /**< suspend action execution for asynchronous operation to complete. */
 } PlatformActionExecution;
 
-typedef enum {
-    kSystemFeatureTypeIsFabricMember           = (1 << 0),    /**< The System's Weave module            IS | IS NOT     a member of a fabric. */
-    kSystemFeatureTypeWiFiConnected            = (1 << 1),    /**< The System's WiFi Interface          IS | IS NOT     connected. */
-    kSystemFeatureTypeThreadConnected          = (1 << 2),    /**< The System's Thread Interface        IS | IS NOT     connected. */
-    kSystemFeatureTypeThreadRoutingEnabled     = (1 << 3),    /**< The System's Thread Routing Feature  IS | IS NOT     enabled. */
-    kSystemFeatureTypeBorderRoutingEnabled     = (1 << 4),    /**< The System's Border Routing Feature  IS | IS NOT     enabled. */
-    kSystemFeatureTypeTunnelInterfaceEnabled   = (1 << 5),    /**< The System's Tunnel Interface        IS | IS NOT     enabled. */
-    kSystemFeatureTypeTunnelState              = (1 << 6),    /**< The System's Tunnel Service          IS | IS NOT     established. */
-    kSystemFeatureTypeCellularConnected        = (1 << 7),    /**< The System's Cellular Interface      IS | IS NOT     connected. */
+typedef enum
+{
+    kSystemFeatureTypeIsFabricMember  = (1 << 0), /**< The System's Weave module            IS | IS NOT     a member of a fabric. */
+    kSystemFeatureTypeWiFiConnected   = (1 << 1), /**< The System's WiFi Interface          IS | IS NOT     connected. */
+    kSystemFeatureTypeThreadConnected = (1 << 2), /**< The System's Thread Interface        IS | IS NOT     connected. */
+    kSystemFeatureTypeThreadRoutingEnabled   = (1 << 3), /**< The System's Thread Routing Feature  IS | IS NOT     enabled. */
+    kSystemFeatureTypeBorderRoutingEnabled   = (1 << 4), /**< The System's Border Routing Feature  IS | IS NOT     enabled. */
+    kSystemFeatureTypeTunnelInterfaceEnabled = (1 << 5), /**< The System's Tunnel Interface        IS | IS NOT     enabled. */
+    kSystemFeatureTypeTunnelState            = (1 << 6), /**< The System's Tunnel Service          IS | IS NOT     established. */
+    kSystemFeatureTypeCellularConnected      = (1 << 7), /**< The System's Cellular Interface      IS | IS NOT     connected. */
 
-    kSystemFeatureTypeMax                      = (1 << 16)    /**< DO NOT EXCEED; reserved to mark the max available bits. */
+    kSystemFeatureTypeMax = (1 << 16) /**< DO NOT EXCEED; reserved to mark the max available bits. */
 } SystemFeatureType;
 
-typedef enum {
-    kActionTypeWiFiHostAddress              = (1 << 0),   /**< Add | Remove the IP address for the WiFi Interface on the host's IP stack. */
-    kActionTypeThreadHostAddress            = (1 << 1),   /**< Add | Remove the IP address for the Thread Interface on the host's IP stack. */
-    kActionTypeThreadThreadAddress          = (1 << 2),   /**< Add | Remove the IP address for the Thread Interface on the Thread Module's IP stack. */
-    kActionTypeLegacy6LoWPANHostAddress     = (1 << 3),   /**< Add | Remove the IP address for the Legacy 6LowPAN Interface on the host's IP stack. */
-    kActionTypeLegacy6LoWPANThreadAddress   = (1 << 4),   /**< Add | Remove the IP address for the Legacy 6LowPAN Interface on the Thread Module's IP stack. */
-    kActionTypeHostRouteThread              = (1 << 5),   /**< Add | Remove the IP route for the Thread Interface on the host's IP stack. */
-    kActionTypeThreadAdvertisement          = (1 << 6),   /**< Start | Stop the route advertisement by the Thread Module. */
-    kActionTypeThreadRoute                  = (1 << 7),   /**< Add | Remove the IP route on the Thread Module for Border Route support. */
-    kActionTypeTunnelHostAddress            = (1 << 8),   /**< Add | Remove the IP address for the Tunnel Interface on the host's IP stack. */
-    kActionTypeTunnelHostRoute              = (1 << 9),   /**< Add | Remove the IP route for the Tunnel Interface on the host's IP stack. */
-    kActionTypeThreadRoutePriority          = (1 << 10),  /**< Change the Route Priority of the Thread Route on the Thread Module. */
-    kActionTypeTunnelServiceRoute           = (1 << 11),  /**< Add | Remove the 64 bit IP route for Service subnet on the host's IP stack. */
+typedef enum
+{
+    kActionTypeWiFiHostAddress   = (1 << 0), /**< Add | Remove the IP address for the WiFi Interface on the host's IP stack. */
+    kActionTypeThreadHostAddress = (1 << 1), /**< Add | Remove the IP address for the Thread Interface on the host's IP stack. */
+    kActionTypeThreadThreadAddress =
+        (1 << 2), /**< Add | Remove the IP address for the Thread Interface on the Thread Module's IP stack. */
+    kActionTypeLegacy6LoWPANHostAddress =
+        (1 << 3), /**< Add | Remove the IP address for the Legacy 6LowPAN Interface on the host's IP stack. */
+    kActionTypeLegacy6LoWPANThreadAddress =
+        (1 << 4), /**< Add | Remove the IP address for the Legacy 6LowPAN Interface on the Thread Module's IP stack. */
+    kActionTypeHostRouteThread     = (1 << 5),  /**< Add | Remove the IP route for the Thread Interface on the host's IP stack. */
+    kActionTypeThreadAdvertisement = (1 << 6),  /**< Start | Stop the route advertisement by the Thread Module. */
+    kActionTypeThreadRoute         = (1 << 7),  /**< Add | Remove the IP route on the Thread Module for Border Route support. */
+    kActionTypeTunnelHostAddress   = (1 << 8),  /**< Add | Remove the IP address for the Tunnel Interface on the host's IP stack. */
+    kActionTypeTunnelHostRoute     = (1 << 9),  /**< Add | Remove the IP route for the Tunnel Interface on the host's IP stack. */
+    kActionTypeThreadRoutePriority = (1 << 10), /**< Change the Route Priority of the Thread Route on the Thread Module. */
+    kActionTypeTunnelServiceRoute  = (1 << 11), /**< Add | Remove the 64 bit IP route for Service subnet on the host's IP stack. */
 
-    kActionTypeMax                          = (1 << 16)   /**< DO NOT EXCEED; reserved to mark the max available bits. */
+    kActionTypeMax = (1 << 16) /**< DO NOT EXCEED; reserved to mark the max available bits. */
 } ActionType;
 
 typedef uint16_t FlagsType;
 
-typedef PlatformResult (* ActionFunction)(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId);
+typedef PlatformResult (*ActionFunction)(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                         const uint64_t & inInterfaceId);
 
 typedef struct
 {
-    FlagsType           mNecessaryActiveSystemFeatures; /**< Stores the System Features that that are pre-requisites for taking the affirmative form of the Action. */
-    ActionType          mActionType;                    /**< The type of Action to which this Entry pertains. */
-    ActionFunction      mAction;                        /**< A function to execute the Action. */
+    FlagsType mNecessaryActiveSystemFeatures; /**< Stores the System Features that that are pre-requisites for taking the
+                                                 affirmative form of the Action. */
+    ActionType mActionType;                   /**< The type of Action to which this Entry pertains. */
+    ActionFunction mAction;                   /**< A function to execute the Action. */
 } ActionEntry;
 
-typedef struct {
-    InitState                                               mInitState;                    /**< Tracks State of the Module initialization. */
-    const WeaveFabricState                                  *mFabricState;                 /**< Stores a fabric State. */
-    uint64_t                                                mFabricId;                     /**< Stores the fabric id which was last joined */
-    FlagsType                                               mSystemFeatureStateFlags;      /**< Tracks changes for System Feature State. */
-    FlagsType                                               mActionStateFlags;             /**< Tracks State of Actions. */
+typedef struct
+{
+    InitState mInitState;                  /**< Tracks State of the Module initialization. */
+    const WeaveFabricState * mFabricState; /**< Stores a fabric State. */
+    uint64_t mFabricId;                    /**< Stores the fabric id which was last joined */
+    FlagsType mSystemFeatureStateFlags;    /**< Tracks changes for System Feature State. */
+    FlagsType mActionStateFlags;           /**< Tracks State of Actions. */
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL
-    Profiles::WeaveTunnel::Platform::TunnelAvailabilityMode mTunnelRequestedAvailability;  /**< Stores the desired Tunnel availability. */
-    Profiles::WeaveTunnel::Platform::TunnelAvailabilityMode mTunnelCurrentAvailability;    /**< Stores the configured Tunnel availability. */
+    Profiles::WeaveTunnel::Platform::TunnelAvailabilityMode
+        mTunnelRequestedAvailability; /**< Stores the desired Tunnel availability. */
+    Profiles::WeaveTunnel::Platform::TunnelAvailabilityMode
+        mTunnelCurrentAvailability; /**< Stores the configured Tunnel availability. */
 #endif
 
     // the following members are used to support platform API's that return kPlatformResultInProgress
-    volatile bool                                           mActionInProgress;             /**< Tracks whether or not an Action is in progress. */
-    ActionType                                              mInProgressAction;             /**< Stores the type of Action that is in progress. */
-    bool                                                    mInProgressActionState;        /**< Stores the desired State of the Action when the Action completes. */
+    volatile bool mActionInProgress; /**< Tracks whether or not an Action is in progress. */
+    ActionType mInProgressAction;    /**< Stores the type of Action that is in progress. */
+    bool mInProgressActionState;     /**< Stores the desired State of the Action when the Action completes. */
 } ModuleState;
 
 // Prototypes
@@ -112,28 +125,24 @@ static ModuleState sState;
 static WarmFabricStateDelegate sFabricStateDelegate;
 
 // These may be unused depending on WARM_CONFIG_SUPPORT_XXX definitions
-#if WARM_CONFIG_SUPPORT_THREAD_ROUTING || \
-    WARM_CONFIG_SUPPORT_WIFI || \
-    WARM_CONFIG_SUPPORT_CELLULAR || \
-    WARM_CONFIG_SUPPORT_THREAD_ROUTING || \
-    WARM_CONFIG_SUPPORT_WEAVE_TUNNEL || \
-    WARM_CONFIG_SUPPORT_BORDER_ROUTING
-static const uint8_t kGlobalULAPrefixLength               = 48;
+#if WARM_CONFIG_SUPPORT_THREAD_ROUTING || WARM_CONFIG_SUPPORT_WIFI || WARM_CONFIG_SUPPORT_CELLULAR ||                              \
+    WARM_CONFIG_SUPPORT_THREAD_ROUTING || WARM_CONFIG_SUPPORT_WEAVE_TUNNEL || WARM_CONFIG_SUPPORT_BORDER_ROUTING
+static const uint8_t kGlobalULAPrefixLength = 48;
 #endif
 #if WARM_CONFIG_SUPPORT_WIFI
-static const uint8_t kWiFiULAAddressPrefixLength          = 64;
+static const uint8_t kWiFiULAAddressPrefixLength = 64;
 #endif
-static const uint8_t kThreadULAAddressPrefixLength        = 64;
+static const uint8_t kThreadULAAddressPrefixLength = 64;
 #if WARM_CONFIG_SUPPORT_LEGACY6LOWPAN_NETWORK
 static const uint8_t kLegacy6LoWPANULAAddressPrefixLength = 64;
 #endif
 
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL
 
-static const uint8_t kTunnelAddressPrefixLength           = 128;
+static const uint8_t kTunnelAddressPrefixLength = 128;
 
 #if !WARM_CONFIG_ENABLE_FABRIC_DEFAULT_ROUTING
-static const uint8_t kServiceULAAddressPrefixLength       = 64;
+static const uint8_t kServiceULAAddressPrefixLength = 64;
 #endif // !WARM_CONFIG_ENABLE_FABRIC_DEFAULT_ROUTING
 
 #endif // WARM_CONFIG_SUPPORT_WEAVE_TUNNEL
@@ -172,11 +181,15 @@ static void SetCurrentActionState(ActionType inAction, bool inValue)
 {
     const bool current = GetCurrentActionState(inAction);
 
-    if (current != inValue) {
+    if (current != inValue)
+    {
 
-        if (inValue) {
+        if (inValue)
+        {
             sState.mActionStateFlags |= inAction;
-        } else {
+        }
+        else
+        {
             sState.mActionStateFlags &= ~inAction;
         }
     }
@@ -214,14 +227,18 @@ static inline bool GetSystemFeatureState(SystemFeatureType inSystemFeature)
  */
 static bool SetSystemFeatureState(SystemFeatureType inSystemFeature, bool inValue)
 {
-    bool retval = false;
+    bool retval        = false;
     const bool current = GetSystemFeatureState(inSystemFeature);
 
-    if (current != inValue) {
+    if (current != inValue)
+    {
 
-        if (inValue) {
+        if (inValue)
+        {
             sState.mSystemFeatureStateFlags |= inSystemFeature;
-        } else {
+        }
+        else
+        {
             sState.mSystemFeatureStateFlags &= ~inSystemFeature;
         }
 
@@ -249,19 +266,19 @@ static bool SetSystemFeatureState(SystemFeatureType inSystemFeature, bool inValu
  *  @return true if the action is not currently in the desired state, false otherwise.
  *
  */
-static bool ShouldPerformAction(ActionType inAction, FlagsType inNecessarySystemFeatureState, bool &outActivate)
+static bool ShouldPerformAction(ActionType inAction, FlagsType inNecessarySystemFeatureState, bool & outActivate)
 {
     bool retval = false;
     // Compare the necessary System Feature State flags to the current state of the action.
-    const bool desiredActionState = (inNecessarySystemFeatureState == (sState.mSystemFeatureStateFlags & inNecessarySystemFeatureState));
+    const bool desiredActionState =
+        (inNecessarySystemFeatureState == (sState.mSystemFeatureStateFlags & inNecessarySystemFeatureState));
 
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
     if (inAction == kActionTypeThreadRoutePriority)
     {
-        if (desiredActionState &&
-            sState.mTunnelRequestedAvailability != sState.mTunnelCurrentAvailability)
+        if (desiredActionState && sState.mTunnelRequestedAvailability != sState.mTunnelCurrentAvailability)
         {
-            retval = true;  // instruct the caller to take action.
+            retval = true; // instruct the caller to take action.
         }
     }
     else
@@ -269,7 +286,7 @@ static bool ShouldPerformAction(ActionType inAction, FlagsType inNecessarySystem
     {
         if (GetCurrentActionState(inAction) != desiredActionState)
         {
-            retval = true; // instruct the caller to take action.
+            retval      = true;               // instruct the caller to take action.
             outActivate = desiredActionState; // provide the caller with the desired state of the action
         }
     }
@@ -299,30 +316,28 @@ static PlatformActionExecution RecordPlatformResult(PlatformResult inResult, Act
 
     switch (inResult)
     {
-        case kPlatformResultSuccess:
-            SetCurrentActionState(inAction, inActionState);
+    case kPlatformResultSuccess: SetCurrentActionState(inAction, inActionState);
 
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
-            if ((inAction == kActionTypeThreadRoute && inActionState) ||
-                (inAction == kActionTypeThreadRoutePriority))
-            {
-                sState.mTunnelCurrentAvailability = sState.mTunnelRequestedAvailability;
-            }
+        if ((inAction == kActionTypeThreadRoute && inActionState) || (inAction == kActionTypeThreadRoutePriority))
+        {
+            sState.mTunnelCurrentAvailability = sState.mTunnelRequestedAvailability;
+        }
 #endif // WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
-            break;
+        break;
 
-        case kPlatformResultFailure:
-            // return false to keep going. By not setting the ActionState the Action will be retried.
-            // TODO: perhaps return true here to prevent continuation of actions on this iteration.
-            break;
+    case kPlatformResultFailure:
+        // return false to keep going. By not setting the ActionState the Action will be retried.
+        // TODO: perhaps return true here to prevent continuation of actions on this iteration.
+        break;
 
-        case kPlatformResultInProgress:
-            retval = kPlatformActionExecutionSuspendForAsynchOpCompletion; // instruct caller to stop executing actions.
-            // record that an action is in progress and use this in ReportActionComplete()
-            sState.mInProgressAction = inAction;
-            sState.mInProgressActionState = inActionState;
-            sState.mActionInProgress = true;
-            break;
+    case kPlatformResultInProgress:
+        retval = kPlatformActionExecutionSuspendForAsynchOpCompletion; // instruct caller to stop executing actions.
+        // record that an action is in progress and use this in ReportActionComplete()
+        sState.mInProgressAction      = inAction;
+        sState.mInProgressActionState = inActionState;
+        sState.mActionInProgress      = true;
+        break;
     }
 
     return retval;
@@ -392,7 +407,7 @@ static void FabricStateChange(InterfaceState inState)
  *  @param[in] newFabricId   The new fabric id.
  *
  */
-void WarmFabricStateDelegate::DidJoinFabric(WeaveFabricState *fabricState, uint64_t newFabricId)
+void WarmFabricStateDelegate::DidJoinFabric(WeaveFabricState * fabricState, uint64_t newFabricId)
 {
     FabricStateChange(kInterfaceStateUp);
 }
@@ -404,7 +419,7 @@ void WarmFabricStateDelegate::DidJoinFabric(WeaveFabricState *fabricState, uint6
  *  @param[in] oldFabricId   The old/previous fabric id.
  *
  */
-void WarmFabricStateDelegate::DidLeaveFabric(WeaveFabricState *fabricState, uint64_t oldFabricId)
+void WarmFabricStateDelegate::DidLeaveFabric(WeaveFabricState * fabricState, uint64_t oldFabricId)
 {
     FabricStateChange(kInterfaceStateDown);
 }
@@ -420,7 +435,7 @@ void WarmFabricStateDelegate::DidLeaveFabric(WeaveFabricState *fabricState, uint
  *  @retval other                        Error code otherwise.
  *
  */
-WEAVE_ERROR Init(WeaveFabricState &inFabricState)
+WEAVE_ERROR Init(WeaveFabricState & inFabricState)
 {
     WEAVE_ERROR err;
 
@@ -445,7 +460,7 @@ WEAVE_ERROR Init(WeaveFabricState &inFabricState)
         // Then update/inform WARM of the current fabric state. This should be done within
         // the critical section to protect against race situation caused by delegate callbacks
         // (which can be invoked from another task/process context)
-        FabricStateChange((inFabricState.FabricId != 0)?  kInterfaceStateUp : kInterfaceStateDown);
+        FabricStateChange((inFabricState.FabricId != 0) ? kInterfaceStateUp : kInterfaceStateDown);
     }
     Platform::CriticalSectionExit();
 
@@ -471,39 +486,33 @@ exit:
  *  @retval WEAVE_ERROR_INVALID_ARGUMENT  If this API is called with an invalid Interface Type.
  *
  */
-WEAVE_ERROR GetULA(InterfaceType inInterfaceType, Inet::IPAddress &outAddress)
+WEAVE_ERROR GetULA(InterfaceType inInterfaceType, Inet::IPAddress & outAddress)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint64_t    globalId;
-    uint64_t    interfaceId;
-    uint16_t    subnet;
+    uint64_t globalId;
+    uint64_t interfaceId;
+    uint16_t subnet;
 
     switch (inInterfaceType)
     {
-        case kInterfaceTypeLegacy6LoWPAN:
-            subnet = nl::Weave::kWeaveSubnetId_ThreadAlarm;
-            break;
+    case kInterfaceTypeLegacy6LoWPAN: subnet = nl::Weave::kWeaveSubnetId_ThreadAlarm; break;
 
-        case kInterfaceTypeThread:
-            subnet = nl::Weave::kWeaveSubnetId_ThreadMesh;
-            break;
+    case kInterfaceTypeThread: subnet = nl::Weave::kWeaveSubnetId_ThreadMesh; break;
 
-        case kInterfaceTypeWiFi:
-            subnet = nl::Weave::kWeaveSubnetId_PrimaryWiFi;
-            break;
+    case kInterfaceTypeWiFi: subnet = nl::Weave::kWeaveSubnetId_PrimaryWiFi; break;
 
-        default:
-            err = WEAVE_ERROR_INVALID_ARGUMENT;
-            goto exit;
+    default: err = WEAVE_ERROR_INVALID_ARGUMENT; goto exit;
     }
 
     Platform::CriticalSectionEnter();
     {
         if (GetSystemFeatureState(kSystemFeatureTypeIsFabricMember))
         {
-            globalId = nl::Weave::WeaveFabricIdToIPv6GlobalId(sState.mFabricId);
+            globalId    = nl::Weave::WeaveFabricIdToIPv6GlobalId(sState.mFabricId);
             interfaceId = nl::Weave::WeaveNodeIdToIPv6InterfaceId(sState.mFabricState->LocalNodeId);
-        } else {
+        }
+        else
+        {
             err = WEAVE_ERROR_INCORRECT_STATE;
         }
     }
@@ -531,7 +540,7 @@ exit:
  *                                        has been initialized.
  *
  */
-WEAVE_ERROR GetFabricState(const WeaveFabricState *&outFabricState)
+WEAVE_ERROR GetFabricState(const WeaveFabricState *& outFabricState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -592,7 +601,7 @@ void InvokeActions(void)
  */
 void ReportActionComplete(PlatformResult inResult)
 {
-    VerifyOrExit(((inResult != kPlatformResultInProgress) && (sState.mActionInProgress)), (void)0);
+    VerifyOrExit(((inResult != kPlatformResultInProgress) && (sState.mActionInProgress)), (void) 0);
 
     Platform::CriticalSectionEnter();
     {
@@ -639,7 +648,8 @@ void CellularInterfaceStateChange(InterfaceState inState)
  *  @return Forwards the result from Platform::HostAddress().
  *
  */
-static PlatformResult WiFiHostAddressAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult WiFiHostAddressAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                            const uint64_t & inInterfaceId)
 {
     const Inet::IPAddress address = nl::Inet::IPAddress::MakeULA(inGlobalId, nl::Weave::kWeaveSubnetId_PrimaryWiFi, inInterfaceId);
 
@@ -670,13 +680,9 @@ void WiFiInterfaceStateChange(InterfaceState inState)
  *  @param[out] outPrefix       The Prefix to initialize.
  *
  */
-#if WARM_CONFIG_SUPPORT_THREAD_ROUTING || \
-    WARM_CONFIG_SUPPORT_WIFI || \
-    WARM_CONFIG_SUPPORT_CELLULAR || \
-    WARM_CONFIG_SUPPORT_WEAVE_TUNNEL || \
-    WARM_CONFIG_SUPPORT_BORDER_ROUTING
-static void MakePrefix(const uint64_t &inGlobalID, const uint16_t subnetId, const uint8_t inPrefixLen,
-                       Inet::IPPrefix &outPrefix)
+#if WARM_CONFIG_SUPPORT_THREAD_ROUTING || WARM_CONFIG_SUPPORT_WIFI || WARM_CONFIG_SUPPORT_CELLULAR ||                              \
+    WARM_CONFIG_SUPPORT_WEAVE_TUNNEL || WARM_CONFIG_SUPPORT_BORDER_ROUTING
+static void MakePrefix(const uint64_t & inGlobalID, const uint16_t subnetId, const uint8_t inPrefixLen, Inet::IPPrefix & outPrefix)
 {
     const Inet::IPAddress address = nl::Inet::IPAddress::MakeULA(inGlobalID, subnetId, 0);
 
@@ -698,7 +704,8 @@ static void MakePrefix(const uint64_t &inGlobalID, const uint16_t subnetId, cons
  *  @return Forwards the result from Platform::HostAddress().
  *
  */
-static PlatformResult ThreadHostAddressAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult ThreadHostAddressAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                              const uint64_t & inInterfaceId)
 {
     const Inet::IPAddress address = nl::Inet::IPAddress::MakeULA(inGlobalId, nl::Weave::kWeaveSubnetId_ThreadMesh, inInterfaceId);
 
@@ -716,7 +723,8 @@ static PlatformResult ThreadHostAddressAction(ActionType inAction, bool inActiva
  *  @return Forwards the result from Platform::ThreadAddress().
  *
  */
-static PlatformResult ThreadThreadAddressAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult ThreadThreadAddressAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                                const uint64_t & inInterfaceId)
 {
     const Inet::IPAddress address = nl::Inet::IPAddress::MakeULA(inGlobalId, nl::Weave::kWeaveSubnetId_ThreadMesh, inInterfaceId);
 
@@ -734,7 +742,8 @@ static PlatformResult ThreadThreadAddressAction(ActionType inAction, bool inActi
  *  @return Forwards the result from Platform::HostRoute().
  *
  */
-static PlatformResult ThreadHostRouteAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult ThreadHostRouteAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                            const uint64_t & inInterfaceId)
 {
     Inet::IPPrefix prefix;
     PlatformResult result = kPlatformResultSuccess;
@@ -753,10 +762,10 @@ static PlatformResult ThreadHostRouteAction(ActionType inAction, bool inActivate
 
 #else
 
-    prefix = prefix.Zero;
+    prefix        = prefix.Zero;
     prefix.Length = 0;
 
-    result = Platform::AddRemoveHostRoute(kInterfaceTypeThread, prefix, kRoutePriorityLow, inActivate);
+    result                       = Platform::AddRemoveHostRoute(kInterfaceTypeThread, prefix, kRoutePriorityLow, inActivate);
 #endif // WARM_CONFIG_SUPPORT_WIFI || WARM_CONFIG_SUPPORT_CELLULAR
 
     return result;
@@ -792,7 +801,8 @@ void ThreadInterfaceStateChange(InterfaceState inState)
  *  @return Forwards the result from Platform::HostAddress().
  *
  */
-static PlatformResult LegacyHostAddressAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult LegacyHostAddressAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                              const uint64_t & inInterfaceId)
 {
     const Inet::IPAddress address = nl::Inet::IPAddress::MakeULA(inGlobalId, nl::Weave::kWeaveSubnetId_ThreadAlarm, inInterfaceId);
 
@@ -810,7 +820,8 @@ static PlatformResult LegacyHostAddressAction(ActionType inAction, bool inActiva
  *  @return Forwards the result from Platform::ThreadAddress().
  *
  */
-static PlatformResult LegacyThreadAddressAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult LegacyThreadAddressAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                                const uint64_t & inInterfaceId)
 {
     const Inet::IPAddress address = nl::Inet::IPAddress::MakeULA(inGlobalId, nl::Weave::kWeaveSubnetId_ThreadAlarm, inInterfaceId);
 
@@ -832,7 +843,8 @@ static PlatformResult LegacyThreadAddressAction(ActionType inAction, bool inActi
  *  @return Forwards the result from Platform::ThreadAdvertisement().
  *
  */
-static PlatformResult ThreadAdvertisementAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult ThreadAdvertisementAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                                const uint64_t & inInterfaceId)
 {
     Inet::IPPrefix prefix;
 
@@ -871,7 +883,8 @@ void ThreadRoutingStateChange(InterfaceState inState)
  *  @return Forwards the result from Platform::HostAddress().
  *
  */
-static PlatformResult TunnelHostAddressAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult TunnelHostAddressAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                              const uint64_t & inInterfaceId)
 {
     // Prioritize using the Thread address over the WiFi address in order to improve connectivity
     // in cases where the WiFi network is unavailable and another path exists to the fabic.  See
@@ -898,7 +911,8 @@ static PlatformResult TunnelHostAddressAction(ActionType inAction, bool inActiva
  *  @return Forwards the result from Platform::HostRoute().
  *
  */
-static PlatformResult TunnelHostRouteAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult TunnelHostRouteAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                            const uint64_t & inInterfaceId)
 {
     Inet::IPPrefix prefix;
 
@@ -939,7 +953,8 @@ static void TunnelInterfaceStateChange(InterfaceState inState)
  *  @param[in] inAvailability    The availability status to be used later in configuring the tunnel.
  *
  */
-static void TunnelServiceStateChange(InterfaceState inState, nl::Weave::Profiles::WeaveTunnel::Platform::TunnelAvailabilityMode inAvailability)
+static void TunnelServiceStateChange(InterfaceState inState,
+                                     nl::Weave::Profiles::WeaveTunnel::Platform::TunnelAvailabilityMode inAvailability)
 {
     if (inState)
     {
@@ -970,11 +985,10 @@ static void TunnelPriorityStateChange(nl::Weave::Profiles::WeaveTunnel::Platform
 
     Platform::CriticalSectionEnter();
     {
-        if (GetSystemFeatureState(kSystemFeatureTypeTunnelState) &&
-            sState.mTunnelRequestedAvailability != inAvailability)
+        if (GetSystemFeatureState(kSystemFeatureTypeTunnelState) && sState.mTunnelRequestedAvailability != inAvailability)
         {
             sState.mTunnelRequestedAvailability = inAvailability;
-            notify = true;
+            notify                              = true;
         }
     }
     Platform::CriticalSectionExit();
@@ -1001,7 +1015,7 @@ namespace Platform {
  */
 void TunnelInterfaceUp(InterfaceId tunIf)
 {
-    (void)tunIf;
+    (void) tunIf;
 
     Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateUp);
 }
@@ -1014,7 +1028,7 @@ void TunnelInterfaceUp(InterfaceId tunIf)
  */
 void TunnelInterfaceDown(InterfaceId tunIf)
 {
-    (void)tunIf;
+    (void) tunIf;
 
     Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateDown);
 }
@@ -1028,7 +1042,7 @@ void TunnelInterfaceDown(InterfaceId tunIf)
  */
 void ServiceTunnelEstablished(InterfaceId tunIf, TunnelAvailabilityMode tunMode)
 {
-    (void)tunIf;
+    (void) tunIf;
 
     Warm::TunnelServiceStateChange(Warm::kInterfaceStateUp, tunMode);
 }
@@ -1041,7 +1055,7 @@ void ServiceTunnelEstablished(InterfaceId tunIf, TunnelAvailabilityMode tunMode)
  */
 void ServiceTunnelDisconnected(InterfaceId tunIf)
 {
-    (void)tunIf;
+    (void) tunIf;
 
     Warm::TunnelServiceStateChange(Warm::kInterfaceStateDown, Warm::sState.mTunnelRequestedAvailability);
 }
@@ -1055,7 +1069,7 @@ void ServiceTunnelDisconnected(InterfaceId tunIf)
  */
 void ServiceTunnelModeChange(InterfaceId tunIf, TunnelAvailabilityMode tunMode)
 {
-    (void)tunIf;
+    (void) tunIf;
 
     Warm::TunnelPriorityStateChange(tunMode);
 }
@@ -1125,14 +1139,10 @@ static RoutePriority MapAvailabilityToPriority(Profiles::WeaveTunnel::Platform::
 
     switch (inAvailability)
     {
-        case Profiles::WeaveTunnel::Platform::kMode_Primary:
-        case Profiles::WeaveTunnel::Platform::kMode_PrimaryAndBackup:
-            retval = kRoutePriorityMedium;
-            break;
+    case Profiles::WeaveTunnel::Platform::kMode_Primary:
+    case Profiles::WeaveTunnel::Platform::kMode_PrimaryAndBackup: retval = kRoutePriorityMedium; break;
 
-        case Profiles::WeaveTunnel::Platform::kMode_BackupOnly:
-            retval = kRoutePriorityLow;
-            break;
+    case Profiles::WeaveTunnel::Platform::kMode_BackupOnly: retval = kRoutePriorityLow; break;
     }
 
     return retval;
@@ -1149,14 +1159,15 @@ static RoutePriority MapAvailabilityToPriority(Profiles::WeaveTunnel::Platform::
  *  @return Forwards the result from Platform::ThreadRoute().
  *
  */
-static PlatformResult ThreadThreadRouteAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult ThreadThreadRouteAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                              const uint64_t & inInterfaceId)
 {
     Inet::IPPrefix prefix;
 
     MakePrefix(inGlobalId, 0, kGlobalULAPrefixLength, prefix);
 
-    return Platform::AddRemoveThreadRoute(kInterfaceTypeThread, prefix, MapAvailabilityToPriority(sState.mTunnelRequestedAvailability), inActivate);
-
+    return Platform::AddRemoveThreadRoute(kInterfaceTypeThread, prefix,
+                                          MapAvailabilityToPriority(sState.mTunnelRequestedAvailability), inActivate);
 }
 
 /**
@@ -1170,14 +1181,15 @@ static PlatformResult ThreadThreadRouteAction(ActionType inAction, bool inActiva
  *  @return Forwards the result from Platform::ThreadRoutePriority().
  *
  */
-static PlatformResult ThreadRoutePriorityAction(ActionType inAction, bool inActivate, const uint64_t &inGlobalId, const uint64_t &inInterfaceId)
+static PlatformResult ThreadRoutePriorityAction(ActionType inAction, bool inActivate, const uint64_t & inGlobalId,
+                                                const uint64_t & inInterfaceId)
 {
     Inet::IPPrefix prefix;
 
     MakePrefix(inGlobalId, 0, kGlobalULAPrefixLength, prefix);
 
-    return Platform::SetThreadRoutePriority(kInterfaceTypeThread, prefix, MapAvailabilityToPriority(sState.mTunnelRequestedAvailability));
-
+    return Platform::SetThreadRoutePriority(kInterfaceTypeThread, prefix,
+                                            MapAvailabilityToPriority(sState.mTunnelRequestedAvailability));
 }
 
 #endif // WARM_CONFIG_SUPPORT_BORDER_ROUTING
@@ -1197,108 +1209,54 @@ static PlatformResult ThreadRoutePriorityAction(ActionType inAction, bool inActi
  */
 static void TakeActions(void)
 {
-    static const ActionEntry kActions[] =
-    {
+    static const ActionEntry kActions[] = {
     // TODO: Order of operations could be important here.  If it is found that a specific order of operations must be
     // maintained, then this structure will need to be re-factored.  The current implementation has a single fixed order
     // which may not be adequate.
 #if WARM_CONFIG_SUPPORT_WIFI
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeWiFiConnected ),
-            kActionTypeWiFiHostAddress,
-            WiFiHostAddressAction
-        },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeWiFiConnected), kActionTypeWiFiHostAddress, WiFiHostAddressAction },
 #endif // WARM_CONFIG_SUPPORT_WIFI
 #if WARM_CONFIG_SUPPORT_THREAD
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected ),
-            kActionTypeThreadHostAddress,
-            ThreadHostAddressAction
-        },
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected ),
-            kActionTypeThreadThreadAddress,
-            ThreadThreadAddressAction
-        },
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected ),
-            kActionTypeHostRouteThread,
-            ThreadHostRouteAction
-        },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected), kActionTypeThreadHostAddress,
+          ThreadHostAddressAction },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected), kActionTypeThreadThreadAddress,
+          ThreadThreadAddressAction },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected), kActionTypeHostRouteThread,
+          ThreadHostRouteAction },
 #endif // WARM_CONFIG_SUPPORT_THREAD
 #if WARM_CONFIG_SUPPORT_LEGACY6LOWPAN_NETWORK
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected ),
-            kActionTypeLegacy6LoWPANHostAddress,
-            LegacyHostAddressAction
-        },
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected ),
-            kActionTypeLegacy6LoWPANThreadAddress,
-            LegacyThreadAddressAction
-        },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected), kActionTypeLegacy6LoWPANHostAddress,
+          LegacyHostAddressAction },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected), kActionTypeLegacy6LoWPANThreadAddress,
+          LegacyThreadAddressAction },
 #endif // WARM_CONFIG_SUPPORT_LEGACY6LOWPAN_NETWORK
 #if WARM_CONFIG_SUPPORT_THREAD_ROUTING
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected |
-              kSystemFeatureTypeThreadRoutingEnabled ),
-            kActionTypeThreadAdvertisement,
-            ThreadAdvertisementAction
-        },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected | kSystemFeatureTypeThreadRoutingEnabled),
+          kActionTypeThreadAdvertisement, ThreadAdvertisementAction },
 #endif // WARM_CONFIG_SUPPORT_THREAD_ROUTING
 #if WARM_CONFIG_SUPPORT_BORDER_ROUTING
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected |
-              kSystemFeatureTypeThreadRoutingEnabled |
-              kSystemFeatureTypeTunnelInterfaceEnabled |
-              kSystemFeatureTypeBorderRoutingEnabled |
-              kSystemFeatureTypeTunnelState ),
-            kActionTypeThreadRoute,
-            ThreadThreadRouteAction
-        },
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeThreadConnected |
-              kSystemFeatureTypeThreadRoutingEnabled |
-              kSystemFeatureTypeTunnelInterfaceEnabled |
-              kSystemFeatureTypeBorderRoutingEnabled |
-              kSystemFeatureTypeTunnelState ),
-            kActionTypeThreadRoutePriority,
-            ThreadRoutePriorityAction
-        },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected | kSystemFeatureTypeThreadRoutingEnabled |
+           kSystemFeatureTypeTunnelInterfaceEnabled | kSystemFeatureTypeBorderRoutingEnabled | kSystemFeatureTypeTunnelState),
+          kActionTypeThreadRoute, ThreadThreadRouteAction },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeThreadConnected | kSystemFeatureTypeThreadRoutingEnabled |
+           kSystemFeatureTypeTunnelInterfaceEnabled | kSystemFeatureTypeBorderRoutingEnabled | kSystemFeatureTypeTunnelState),
+          kActionTypeThreadRoutePriority, ThreadRoutePriorityAction },
 #endif // WARM_CONFIG_SUPPORT_BORDER_ROUTING
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeTunnelInterfaceEnabled ),
-            kActionTypeTunnelHostAddress,
-            TunnelHostAddressAction
-        },
-        {
-            ( kSystemFeatureTypeIsFabricMember |
-              kSystemFeatureTypeTunnelInterfaceEnabled |
-              kSystemFeatureTypeTunnelState),
-            kActionTypeTunnelHostRoute,
-            TunnelHostRouteAction
-        },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeTunnelInterfaceEnabled), kActionTypeTunnelHostAddress,
+          TunnelHostAddressAction },
+        { (kSystemFeatureTypeIsFabricMember | kSystemFeatureTypeTunnelInterfaceEnabled | kSystemFeatureTypeTunnelState),
+          kActionTypeTunnelHostRoute, TunnelHostRouteAction },
 #endif // WARM_CONFIG_SUPPORT_WEAVE_TUNNEL
     };
 
     bool activate = false;
     PlatformResult platformResult;
-    const uint64_t globalId = nl::Weave::WeaveFabricIdToIPv6GlobalId(sState.mFabricId);
+    const uint64_t globalId    = nl::Weave::WeaveFabricIdToIPv6GlobalId(sState.mFabricId);
     const uint64_t interfaceId = nl::Weave::WeaveNodeIdToIPv6InterfaceId(sState.mFabricState->LocalNodeId);
     ActionType theActionType;
 
-    for (size_t i = 0 ; i < sizeof(kActions) / sizeof(kActions[0]) ; i++)
+    for (size_t i = 0; i < sizeof(kActions) / sizeof(kActions[0]); i++)
     {
         theActionType = kActions[i].mActionType;
 

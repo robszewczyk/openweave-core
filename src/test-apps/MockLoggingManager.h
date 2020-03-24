@@ -33,21 +33,23 @@ class EventGenerator
 public:
     virtual void Generate(void) = 0;
     virtual size_t GetNumStates(void);
+
 protected:
     EventGenerator(size_t aNumStates, size_t aInitialState);
     size_t mNumStates;
     size_t mState;
 };
 
-void InitializeEventLogging(WeaveExchangeManager *inMgr);
+void InitializeEventLogging(WeaveExchangeManager * inMgr);
 
 class MockEventGenerator
 {
 public:
     static MockEventGenerator * GetInstance(void);
-    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *aExchangeMgr, EventGenerator *aEventGenerator, int aDelayBetweenEvents, bool aWraparound) = 0;
-    virtual void SetEventGeneratorStop() = 0;
-    virtual bool IsEventGeneratorStopped() = 0;
+    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, EventGenerator * aEventGenerator,
+                             int aDelayBetweenEvents, bool aWraparound) = 0;
+    virtual void SetEventGeneratorStop()                                = 0;
+    virtual bool IsEventGeneratorStopped()                              = 0;
 };
 
 EventGenerator * GetTestDebugGenerator(void);

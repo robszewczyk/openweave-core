@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Nest {
 namespace Test {
@@ -40,15 +38,17 @@ namespace TestHTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0xfe08U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0xfe08U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -187,12 +187,12 @@ struct StructDictionary
     uint32_t dc;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct StructDictionary_array {
+struct StructDictionary_array
+{
     uint32_t num;
-    StructDictionary *buf;
+    StructDictionary * buf;
 };
 
 struct StructH
@@ -201,12 +201,12 @@ struct StructH
     uint32_t sc;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct StructH_array {
+struct StructH_array
+{
     uint32_t num;
-    StructH *buf;
+    StructH * buf;
 };
 
 } // namespace TestHTrait

@@ -40,8 +40,7 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
  *  @brief A Weave provided implementation of the TraitCatalogBase interface for a collection of trait data instances
  *         that all refer to the same resource. It provides an array-backed, bounded storage for these instances.
  */
-template <typename T>
-class SingleResourceTraitCatalog : public TraitCatalogBase<T>
+template <typename T> class SingleResourceTraitCatalog : public TraitCatalogBase<T>
 {
 public:
     struct CatalogItem
@@ -88,9 +87,9 @@ public: // TraitCatalogBase
     WEAVE_ERROR DispatchEvent(uint16_t aEvent, void * aContext) const;
     void Iterate(IteratorCallback aCallback, void * aContext);
 
-#if    WEAVE_CONFIG_ENABLE_WDM_UPDATE
-    WEAVE_ERROR GetInstanceId(TraitDataHandle aHandle, uint64_t &aInstanceId) const;
-    WEAVE_ERROR GetResourceId(TraitDataHandle aHandle, ResourceIdentifier &aResourceId) const;
+#if WEAVE_CONFIG_ENABLE_WDM_UPDATE
+    WEAVE_ERROR GetInstanceId(TraitDataHandle aHandle, uint64_t & aInstanceId) const;
+    WEAVE_ERROR GetResourceId(TraitDataHandle aHandle, ResourceIdentifier & aResourceId) const;
 #endif // WEAVE_CONFIG_ENABLE_WDM_UPDATE
 
 private:
@@ -103,8 +102,8 @@ private:
 typedef SingleResourceTraitCatalog<TraitDataSink> SingleResourceSinkTraitCatalog;
 typedef SingleResourceTraitCatalog<TraitDataSource> SingleResourceSourceTraitCatalog;
 
-}; // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-}; // namespace Profiles
-}; // namespace Weave
-}; // namespace nl
+};     // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+};     // namespace Profiles
+};     // namespace Weave
+};     // namespace nl
 #endif // _WEAVE_DATA_MANAGEMENT_SINGLE_RESOURCE_TRAIT_CATALOG_CURRENT_H

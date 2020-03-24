@@ -74,20 +74,20 @@ class NetworkProvisioningServer;
  */
 enum
 {
-    kStatusCode_UnknownNetwork                  = 1,            /**< A provisioned network with the specified network ID was not found. */
-    kStatusCode_TooManyNetworks                 = 2,            /**< The maximum number of provisioned networks has been reached. */
-    kStatusCode_InvalidNetworkConfiguration     = 3,            /**< The specified network configuration is invalid. */
-    kStatusCode_UnsupportedNetworkType          = 4,            /**< The specified network type is unknown or unsupported. */
-    kStatusCode_UnsupportedWiFiMode             = 5,            /**< The specified WiFi mode is unsupported. */
-    kStatusCode_UnsupportedWiFiRole             = 6,            /**< The specified WiFi role is unsupported. */
-    kStatusCode_UnsupportedWiFiSecurityType     = 7,            /**< The specified WiFi security type is unsupported. */
-    kStatusCode_InvalidState                    = 8,            /**< The network provisioning operation could not be performed in the current state. */
-    kStatusCode_TestNetworkFailed               = 9,            /**< The connectivity test of the specified network failed. */
-                                                                // XXX Placeholder for more detailed errors to come
-    kStatusCode_NetworkConnectFailed            = 10,           /**< An attempt to connect to the specified network failed. */
-    kStatusCode_NoRouterAvailable               = 11,           /**< An appropriate network router was not found. */
-    kStatusCode_UnsupportedRegulatoryDomain     = 12,           /**< The specified wireless regulatory domain is unsupported. */
-    kStatusCode_UnsupportedOperatingLocation    = 13,           /**< The specified wireless operating location is unsupported. */
+    kStatusCode_UnknownNetwork              = 1, /**< A provisioned network with the specified network ID was not found. */
+    kStatusCode_TooManyNetworks             = 2, /**< The maximum number of provisioned networks has been reached. */
+    kStatusCode_InvalidNetworkConfiguration = 3, /**< The specified network configuration is invalid. */
+    kStatusCode_UnsupportedNetworkType      = 4, /**< The specified network type is unknown or unsupported. */
+    kStatusCode_UnsupportedWiFiMode         = 5, /**< The specified WiFi mode is unsupported. */
+    kStatusCode_UnsupportedWiFiRole         = 6, /**< The specified WiFi role is unsupported. */
+    kStatusCode_UnsupportedWiFiSecurityType = 7, /**< The specified WiFi security type is unsupported. */
+    kStatusCode_InvalidState      = 8, /**< The network provisioning operation could not be performed in the current state. */
+    kStatusCode_TestNetworkFailed = 9, /**< The connectivity test of the specified network failed. */
+                                       // XXX Placeholder for more detailed errors to come
+    kStatusCode_NetworkConnectFailed         = 10, /**< An attempt to connect to the specified network failed. */
+    kStatusCode_NoRouterAvailable            = 11, /**< An appropriate network router was not found. */
+    kStatusCode_UnsupportedRegulatoryDomain  = 12, /**< The specified wireless regulatory domain is unsupported. */
+    kStatusCode_UnsupportedOperatingLocation = 13, /**< The specified wireless operating location is unsupported. */
 };
 
 /**
@@ -95,23 +95,23 @@ enum
  */
 enum
 {
-    kMsgType_ScanNetworks                           = 1,
-    kMsgType_NetworkScanComplete                    = 2,
-    kMsgType_AddNetwork                             = 3,
-    kMsgType_AddNetworkComplete                     = 4,
-    kMsgType_UpdateNetwork                          = 5,
-    kMsgType_RemoveNetwork                          = 6,
-    kMsgType_EnableNetwork                          = 7,
-    kMsgType_DisableNetwork                         = 8,
-    kMsgType_TestConnectivity                       = 9,
-    kMsgType_SetRendezvousMode                      = 10,
-    kMsgType_GetNetworks                            = 11,
-    kMsgType_GetNetworksComplete                    = 12,
-    kMsgType_GetLastResult                          = 13,
-    kMsgType_AddNetworkV2                           = 14,
-    kMsgType_SetWirelessRegulatoryConfig            = 15,
-    kMsgType_GetWirelessRegulatoryConfig            = 16,
-    kMgrType_GetWirelessRegulatoryConfigComplete    = 17,
+    kMsgType_ScanNetworks                        = 1,
+    kMsgType_NetworkScanComplete                 = 2,
+    kMsgType_AddNetwork                          = 3,
+    kMsgType_AddNetworkComplete                  = 4,
+    kMsgType_UpdateNetwork                       = 5,
+    kMsgType_RemoveNetwork                       = 6,
+    kMsgType_EnableNetwork                       = 7,
+    kMsgType_DisableNetwork                      = 8,
+    kMsgType_TestConnectivity                    = 9,
+    kMsgType_SetRendezvousMode                   = 10,
+    kMsgType_GetNetworks                         = 11,
+    kMsgType_GetNetworksComplete                 = 12,
+    kMsgType_GetLastResult                       = 13,
+    kMsgType_AddNetworkV2                        = 14,
+    kMsgType_SetWirelessRegulatoryConfig         = 15,
+    kMsgType_GetWirelessRegulatoryConfig         = 16,
+    kMgrType_GetWirelessRegulatoryConfigComplete = 17,
 };
 
 /**
@@ -121,37 +121,39 @@ enum
 enum
 {
     // Top-level Data Elements (profile-specific).
-    kTag_Networks                               = 1,	/**< [ array ] An array of NetworkConfiguration structures. */
-    kTag_EnabledNetworks                        = 2,	/**< [ array ] An array of NetworkIds identifying the networks currently enabled on the device. */
-    kTag_RendezvousMode                         = 3,	/**< [ uint ] A bit field indicating the currently active rendezvous mode. */
+    kTag_Networks        = 1, /**< [ array ] An array of NetworkConfiguration structures. */
+    kTag_EnabledNetworks = 2, /**< [ array ] An array of NetworkIds identifying the networks currently enabled on the device. */
+    kTag_RendezvousMode  = 3, /**< [ uint ] A bit field indicating the currently active rendezvous mode. */
 
     // General-Purpose Data Elements (profile-specific).
-    kTag_NetworkInformation                     = 32,	/**< [ struct ] A structure containing information for a network. */
-    kTag_NetworkId                              = 33,	/**< [ uint, 32-bit max ] An integer uniquely identifying a provisioned network. */
-    kTag_NetworkType                            = 34,	/**< [ uint, 8-bit max ] An unsigned integer value identifying the type of a network. */
-    kTag_WirelessSignalStrength                 = 35,   /**< [ int, 16-bit max ] An signed integer value giving the signal strength of a wireless network in dBm. */
+    kTag_NetworkInformation = 32, /**< [ struct ] A structure containing information for a network. */
+    kTag_NetworkId          = 33, /**< [ uint, 32-bit max ] An integer uniquely identifying a provisioned network. */
+    kTag_NetworkType        = 34, /**< [ uint, 8-bit max ] An unsigned integer value identifying the type of a network. */
+    kTag_WirelessSignalStrength =
+        35, /**< [ int, 16-bit max ] An signed integer value giving the signal strength of a wireless network in dBm. */
 
     // WiFi Data Elements (Profile-specific).
-    kTag_WiFiSSID                               = 64,	/**< [ UTF-8 string ] A string containing a WiFi SSID. */
-    kTag_WiFiMode                               = 65,	/**< [ uint, 8-bit max ] An integer identify the mode of operation of the WiFi network. */
-    kTag_WiFiRole                               = 66,	/**< [ uint, 8-bit max ] An integer identify the role the device plays in the WiFi network. */
-    kTag_WiFiSecurityType                       = 67,	/**< [ uint, 8-bit max ] An integer value identifying the type of security used by a WiFi network. */
-    kTag_WiFiPreSharedKey                       = 68,	/**< [ byte string ] A byte string containing the WiFi password/pre-shared key. */
+    kTag_WiFiSSID = 64, /**< [ UTF-8 string ] A string containing a WiFi SSID. */
+    kTag_WiFiMode = 65, /**< [ uint, 8-bit max ] An integer identify the mode of operation of the WiFi network. */
+    kTag_WiFiRole = 66, /**< [ uint, 8-bit max ] An integer identify the role the device plays in the WiFi network. */
+    kTag_WiFiSecurityType =
+        67, /**< [ uint, 8-bit max ] An integer value identifying the type of security used by a WiFi network. */
+    kTag_WiFiPreSharedKey = 68, /**< [ byte string ] A byte string containing the WiFi password/pre-shared key. */
 
     // Thread Data Elements (profile-specific).
-    kTag_ThreadExtendedPANId                    = 80,   /**< [ byte string ] The Thread extended PAN ID. */
-    kTag_ThreadNetworkName                      = 81,   /**< [ UTF-8 string ] A UTF-8 string containing the name of the Thread network. */
-    kTag_ThreadNetworkKey                       = 82,   /**< [ bytes string ] The Thread master network key. */
-    kTag_ThreadMeshPrefix                       = 83,   /**< [ bytes string, exactly 8 bytes ] Thread mesh IPv6 /64 prefix (optional). */
-    kTag_ThreadChannel                          = 84,   /**< [ uint, 8-bit max ] Thread channel number (optional). */
-    kTag_ThreadPANId                            = 85,   /**< [ uint, 16-bit max ] Thread PAN ID (optional). */
-    kTag_ThreadPSKc                             = 86,   /**< [ uint, 16-bit max ] Thread PSKc (optional). */
+    kTag_ThreadExtendedPANId = 80, /**< [ byte string ] The Thread extended PAN ID. */
+    kTag_ThreadNetworkName   = 81, /**< [ UTF-8 string ] A UTF-8 string containing the name of the Thread network. */
+    kTag_ThreadNetworkKey    = 82, /**< [ bytes string ] The Thread master network key. */
+    kTag_ThreadMeshPrefix    = 83, /**< [ bytes string, exactly 8 bytes ] Thread mesh IPv6 /64 prefix (optional). */
+    kTag_ThreadChannel       = 84, /**< [ uint, 8-bit max ] Thread channel number (optional). */
+    kTag_ThreadPANId         = 85, /**< [ uint, 16-bit max ] Thread PAN ID (optional). */
+    kTag_ThreadPSKc          = 86, /**< [ uint, 16-bit max ] Thread PSKc (optional). */
 
     // Wireless Regulatory Config Tags (context-specific)
-    kTag_WirelessRegConfig_RegulatoryDomain     = 1,    /**< [ UTF-8 string, len 2 ] Wireless regulatory domain. */
-    kTag_WirelessRegConfig_OperatingLocation    = 2,    /**< [ uint enum, 8-bit max ] Operating location relevant to wireless regulatory rules. */
-    kTag_WirelessRegConfig_SupportedRegulatoryDomains
-                                                = 3,    /**< [ array of string len 2 ] List of support regulatory domains. */
+    kTag_WirelessRegConfig_RegulatoryDomain = 1, /**< [ UTF-8 string, len 2 ] Wireless regulatory domain. */
+    kTag_WirelessRegConfig_OperatingLocation =
+        2, /**< [ uint enum, 8-bit max ] Operating location relevant to wireless regulatory rules. */
+    kTag_WirelessRegConfig_SupportedRegulatoryDomains = 3, /**< [ array of string len 2 ] List of support regulatory domains. */
 };
 
 /**
@@ -159,10 +161,10 @@ enum
  */
 enum NetworkType
 {
-    kNetworkType_NotSpecified                   = -1,
+    kNetworkType_NotSpecified = -1,
 
-    kNetworkType_WiFi                           = 1,
-    kNetworkType_Thread                         = 2
+    kNetworkType_WiFi   = 1,
+    kNetworkType_Thread = 2
 };
 
 /**
@@ -170,20 +172,20 @@ enum NetworkType
  */
 enum WiFiSecurityType
 {
-    kWiFiSecurityType_NotSpecified              = -1,
+    kWiFiSecurityType_NotSpecified = -1,
 
-    kWiFiSecurityType_None                      = 1,
-    kWiFiSecurityType_WEP                       = 2,
-    kWiFiSecurityType_WPAPersonal               = 3,
-    kWiFiSecurityType_WPA2Personal              = 4,
-    kWiFiSecurityType_WPA2MixedPersonal         = 5,
-    kWiFiSecurityType_WPAEnterprise             = 6,
-    kWiFiSecurityType_WPA2Enterprise            = 7,
-    kWiFiSecurityType_WPA2MixedEnterprise       = 8,
-    kWiFiSecurityType_WPA3Personal              = 9,
-    kWiFiSecurityType_WPA3MixedPersonal         = 10,
-    kWiFiSecurityType_WPA3Enterprise            = 11,
-    kWiFiSecurityType_WPA3MixedEnterprise       = 12,
+    kWiFiSecurityType_None                = 1,
+    kWiFiSecurityType_WEP                 = 2,
+    kWiFiSecurityType_WPAPersonal         = 3,
+    kWiFiSecurityType_WPA2Personal        = 4,
+    kWiFiSecurityType_WPA2MixedPersonal   = 5,
+    kWiFiSecurityType_WPAEnterprise       = 6,
+    kWiFiSecurityType_WPA2Enterprise      = 7,
+    kWiFiSecurityType_WPA2MixedEnterprise = 8,
+    kWiFiSecurityType_WPA3Personal        = 9,
+    kWiFiSecurityType_WPA3MixedPersonal   = 10,
+    kWiFiSecurityType_WPA3Enterprise      = 11,
+    kWiFiSecurityType_WPA3MixedEnterprise = 12,
 };
 
 /**
@@ -191,10 +193,10 @@ enum WiFiSecurityType
  */
 enum WiFiMode
 {
-    kWiFiMode_NotSpecified                      = -1,
+    kWiFiMode_NotSpecified = -1,
 
-    kWiFiMode_AdHoc                             = 1,
-    kWiFiMode_Managed                           = 2
+    kWiFiMode_AdHoc   = 1,
+    kWiFiMode_Managed = 2
 };
 
 /**
@@ -202,10 +204,10 @@ enum WiFiMode
  */
 enum WiFiRole
 {
-    kWiFiRole_NotSpecified                      = -1,
+    kWiFiRole_NotSpecified = -1,
 
-    kWiFiRole_Station                           = 1,
-    kWiFiRole_AccessPoint                       = 2
+    kWiFiRole_Station     = 1,
+    kWiFiRole_AccessPoint = 2
 };
 
 /**
@@ -213,7 +215,7 @@ enum WiFiRole
  */
 enum
 {
-    kThreadPANId_NotSpecified                   = UINT32_MAX
+    kThreadPANId_NotSpecified = UINT32_MAX
 };
 
 /**
@@ -221,7 +223,7 @@ enum
  */
 enum
 {
-    kThreadChannel_NotSpecified                 = UINT8_MAX
+    kThreadChannel_NotSpecified = UINT8_MAX
 };
 
 /**
@@ -238,7 +240,7 @@ enum RendezvousModeFlags
  */
 enum GetNetworkFlags
 {
-    kGetNetwork_IncludeCredentials              = 0x01
+    kGetNetwork_IncludeCredentials = 0x01
 };
 
 /**
@@ -247,9 +249,9 @@ enum GetNetworkFlags
 class NetworkProvisioningDelegate : public WeaveServerDelegateBase
 {
 public:
-    NetworkProvisioningServer * Server;         /**< [READ ONLY] The server object to which this delegate is attached. */
+    NetworkProvisioningServer * Server; /**< [READ ONLY] The server object to which this delegate is attached. */
 
-   /**
+    /**
      * Perform a network scan.
      *
      * @param[in] networkType   The technology (for example, WiFi or Thread) to scan.  @sa #NetworkType for valid types.
@@ -263,24 +265,26 @@ public:
     /**
      * Add a particular network.
      *
-     * @param[in] networkInfoTLV    The network configuration encoded in TLV.  @sa @ref NetworkProvisioningDataElementTags for valid types.
+     * @param[in] networkInfoTLV    The network configuration encoded in TLV.  @sa @ref NetworkProvisioningDataElementTags for valid
+     * types.
      *
      * @retval #WEAVE_NO_ERROR  On success.
      * @retval other            Other Weave or platform-specific error codes indicating that an error
      *                          occurred preventing the device from adding the network.
      */
-    virtual WEAVE_ERROR HandleAddNetwork(PacketBuffer *networkInfoTLV) = 0;
+    virtual WEAVE_ERROR HandleAddNetwork(PacketBuffer * networkInfoTLV) = 0;
 
     /**
      * Update a network's configuration.
      *
-     * @param[in] networkInfoTLV    The network configuration encoded in TLV.  @sa @ref NetworkProvisioningDataElementTags for valid types.
+     * @param[in] networkInfoTLV    The network configuration encoded in TLV.  @sa @ref NetworkProvisioningDataElementTags for valid
+     * types.
      *
      * @retval #WEAVE_NO_ERROR  On success.
      * @retval other            Other Weave or platform-specific error codes indicating that an error
      *                          occurred preventing the device from updating the network.
      */
-    virtual WEAVE_ERROR HandleUpdateNetwork(PacketBuffer *networkInfoTLV) = 0;
+    virtual WEAVE_ERROR HandleUpdateNetwork(PacketBuffer * networkInfoTLV) = 0;
 
     /**
      * Remove a configured network.
@@ -382,8 +386,8 @@ public:
      *                          is expected to represent the final assessment of access control policy for the
      *                          message.
      */
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 
     /**
      * Called to determine if the device is currently paired to an account.
@@ -395,27 +399,28 @@ public:
 /**
  * Server class for implementing the Network Provisioning profile.
  */
-// TODO: Additional documentation detail required (i.e. expected class usage, number in the system, instantiation requirements, lifetime).
+// TODO: Additional documentation detail required (i.e. expected class usage, number in the system, instantiation requirements,
+// lifetime).
 class NL_DLL_EXPORT NetworkProvisioningServer : public WeaveServerBase
 {
 public:
     NetworkProvisioningServer(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    void SetDelegate(NetworkProvisioningDelegate *delegate);
+    void SetDelegate(NetworkProvisioningDelegate * delegate);
 
-    virtual WEAVE_ERROR SendNetworkScanComplete(uint8_t resultCount, PacketBuffer *scanResultsTLV);
+    virtual WEAVE_ERROR SendNetworkScanComplete(uint8_t resultCount, PacketBuffer * scanResultsTLV);
     virtual WEAVE_ERROR SendAddNetworkComplete(uint32_t networkId);
-    virtual WEAVE_ERROR SendGetNetworksComplete(uint8_t resultCount, PacketBuffer *resultsTLV);
-    virtual WEAVE_ERROR SendGetWirelessRegulatoryConfigComplete(PacketBuffer *resultsTLV);
+    virtual WEAVE_ERROR SendGetNetworksComplete(uint8_t resultCount, PacketBuffer * resultsTLV);
+    virtual WEAVE_ERROR SendGetWirelessRegulatoryConfigComplete(PacketBuffer * resultsTLV);
     virtual WEAVE_ERROR SendSuccessResponse(void);
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
 protected:
-    ExchangeContext *mCurOp;
-    NetworkProvisioningDelegate *mDelegate;
+    ExchangeContext * mCurOp;
+    NetworkProvisioningDelegate * mDelegate;
     struct
     {
         uint32_t StatusProfileId;
@@ -425,11 +430,11 @@ protected:
     uint8_t mCurOpType;
 
 private:
-    static void HandleRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-            uint8_t msgType, PacketBuffer *payload);
-    WEAVE_ERROR SendCompleteWithNetworkList(uint8_t msgType, int8_t resultCount, PacketBuffer *resultTLV);
+    static void HandleRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                              uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    WEAVE_ERROR SendCompleteWithNetworkList(uint8_t msgType, int8_t resultCount, PacketBuffer * resultTLV);
 
-    NetworkProvisioningServer(const NetworkProvisioningServer&);   // not defined
+    NetworkProvisioningServer(const NetworkProvisioningServer &); // not defined
 };
 
 } // namespace NetworkProvisioning

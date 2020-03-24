@@ -55,9 +55,7 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0xf0, 0x1
-};
+uint8_t IsNullableHandleBitfield[] = { 0xf0, 0x1 };
 
 //
 // Supported version
@@ -68,69 +66,56 @@ const ConstSchemaVersionRange traitVersion = { .mMinVersion = 1, .mMaxVersion = 
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        &traitVersion,
+    &traitVersion,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor LivenessChangeEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(LivenessChangeEvent, status), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1
-    },
+const nl::FieldDescriptor LivenessChangeEventFieldDescriptors[] = {
+    { NULL, offsetof(LivenessChangeEvent, status), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1 },
 
-    {
-        NULL, offsetof(LivenessChangeEvent, heartbeatStatus), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2
-    },
+    { NULL, offsetof(LivenessChangeEvent, heartbeatStatus), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2 },
 
-    {
-        NULL, offsetof(LivenessChangeEvent, notifyRequestUnresponsiveness), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1), 3
-    },
+    { NULL, offsetof(LivenessChangeEvent, notifyRequestUnresponsiveness), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1),
+      3 },
 
-    {
-        NULL, offsetof(LivenessChangeEvent, commandRequestUnresponsiveness), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1), 4
-    },
+    { NULL, offsetof(LivenessChangeEvent, commandRequestUnresponsiveness), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 1),
+      4 },
 
-    {
-        NULL, offsetof(LivenessChangeEvent, prevStatus), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 5
-    },
+    { NULL, offsetof(LivenessChangeEvent, prevStatus), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 5 },
 
 };
 
-const nl::SchemaFieldDescriptor LivenessChangeEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(LivenessChangeEventFieldDescriptors)/sizeof(LivenessChangeEventFieldDescriptors[0]),
-    .mFields = LivenessChangeEventFieldDescriptors,
-    .mSize = sizeof(LivenessChangeEvent)
+const nl::SchemaFieldDescriptor LivenessChangeEvent::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(LivenessChangeEventFieldDescriptors) / sizeof(LivenessChangeEventFieldDescriptors[0]),
+    .mFields                     = LivenessChangeEventFieldDescriptors,
+    .mSize                       = sizeof(LivenessChangeEvent)
 };
-const nl::Weave::Profiles::DataManagement::EventSchema LivenessChangeEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::ProductionCritical,
-    .mDataSchemaVersion = 2,
+const nl::Weave::Profiles::DataManagement::EventSchema LivenessChangeEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::ProductionCritical,
+    .mDataSchemaVersion              = 2,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

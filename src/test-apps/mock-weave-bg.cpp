@@ -56,15 +56,15 @@ using namespace ::nl::Weave::Profiles::DeviceDescription;
 
 #define DEFAULT_TFE_NODE_ID 0xC0FFEE
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
 static WeaveTunnelAgent gTunAgent;
 
-static bool gUseCASE = false;
-static bool gTunnelLogging = false;
-static IPAddress gDestAddr = IPAddress::Any;
-static uint16_t gDestPort = 0;
+static bool gUseCASE        = false;
+static bool gTunnelLogging  = false;
+static IPAddress gDestAddr  = IPAddress::Any;
+static uint16_t gDestPort   = 0;
 static uint64_t gDestNodeId = DEFAULT_TFE_NODE_ID;
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
@@ -73,40 +73,37 @@ static ServiceDirectory::WeaveServiceManager gServiceMgr;
 static uint8_t gServiceDirCache[500];
 #endif
 
-static uint8_t gRole = kClientRole_BorderGateway; //Default Value
+static uint8_t gRole = kClientRole_BorderGateway; // Default Value
 
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-static const char *gPrimaryIntf;
-static const char *gBackupIntf;
+static const char * gPrimaryIntf;
+static const char * gBackupIntf;
 static bool gEnableBackup = false;
 #endif
 
 enum
 {
-    kToolOpt_ConnectTo          = 1000,
+    kToolOpt_ConnectTo = 1000,
     kToolOpt_UseServiceDir,
 };
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "role",                kArgumentRequired, 'r' },
+static OptionDef gToolOptionDefs[] = { { "role", kArgumentRequired, 'r' },
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-    { "primary-intf",        kArgumentRequired, 'P' },
-    { "backup-intf",         kArgumentRequired, 'B' },
-    { "enable-backup",       kNoArgument,       'e' },
+                                       { "primary-intf", kArgumentRequired, 'P' },
+                                       { "backup-intf", kArgumentRequired, 'B' },
+                                       { "enable-backup", kNoArgument, 'e' },
 #endif
-    { "connect-to",          kArgumentRequired, kToolOpt_ConnectTo },
+                                       { "connect-to", kArgumentRequired, kToolOpt_ConnectTo },
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { "service-dir",         kNoArgument,       kToolOpt_UseServiceDir },
+                                       { "service-dir", kNoArgument, kToolOpt_UseServiceDir },
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { "case",                kNoArgument,       'C' },
+                                       { "case", kNoArgument, 'C' },
 #if WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
-    { "tunnel-log",          kNoArgument,       'l' },
+                                       { "tunnel-log", kNoArgument, 'l' },
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
-    { }
-};
+                                       { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -r, --role <num>\n"
     "       Role for local client node, i.e., 1) Border Gateway or 2) Mobile Device.\n"
     "\n"
@@ -139,67 +136,43 @@ static const char *const gToolOptionHelp =
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
     "";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
+
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " <options>\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
+
+static OptionSet * gToolOptionSets[] = {
+    &gToolOptions,       &gNetworkOptions,          &gWeaveNodeOptions,      &gWRMPOptions, &gCASEOptions,
+    &gDeviceDescOptions, &gServiceDirClientOptions, &gFaultInjectionOptions, &gHelpOptions, NULL
 };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " <options>\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
-
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWRMPOptions,
-    &gCASEOptions,
-    &gDeviceDescOptions,
-    &gServiceDirClientOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
-
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
     case 'r':
-        if (!ParseInt(arg, gRole) ||
-            (gRole != kClientRole_BorderGateway && gRole != kClientRole_MobileDevice))
+        if (!ParseInt(arg, gRole) || (gRole != kClientRole_BorderGateway && gRole != kClientRole_MobileDevice))
         {
-            PrintArgError("%s: Invalid value specified for device role: %s. Possible values: (1)BorderGateway and (2)MobileDevice\n", progName, arg);
+            PrintArgError(
+                "%s: Invalid value specified for device role: %s. Possible values: (1)BorderGateway and (2)MobileDevice\n",
+                progName, arg);
             return false;
         }
         break;
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-    case 'P':
-        gPrimaryIntf = arg;
-        break;
-    case 'B':
-        gBackupIntf = arg;
-        break;
-    case 'e':
-        gEnableBackup = true;
-        break;
+    case 'P': gPrimaryIntf = arg; break;
+    case 'B': gBackupIntf = arg; break;
+    case 'e': gEnableBackup = true; break;
 #endif // WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
     case kToolOpt_ConnectTo:
     {
-        const char *host;
+        const char * host;
         uint16_t hostLen;
         if (ParseHostAndPort(arg, strlen(arg), host, hostLen, gDestPort) != WEAVE_NO_ERROR)
         {
             PrintArgError("%s: Invalid value specified for --connect-to: %s\n", progName, arg);
             return false;
         }
-        char *hostCopy = strndup(host, hostLen);
+        char * hostCopy  = strndup(host, hostLen);
         bool isValidAddr = IPAddress::FromString(hostCopy, gDestAddr);
         free(hostCopy);
         if (!isValidAddr)
@@ -210,25 +183,17 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         break;
     }
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    case kToolOpt_UseServiceDir:
-        gUseServiceDirForTunnel = true;
-        break;
+    case kToolOpt_UseServiceDir: gUseServiceDirForTunnel = true; break;
 #endif
-    case 'C':
-        gUseCASE = true;
-        break;
-    case 'l':
-        gTunnelLogging = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'C': gUseCASE = true; break;
+    case 'l': gTunnelLogging = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -249,7 +214,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
 }
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
-void TunneledPacketTransitHandler(const PacketBuffer &pkt, TunnelPktDirection pktDir, TunnelType tunnelType, bool &toDrop)
+void TunneledPacketTransitHandler(const PacketBuffer & pkt, TunnelPktDirection pktDir, TunnelType tunnelType, bool & toDrop)
 {
     DecodedIPPacket decodedPkt;
     char InOrOut[9];
@@ -260,7 +225,9 @@ void TunneledPacketTransitHandler(const PacketBuffer &pkt, TunnelPktDirection pk
     decodedPkt.PacketHeaderDecode(pkt.Start() + TUN_HDR_SIZE_IN_BYTES, pkt.DataLength() - TUN_HDR_SIZE_IN_BYTES);
 
     strncpy(InOrOut, (pktDir == kDir_Outbound) ? "Outbound" : "Inbound", sizeof(InOrOut));
-    strncpy(tunTypeStr, (tunnelType == kType_TunnelPrimary) ? "primary" : (tunnelType == kType_TunnelBackup) ? "backup" : "shortcut", sizeof(tunTypeStr));
+    strncpy(tunTypeStr,
+            (tunnelType == kType_TunnelPrimary) ? "primary" : (tunnelType == kType_TunnelBackup) ? "backup" : "shortcut",
+            sizeof(tunTypeStr));
 
     WeaveLogDetail(WeaveTunnel, "Tun: %s over %s", InOrOut, tunTypeStr);
 
@@ -269,20 +236,18 @@ void TunneledPacketTransitHandler(const PacketBuffer &pkt, TunnelPktDirection pk
     LogPacket(decodedPkt, true);
 
     // Inject a packet drop by the application.
-    WEAVE_FAULT_INJECT(FaultInjection::kFault_TunnelPacketDropByPolicy,
-                       toDrop = true);
-
+    WEAVE_FAULT_INJECT(FaultInjection::kFault_TunnelPacketDropByPolicy, toDrop = true);
 }
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_TRANSIT_CALLBACK
 
 #endif // WEAVE_CONFIG_ENABLE_TUNNELING
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_CONFIG_ENABLE_TUNNELING
     WEAVE_ERROR err;
     gWeaveNodeOptions.LocalNodeId = DEFAULT_BG_NODE_ID;
-    WeaveAuthMode authMode = kWeaveAuthMode_Unauthenticated;
+    WeaveAuthMode authMode        = kWeaveAuthMode_Unauthenticated;
 
     nl::Weave::System::Stats::Snapshot before;
     nl::Weave::System::Stats::Snapshot after;
@@ -295,7 +260,8 @@ int main(int argc, char *argv[])
     SetSignalHandler(DoneOnHandleSIGUSR1);
 
     // Configure some alternate defaults for the device descriptor values.
-    gDeviceDescOptions.BaseDeviceDesc.ProductId = nl::Weave::Profiles::Vendor::Nestlabs::DeviceDescription::kNestWeaveProduct_Topaz2;
+    gDeviceDescOptions.BaseDeviceDesc.ProductId =
+        nl::Weave::Profiles::Vendor::Nestlabs::DeviceDescription::kNestWeaveProduct_Topaz2;
     strcpy(gDeviceDescOptions.BaseDeviceDesc.SerialNumber, "mock-weave-bg");
     strcpy(gDeviceDescOptions.BaseDeviceDesc.SoftwareVersion, "mock-weave-bg/1.0");
     gDeviceDescOptions.BaseDeviceDesc.DeviceFeatures = WeaveDeviceDescriptor::kFeature_LinePowered;
@@ -343,12 +309,11 @@ int main(int argc, char *argv[])
     printf("  Subnet Number: %X\n", FabricState.DefaultSubnet);
     printf("  Node Id: %" PRIX64 "\n", FabricState.LocalNodeId);
 
-	nl::Weave::Stats::UpdateSnapshot(before);
+    nl::Weave::Stats::UpdateSnapshot(before);
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    err = gServiceMgr.init(&ExchangeMgr, gServiceDirCache, sizeof(gServiceDirCache),
-            GetRootServiceDirectoryEntry, kWeaveAuthMode_CASE_ServiceEndPoint,
-            NULL, NULL, OverrideServiceConnectArguments);
+    err = gServiceMgr.init(&ExchangeMgr, gServiceDirCache, sizeof(gServiceDirCache), GetRootServiceDirectoryEntry,
+                           kWeaveAuthMode_CASE_ServiceEndPoint, NULL, NULL, OverrideServiceConnectArguments);
     FAIL_ERROR(err, "gServiceMgr.Init failed");
 #endif
 
@@ -358,16 +323,12 @@ int main(int argc, char *argv[])
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
     if (gUseServiceDirForTunnel)
     {
-        err = gTunAgent.Init(&Inet, &ExchangeMgr, gDestNodeId,
-                            authMode, &gServiceMgr,
-                            "weave-tun0", gRole);
+        err = gTunAgent.Init(&Inet, &ExchangeMgr, gDestNodeId, authMode, &gServiceMgr, "weave-tun0", gRole);
     }
     else
 #endif
     {
-        err = gTunAgent.Init(&Inet, &ExchangeMgr, gDestNodeId, gDestAddr,
-                            authMode,
-                            "weave-tun0", gRole);
+        err = gTunAgent.Init(&Inet, &ExchangeMgr, gDestNodeId, gDestAddr, authMode, "weave-tun0", gRole);
     }
 
     FAIL_ERROR(err, "TunnelAgent.Init failed");
@@ -411,14 +372,14 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
-
     }
 
-    if (gSigusr1Received) {
+    if (gSigusr1Received)
+    {
         printf("SIGUSR1 received: proceed to exit gracefully\n");
     }
 

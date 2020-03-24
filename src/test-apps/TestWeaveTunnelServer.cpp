@@ -53,7 +53,7 @@
 
 #define TOOL_NAME "TestWeaveTunnelServer"
 
-#define TUNNEL_SERVICE_INTF "service-tun0"
+#define TUNNEL_SERVICE_INTF    "service-tun0"
 #define TUNNEL_SERVICE_LL_ADDR "fe80::2"
 
 using nl::StatusReportStr;
@@ -61,59 +61,46 @@ using namespace nl::Weave::Encoding;
 using namespace nl::Weave::Profiles::WeaveTunnel;
 using namespace nl::Weave::TLV;
 
-static WEAVE_ERROR SendTunnelReconnectMessage(ExchangeContext *ec, const uint16_t port = WEAVE_PORT,
-                                              const char *tunnelHostname = NULL, uint16_t hostLen = 0);
-static WEAVE_ERROR VerifyAndParseStatusResponse(uint32_t profileId,
-                                                uint8_t msgType, PacketBuffer *payload,
-                                                StatusReport &outReport);
-static WEAVE_ERROR SendStatusReportResponse(ExchangeContext *ec, uint32_t profileId, uint32_t tunStatusCode,
+static WEAVE_ERROR SendTunnelReconnectMessage(ExchangeContext * ec, const uint16_t port = WEAVE_PORT,
+                                              const char * tunnelHostname = NULL, uint16_t hostLen = 0);
+static WEAVE_ERROR VerifyAndParseStatusResponse(uint32_t profileId, uint8_t msgType, PacketBuffer * payload,
+                                                StatusReport & outReport);
+static WEAVE_ERROR SendStatusReportResponse(ExchangeContext * ec, uint32_t profileId, uint32_t tunStatusCode,
                                             bool isRoutingRestricted = false);
 
 WeaveTunnelServer gTunServer;
 WeaveEchoServer gEchoServer;
 
-uint32_t gCurrTestNum = 0;
-bool gReconnectSent = false;
+uint32_t gCurrTestNum        = 0;
+bool gReconnectSent          = false;
 bool gStatusReportSuppressed = false;
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gCASEOptions,
-    &gDeviceDescOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gNetworkOptions,        &gWeaveNodeOptions, &gCASEOptions, &gDeviceDescOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,      NULL };
 
 void ServiceTunnelInterfaceUp(InterfaceId tunIf)
 {
-   WEAVE_ERROR err = WEAVE_NO_ERROR;
-   uint64_t globalId = 0;
-   IPAddress tunULAAddr;
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint64_t globalId = 0;
+    IPAddress tunULAAddr;
 
-   /*
-    * Add the service interface ULA address to the tunnel interface to ensure the selection of
-    * a Weave ULA as the source address for packets originating on the local node but destined
-    * for addresses reachable via the tunnel. Without this, the default IPv6 source address
-    * selection algorithm might choose an inappropriate source address, making it impossible
-    * for the destination node to respond.
-    */
-   globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
-   tunULAAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_Service,
-                                   nl::Weave::WeaveNodeIdToIPv6InterfaceId(ExchangeMgr.FabricState->LocalNodeId));
-   err = InterfaceAddAddress(tunIf, tunULAAddr, NL_INET_IPV6_MAX_PREFIX_LEN);
-   if (err != WEAVE_NO_ERROR)
-   {
-       WeaveLogError(WeaveTunnel, "Failed to service address to Weave tunnel interface\n");
-   }
+    /*
+     * Add the service interface ULA address to the tunnel interface to ensure the selection of
+     * a Weave ULA as the source address for packets originating on the local node but destined
+     * for addresses reachable via the tunnel. Without this, the default IPv6 source address
+     * selection algorithm might choose an inappropriate source address, making it impossible
+     * for the destination node to respond.
+     */
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr.FabricState->FabricId);
+    tunULAAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_Service,
+                                    nl::Weave::WeaveNodeIdToIPv6InterfaceId(ExchangeMgr.FabricState->LocalNodeId));
+    err        = InterfaceAddAddress(tunIf, tunULAAddr, NL_INET_IPV6_MAX_PREFIX_LEN);
+    if (err != WEAVE_NO_ERROR)
+    {
+        WeaveLogError(WeaveTunnel, "Failed to service address to Weave tunnel interface\n");
+    }
 }
 
 VirtualRouteTable::VirtualRouteTable(void)
@@ -122,7 +109,7 @@ VirtualRouteTable::VirtualRouteTable(void)
 }
 
 /* Lookup Route */
-int VirtualRouteTable::FindRouteEntry (IPPrefix &ip6Route)
+int VirtualRouteTable::FindRouteEntry(IPPrefix & ip6Route)
 {
     int index = -1;
     for (int i = 0; i < SERVICE_ROUTE_TABLE_SIZE; i++)
@@ -138,32 +125,30 @@ int VirtualRouteTable::FindRouteEntry (IPPrefix &ip6Route)
 }
 
 /* Purge entries matching the connection */
-void VirtualRouteTable::RemoveRouteEntryByConnection (WeaveConnection *con)
+void VirtualRouteTable::RemoveRouteEntryByConnection(WeaveConnection * con)
 {
     for (int i = 0; i < SERVICE_ROUTE_TABLE_SIZE; i++)
     {
         if (con == RouteTable[i].outgoingCon[0])
         {
             RouteTable[i].outgoingCon[0] = NULL;
-            RouteTable[i].priority[0] = 0;
+            RouteTable[i].priority[0]    = 0;
         }
         else if (con == RouteTable[i].outgoingCon[1])
         {
             RouteTable[i].outgoingCon[1] = NULL;
-            RouteTable[i].priority[1] = 0;
+            RouteTable[i].priority[1]    = 0;
         }
 
-        if (RouteTable[i].outgoingCon[0] == NULL &&
-            RouteTable[i].outgoingCon[1] == NULL)
+        if (RouteTable[i].outgoingCon[0] == NULL && RouteTable[i].outgoingCon[1] == NULL)
         {
             memset(&RouteTable[i].prefix, 0, sizeof(IPPrefix));
         }
     }
-
 }
 
 /* Create a new route entry */
-int VirtualRouteTable::NewRouteEntry (void)
+int VirtualRouteTable::NewRouteEntry(void)
 {
     int retIndex = -1;
 
@@ -180,7 +165,7 @@ int VirtualRouteTable::NewRouteEntry (void)
 }
 
 /* Free a route entry at a particular index */
-WEAVE_ERROR VirtualRouteTable::FreeRouteEntry (int index)
+WEAVE_ERROR VirtualRouteTable::FreeRouteEntry(int index)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -203,10 +188,10 @@ exit:
 WeaveTunnelServer::WeaveTunnelServer()
 {
     ExchangeMgr = NULL;
-    memset((void *)vRouteDB.RouteTable, 0, sizeof(vRouteDB.RouteTable));
+    memset((void *) vRouteDB.RouteTable, 0, sizeof(vRouteDB.RouteTable));
 }
 
-void WeaveTunnelServer::HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void WeaveTunnelServer::HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -216,17 +201,15 @@ void WeaveTunnelServer::HandleConnectionReceived(WeaveMessageLayer *msgLayer, We
     WeaveLogDetail(WeaveTunnel, "Connection received from node (%s)\n", ipAddrStr);
 
     con->OnConnectionClosed = HandleConnectionClosed;
-    con->AppState = &gTunServer;
+    con->AppState           = &gTunServer;
 
     err = gTunServer.mConTable.AddConnection(con);
 
-    if (err != WEAVE_NO_ERROR ||
-        gCurrTestNum == kTestNum_TestTunnelConnectionDownReconnect ||
+    if (err != WEAVE_NO_ERROR || gCurrTestNum == kTestNum_TestTunnelConnectionDownReconnect ||
         gCurrTestNum == kTestNum_TestTunnelResetReconnectBackoffImmediately ||
         gCurrTestNum == kTestNum_TestTunnelResetReconnectBackoffRandomized)
     {
-        WeaveLogDetail(WeaveTunnel, "Closing Connection for test %d with node (%s)\n",
-                       gCurrTestNum, ipAddrStr);
+        WeaveLogDetail(WeaveTunnel, "Closing Connection for test %d with node (%s)\n", gCurrTestNum, ipAddrStr);
 
         gTunServer.mConTable.RemoveConnection(con);
         con->Close();
@@ -234,49 +217,36 @@ void WeaveTunnelServer::HandleConnectionReceived(WeaveMessageLayer *msgLayer, We
     }
 }
 
-WEAVE_ERROR WeaveTunnelServer::Init (WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR WeaveTunnelServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     ExchangeMgr = exchangeMgr;
 
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_Start,
-                                                   HandleTunnelControlMsg,
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_Start, HandleTunnelControlMsg, this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_End, HandleTunnelControlMsg, this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_RequestTunnelConnDrop, HandleTunnelControlMsg, this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelOpenV2, HandleTunnelControlMsg, this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelRouteUpdate, HandleTunnelControlMsg,
                                                    this);
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_End,
-                                                   HandleTunnelControlMsg,
-                                                   this);
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_RequestTunnelConnDrop,
-                                                   HandleTunnelControlMsg,
-                                                   this);
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelOpenV2, HandleTunnelControlMsg,
-                                                   this);
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelRouteUpdate, HandleTunnelControlMsg,
-                                                   this);
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelClose, HandleTunnelControlMsg,
-                                                   this);
-    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelLiveness, HandleTunnelControlMsg,
-                                                   this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelClose, HandleTunnelControlMsg, this);
+    ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelLiveness, HandleTunnelControlMsg, this);
 
-    //Create Tunnel EndPoint and populate into member mTunEP
+    // Create Tunnel EndPoint and populate into member mTunEP
     err = CreateServiceTunEndPoint();
     SuccessOrExit(err);
 
     err = SetupServiceTunEndPoint();
     SuccessOrExit(err);
 
-    //Register Recv function for TunEndPoint
+    // Register Recv function for TunEndPoint
     mTunEP->OnPacketReceived = RecvdFromServiceTunEndPoint;
 
-    //Set the TunEndPoint appState to the WeaveTunnelServer.
+    // Set the TunEndPoint appState to the WeaveTunnelServer.
     mTunEP->AppState = this;
 
     // Initialize the gEchoServer application.
@@ -287,32 +257,28 @@ WEAVE_ERROR WeaveTunnelServer::Init (WeaveExchangeManager *exchangeMgr)
     gEchoServer.OnEchoRequestReceived = HandleEchoRequestReceived;
 
     SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
-    SecurityMgr.OnSessionError = HandleSecureSessionError;
+    SecurityMgr.OnSessionError       = HandleSecureSessionError;
 
 exit:
 
     return err;
 }
 
-WEAVE_ERROR WeaveTunnelServer::Shutdown (void)
+WEAVE_ERROR WeaveTunnelServer::Shutdown(void)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     CloseConnections();
 
-    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelOpenV2);
-    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelRouteUpdate);
-    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelClose);
-    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                   kMsgType_TunnelLiveness);
+    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelOpenV2);
+    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelRouteUpdate);
+    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelClose);
+    ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelLiveness);
     ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_Start);
     ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_End);
     ExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_TunnelTest_RequestTunnelConnDrop);
 
-    //Tear down the tun endpoint setup
+    // Tear down the tun endpoint setup
     err = TeardownServiceTunEndPoint();
 
     gEchoServer.Shutdown();
@@ -320,27 +286,26 @@ WEAVE_ERROR WeaveTunnelServer::Shutdown (void)
     return err;
 }
 
-WEAVE_ERROR WeaveTunnelServer::ProcessIPv6Message (WeaveConnection *con, const WeaveMessageInfo *recvMsgInfo,
-                                                   PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelServer::ProcessIPv6Message(WeaveConnection * con, const WeaveMessageInfo * recvMsgInfo, PacketBuffer * msg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     char ipAddrStr[64];
-    uint8_t *p = NULL;
-    struct ip6_hdr *ip6hdr = NULL;
+    uint8_t * p             = NULL;
+    struct ip6_hdr * ip6hdr = NULL;
     WeaveTunnelHeader tunHeader;
     WeaveMessageInfo msgInfo;
     IPAddress destIP6Addr;
     IPAddress srcIP6Addr;
-    IPPrefix  ip6Prefix;
-    WeaveConnection *outgoingWeaveCon = NULL;
-    int8_t index = -1;
+    IPPrefix ip6Prefix;
+    WeaveConnection * outgoingWeaveCon = NULL;
+    int8_t index                       = -1;
 
     VerifyOrExit(con != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    p = msg->Start();
-    ip6hdr = (struct ip6_hdr *)p;
+    p      = msg->Start();
+    ip6hdr = (struct ip6_hdr *) p;
 
-    //Check destination address
+    // Check destination address
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     ip6_addr_t tempAddr6;
     ip6_addr_copy(tempAddr6, ip6hdr->dest);
@@ -353,38 +318,37 @@ WEAVE_ERROR WeaveTunnelServer::ProcessIPv6Message (WeaveConnection *con, const W
     srcIP6Addr  = IPAddress::FromIPv6(ip6hdr->ip6_src);
 #endif
 
-    //Prepare the msg header
+    // Prepare the msg header
     msgInfo.Clear();
-    //Set message version to V2
+    // Set message version to V2
     msgInfo.MessageVersion = kWeaveMessageVersion_V2;
 
-    //Set the tunneling flag
+    // Set the tunneling flag
     msgInfo.Flags |= kWeaveMessageFlag_TunneledData;
 
     if (destIP6Addr.Subnet() == kWeaveSubnetId_Service)
     {
-        //Send down Tunnel Endpoint to the network stack to be
-        //routed back up InetLayer to Weave.
+        // Send down Tunnel Endpoint to the network stack to be
+        // routed back up InetLayer to Weave.
         mTunEP->Send(msg);
         msg = NULL;
     }
     else
     {
-        //Perform some sanity checks on the destination address
+        // Perform some sanity checks on the destination address
         if (!destIP6Addr.IsIPv6ULA())
         {
             ExitNow();
         }
 
-        if (destIP6Addr.Subnet() != kWeaveSubnetId_MobileDevice &&
-            destIP6Addr.Subnet() != kWeaveSubnetId_PrimaryWiFi &&
+        if (destIP6Addr.Subnet() != kWeaveSubnetId_MobileDevice && destIP6Addr.Subnet() != kWeaveSubnetId_PrimaryWiFi &&
             destIP6Addr.Subnet() != kWeaveSubnetId_ThreadMesh)
         {
             WeaveLogError(WeaveTunnel, "Received packet's destination unknown. Discarding\n");
             ExitNow();
         }
 
-        //Prepare IPPrefix for look-up in virtual route table
+        // Prepare IPPrefix for look-up in virtual route table
         if (destIP6Addr.Subnet() == kWeaveSubnetId_MobileDevice)
         {
             ip6Prefix.IPAddr = destIP6Addr;
@@ -396,13 +360,13 @@ WEAVE_ERROR WeaveTunnelServer::ProcessIPv6Message (WeaveConnection *con, const W
             ip6Prefix.Length = NL_INET_IPV6_DEFAULT_PREFIX_LEN;
         }
 
-        //Lookup virtual table
+        // Lookup virtual table
         index = vRouteDB.FindRouteEntry(ip6Prefix);
         if (index >= 0)
         {
-            //Ensure Reserved size
+            // Ensure Reserved size
             msg->EnsureReservedSize(sizeof(tunHeader) + sizeof(msgInfo));
-            //Set version to V1
+            // Set version to V1
             tunHeader.Version = kWeaveTunnelVersion_V1;
 
             err = WeaveTunnelHeader::EncodeTunnelHeader(&tunHeader, msg);
@@ -412,15 +376,15 @@ WEAVE_ERROR WeaveTunnelServer::ProcessIPv6Message (WeaveConnection *con, const W
 
             outgoingWeaveCon->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
             WeaveLogDetail(WeaveTunnel, "Received Message:Forwarding to node %" PRIX64 " (%s): len=%u.\n",
-                    outgoingWeaveCon->PeerNodeId, ipAddrStr, msg->DataLength());
+                           outgoingWeaveCon->PeerNodeId, ipAddrStr, msg->DataLength());
 
-            //Encrypt message
+            // Encrypt message
             msgInfo.EncryptionType = vRouteDB.RouteTable[index].encryptionType;
-            msgInfo.KeyId = vRouteDB.RouteTable[index].keyId;
+            msgInfo.KeyId          = vRouteDB.RouteTable[index].keyId;
 
-            //Set the source and destination node ids;
+            // Set the source and destination node ids;
             msgInfo.SourceNodeId = recvMsgInfo->DestNodeId;
-            msgInfo.DestNodeId = outgoingWeaveCon->PeerNodeId;
+            msgInfo.DestNodeId   = outgoingWeaveCon->PeerNodeId;
 
             err = outgoingWeaveCon->SendTunneledMessage(&msgInfo, msg);
             msg = NULL;
@@ -428,7 +392,7 @@ WEAVE_ERROR WeaveTunnelServer::ProcessIPv6Message (WeaveConnection *con, const W
         else
         {
             WeaveLogDetail(WeaveTunnel, "No route to host\n");
-            //Send No Route to host;
+            // Send No Route to host;
         }
     }
 
@@ -439,19 +403,17 @@ exit:
     }
 
     return err;
-
 }
 
 /* Send a tunnel control status report message */
-WEAVE_ERROR SendStatusReportResponse(ExchangeContext *ec, uint32_t profileId, uint32_t tunStatusCode,
-                                     bool isRoutingRestricted)
+WEAVE_ERROR SendStatusReportResponse(ExchangeContext * ec, uint32_t profileId, uint32_t tunStatusCode, bool isRoutingRestricted)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport tunStatusReport;
-    PacketBuffer *msgBuf = NULL;
+    PacketBuffer * msgBuf = NULL;
     nl::Weave::TLV::TLVWriter tunWriter;
     nl::Weave::TLV::TLVType containerType;
-    uint8_t *p = NULL;
+    uint8_t * p = NULL;
 
     msgBuf = PacketBuffer::New();
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -484,7 +446,7 @@ WEAVE_ERROR SendStatusReportResponse(ExchangeContext *ec, uint32_t profileId, ui
         SuccessOrExit(err);
     }
 
-    err = ec->SendMessage(kWeaveProfile_Common, Common::kMsgType_StatusReport, msgBuf, 0);
+    err    = ec->SendMessage(kWeaveProfile_Common, Common::kMsgType_StatusReport, msgBuf, 0);
     msgBuf = NULL;
 
 exit:
@@ -494,29 +456,28 @@ exit:
     return err;
 }
 
-void WeaveTunnelServer::StoreGatewayInfoForPriority(WeaveConnection *conn, uint8_t rtIndex, uint8_t priorityIndex,
-                                                    uint8_t priorityVal, const IPPacketInfo *pktInfo,
-                                                    const WeaveMessageInfo *msgInfo)
+void WeaveTunnelServer::StoreGatewayInfoForPriority(WeaveConnection * conn, uint8_t rtIndex, uint8_t priorityIndex,
+                                                    uint8_t priorityVal, const IPPacketInfo * pktInfo,
+                                                    const WeaveMessageInfo * msgInfo)
 {
 
-    vRouteDB.RouteTable[rtIndex].priority[priorityIndex] = priorityVal;
+    vRouteDB.RouteTable[rtIndex].priority[priorityIndex]    = priorityVal;
     vRouteDB.RouteTable[rtIndex].outgoingCon[priorityIndex] = conn;
-    //Set the Tunnel Data handler
+    // Set the Tunnel Data handler
     vRouteDB.RouteTable[rtIndex].outgoingCon[priorityIndex]->OnTunneledMessageReceived = HandleTunnelDataMessage;
-    //Set the PeerNodeId in connection object
+    // Set the PeerNodeId in connection object
     vRouteDB.RouteTable[rtIndex].outgoingCon[priorityIndex]->PeerNodeId = msgInfo->SourceNodeId;
-    vRouteDB.RouteTable[rtIndex].outgoingCon[priorityIndex]->PeerAddr = pktInfo->SrcAddress;
+    vRouteDB.RouteTable[rtIndex].outgoingCon[priorityIndex]->PeerAddr   = pktInfo->SrcAddress;
 }
 
 /**
  * Send a reconnect message to the border gateway.
  */
-WEAVE_ERROR SendTunnelReconnectMessage(ExchangeContext *ec, const uint16_t port,
-                                       const char *tunnelHostname, uint16_t hostLen)
+WEAVE_ERROR SendTunnelReconnectMessage(ExchangeContext * ec, const uint16_t port, const char * tunnelHostname, uint16_t hostLen)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *msg = NULL;
-    uint8_t *p = NULL;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    PacketBuffer * msg = NULL;
+    uint8_t * p        = NULL;
 
     msg = PacketBuffer::New();
     VerifyOrExit(msg, err = WEAVE_ERROR_NO_MEMORY);
@@ -543,9 +504,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR VerifyAndParseStatusResponse(uint32_t profileId,
-                                         uint8_t msgType, PacketBuffer *payload,
-                                         StatusReport &outReport)
+WEAVE_ERROR VerifyAndParseStatusResponse(uint32_t profileId, uint8_t msgType, PacketBuffer * payload, StatusReport & outReport)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -564,13 +523,13 @@ exit:
     return err;
 }
 
-void WeaveTunnelServer::HandleReconnectResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelServer::HandleReconnectResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
-    WeaveTunnelServer *tunServer = static_cast<WeaveTunnelServer *>(ec->AppState);
+    WeaveTunnelServer * tunServer = static_cast<WeaveTunnelServer *>(ec->AppState);
 
     err = VerifyAndParseStatusResponse(profileId, msgType, payload, report);
     SuccessOrExit(err);
@@ -580,7 +539,6 @@ void WeaveTunnelServer::HandleReconnectResponse(ExchangeContext *ec, const IPPac
         // Received a Success Status report
 
         WeaveLogDetail(WeaveTunnel, "Received Status Success for TunnelReconnect message for test %d\n", gCurrTestNum);
-
     }
     else
     {
@@ -607,16 +565,15 @@ exit:
 
     if (err != WEAVE_NO_ERROR)
     {
-        WeaveLogError(WeaveTunnel, "HandleReconnectResponse FAILED with error: %ld\n", (long)err);
+        WeaveLogError(WeaveTunnel, "HandleReconnectResponse FAILED with error: %ld\n", (long) err);
     }
 
     return;
-
 }
 
 void WeaveTunnelServer::CloseConnections(void)
 {
-    WeaveConnection *con;
+    WeaveConnection * con;
 
     printf("closing connections\n");
 
@@ -632,23 +589,22 @@ void WeaveTunnelServer::CloseConnections(void)
     }
 }
 
-void WeaveTunnelServer::HandleTunnelControlMsg (ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelServer::HandleTunnelControlMsg(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveTunnelServer *tunServer = static_cast<WeaveTunnelServer *>(ec->AppState);
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    WeaveTunnelServer * tunServer = static_cast<WeaveTunnelServer *>(ec->AppState);
     WeaveTunnelRoute tunRoute;
     uint64_t msgFabricId = 0;
-    uint8_t *p = NULL;
-    int index = -1;
+    uint8_t * p          = NULL;
+    int index            = -1;
     Role role;
     TunnelType tunnelType;
     SrcInterfaceType srcIntfType;
     LivenessStrategy livenessStrategy;
     uint16_t livenessTimeout;
-    bool isRoutingRestricted = false;
-    ExchangeContext *exchangeCtx = NULL;
+    bool isRoutingRestricted      = false;
+    ExchangeContext * exchangeCtx = NULL;
 
     VerifyOrExit(tunServer, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -675,169 +631,164 @@ void WeaveTunnelServer::HandleTunnelControlMsg (ExchangeContext *ec, const IPPac
         {
             // Drop the connection
             gTunServer.CloseConnections();
-
         }
     }
     else if (profileId == kWeaveProfile_Tunneling)
     {
         switch (msgType)
         {
-            case kMsgType_TunnelOpenV2:
-                //Decode the Tunnel Device Role, TunnelType and Source Interface
-                p = payload->Start();
+        case kMsgType_TunnelOpenV2:
+            // Decode the Tunnel Device Role, TunnelType and Source Interface
+            p = payload->Start();
 
-                role = static_cast<Role>(nl::Weave::Encoding::Read8(p));
+            role = static_cast<Role>(nl::Weave::Encoding::Read8(p));
 
-                tunnelType = static_cast<TunnelType>(nl::Weave::Encoding::Read8(p));
+            tunnelType = static_cast<TunnelType>(nl::Weave::Encoding::Read8(p));
 
-                srcIntfType = static_cast<SrcInterfaceType>(nl::Weave::Encoding::Read8(p));
+            srcIntfType = static_cast<SrcInterfaceType>(nl::Weave::Encoding::Read8(p));
 
-                livenessStrategy = static_cast<LivenessStrategy>(nl::Weave::Encoding::Read8(p));
+            livenessStrategy = static_cast<LivenessStrategy>(nl::Weave::Encoding::Read8(p));
 
-                livenessTimeout = nl::Weave::Encoding::LittleEndian::Read16(p);
+            livenessTimeout = nl::Weave::Encoding::LittleEndian::Read16(p);
 
-                WeaveLogDetail(WeaveTunnel, "Received TunOpenV2 message for Tunnel role :%u, type :%u, \
+            WeaveLogDetail(WeaveTunnel,
+                           "Received TunOpenV2 message for Tunnel role :%u, type :%u, \
                                              srcIntf :%u, livenessStrategy :%u, livenessTimeout:%u\n",
-                                            role, tunnelType, srcIntfType, livenessStrategy, livenessTimeout);
+                           role, tunnelType, srcIntfType, livenessStrategy, livenessTimeout);
 
-                // Set the buffer start pointer for the subsequent parsing of the fabric and routes
-                payload->SetStart(p);
+            // Set the buffer start pointer for the subsequent parsing of the fabric and routes
+            payload->SetStart(p);
 
-                //Save the routes and connection object
-                memset(&tunRoute, 0, sizeof(tunRoute));
-                err = WeaveTunnelRoute::DecodeFabricTunnelRoutes(&msgFabricId, &tunRoute, payload);
-                SuccessOrExit(err);
+            // Save the routes and connection object
+            memset(&tunRoute, 0, sizeof(tunRoute));
+            err = WeaveTunnelRoute::DecodeFabricTunnelRoutes(&msgFabricId, &tunRoute, payload);
+            SuccessOrExit(err);
 
-                if (gCurrTestNum == kTestNum_TestTunnelNoStatusReportReconnect ||
-                    gCurrTestNum == kTestNum_TestTunnelNoStatusReportResetReconnectBackoff)
+            if (gCurrTestNum == kTestNum_TestTunnelNoStatusReportReconnect ||
+                gCurrTestNum == kTestNum_TestTunnelNoStatusReportResetReconnectBackoff)
+            {
+                gStatusReportSuppressed = true;
+
+                WeaveLogDetail(WeaveTunnel, "Received TunOpenV2 message for test %d\n", gCurrTestNum);
+                ExitNow();
+            }
+
+            if (gCurrTestNum == kTestNum_TestTunnelErrorStatusReportReconnect)
+            {
+                WeaveLogDetail(WeaveTunnel, "Sending error StatusReport message for test %d\n", gCurrTestNum);
+
+                SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_UnexpectedMessage);
+                ExitNow();
+            }
+
+            if (gCurrTestNum == kTestNum_TestTunnelRestrictedRoutingOnTunnelOpen)
+            {
+                isRoutingRestricted = true;
+            }
+
+            for (int i = 0; i < tunRoute.numOfPrefixes; i++)
+            {
+                index = tunServer->vRouteDB.FindRouteEntry(tunRoute.tunnelRoutePrefix[i]);
+                if (index < 0)
                 {
-                    gStatusReportSuppressed = true;
+                    // Not found; Create a new entry
+                    index = tunServer->vRouteDB.NewRouteEntry();
 
-                    WeaveLogDetail(WeaveTunnel, "Received TunOpenV2 message for test %d\n", gCurrTestNum);
-                    ExitNow();
+                    // Fill in the details at the index
+                    tunServer->vRouteDB.RouteTable[index].prefix     = tunRoute.tunnelRoutePrefix[i];
+                    tunServer->vRouteDB.RouteTable[index].fabricId   = msgFabricId;
+                    tunServer->vRouteDB.RouteTable[index].routeState = VirtualRouteTable::kRouteEntryState_Valid;
+
+                    // Set encryption type and key id for the connection
+                    tunServer->vRouteDB.RouteTable[index].keyId          = msgInfo->KeyId;
+                    tunServer->vRouteDB.RouteTable[index].encryptionType = msgInfo->EncryptionType;
+
+                    tunServer->StoreGatewayInfoForPriority(ec->Con, index, 0, tunRoute.priority[i], pktInfo, msgInfo);
                 }
-
-                if (gCurrTestNum == kTestNum_TestTunnelErrorStatusReportReconnect)
+                else
                 {
-                    WeaveLogDetail(WeaveTunnel, "Sending error StatusReport message for test %d\n", gCurrTestNum);
-
-                    SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_UnexpectedMessage);
-                    ExitNow();
-                }
-
-                if (gCurrTestNum == kTestNum_TestTunnelRestrictedRoutingOnTunnelOpen)
-                {
-                    isRoutingRestricted = true;
-                }
-
-                for (int i = 0; i < tunRoute.numOfPrefixes; i++)
-                {
-                    index = tunServer->vRouteDB.FindRouteEntry(tunRoute.tunnelRoutePrefix[i]);
-                    if (index < 0)
+                    // Route already exists
+                    if (tunServer->vRouteDB.RouteTable[index].priority[0] == 0)
                     {
-                        //Not found; Create a new entry
-                        index = tunServer->vRouteDB.NewRouteEntry();
+                        // Add a different priority entry
 
-                        //Fill in the details at the index
-                        tunServer->vRouteDB.RouteTable[index].prefix = tunRoute.tunnelRoutePrefix[i];
-                        tunServer->vRouteDB.RouteTable[index].fabricId = msgFabricId;
-                        tunServer->vRouteDB.RouteTable[index].routeState = VirtualRouteTable::kRouteEntryState_Valid;
-
-                        //Set encryption type and key id for the connection
-                        tunServer->vRouteDB.RouteTable[index].keyId = msgInfo->KeyId;
-                        tunServer->vRouteDB.RouteTable[index].encryptionType = msgInfo->EncryptionType;
-
-                        tunServer->StoreGatewayInfoForPriority(ec->Con, index, 0, tunRoute.priority[i], pktInfo,
-                                                                msgInfo);
+                        tunServer->StoreGatewayInfoForPriority(ec->Con, index, 0, tunRoute.priority[i], pktInfo, msgInfo);
                     }
                     else
                     {
-                        // Route already exists
-                        if (tunServer->vRouteDB.RouteTable[index].priority[0] == 0)
-                        {
-                            // Add a different priority entry
-
-                            tunServer->StoreGatewayInfoForPriority(ec->Con, index, 0, tunRoute.priority[i], pktInfo,
-                                                                    msgInfo);
-                        }
-                        else
-                        {
-                            tunServer->StoreGatewayInfoForPriority(ec->Con, index, 1, tunRoute.priority[i], pktInfo,
-                                                                    msgInfo);
-                        }
+                        tunServer->StoreGatewayInfoForPriority(ec->Con, index, 1, tunRoute.priority[i], pktInfo, msgInfo);
                     }
                 }
+            }
 
-                // Send a status report
+            // Send a status report
 
-                err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success, isRoutingRestricted);
+            err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success, isRoutingRestricted);
+            SuccessOrExit(err);
+
+            if (gCurrTestNum == kTestNum_TestReceiveReconnectFromService && !gReconnectSent)
+            {
+                // Wait for a short while and then send a Tunnel Reconnect message
+
+                sleep(1); // Sleep for a second
+
+                // Create a new ExchangeContext
+
+                exchangeCtx = tunServer->ExchangeMgr->NewContext(ec->Con, tunServer);
+
+                VerifyOrExit(exchangeCtx != NULL, err = WEAVE_ERROR_NO_MEMORY);
+
+                // Assign the appropriate message receipt handler to the callback.
+
+                exchangeCtx->OnMessageReceived = HandleReconnectResponse;
+
+                err = SendTunnelReconnectMessage(exchangeCtx, WEAVE_PORT, TEST_TUNNEL_RECONNECT_HOSTNAME,
+                                                 strlen(TEST_TUNNEL_RECONNECT_HOSTNAME));
                 SuccessOrExit(err);
 
-                if (gCurrTestNum == kTestNum_TestReceiveReconnectFromService && !gReconnectSent)
-                {
-                    // Wait for a short while and then send a Tunnel Reconnect message
+                gReconnectSent = true;
+            }
 
-                    sleep(1); // Sleep for a second
+            break;
+        case kMsgType_TunnelRouteUpdate:
 
-                    // Create a new ExchangeContext
+            // The reason this is not implemented yet is because for all practical purposes of developmental testing
+            // we have not needed to modify the routes that were already sent with the TunnelOpen messages. However,
+            // this message keeps that possibility open to modify the routes that have been sent before.
 
-                    exchangeCtx = tunServer->ExchangeMgr->NewContext(ec->Con, tunServer);
+            // Send a status report
 
-                    VerifyOrExit(exchangeCtx != NULL, err = WEAVE_ERROR_NO_MEMORY);
+            err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success);
+            SuccessOrExit(err);
 
-                    // Assign the appropriate message receipt handler to the callback.
+            break;
+        case kMsgType_TunnelClose:
+            if (gCurrTestNum == kTestNum_TestTunnelErrorStatusReportOnTunnelClose)
+            {
+                WeaveLogDetail(WeaveTunnel, "Sending error StatusReport message for test %d\n", gCurrTestNum);
 
-                    exchangeCtx->OnMessageReceived = HandleReconnectResponse;
+                SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_UnexpectedMessage);
+                ExitNow();
+            }
 
-                    err = SendTunnelReconnectMessage(exchangeCtx, WEAVE_PORT,
-                                                     TEST_TUNNEL_RECONNECT_HOSTNAME,
-                                                     strlen(TEST_TUNNEL_RECONNECT_HOSTNAME));
-                    SuccessOrExit(err);
+            err = WeaveTunnelRoute::DecodeFabricTunnelRoutes(&msgFabricId, &tunRoute, payload);
+            SuccessOrExit(err);
 
-                    gReconnectSent = true;
+            err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success);
+            SuccessOrExit(err);
 
-                }
+            break;
+        case kMsgType_TunnelLiveness:
+            if (gCurrTestNum == kTestNum_TestTunnelLivenessDisconnectOnNoResponse)
+            {
+                WeaveLogDetail(WeaveTunnel, "Received Tunnel Liveness message for test %d\n", gCurrTestNum);
+                ExitNow();
+            }
 
-                break;
-            case kMsgType_TunnelRouteUpdate:
+            err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success);
+            SuccessOrExit(err);
 
-                // The reason this is not implemented yet is because for all practical purposes of developmental testing
-                // we have not needed to modify the routes that were already sent with the TunnelOpen messages. However,
-                // this message keeps that possibility open to modify the routes that have been sent before.
-
-                // Send a status report
-
-                err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success);
-                SuccessOrExit(err);
-
-                break;
-            case kMsgType_TunnelClose:
-                if (gCurrTestNum == kTestNum_TestTunnelErrorStatusReportOnTunnelClose)
-                {
-                    WeaveLogDetail(WeaveTunnel, "Sending error StatusReport message for test %d\n", gCurrTestNum);
-
-                    SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_UnexpectedMessage);
-                    ExitNow();
-                }
-
-                err = WeaveTunnelRoute::DecodeFabricTunnelRoutes(&msgFabricId, &tunRoute, payload);
-                SuccessOrExit(err);
-
-                err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success);
-                SuccessOrExit(err);
-
-                break;
-            case kMsgType_TunnelLiveness:
-                if (gCurrTestNum == kTestNum_TestTunnelLivenessDisconnectOnNoResponse)
-                {
-                    WeaveLogDetail(WeaveTunnel, "Received Tunnel Liveness message for test %d\n", gCurrTestNum);
-                    ExitNow();
-                }
-
-                err = SendStatusReportResponse(ec, kWeaveProfile_Common, Common::kStatus_Success);
-                SuccessOrExit(err);
-
-                break;
+            break;
         }
     }
 
@@ -851,23 +802,21 @@ exit:
     }
 }
 
-void WeaveTunnelServer::HandleTunnelDataMessage (WeaveConnection *con, const WeaveMessageInfo *recvMsgInfo,
-                                                 PacketBuffer *msg)
+void WeaveTunnelServer::HandleTunnelDataMessage(WeaveConnection * con, const WeaveMessageInfo * recvMsgInfo, PacketBuffer * msg)
 {
     char ipAddrStr[64];
-    WEAVE_ERROR err =  WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveTunnelHeader tunHeader;
-    WeaveTunnelServer *tunServer = static_cast<WeaveTunnelServer *>(con->AppState);
-    //Decrypt payload
+    WeaveTunnelServer * tunServer = static_cast<WeaveTunnelServer *>(con->AppState);
+    // Decrypt payload
 
-    //Decapsulate Tunnel header and metadata
+    // Decapsulate Tunnel header and metadata
     err = WeaveTunnelHeader::DecodeTunnelHeader(&tunHeader, msg);
     SuccessOrExit(err);
 
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
-    WeaveLogDetail(WeaveTunnel, "Message from node %" PRIX64 " (%s): len=%u.\n",
-           con->PeerNodeId, ipAddrStr, msg->DataLength());
+    WeaveLogDetail(WeaveTunnel, "Message from node %" PRIX64 " (%s): len=%u.\n", con->PeerNodeId, ipAddrStr, msg->DataLength());
 
     if (tunServer)
     {
@@ -879,27 +828,26 @@ exit:
     return;
 }
 
-void WeaveTunnelServer::HandleConnectionClosed (WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveTunnelServer::HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
-    WeaveTunnelServer *tServer = static_cast<WeaveTunnelServer *>(con->AppState);
+    WeaveTunnelServer * tServer = static_cast<WeaveTunnelServer *>(con->AppState);
 
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     if (conErr == WEAVE_NO_ERROR)
     {
-        WeaveLogDetail(WeaveTunnel, "Connection closed with node %" PRIx64 " (%s)\n",
-                       con->PeerNodeId, ipAddrStr);
+        WeaveLogDetail(WeaveTunnel, "Connection closed with node %" PRIx64 " (%s)\n", con->PeerNodeId, ipAddrStr);
     }
     else
     {
-        WeaveLogError(WeaveTunnel, "Connection ABORTED with node %" PRIx64 " (%s): %ld\n",
-                      con->PeerNodeId, ipAddrStr, (long)conErr);
+        WeaveLogError(WeaveTunnel, "Connection ABORTED with node %" PRIx64 " (%s): %ld\n", con->PeerNodeId, ipAddrStr,
+                      (long) conErr);
     }
 
     if (tServer)
     {
-        //Remove route table entry
+        // Remove route table entry
         tServer->vRouteDB.RemoveRouteEntryByConnection(con);
 
         tServer->mConTable.RemoveConnection(con);
@@ -909,7 +857,7 @@ void WeaveTunnelServer::HandleConnectionClosed (WeaveConnection *con, WEAVE_ERRO
 }
 
 /* Create a new Tunnel endpoint */
-WEAVE_ERROR WeaveTunnelServer::CreateServiceTunEndPoint (void)
+WEAVE_ERROR WeaveTunnelServer::CreateServiceTunEndPoint(void)
 {
     WEAVE_ERROR res = WEAVE_NO_ERROR;
 
@@ -924,7 +872,7 @@ exit:
 }
 
 /* Setup the TunEndPoint interface and configure the link-local address and fabric default route */
-WEAVE_ERROR WeaveTunnelServer::SetupServiceTunEndPoint (void)
+WEAVE_ERROR WeaveTunnelServer::SetupServiceTunEndPoint(void)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 #if !WEAVE_TUNNEL_CONFIG_WILL_OVERRIDE_ADDR_ROUTING_FUNCS
@@ -936,27 +884,27 @@ WEAVE_ERROR WeaveTunnelServer::SetupServiceTunEndPoint (void)
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     err = mTunEP->Open();
 #else
-    err = mTunEP->Open(TUNNEL_SERVICE_INTF);
+    err         = mTunEP->Open(TUNNEL_SERVICE_INTF);
 #endif
     SuccessOrExit(err);
 
     if (!mTunEP->IsInterfaceUp())
     {
-        //Bring interface up
+        // Bring interface up
         err = mTunEP->InterfaceUp();
         SuccessOrExit(err);
     }
 
 #if !WEAVE_TUNNEL_CONFIG_WILL_OVERRIDE_ADDR_ROUTING_FUNCS
     ServiceTunnelInterfaceUp(mTunEP->GetTunnelInterfaceId());
-    //Create prefix fd<globalId>::/48 to install route to tunnel interface
-    globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr->FabricState->FabricId);
+    // Create prefix fd<globalId>::/48 to install route to tunnel interface
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr->FabricState->FabricId);
     tunULAAddr = IPAddress::MakeULA(globalId, 0, 0);
 
     prefix.IPAddr = tunULAAddr;
     prefix.Length = 48;
 
-    //Add route to tunnel interface
+    // Add route to tunnel interface
     err = SetRouteToTunnelInterface(mTunEP->GetTunnelInterfaceId(), prefix, TunEndPoint::kRouteTunIntf_Add);
     SuccessOrExit(err);
 #endif // WEAVE_TUNNEL_CONFIG_WILL_OVERRIDE_ADDR_ROUTING_FUNCS
@@ -972,7 +920,7 @@ exit:
 }
 
 /* Tear down TunEndpoint interface and remove the link-local address and fabric default route */
-WEAVE_ERROR WeaveTunnelServer::TeardownServiceTunEndPoint (void)
+WEAVE_ERROR WeaveTunnelServer::TeardownServiceTunEndPoint(void)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -981,26 +929,26 @@ WEAVE_ERROR WeaveTunnelServer::TeardownServiceTunEndPoint (void)
     IPAddress tunULAAddr;
     IPPrefix prefix;
 
-    //Delete route to tunnel interface for prefix fd<globalId>::/48
-    globalId = WeaveFabricIdToIPv6GlobalId(ExchangeMgr->FabricState->FabricId);
+    // Delete route to tunnel interface for prefix fd<globalId>::/48
+    globalId   = WeaveFabricIdToIPv6GlobalId(ExchangeMgr->FabricState->FabricId);
     tunULAAddr = IPAddress::MakeULA(globalId, 0, 0);
 
     prefix.IPAddr = tunULAAddr;
     prefix.Length = 48;
-    //Delete route
+    // Delete route
     err = SetRouteToTunnelInterface(mTunEP->GetTunnelInterfaceId(), prefix, TunEndPoint::kRouteTunIntf_Del);
     SuccessOrExit(err);
 #endif // WEAVE_TUNNEL_CONFIG_WILL_OVERRIDE_ADDR_ROUTING_FUNCS
 
     if (mTunEP->IsInterfaceUp())
     {
-        //Bring interface down
+        // Bring interface down
         err = mTunEP->InterfaceDown();
         SuccessOrExit(err);
     }
 
 exit:
-    //Free Tunnel Endpoint
+    // Free Tunnel Endpoint
     if (mTunEP != NULL)
     {
         mTunEP->Free();
@@ -1010,27 +958,27 @@ exit:
     return err;
 }
 
-void WeaveTunnelServer::RecvdFromServiceTunEndPoint (TunEndPoint *tunEP, PacketBuffer *msg)
+void WeaveTunnelServer::RecvdFromServiceTunEndPoint(TunEndPoint * tunEP, PacketBuffer * msg)
 {
-    WEAVE_ERROR err        = WEAVE_NO_ERROR;
-    uint8_t     *p         = NULL;
-    struct ip6_hdr *ip6hdr = NULL;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
+    uint8_t * p             = NULL;
+    struct ip6_hdr * ip6hdr = NULL;
     WeaveTunnelHeader tunHeader;
     WeaveMessageInfo msgInfo;
     IPAddress destIP6Addr;
-    IPPrefix  ip6Prefix;
-    int8_t index = -1;
-    WeaveConnection *outgoingWeaveCon = NULL;
+    IPPrefix ip6Prefix;
+    int8_t index                       = -1;
+    WeaveConnection * outgoingWeaveCon = NULL;
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     ip6_addr_t tempAddr6;
 #endif
-    WeaveTunnelServer *tServer = static_cast<WeaveTunnelServer *>(tunEP->AppState);
+    WeaveTunnelServer * tServer = static_cast<WeaveTunnelServer *>(tunEP->AppState);
 
-    //Extract the IPv6 header to look at the destination address
-    p = msg->Start();
-    ip6hdr = (struct ip6_hdr *)p;
+    // Extract the IPv6 header to look at the destination address
+    p      = msg->Start();
+    ip6hdr = (struct ip6_hdr *) p;
 
-    //Check destination address
+    // Check destination address
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     ip6_addr_copy(tempAddr6, ip6hdr->dest);
     destIP6Addr = IPAddress::FromIPv6(tempAddr6);
@@ -1038,42 +986,41 @@ void WeaveTunnelServer::RecvdFromServiceTunEndPoint (TunEndPoint *tunEP, PacketB
     destIP6Addr = IPAddress::FromIPv6(ip6hdr->ip6_dst);
 #endif
 
-    if ((destIP6Addr.Subnet() == kWeaveSubnetId_PrimaryWiFi) ||
-        (destIP6Addr.Subnet() == kWeaveSubnetId_ThreadMesh))
+    if ((destIP6Addr.Subnet() == kWeaveSubnetId_PrimaryWiFi) || (destIP6Addr.Subnet() == kWeaveSubnetId_ThreadMesh))
     {
-        //Prepare the msg header
+        // Prepare the msg header
         msgInfo.Clear();
-        //Set message version to V2
+        // Set message version to V2
         msgInfo.MessageVersion = kWeaveMessageVersion_V2;
 
-        //Ensure Reserved size
+        // Ensure Reserved size
         msg->EnsureReservedSize(sizeof(tunHeader) + sizeof(msgInfo));
 
-        //Set version to V1
+        // Set version to V1
         tunHeader.Version = kWeaveTunnelVersion_V1;
 
         err = WeaveTunnelHeader::EncodeTunnelHeader(&tunHeader, msg);
         SuccessOrExit(err);
 
-        //Prepare prefix for route table lookup
+        // Prepare prefix for route table lookup
         ip6Prefix.IPAddr = IPAddress::MakeULA(destIP6Addr.GlobalId(), destIP6Addr.Subnet(), 0);
         ip6Prefix.Length = NL_INET_IPV6_DEFAULT_PREFIX_LEN;
 
         index = tServer->vRouteDB.FindRouteEntry(ip6Prefix);
         if (index >= 0)
         {
-            //Encrypt message
+            // Encrypt message
             msgInfo.EncryptionType = tServer->vRouteDB.RouteTable[index].encryptionType;
-            msgInfo.KeyId = tServer->vRouteDB.RouteTable[index].keyId;
+            msgInfo.KeyId          = tServer->vRouteDB.RouteTable[index].keyId;
 
             outgoingWeaveCon = tServer->GetOutgoingConn(index);
             if (outgoingWeaveCon)
             {
-                //Set the source and destination node ids; Interchange and copy from recvd msgInfo
+                // Set the source and destination node ids; Interchange and copy from recvd msgInfo
                 msgInfo.SourceNodeId = tServer->ExchangeMgr->FabricState->LocalNodeId;
-                msgInfo.DestNodeId = outgoingWeaveCon->PeerNodeId;
+                msgInfo.DestNodeId   = outgoingWeaveCon->PeerNodeId;
 
-                //Send over TCP Connection
+                // Send over TCP Connection
                 err = outgoingWeaveCon->SendTunneledMessage(&msgInfo, msg);
                 msg = NULL;
                 SuccessOrExit(err);
@@ -1101,7 +1048,7 @@ exit:
 
 WeaveConnection * WeaveTunnelServer::GetOutgoingConn(uint8_t index)
 {
-    WeaveConnection *outgoingCon = NULL;
+    WeaveConnection * outgoingCon = NULL;
 
     VirtualRouteTable::RouteEntry rtEntry = vRouteDB.RouteTable[index];
 
@@ -1125,19 +1072,17 @@ WeaveConnection * WeaveTunnelServer::GetOutgoingConn(uint8_t index)
     return outgoingCon;
 }
 
-void WeaveTunnelServer::HandleEchoRequestReceived (uint64_t nodeId, IPAddress nodeAddr,
-                                                   PacketBuffer *payload)
+void WeaveTunnelServer::HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     char ipAddrStr[64];
     nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     WeaveLogDetail(WeaveTunnel, "Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n", nodeId, ipAddrStr,
-            payload->DataLength());
+                   payload->DataLength());
 }
 
-void WeaveTunnelServer::HandleSecureSessionEstablished (WeaveSecurityManager *sm, WeaveConnection *con,
-                                                        void *reqState, uint16_t sessionKeyId,
-                                                        uint64_t peerNodeId, uint8_t encType)
+void WeaveTunnelServer::HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState,
+                                                       uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
 {
     char ipAddrStr[64] = "";
 
@@ -1147,9 +1092,8 @@ void WeaveTunnelServer::HandleSecureSessionEstablished (WeaveSecurityManager *sm
     WeaveLogDetail(WeaveTunnel, "Secure session established with node %" PRIX64 " (%s)\n", peerNodeId, ipAddrStr);
 }
 
-void WeaveTunnelServer::HandleSecureSessionError (WeaveSecurityManager *sm, WeaveConnection *con,
-                                                  void *reqState, WEAVE_ERROR localErr,
-                                                  uint64_t peerNodeId, StatusReport *statusReport)
+void WeaveTunnelServer::HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState,
+                                                 WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport * statusReport)
 {
     char ipAddrStr[64] = "";
 
@@ -1157,11 +1101,11 @@ void WeaveTunnelServer::HandleSecureSessionError (WeaveSecurityManager *sm, Weav
         con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
-        WeaveLogError(WeaveTunnel, "FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId,
-               ipAddrStr, StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        WeaveLogError(WeaveTunnel, "FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr,
+                      StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     else
-        WeaveLogDetail(WeaveTunnel, "FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId,
-               ipAddrStr, ErrorStr(localErr));
+        WeaveLogDetail(WeaveTunnel, "FAILED to establish secure session to node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr,
+                       ErrorStr(localErr));
 }
 
 ConnectionTable::ConnectionTable(void)
@@ -1169,19 +1113,18 @@ ConnectionTable::ConnectionTable(void)
     memset(&mTable, 0, sizeof(mTable));
 }
 
-WEAVE_ERROR ConnectionTable::AddConnection(WeaveConnection *aCon)
+WEAVE_ERROR ConnectionTable::AddConnection(WeaveConnection * aCon)
 {
     size_t i;
     size_t freeEntry = CONNECTION_TABLE_SIZE;
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
 
     for (i = 0; i < CONNECTION_TABLE_SIZE; i++)
     {
         // If the entry exists already, exit and return success
         VerifyOrExit(mTable[i].mConnection != aCon, /* no-op */);
 
-        if (freeEntry == CONNECTION_TABLE_SIZE &&
-                mTable[i].mConnection == NULL)
+        if (freeEntry == CONNECTION_TABLE_SIZE && mTable[i].mConnection == NULL)
         {
             freeEntry = i;
         }
@@ -1195,7 +1138,7 @@ exit:
     return err;
 }
 
-void ConnectionTable::RemoveConnection(WeaveConnection *aCon)
+void ConnectionTable::RemoveConnection(WeaveConnection * aCon)
 {
     size_t i;
 
@@ -1208,10 +1151,9 @@ void ConnectionTable::RemoveConnection(WeaveConnection *aCon)
         }
     }
 }
-#endif //WEAVE_CONFIG_ENABLE_TUNNELING
+#endif // WEAVE_CONFIG_ENABLE_TUNNELING
 
-
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 
 #if WEAVE_CONFIG_ENABLE_TUNNELING
@@ -1249,11 +1191,10 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
-
     }
 
     gTunServer.Shutdown();
@@ -1265,6 +1206,6 @@ int main(int argc, char *argv[])
     ShutdownNetwork();
     ShutdownSystemLayer();
 
-#endif //WEAVE_CONFIG_ENABLE_TUNNELING
+#endif // WEAVE_CONFIG_ENABLE_TUNNELING
     return 0;
 }

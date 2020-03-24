@@ -31,37 +31,35 @@ namespace Weave {
 namespace Trait {
 namespace Locale {
 namespace LocaleCapabilitiesTrait {
-    TraitSchemaEngine::PropertyInfo gSchemaMap[] = {
-        /*  ParentHandle                ContextTag */
-        { kRootPropertyPathHandle,         2 }
-    };
+TraitSchemaEngine::PropertyInfo gSchemaMap[] = {
+    /*  ParentHandle                ContextTag */
+    { kRootPropertyPathHandle, 2 }
+};
 
-    TraitSchemaEngine TraitSchema = {
-        .mSchema = {
-            kWeaveProfileId,
-            gSchemaMap,
-            sizeof(gSchemaMap) / sizeof(gSchemaMap[0]),
-            1,
+TraitSchemaEngine TraitSchema = { .mSchema = {
+                                      kWeaveProfileId,
+                                      gSchemaMap,
+                                      sizeof(gSchemaMap) / sizeof(gSchemaMap[0]),
+                                      1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-            2,
+                                      2,
 #endif
 #if (TDM_DICTIONARY_SUPPORT)
-            NULL,
+                                      NULL,
 #endif
-            NULL,
-            NULL,
-            NULL,
-            NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL,
 #if (TDM_EXTENSION_SUPPORT)
-            NULL,
+                                      NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-            NULL,
+                                      NULL,
 #endif
-        }
-    };
+                                  } };
 
-}; // LocaleCapabilitiesTrait
-}; // Locale
-}; // Trait
-}; // Weave
+}; // namespace LocaleCapabilitiesTrait
+}; // namespace Locale
+}; // namespace Trait
+}; // namespace Weave

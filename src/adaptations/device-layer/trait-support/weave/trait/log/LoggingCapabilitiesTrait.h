@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace LoggingCapabilitiesTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xa02U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xa02U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -95,9 +95,10 @@ enum {
 // Enums
 //
 
-enum LogTransport {
-    LOG_TRANSPORT_BDX = 1,
-    LOG_TRANSPORT_HTTP = 2,
+enum LogTransport
+{
+    LOG_TRANSPORT_BDX   = 1,
+    LOG_TRANSPORT_HTTP  = 2,
     LOG_TRANSPORT_HTTPS = 3,
 };
 

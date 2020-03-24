@@ -44,8 +44,8 @@
 using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles::DataManagement;
 
-static WEAVE_ERROR FetchMockExternalEvents(EventLoadOutContext *aContext);
-static WEAVE_ERROR FetchWithBlitEvent(EventLoadOutContext *aContext);
+static WEAVE_ERROR FetchMockExternalEvents(EventLoadOutContext * aContext);
+static WEAVE_ERROR FetchWithBlitEvent(EventLoadOutContext * aContext);
 
 #define NUM_CALLBACKS 3
 event_id_t extEvtPtrs[NUM_CALLBACKS];
@@ -57,12 +57,13 @@ static ShouldBlitFunct ShouldBlit = NULL;
 WEAVE_ERROR LogMockExternalEvents(size_t aNumEvents, int numCallback)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    nl::Weave::Profiles::DataManagement::LoggingManagement &logger =
+    nl::Weave::Profiles::DataManagement::LoggingManagement & logger =
         nl::Weave::Profiles::DataManagement::LoggingManagement::GetInstance();
 
     if ((numCallback > 0) && (numCallback <= NUM_CALLBACKS))
     {
-        err = logger.RegisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Production, FetchMockExternalEvents, aNumEvents, &extEvtPtrs[numCallback - 1]);
+        err = logger.RegisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Production, FetchMockExternalEvents,
+                                                        aNumEvents, &extEvtPtrs[numCallback - 1]);
         if (err == WEAVE_NO_ERROR)
         {
             numEvents[numCallback - 1] = aNumEvents;
@@ -79,12 +80,13 @@ WEAVE_ERROR LogMockExternalEvents(size_t aNumEvents, int numCallback)
 WEAVE_ERROR LogMockDebugExternalEvents(size_t aNumEvents, int numCallback)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    nl::Weave::Profiles::DataManagement::LoggingManagement &logger =
+    nl::Weave::Profiles::DataManagement::LoggingManagement & logger =
         nl::Weave::Profiles::DataManagement::LoggingManagement::GetInstance();
 
     if ((numCallback > 0) && (numCallback <= NUM_CALLBACKS))
     {
-        err = logger.RegisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Debug, FetchMockExternalEvents, aNumEvents, &extEvtPtrs[numCallback - 1]);
+        err = logger.RegisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Debug, FetchMockExternalEvents,
+                                                        aNumEvents, &extEvtPtrs[numCallback - 1]);
         if (err == WEAVE_NO_ERROR)
         {
             numEvents[numCallback - 1] = aNumEvents;
@@ -92,7 +94,8 @@ WEAVE_ERROR LogMockDebugExternalEvents(size_t aNumEvents, int numCallback)
     }
     else if (numCallback == 0)
     {
-        err = logger.RegisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Debug, FetchWithBlitEvent, aNumEvents, &blitEvtPtr);
+        err = logger.RegisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Debug, FetchWithBlitEvent, aNumEvents,
+                                                        &blitEvtPtr);
     }
 
     return err;
@@ -100,7 +103,7 @@ WEAVE_ERROR LogMockDebugExternalEvents(size_t aNumEvents, int numCallback)
 
 void ClearMockExternalEvents(int numCallback)
 {
-    nl::Weave::Profiles::DataManagement::LoggingManagement &logger =
+    nl::Weave::Profiles::DataManagement::LoggingManagement & logger =
         nl::Weave::Profiles::DataManagement::LoggingManagement::GetInstance();
 
     logger.UnregisterEventCallbackForImportance(nl::Weave::Profiles::DataManagement::Production, extEvtPtrs[numCallback - 1]);
@@ -111,13 +114,12 @@ void SetShouldBlitCallback(ShouldBlitFunct aShouldBlit)
     ShouldBlit = aShouldBlit;
 }
 
-WEAVE_ERROR FetchMockExternalEvents(EventLoadOutContext *aContext)
+WEAVE_ERROR FetchMockExternalEvents(EventLoadOutContext * aContext)
 {
     int i;
     for (i = 0; i < NUM_CALLBACKS; i++)
     {
-        if ((aContext->mExternalEvents != NULL) &&
-            aContext->mExternalEvents->IsValid() &&
+        if ((aContext->mExternalEvents != NULL) && aContext->mExternalEvents->IsValid() &&
             aContext->mExternalEvents->mLastEventID == extEvtPtrs[i])
         {
             aContext->mCurrentEventID = extEvtPtrs[i] + 1;
@@ -130,28 +132,24 @@ WEAVE_ERROR FetchMockExternalEvents(EventLoadOutContext *aContext)
 
 struct DebugLogContext
 {
-    const char *mRegion;
-    const char *mFmt;
+    const char * mRegion;
+    const char * mFmt;
     va_list mArgs;
 };
 
-WEAVE_ERROR FetchWithBlitEvent(EventLoadOutContext *aContext)
+WEAVE_ERROR FetchWithBlitEvent(EventLoadOutContext * aContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     DebugLogContext context;
-    EventSchema schema = { kWeaveProfile_NestDebug,
-                           kNestDebug_StringLogEntryEvent,
-                           Production,
-                           1,
-                           1 };
-    EventOptions evOpts = EventOptions(static_cast<utc_timestamp_t>(nl::Weave::System::Timer::GetCurrentEpoch()));
-    LoggingManagement &logger = LoggingManagement::GetInstance();
+    EventSchema schema         = { kWeaveProfile_NestDebug, kNestDebug_StringLogEntryEvent, Production, 1, 1 };
+    EventOptions evOpts        = EventOptions(static_cast<utc_timestamp_t>(nl::Weave::System::Timer::GetCurrentEpoch()));
+    LoggingManagement & logger = LoggingManagement::GetInstance();
 
     char testString[50];
     memset(testString, 'x', sizeof(testString));
     testString[49] = '\0';
 
-    context.mFmt = testString;
+    context.mFmt    = testString;
     context.mRegion = "";
 
     while ((err == WEAVE_NO_ERROR) && (aContext->mCurrentEventID <= blitEvtPtr))

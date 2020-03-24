@@ -30,10 +30,10 @@
 #include <Weave/Core/WeaveEncoding.h>
 #include <Weave/Support/CodeUtils.h>
 
-#define NL_ICMPV6_MIN_PARSE_LEN  4  // Type, Code, and Checksum.
-#define NL_NODE_ID_SIZE  8
-#define NL_KEY_ID_SIZE  2
-#define WEAVE_EXCH_HDR_LEN 8
+#define NL_ICMPV6_MIN_PARSE_LEN 4 // Type, Code, and Checksum.
+#define NL_NODE_ID_SIZE         8
+#define NL_KEY_ID_SIZE          2
+#define WEAVE_EXCH_HDR_LEN      8
 
 using namespace nl::Weave::Encoding;
 using namespace nl::Weave;
@@ -48,11 +48,11 @@ using namespace nl::Weave;
  * @return  INET_ERROR while parsing the packet or INET_NO_ERROR
  *          on Success.
  */
-INET_ERROR DecodedIPPacket::PacketHeaderDecode(const uint8_t *p, uint16_t pktLen)
+INET_ERROR DecodedIPPacket::PacketHeaderDecode(const uint8_t * p, uint16_t pktLen)
 {
-    INET_ERROR err = INET_NO_ERROR;
-    const uint8_t *payload = NULL;
-    const uint8_t *pktStart;
+    INET_ERROR err          = INET_NO_ERROR;
+    const uint8_t * payload = NULL;
+    const uint8_t * pktStart;
 
     // IP6 header fields
     uint32_t ip6VerTCFlags;
@@ -73,7 +73,7 @@ INET_ERROR DecodedIPPacket::PacketHeaderDecode(const uint8_t *p, uint16_t pktLen
     VerifyOrExit(ipProtoVersion == NL_IP_VERSION_6, err = INET_ERROR_WRONG_ADDRESS_TYPE);
 
     ip6PayloadLen = BigEndian::Read16(p);
-    ipPktSize = NL_IP6_HDR_LEN + ip6PayloadLen;
+    ipPktSize     = NL_IP6_HDR_LEN + ip6PayloadLen;
     VerifyOrExit(ipPktSize == pktLen, err = INET_ERROR_INVALID_IPV6_PKT);
 
     ipProtoType = Read8(p);
@@ -103,7 +103,6 @@ INET_ERROR DecodedIPPacket::PacketHeaderDecode(const uint8_t *p, uint16_t pktLen
         p += 2; // Move over to UDP checksum;
 
         checksum = BigEndian::Read16(p);
-
     }
     else if (ipProtoType == NL_PROTO_TYPE_TCP)
     {
@@ -153,10 +152,10 @@ INET_ERROR DecodedIPPacket::PacketHeaderDecode(const uint8_t *p, uint16_t pktLen
             if ((versionFlags >> 4) != nl::Weave::kWeaveExchangeVersion_V1)
                 ExitNow(err = WEAVE_ERROR_UNSUPPORTED_EXCHANGE_VERSION);
 
-            msgType = Read8(payload);
+            msgType    = Read8(payload);
             exchangeId = LittleEndian::Read16(payload);
-            profileId = LittleEndian::Read32(payload);
-            exchFlags = versionFlags & 0xF;
+            profileId  = LittleEndian::Read32(payload);
+            exchFlags  = versionFlags & 0xF;
 
             ackMsgId = 0;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
@@ -164,7 +163,7 @@ INET_ERROR DecodedIPPacket::PacketHeaderDecode(const uint8_t *p, uint16_t pktLen
             {
                 if ((payload + 4) > pktStart + ipPktSize)
                     ExitNow(err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
-                    ackMsgId = LittleEndian::Read32(payload);
+                ackMsgId = LittleEndian::Read32(payload);
             }
 #endif
         }
@@ -174,25 +173,25 @@ exit:
 }
 
 /* Get the Weave Node Identifier from an IPv6 ULA address */
-uint64_t DecodedIPPacket::GetWeaveNodeIdFromAddr(const uint8_t *addr)
+uint64_t DecodedIPPacket::GetWeaveNodeIdFromAddr(const uint8_t * addr)
 {
     uint64_t nodeId = 0;
 
     if (addr[0] == 0xFD)
     {
         nodeId = ((static_cast<uint64_t>(addr[8] << 24 | addr[9] << 16 | addr[10] << 8 | addr[11]) << 32) |
-                  static_cast<uint64_t>(addr[12] << 24 | addr[13] << 16 | addr[14] << 8 | addr[15]))
-                  & ~(0x0200000000000000ULL);
+                  static_cast<uint64_t>(addr[12] << 24 | addr[13] << 16 | addr[14] << 8 | addr[15])) &
+            ~(0x0200000000000000ULL);
     }
 
     return nodeId;
 }
 
-WEAVE_ERROR DecodedIPPacket::ParseWeaveMessageHeader(const uint8_t *p, const uint8_t *pktStart, const uint8_t **payloadStart)
+WEAVE_ERROR DecodedIPPacket::ParseWeaveMessageHeader(const uint8_t * p, const uint8_t * pktStart, const uint8_t ** payloadStart)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t msgLen = static_cast<uint16_t>((pktStart + ipPktSize) - p);
-    const uint8_t *msgEnd = p + msgLen;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    uint16_t msgLen        = static_cast<uint16_t>((pktStart + ipPktSize) - p);
+    const uint8_t * msgEnd = p + msgLen;
     uint16_t headerField;
     uint8_t msgVersion;
 
@@ -204,15 +203,17 @@ WEAVE_ERROR DecodedIPPacket::ParseWeaveMessageHeader(const uint8_t *p, const uin
     // Decode the header field.
     headerField = LittleEndian::Read16(p);
 
-    msgVersion = static_cast<uint8_t>((headerField & nl::Weave::kMsgHeaderField_MessageVersionMask) >> nl::Weave::kMsgHeaderField_MessageVersionShift);
+    msgVersion = static_cast<uint8_t>((headerField & nl::Weave::kMsgHeaderField_MessageVersionMask) >>
+                                      nl::Weave::kMsgHeaderField_MessageVersionShift);
 
-    msgHdrFlags = static_cast<uint16_t>((headerField & nl::Weave::kMsgHeaderField_FlagsMask) >> nl::Weave::kMsgHeaderField_FlagsShift);
+    msgHdrFlags =
+        static_cast<uint16_t>((headerField & nl::Weave::kMsgHeaderField_FlagsMask) >> nl::Weave::kMsgHeaderField_FlagsShift);
 
-    encryptionType = static_cast<uint8_t>((headerField & nl::Weave::kMsgHeaderField_EncryptionTypeMask) >> nl::Weave::kMsgHeaderField_EncryptionTypeShift);
+    encryptionType = static_cast<uint8_t>((headerField & nl::Weave::kMsgHeaderField_EncryptionTypeMask) >>
+                                          nl::Weave::kMsgHeaderField_EncryptionTypeShift);
 
     // Error if the message version is unsupported.
-    if (msgVersion != nl::Weave::kWeaveMessageVersion_V1 &&
-        msgVersion != nl::Weave::kWeaveMessageVersion_V2)
+    if (msgVersion != nl::Weave::kWeaveMessageVersion_V1 && msgVersion != nl::Weave::kWeaveMessageVersion_V2)
     {
         ExitNow(err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION);
     }
@@ -281,13 +282,9 @@ exit:
  */
 bool DecodedIPPacket::DoesPacketHaveWeaveMessage(void) const
 {
-    return ((ipProtoType == NL_PROTO_TYPE_UDP ||
-            ipProtoType == NL_PROTO_TYPE_TCP)
-            &&
-            (srcPort == WEAVE_PORT ||
-             srcPort == WEAVE_UNSECURED_PORT ||
-             destPort == WEAVE_PORT ||
-             destPort == WEAVE_UNSECURED_PORT));
+    return (
+        (ipProtoType == NL_PROTO_TYPE_UDP || ipProtoType == NL_PROTO_TYPE_TCP) &&
+        (srcPort == WEAVE_PORT || srcPort == WEAVE_UNSECURED_PORT || destPort == WEAVE_PORT || destPort == WEAVE_UNSECURED_PORT));
 }
 
 /**
@@ -300,15 +297,15 @@ bool DecodedIPPacket::DoesPacketHaveWeaveMessage(void) const
  *
  * return INET_ERROR
  */
-INET_ERROR LogPacket(const DecodedIPPacket &decodedPacket, bool isTunneled)
+INET_ERROR LogPacket(const DecodedIPPacket & decodedPacket, bool isTunneled)
 {
     INET_ERROR err = INET_NO_ERROR;
     IPAddress ipSrc;
     IPAddress ipDest;
     char weaveFlags[25];
-    const char *tunnelStr = (isTunneled ? "Tun:":"");
-    const char *transport = (decodedPacket.ipProtoType == NL_PROTO_TYPE_UDP) ? "UDP" :
-                             (decodedPacket.ipProtoType == NL_PROTO_TYPE_TCP) ? "TCP" : "";
+    const char * tunnelStr = (isTunneled ? "Tun:" : "");
+    const char * transport =
+        (decodedPacket.ipProtoType == NL_PROTO_TYPE_UDP) ? "UDP" : (decodedPacket.ipProtoType == NL_PROTO_TYPE_TCP) ? "TCP" : "";
 
     char srcIPAddrStr[INET6_ADDRSTRLEN], destIPAddrStr[INET6_ADDRSTRLEN];
 
@@ -319,19 +316,18 @@ INET_ERROR LogPacket(const DecodedIPPacket &decodedPacket, bool isTunneled)
     }
     else
     {
-        //TODO : IPv4 address
+        // TODO : IPv4 address
     }
 
     ipSrc.ToString(srcIPAddrStr, sizeof(srcIPAddrStr));
     ipDest.ToString(destIPAddrStr, sizeof(destIPAddrStr));
 
-    WeaveLogDetail(Inet, "%s IPv%d NxtHdr=%d PktSz=%d SrcAddr=%s DstAddr=%s",
-                         tunnelStr, decodedPacket.ipProtoVersion, decodedPacket.ipProtoType, decodedPacket.ipPktSize,
-                         srcIPAddrStr, destIPAddrStr);
+    WeaveLogDetail(Inet, "%s IPv%d NxtHdr=%d PktSz=%d SrcAddr=%s DstAddr=%s", tunnelStr, decodedPacket.ipProtoVersion,
+                   decodedPacket.ipProtoType, decodedPacket.ipPktSize, srcIPAddrStr, destIPAddrStr);
     if (decodedPacket.ipProtoType == NL_PROTO_TYPE_UDP || decodedPacket.ipProtoType == NL_PROTO_TYPE_TCP)
     {
-        WeaveLogDetail(Inet, "%s %s SrcPort=%d DstPort=%d ChkSum=%04" PRIX16,
-                             tunnelStr, transport, decodedPacket.srcPort, decodedPacket.destPort, decodedPacket.checksum);
+        WeaveLogDetail(Inet, "%s %s SrcPort=%d DstPort=%d ChkSum=%04" PRIX16, tunnelStr, transport, decodedPacket.srcPort,
+                       decodedPacket.destPort, decodedPacket.checksum);
         if (decodedPacket.DoesPacketHaveWeaveMessage())
         {
 
@@ -343,30 +339,48 @@ INET_ERROR LogPacket(const DecodedIPPacket &decodedPacket, bool isTunneled)
                          (decodedPacket.exchFlags & nl::Weave::kWeaveExchangeFlag_NeedsAck) ? 1 : 0,
                          (decodedPacket.exchFlags & nl::Weave::kWeaveExchangeFlag_AckId) ? 1 : 0);
 
-                WeaveLogDetail(Inet, "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " ExchId=%04" PRIX16 " MsgId=%08" PRIX32 " AckMsgId=%08" PRIX32 " KeyId=%d %s", tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId, decodedPacket.destNodeId, decodedPacket.exchangeId, decodedPacket.messageId, decodedPacket.ackMsgId, decodedPacket.keyId, weaveFlags);
+                WeaveLogDetail(Inet,
+                               "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " ExchId=%04" PRIX16
+                               " MsgId=%08" PRIX32 " AckMsgId=%08" PRIX32 " KeyId=%d %s",
+                               tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId,
+                               decodedPacket.destNodeId, decodedPacket.exchangeId, decodedPacket.messageId, decodedPacket.ackMsgId,
+                               decodedPacket.keyId, weaveFlags);
 #else
                 snprintf(weaveFlags, sizeof(weaveFlags), "[E=%d FI=%d]", decodedPacket.encryptionType,
                          (decodedPacket.exchFlags & nl::Weave::kWeaveExchangeFlag_Initiator) ? 1 : 0);
 
-                WeaveLogDetail(Inet, "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " ExchId=%04" PRIX16 " MsgId=%08" PRIX32 " KeyId=%d %s", tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId, decodedPacket.destNodeId, decodedPacket.exchangeId, decodedPacket.messageId, decodedPacket.keyId, weaveFlags);
+                WeaveLogDetail(Inet,
+                               "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " ExchId=%04" PRIX16
+                               " MsgId=%08" PRIX32 " KeyId=%d %s",
+                               tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId,
+                               decodedPacket.destNodeId, decodedPacket.exchangeId, decodedPacket.messageId, decodedPacket.keyId,
+                               weaveFlags);
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
             }
             else
-            {  // Encrypted: Exclude exchange header fields.
+            { // Encrypted: Exclude exchange header fields.
                 snprintf(weaveFlags, sizeof(weaveFlags), "[E=%d]", decodedPacket.encryptionType);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-                WeaveLogDetail(Inet, "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " MsgId=%08" PRIX32 " AckMsgId=%08" PRIX32 " KeyId=%d %s", tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId, decodedPacket.destNodeId, decodedPacket.messageId, decodedPacket.ackMsgId, decodedPacket.keyId, weaveFlags);
+                WeaveLogDetail(Inet,
+                               "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " MsgId=%08" PRIX32
+                               " AckMsgId=%08" PRIX32 " KeyId=%d %s",
+                               tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId,
+                               decodedPacket.destNodeId, decodedPacket.messageId, decodedPacket.ackMsgId, decodedPacket.keyId,
+                               weaveFlags);
 #else
-                WeaveLogDetail(Inet, "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " MsgId=%08" PRIX32 " KeyId=%d %s", tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId, decodedPacket.destNodeId, decodedPacket.messageId, decodedPacket.keyId, weaveFlags);
+                WeaveLogDetail(
+                    Inet, "%s Weave Msg %08" PRIX32 ":%d Src=%016" PRIX64 " Dst=%016" PRIX64 " MsgId=%08" PRIX32 " KeyId=%d %s",
+                    tunnelStr, decodedPacket.profileId, decodedPacket.msgType, decodedPacket.srcNodeId, decodedPacket.destNodeId,
+                    decodedPacket.messageId, decodedPacket.keyId, weaveFlags);
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
             }
         }
     }
     else if (decodedPacket.ipProtoType == NL_PROTO_TYPE_ICMPV6)
     {
-        WeaveLogDetail(Inet, "%s ICMPv6 Type=%d Code=%d ChkSum=%04" PRIX16, tunnelStr, decodedPacket.icmpv6Type, decodedPacket.icmpv6Code,
-                             decodedPacket.checksum);
+        WeaveLogDetail(Inet, "%s ICMPv6 Type=%d Code=%d ChkSum=%04" PRIX16, tunnelStr, decodedPacket.icmpv6Type,
+                       decodedPacket.icmpv6Code, decodedPacket.checksum);
     }
     else
     {

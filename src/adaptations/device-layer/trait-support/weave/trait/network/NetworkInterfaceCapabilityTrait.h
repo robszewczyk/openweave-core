@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace NetworkInterfaceCapabilityTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xb01U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xb01U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -75,11 +75,12 @@ enum {
 // Enums
 //
 
-enum NetworkInterfaceType {
+enum NetworkInterfaceType
+{
     NETWORK_INTERFACE_TYPE_WEAVE_TUNNEL = 1,
-    NETWORK_INTERFACE_TYPE_WIFI = 2,
-    NETWORK_INTERFACE_TYPE_THREAD = 3,
-    NETWORK_INTERFACE_TYPE_CELLULAR = 4,
+    NETWORK_INTERFACE_TYPE_WIFI         = 2,
+    NETWORK_INTERFACE_TYPE_THREAD       = 3,
+    NETWORK_INTERFACE_TYPE_CELLULAR     = 4,
 };
 
 } // namespace NetworkInterfaceCapabilityTrait

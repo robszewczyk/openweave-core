@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace SynchronizationTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1201U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1201U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -122,22 +122,23 @@ struct SynchronizationEntry
     uint32_t currentRevision;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct SynchronizationEntry_array {
+struct SynchronizationEntry_array
+{
     uint32_t num;
-    SynchronizationEntry *buf;
+    SynchronizationEntry * buf;
 };
 
 //
 // Enums
 //
 
-enum SyncronizationStatus {
+enum SyncronizationStatus
+{
     SYNCRONIZATION_STATUS_SYNCHRONIZED = 1,
-    SYNCRONIZATION_STATUS_PENDING = 2,
-    SYNCRONIZATION_STATUS_TIMEOUT = 3,
+    SYNCRONIZATION_STATUS_PENDING      = 2,
+    SYNCRONIZATION_STATUS_TIMEOUT      = 3,
     SYNCRONIZATION_STATUS_FAILED_RETRY = 4,
     SYNCRONIZATION_STATUS_FAILED_FATAL = 5,
 };

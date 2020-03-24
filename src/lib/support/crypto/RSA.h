@@ -35,9 +35,9 @@ namespace nl {
 namespace Weave {
 namespace Crypto {
 
+using nl::Weave::ASN1::OID;
 using nl::Weave::TLV::TLVReader;
 using nl::Weave::TLV::TLVWriter;
-using nl::Weave::ASN1::OID;
 
 class EncodedRSAKey
 {
@@ -47,10 +47,10 @@ public:
         kMaxValueLength = Platform::BitsToByteLength(WEAVE_CONFIG_MAX_RSA_BITS + 1)
     };
 
-    uint8_t *Key;                       // ASN.1 DER Integer value format.
+    uint8_t * Key; // ASN.1 DER Integer value format.
     uint16_t Len;
 
-    bool IsEqual(const EncodedRSAKey& other) const;
+    bool IsEqual(const EncodedRSAKey & other) const;
 };
 
 class EncodedRSASignature
@@ -61,16 +61,16 @@ public:
         kMaxValueLength = Platform::BitsToByteLength(WEAVE_CONFIG_MAX_RSA_BITS)
     };
 
-    uint8_t *Sig;                       // ASN.1 DER Integer value format
+    uint8_t * Sig; // ASN.1 DER Integer value format
     uint16_t Len;
 
-    bool IsEqual(const EncodedRSASignature& other) const;
+    bool IsEqual(const EncodedRSASignature & other) const;
 
-    WEAVE_ERROR ReadSignature(TLVReader& reader);
-    WEAVE_ERROR WriteSignature(TLVWriter& writer, uint64_t tag) const;
+    WEAVE_ERROR ReadSignature(TLVReader & reader);
+    WEAVE_ERROR WriteSignature(TLVWriter & writer, uint64_t tag) const;
 };
 
-inline WEAVE_ERROR EncodedRSASignature::WriteSignature(TLVWriter& writer, uint64_t tag) const
+inline WEAVE_ERROR EncodedRSASignature::WriteSignature(TLVWriter & writer, uint64_t tag) const
 {
     return writer.PutBytes(tag, Sig, Len);
 }
@@ -81,14 +81,10 @@ inline WEAVE_ERROR EncodedRSASignature::WriteSignature(TLVWriter& writer, uint64
 
 #if WEAVE_WITH_OPENSSL
 
-extern WEAVE_ERROR GenerateAndEncodeWeaveRSASignature(OID sigAlgoOID,
-                                                      TLVWriter& writer, uint64_t tag,
-                                                      const uint8_t * hash, uint8_t hashLen,
-                                                      const uint8_t * keyDER, uint16_t keyDERLen);
+extern WEAVE_ERROR GenerateAndEncodeWeaveRSASignature(OID sigAlgoOID, TLVWriter & writer, uint64_t tag, const uint8_t * hash,
+                                                      uint8_t hashLen, const uint8_t * keyDER, uint16_t keyDERLen);
 
-extern WEAVE_ERROR VerifyRSASignature(OID sigAlgoOID,
-                                      const uint8_t * hash, uint8_t hashLen,
-                                      const EncodedRSASignature& sig,
+extern WEAVE_ERROR VerifyRSASignature(OID sigAlgoOID, const uint8_t * hash, uint8_t hashLen, const EncodedRSASignature & sig,
                                       const uint8_t * certDER, uint16_t certDERLen);
 
 #endif // WEAVE_WITH_OPENSSL

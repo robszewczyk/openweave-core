@@ -45,57 +45,38 @@ using namespace nl::Weave::Profiles::DeviceDescription;
 
 #define TOOL_NAME "weave-dd-client"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void SendIdentifyRequest(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-static void HandleIdentifyResponse(void *appState, uint64_t nodeId, const IPAddress& nodeAddr, const IdentifyResponseMessage& respMsg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void SendIdentifyRequest(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+static void HandleIdentifyResponse(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                   const IdentifyResponseMessage & respMsg);
 
 DeviceDescriptionClient DDClient;
 static uint64_t DestNodeId = 1;
-const char *DestIPAddrStr = NULL;
+const char * DestIPAddrStr = NULL;
 IPAddress DestIPAddr;
-uint32_t ResendInterval = 200;  //ms
-uint32_t ResendCnt = 0;
-uint32_t ResendMaxCnt = 3;
+uint32_t ResendInterval = 200; // ms
+uint32_t ResendCnt      = 0;
+uint32_t ResendMaxCnt   = 3;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "dest-addr", kArgumentRequired, 'D' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "dest-addr", kArgumentRequired, 'D' }, { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -D, --dest-addr <host>\n"
     "       Send an ImageQuery request to a specific address rather than one\n"
     "       derived from the destination node id.  <host> can be a hostname,\n"
     "       an IPv4 address or an IPv6 address.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>]\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -144,7 +125,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -159,16 +140,16 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void SendIdentifyRequest(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void SendIdentifyRequest(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     printf("Sending identify requests to node %" PRIX64 " at %s\n", DestNodeId, DestIPAddrStr);
 
     IdentifyRequestMessage identifyReqMsg;
-    identifyReqMsg.TargetFabricId = gWeaveNodeOptions.FabricId;
-    identifyReqMsg.TargetModes= kTargetDeviceMode_Any;
-    identifyReqMsg.TargetVendorId = 0xFFFF;
+    identifyReqMsg.TargetFabricId  = gWeaveNodeOptions.FabricId;
+    identifyReqMsg.TargetModes     = kTargetDeviceMode_Any;
+    identifyReqMsg.TargetVendorId  = 0xFFFF;
     identifyReqMsg.TargetProductId = 0xFFFF;
-    identifyReqMsg.TargetDeviceId = DestNodeId;
+    identifyReqMsg.TargetDeviceId  = DestNodeId;
 
     IPAddress::FromString(DestIPAddrStr, DestIPAddr);
     DDClient.SendIdentifyRequest(DestIPAddr, identifyReqMsg);
@@ -183,22 +164,18 @@ void SendIdentifyRequest(System::Layer* aSystemLayer, void* aAppState, System::E
     }
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'D':
-        DestIPAddrStr = arg;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'D': DestIPAddrStr = arg; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc < 1)
     {
@@ -212,12 +189,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    const char *nodeId = argv[0];
-    char *p = (char *)strchr(nodeId, '@');
+    const char * nodeId = argv[0];
+    char * p            = (char *) strchr(nodeId, '@');
     if (p != NULL)
     {
-        *p = 0;
-        DestIPAddrStr = p+1;
+        *p            = 0;
+        DestIPAddrStr = p + 1;
     }
 
     if (!ParseNodeId(nodeId, DestNodeId))
@@ -229,16 +206,17 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-static void HandleIdentifyResponse(void *appState, uint64_t nodeId, const IPAddress& nodeAddr, const IdentifyResponseMessage& respMsg)
+static void HandleIdentifyResponse(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                   const IdentifyResponseMessage & respMsg)
 {
     WeaveDeviceDescriptor deviceDesc = respMsg.DeviceDesc;
     char ipAddrStr[64];
     nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
     printf("IdentifyResponse received from node %" PRIX64 " (%s)\n", nodeId, ipAddrStr);
     printf("  Source Fabric Id: %016" PRIX64 "\n", deviceDesc.FabricId);
-    printf("  Source Vendor Id: %04X\n", (unsigned)deviceDesc.VendorId);
-    printf("  Source Product Id: %04X\n", (unsigned)deviceDesc.ProductId);
-    printf("  Source Product Revision: %04X\n", (unsigned)deviceDesc.ProductRevision);
+    printf("  Source Vendor Id: %04X\n", (unsigned) deviceDesc.VendorId);
+    printf("  Source Product Id: %04X\n", (unsigned) deviceDesc.ProductId);
+    printf("  Source Product Revision: %04X\n", (unsigned) deviceDesc.ProductRevision);
     printf("Received IdentifyResponse\n");
     printf("Device Description Operation Completed\n");
     DDClient.CancelExchange();

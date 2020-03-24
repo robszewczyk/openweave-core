@@ -39,7 +39,6 @@ namespace TLV {
 
 using namespace nl::Weave::Encoding;
 
-
 /**
  * @var uint32_t TLVWriter::ImplicitProfileId
  *
@@ -66,7 +65,8 @@ using namespace nl::Weave::Encoding;
  */
 
 /**
- * @typedef WEAVE_ERROR (*TLVWriter::GetNewBufferFunct)(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart, uint32_t& bufLen)
+ * @typedef WEAVE_ERROR (*TLVWriter::GetNewBufferFunct)(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart, uint32_t&
+ * bufLen)
  *
  * A function that supplies new output buffer space to a TLVWriter.
  *
@@ -115,7 +115,8 @@ using namespace nl::Weave::Encoding;
  */
 
 /**
- * @typedef WEAVE_ERROR (*TLVWriter::FinalizeBufferFunct)(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart, uint32_t bufLen)
+ * @typedef WEAVE_ERROR (*TLVWriter::FinalizeBufferFunct)(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart, uint32_t
+ * bufLen)
  *
  * A function used to perform finalization of the output from a TLVWriter object.
  *
@@ -160,21 +161,20 @@ using namespace nl::Weave::Encoding;
  * @param[in]   maxLen  The maximum number of bytes that should be written to the output buffer.
  *
  */
-__attribute__((noinline))
-void TLVWriter::Init(uint8_t *buf, uint32_t maxLen)
+__attribute__((noinline)) void TLVWriter::Init(uint8_t * buf, uint32_t maxLen)
 {
     mBufHandle = 0;
     mBufStart = mWritePoint = buf;
-    mRemainingLen = maxLen;
-    mLenWritten = 0;
-    mMaxLen = maxLen;
-    mContainerType = kTLVType_NotSpecified;
+    mRemainingLen           = maxLen;
+    mLenWritten             = 0;
+    mMaxLen                 = maxLen;
+    mContainerType          = kTLVType_NotSpecified;
     SetContainerOpen(false);
     SetCloseContainerReserved(true);
 
     ImplicitProfileId = kProfileIdNotSpecified;
-    GetNewBuffer = NULL;
-    FinalizeBuffer = NULL;
+    GetNewBuffer      = NULL;
+    FinalizeBuffer    = NULL;
 }
 
 /**
@@ -190,22 +190,22 @@ void TLVWriter::Init(uint8_t *buf, uint32_t maxLen)
  * @param[in]   maxLen  The maximum number of bytes that should be written to the output buffer.
  *
  */
-void TLVWriter::Init(PacketBuffer *buf, uint32_t maxLen)
+void TLVWriter::Init(PacketBuffer * buf, uint32_t maxLen)
 {
     mBufHandle = (uintptr_t) buf;
     mBufStart = mWritePoint = buf->Start() + buf->DataLength();
-    mRemainingLen = buf->AvailableDataLength();
+    mRemainingLen           = buf->AvailableDataLength();
     if (mRemainingLen > maxLen)
         mRemainingLen = maxLen;
-    mLenWritten = 0;
-    mMaxLen = maxLen;
+    mLenWritten    = 0;
+    mMaxLen        = maxLen;
     mContainerType = kTLVType_NotSpecified;
     SetContainerOpen(false);
     SetCloseContainerReserved(true);
 
     ImplicitProfileId = kProfileIdNotSpecified;
-    GetNewBuffer = NULL;
-    FinalizeBuffer = FinalizePacketBuffer;
+    GetNewBuffer      = NULL;
+    FinalizeBuffer    = FinalizePacketBuffer;
 }
 
 /**
@@ -229,7 +229,7 @@ void TLVWriter::Init(PacketBuffer *buf, uint32_t maxLen)
  *                      in the initial output buffer.
  *
  */
-void TLVWriter::Init(PacketBuffer *buf, uint32_t maxLen, bool allowDiscontiguousBuffers)
+void TLVWriter::Init(PacketBuffer * buf, uint32_t maxLen, bool allowDiscontiguousBuffers)
 {
     Init(buf, maxLen);
 
@@ -657,7 +657,7 @@ WEAVE_ERROR TLVWriter::Put(uint64_t tag, double v)
  *                              GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::PutBytes(uint64_t tag, const uint8_t *buf, uint32_t len)
+WEAVE_ERROR TLVWriter::PutBytes(uint64_t tag, const uint8_t * buf, uint32_t len)
 {
     return WriteElementWithData(kTLVType_ByteString, tag, (const uint8_t *) buf, len);
 }
@@ -688,7 +688,7 @@ WEAVE_ERROR TLVWriter::PutBytes(uint64_t tag, const uint8_t *buf, uint32_t len)
  *                              GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::PutString(uint64_t tag, const char *buf)
+WEAVE_ERROR TLVWriter::PutString(uint64_t tag, const char * buf)
 {
     return PutString(tag, buf, strlen(buf));
 }
@@ -720,7 +720,7 @@ WEAVE_ERROR TLVWriter::PutString(uint64_t tag, const char *buf)
  *                              GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::PutString(uint64_t tag, const char *buf, uint32_t len)
+WEAVE_ERROR TLVWriter::PutString(uint64_t tag, const char * buf, uint32_t len)
 {
     return WriteElementWithData(kTLVType_UTF8String, tag, (const uint8_t *) buf, len);
 }
@@ -772,7 +772,7 @@ WEAVE_ERROR TLVWriter::PutString(uint64_t tag, const char *buf, uint32_t len)
  *               `WriteElementHead` or `GetNewBuffer` -- failed, their
  *               error is immediately forwarded up the call stack.
  */
-WEAVE_ERROR TLVWriter::PutStringF(uint64_t tag, const char *fmt, ...)
+WEAVE_ERROR TLVWriter::PutStringF(uint64_t tag, const char * fmt, ...)
 {
     WEAVE_ERROR err;
     va_list ap;
@@ -786,15 +786,14 @@ WEAVE_ERROR TLVWriter::PutStringF(uint64_t tag, const char *fmt, ...)
     return err;
 }
 
-
 #if CONFIG_HAVE_VCBPRINTF
 // We have a variant of the printf function that takes a callback that
 // emits a single character.  The callback performs a function
 // identical to putchar.
 
-void TLVWriter::WeaveTLVWriterPutcharCB(uint8_t c, void *appState)
+void TLVWriter::WeaveTLVWriterPutcharCB(uint8_t c, void * appState)
 {
-    TLVWriter *w = static_cast<TLVWriter *>(appState);
+    TLVWriter * w = static_cast<TLVWriter *>(appState);
     w->WriteData(&c, sizeof(c));
 }
 #endif
@@ -846,7 +845,7 @@ void TLVWriter::WeaveTLVWriterPutcharCB(uint8_t c, void *appState)
  *               `WriteElementHead` or `GetNewBuffer` -- failed, their
  *               error is immediately forwarded up the call stack.
  */
-WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char *fmt, va_list ap)
+WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char * fmt, va_list ap)
 {
     va_list aq;
     size_t dataLen;
@@ -857,7 +856,7 @@ WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char *fmt, va_list ap)
     size_t writtenBytes;
 #elif CONFIG_HAVE_VCBPRINTF
 #elif HAVE_MALLOC
-    char *tmpBuf;
+    char * tmpBuf;
 #else
     size_t maxLen;
 #endif
@@ -878,13 +877,15 @@ WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char *fmt, va_list ap)
     // no facilities for splitting the stream across multiple buffers,
     // just write however much fits in the current buffer.
     // assume conservative tag length at this time (8 bytes)
-    maxLen =  mRemainingLen - (1 + 8 + (1 << static_cast<uint8_t>(lenFieldSize)) + 1); // 1 : control byte, 8 : tag length, stringLen + 1 for null termination
+    maxLen = mRemainingLen -
+        (1 + 8 + (1 << static_cast<uint8_t>(lenFieldSize)) +
+         1); // 1 : control byte, 8 : tag length, stringLen + 1 for null termination
     if (maxLen < dataLen)
         dataLen = maxLen;
 #endif
 
     // write length.
-    err = WriteElementHead((TLVElementType) (kTLVType_UTF8String | lenFieldSize), tag, dataLen);
+    err = WriteElementHead((TLVElementType)(kTLVType_UTF8String | lenFieldSize), tag, dataLen);
     SuccessOrExit(err);
 
     VerifyOrExit((mLenWritten + dataLen) <= mMaxLen, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
@@ -898,11 +899,11 @@ WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char *fmt, va_list ap)
     {
         va_copy(aq, ap);
 
-        vsnprintf_ex(reinterpret_cast<char*>(mWritePoint), mRemainingLen, skipLen, fmt, aq);
+        vsnprintf_ex(reinterpret_cast<char *>(mWritePoint), mRemainingLen, skipLen, fmt, aq);
 
         va_end(aq);
 
-        writtenBytes = (mRemainingLen >= (dataLen-skipLen))? dataLen-skipLen : mRemainingLen;
+        writtenBytes = (mRemainingLen >= (dataLen - skipLen)) ? dataLen - skipLen : mRemainingLen;
         skipLen += writtenBytes;
         mWritePoint += writtenBytes;
         mRemainingLen -= writtenBytes;
@@ -925,7 +926,7 @@ WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char *fmt, va_list ap)
 
     } while (skipLen < dataLen);
 
-#elif   CONFIG_HAVE_VCBPRINTF
+#elif CONFIG_HAVE_VCBPRINTF
 
     va_copy(aq, ap);
 
@@ -935,23 +936,23 @@ WEAVE_ERROR TLVWriter::VPutStringF(uint64_t tag, const char *fmt, va_list ap)
 
 #elif HAVE_MALLOC
 
-    tmpBuf = static_cast<char*>(malloc(dataLen+1));
+    tmpBuf = static_cast<char *>(malloc(dataLen + 1));
     VerifyOrExit(tmpBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     va_copy(aq, ap);
 
-    vsnprintf(tmpBuf, dataLen+1, fmt, aq);
+    vsnprintf(tmpBuf, dataLen + 1, fmt, aq);
 
     va_end(aq);
 
-    err = WriteData(reinterpret_cast<uint8_t*>(tmpBuf), dataLen);
+    err = WriteData(reinterpret_cast<uint8_t *>(tmpBuf), dataLen);
     free(tmpBuf);
 
 #else // CONFIG_HAVE_VSNPRINTF_EX
 
     va_copy(aq, ap);
 
-    vsnprintf(reinterpret_cast<char *>(mWritePoint), dataLen+1, fmt, aq);
+    vsnprintf(reinterpret_cast<char *>(mWritePoint), dataLen + 1, fmt, aq);
 
     va_end(aq);
 
@@ -965,7 +966,6 @@ exit:
 
     return err;
 }
-
 
 /**
  * Encodes a TLV null value.
@@ -1040,7 +1040,7 @@ WEAVE_ERROR TLVWriter::PutNull(uint64_t tag)
  *                              function associated with the reader object.
  *
  */
-WEAVE_ERROR TLVWriter::CopyElement(TLVReader& reader)
+WEAVE_ERROR TLVWriter::CopyElement(TLVReader & reader)
 {
     return CopyElement(reader.GetTag(), reader);
 }
@@ -1093,19 +1093,19 @@ WEAVE_ERROR TLVWriter::CopyElement(TLVReader& reader)
  *
  */
 
-
 const size_t kWeaveTLVCopyChunkSize = 16;
 
-WEAVE_ERROR TLVWriter::CopyElement(uint64_t tag, TLVReader& reader)
+WEAVE_ERROR TLVWriter::CopyElement(uint64_t tag, TLVReader & reader)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
     TLVElementType elemType = reader.ElementType();
-    uint64_t elemLenOrVal = reader.mElemLenOrVal;
+    uint64_t elemLenOrVal   = reader.mElemLenOrVal;
     TLVReader readerHelper; // used to figure out the length of the element and read data of the element
     uint32_t copyDataLen;
     uint8_t chunk[kWeaveTLVCopyChunkSize];
 
-    VerifyOrExit(elemType != kTLVElementType_NotSpecified && elemType != kTLVElementType_EndOfContainer, err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(elemType != kTLVElementType_NotSpecified && elemType != kTLVElementType_EndOfContainer,
+                 err = WEAVE_ERROR_INCORRECT_STATE);
 
     // Initialize the helper
     readerHelper.Init(reader);
@@ -1125,7 +1125,7 @@ WEAVE_ERROR TLVWriter::CopyElement(uint64_t tag, TLVReader& reader)
     while (copyDataLen > 0)
     {
         uint32_t chunkSize = copyDataLen > kWeaveTLVCopyChunkSize ? kWeaveTLVCopyChunkSize : copyDataLen;
-        err = readerHelper.ReadData(chunk, chunkSize);
+        err                = readerHelper.ReadData(chunk, chunkSize);
         SuccessOrExit(err);
 
         err = WriteData(chunk, chunkSize);
@@ -1136,7 +1136,6 @@ WEAVE_ERROR TLVWriter::CopyElement(uint64_t tag, TLVReader& reader)
 
 exit:
     return err;
-
 }
 
 /**
@@ -1189,7 +1188,7 @@ exit:
  *                              GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::OpenContainer(uint64_t tag, TLVType containerType, TLVWriter& containerWriter)
+WEAVE_ERROR TLVWriter::OpenContainer(uint64_t tag, TLVType containerType, TLVWriter & containerWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1211,18 +1210,18 @@ WEAVE_ERROR TLVWriter::OpenContainer(uint64_t tag, TLVType containerType, TLVWri
         ExitNow();
     }
 
-    containerWriter.mBufHandle = mBufHandle;
-    containerWriter.mBufStart = mBufStart;
-    containerWriter.mWritePoint = mWritePoint;
-    containerWriter.mRemainingLen = mRemainingLen;
-    containerWriter.mLenWritten = 0;
-    containerWriter.mMaxLen = mMaxLen - mLenWritten;
+    containerWriter.mBufHandle     = mBufHandle;
+    containerWriter.mBufStart      = mBufStart;
+    containerWriter.mWritePoint    = mWritePoint;
+    containerWriter.mRemainingLen  = mRemainingLen;
+    containerWriter.mLenWritten    = 0;
+    containerWriter.mMaxLen        = mMaxLen - mLenWritten;
     containerWriter.mContainerType = containerType;
     containerWriter.SetContainerOpen(false);
     containerWriter.SetCloseContainerReserved(IsCloseContainerReserved());
     containerWriter.ImplicitProfileId = ImplicitProfileId;
-    containerWriter.GetNewBuffer = GetNewBuffer;
-    containerWriter.FinalizeBuffer = FinalizeBuffer;
+    containerWriter.GetNewBuffer      = GetNewBuffer;
+    containerWriter.FinalizeBuffer    = FinalizeBuffer;
 
     SetContainerOpen(true);
 
@@ -1262,7 +1261,7 @@ exit:
  *                              configured GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::CloseContainer(TLVWriter& containerWriter)
+WEAVE_ERROR TLVWriter::CloseContainer(TLVWriter & containerWriter)
 {
     if (!TLVTypeIsContainer(containerWriter.mContainerType))
         return WEAVE_ERROR_INCORRECT_STATE;
@@ -1270,9 +1269,9 @@ WEAVE_ERROR TLVWriter::CloseContainer(TLVWriter& containerWriter)
     if (containerWriter.IsContainerOpen())
         return WEAVE_ERROR_TLV_CONTAINER_OPEN;
 
-    mBufHandle = containerWriter.mBufHandle;
-    mBufStart = containerWriter.mBufStart;
-    mWritePoint = containerWriter.mWritePoint;
+    mBufHandle    = containerWriter.mBufHandle;
+    mBufStart     = containerWriter.mBufStart;
+    mWritePoint   = containerWriter.mWritePoint;
     mRemainingLen = containerWriter.mRemainingLen;
     mLenWritten += containerWriter.mLenWritten;
 
@@ -1328,7 +1327,7 @@ WEAVE_ERROR TLVWriter::CloseContainer(TLVWriter& containerWriter)
  *                              GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::StartContainer(uint64_t tag, TLVType containerType, TLVType& outerContainerType)
+WEAVE_ERROR TLVWriter::StartContainer(uint64_t tag, TLVType containerType, TLVType & outerContainerType)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1350,7 +1349,7 @@ WEAVE_ERROR TLVWriter::StartContainer(uint64_t tag, TLVType containerType, TLVTy
         ExitNow();
     }
     outerContainerType = mContainerType;
-    mContainerType = containerType;
+    mContainerType     = containerType;
 
     SetContainerOpen(false);
 
@@ -1445,12 +1444,12 @@ WEAVE_ERROR TLVWriter::EndContainer(TLVType outerContainerType)
  *                              GetNewBuffer() or FinalizeBuffer() functions.
  *
  */
-WEAVE_ERROR TLVWriter::PutPreEncodedContainer(uint64_t tag, TLVType containerType, const uint8_t *data, uint32_t dataLen)
+WEAVE_ERROR TLVWriter::PutPreEncodedContainer(uint64_t tag, TLVType containerType, const uint8_t * data, uint32_t dataLen)
 {
     if (!TLVTypeIsContainer(containerType))
         return WEAVE_ERROR_INVALID_ARGUMENT;
 
-    WEAVE_ERROR err = WriteElementHead((TLVElementType)containerType, tag, 0);
+    WEAVE_ERROR err = WriteElementHead((TLVElementType) containerType, tag, 0);
     if (err != WEAVE_NO_ERROR)
         return err;
 
@@ -1500,7 +1499,7 @@ WEAVE_ERROR TLVWriter::PutPreEncodedContainer(uint64_t tag, TLVType containerTyp
  *                              function associated with the reader object.
  *
  */
-WEAVE_ERROR TLVWriter::CopyContainer(TLVReader& container)
+WEAVE_ERROR TLVWriter::CopyContainer(TLVReader & container)
 {
     return CopyContainer(container.GetTag(), container);
 }
@@ -1555,12 +1554,12 @@ WEAVE_ERROR TLVWriter::CopyContainer(TLVReader& container)
  *                              function associated with the reader object.
  *
  */
-WEAVE_ERROR TLVWriter::CopyContainer(uint64_t tag, TLVReader& container)
+WEAVE_ERROR TLVWriter::CopyContainer(uint64_t tag, TLVReader & container)
 {
     // NOTE: This function MUST be used with a TVLReader that is reading from a contiguous buffer.
     WEAVE_ERROR err;
     TLVType containerType, outerContainerType;
-    const uint8_t *containerStart;
+    const uint8_t * containerStart;
 
     containerType = container.GetType();
 
@@ -1654,7 +1653,7 @@ TLVType TLVWriter::GetContainerType() const
 
 WEAVE_ERROR TLVWriter::WriteElementHead(TLVElementType elemType, uint64_t tag, uint64_t lenOrVal)
 {
-    uint8_t *p;
+    uint8_t * p;
     uint8_t stagingBuf[17]; // 17 = 1 control byte + 8 tag bytes + 8 length/value bytes
 
     if (IsContainerOpen())
@@ -1679,8 +1678,8 @@ WEAVE_ERROR TLVWriter::WriteElementHead(TLVElementType elemType, uint64_t tag, u
         }
         else
         {
-            if (elemType != kTLVElementType_EndOfContainer && mContainerType != kTLVType_NotSpecified
-                    && mContainerType != kTLVType_Array)
+            if (elemType != kTLVElementType_EndOfContainer && mContainerType != kTLVType_NotSpecified &&
+                mContainerType != kTLVType_Array)
                 return WEAVE_ERROR_INVALID_TLV_TAG;
 
             Write8(p, kTLVTagControl_Anonymous | elemType);
@@ -1690,8 +1689,7 @@ WEAVE_ERROR TLVWriter::WriteElementHead(TLVElementType elemType, uint64_t tag, u
     {
         uint32_t profileId = ProfileIdFromTag(tag);
 
-        if (mContainerType != kTLVType_NotSpecified && mContainerType != kTLVType_Structure
-                && mContainerType != kTLVType_Path)
+        if (mContainerType != kTLVType_NotSpecified && mContainerType != kTLVType_Structure && mContainerType != kTLVType_Path)
             return WEAVE_ERROR_INVALID_TLV_TAG;
 
         if (profileId == kCommonProfileId)
@@ -1722,7 +1720,7 @@ WEAVE_ERROR TLVWriter::WriteElementHead(TLVElementType elemType, uint64_t tag, u
         }
         else
         {
-            uint16_t vendorId = (uint16_t) (profileId >> 16);
+            uint16_t vendorId   = (uint16_t)(profileId >> 16);
             uint16_t profileNum = (uint16_t) profileId;
 
             if (tagNum < 65536)
@@ -1744,26 +1742,17 @@ WEAVE_ERROR TLVWriter::WriteElementHead(TLVElementType elemType, uint64_t tag, u
 
     switch (GetTLVFieldSize(elemType))
     {
-    case kTLVFieldSize_0Byte:
-        break;
-    case kTLVFieldSize_1Byte:
-        Write8(p, (uint8_t) lenOrVal);
-        break;
-    case kTLVFieldSize_2Byte:
-        LittleEndian::Write16(p, (uint16_t) lenOrVal);
-        break;
-    case kTLVFieldSize_4Byte:
-        LittleEndian::Write32(p, (uint32_t) lenOrVal);
-        break;
-    case kTLVFieldSize_8Byte:
-        LittleEndian::Write64(p, lenOrVal);
-        break;
+    case kTLVFieldSize_0Byte: break;
+    case kTLVFieldSize_1Byte: Write8(p, (uint8_t) lenOrVal); break;
+    case kTLVFieldSize_2Byte: LittleEndian::Write16(p, (uint16_t) lenOrVal); break;
+    case kTLVFieldSize_4Byte: LittleEndian::Write32(p, (uint32_t) lenOrVal); break;
+    case kTLVFieldSize_8Byte: LittleEndian::Write64(p, lenOrVal); break;
     }
 
     if ((mRemainingLen >= sizeof(stagingBuf)) && (mMaxLen >= sizeof(stagingBuf)))
     {
         uint32_t len = p - mWritePoint;
-        mWritePoint = p;
+        mWritePoint  = p;
         mRemainingLen -= len;
         mLenWritten += len;
         return WEAVE_NO_ERROR;
@@ -1772,7 +1761,7 @@ WEAVE_ERROR TLVWriter::WriteElementHead(TLVElementType elemType, uint64_t tag, u
         return WriteData(stagingBuf, p - stagingBuf);
 }
 
-WEAVE_ERROR TLVWriter::WriteElementWithData(TLVType type, uint64_t tag, const uint8_t *data, uint32_t dataLen)
+WEAVE_ERROR TLVWriter::WriteElementWithData(TLVType type, uint64_t tag, const uint8_t * data, uint32_t dataLen)
 {
     TLVFieldSize lenFieldSize;
 
@@ -1783,14 +1772,14 @@ WEAVE_ERROR TLVWriter::WriteElementWithData(TLVType type, uint64_t tag, const ui
     else
         lenFieldSize = kTLVFieldSize_4Byte;
 
-    WEAVE_ERROR err = WriteElementHead((TLVElementType) (type | lenFieldSize), tag, dataLen);
+    WEAVE_ERROR err = WriteElementHead((TLVElementType)(type | lenFieldSize), tag, dataLen);
     if (err != WEAVE_NO_ERROR)
         return err;
 
     return WriteData(data, dataLen);
 }
 
-WEAVE_ERROR TLVWriter::WriteData(const uint8_t *p, uint32_t len)
+WEAVE_ERROR TLVWriter::WriteData(const uint8_t * p, uint32_t len)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1846,11 +1835,11 @@ exit:
  * See the GetNewBufferFunct type definition for additional information on the API of the
  * GetNewPacketBuffer() function.
  */
-WEAVE_ERROR TLVWriter::GetNewPacketBuffer(TLVWriter& writer, uintptr_t& bufHandle, uint8_t *& bufStart, uint32_t& bufLen)
+WEAVE_ERROR TLVWriter::GetNewPacketBuffer(TLVWriter & writer, uintptr_t & bufHandle, uint8_t *& bufStart, uint32_t & bufLen)
 {
-    PacketBuffer *buf = (PacketBuffer *) bufHandle;
+    PacketBuffer * buf = (PacketBuffer *) bufHandle;
 
-    PacketBuffer *newBuf = buf->Next();
+    PacketBuffer * newBuf = buf->Next();
     if (newBuf == NULL)
     {
         newBuf = PacketBuffer::New(0);
@@ -1861,13 +1850,13 @@ WEAVE_ERROR TLVWriter::GetNewPacketBuffer(TLVWriter& writer, uintptr_t& bufHandl
     if (newBuf != NULL)
     {
         bufHandle = (uintptr_t) newBuf;
-        bufStart = newBuf->Start();
-        bufLen = newBuf->MaxDataLength();
+        bufStart  = newBuf->Start();
+        bufLen    = newBuf->MaxDataLength();
     }
     else
     {
         bufStart = NULL;
-        bufLen = 0;
+        bufLen   = 0;
     }
 
     return WEAVE_NO_ERROR;
@@ -1883,10 +1872,10 @@ WEAVE_ERROR TLVWriter::GetNewPacketBuffer(TLVWriter& writer, uintptr_t& bufHandl
  * See the FinalizeBufferFunct type definition for additional information on the API of the
  * FinalizePacketBuffer() function.
  */
-WEAVE_ERROR TLVWriter::FinalizePacketBuffer(TLVWriter& writer, uintptr_t bufHandle, uint8_t *bufStart, uint32_t dataLen)
+WEAVE_ERROR TLVWriter::FinalizePacketBuffer(TLVWriter & writer, uintptr_t bufHandle, uint8_t * bufStart, uint32_t dataLen)
 {
-    PacketBuffer *buf = (PacketBuffer *) bufHandle;
-    uint8_t * endPtr = bufStart + dataLen;
+    PacketBuffer * buf = (PacketBuffer *) bufHandle;
+    uint8_t * endPtr   = bufStart + dataLen;
 
     buf->SetDataLength(endPtr - buf->Start());
 

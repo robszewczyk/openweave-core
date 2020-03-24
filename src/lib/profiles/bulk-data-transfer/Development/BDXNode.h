@@ -60,31 +60,28 @@ namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesigna
  * callbacks and various parameters affecting the Transfer appropriately before
  * initializing it.
  */
-//TODO: to lower the code footprint for a client application on a highly-constrained
+// TODO: to lower the code footprint for a client application on a highly-constrained
 // device, one might consider wrapping #ifdefs around AwaitBdxSendInit, AwaitBdxReceiveInit,
 // HandleReceiveInit, and HandleSendInit to disable those features and entirely remove
 // their code for a device not meant to support them.
 class NL_DLL_EXPORT BdxNode
 {
 public:
-
     /** Default constructor that sets all members to NULL. Don't try to do anything
      * with the server until you've at least called init(). */
     BdxNode(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager* anExchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * anExchangeMgr);
 
     WEAVE_ERROR Shutdown(void);
 
-    WEAVE_ERROR NewTransfer(Binding *aBinding, BDXHandlers aBDXHandlers,
-                            ReferencedString &aFileDesignator, void * anAppState,
-                            BDXTransfer * &aXfer);
+    WEAVE_ERROR NewTransfer(Binding * aBinding, BDXHandlers aBDXHandlers, ReferencedString & aFileDesignator, void * anAppState,
+                            BDXTransfer *& aXfer);
 
-    WEAVE_ERROR NewTransfer(WeaveConnection *aCon, BDXHandlers aBDXHandlers,
-                            ReferencedString &aFileDesignator, void *anAppState,
-                            BDXTransfer * &aXfer);
+    WEAVE_ERROR NewTransfer(WeaveConnection * aCon, BDXHandlers aBDXHandlers, ReferencedString & aFileDesignator, void * anAppState,
+                            BDXTransfer *& aXfer);
 
-    static void ShutdownTransfer(BDXTransfer *aXfer);
+    static void ShutdownTransfer(BDXTransfer * aXfer);
 
     void AllowBdxTransferToRun(bool aEnable);
 
@@ -92,40 +89,32 @@ public:
 
     bool IsInitialized(void);
 
-    WEAVE_ERROR InitBdxReceive(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                               bool aAsyncOk, ReferencedTLVData *aMetaData);
+    WEAVE_ERROR InitBdxReceive(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk, ReferencedTLVData * aMetaData);
 
-    WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                            bool aAsyncOk, ReferencedTLVData *aMetaData);
-    WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                            bool aAsyncOk, SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback,
-                            void *aMetaDataAppState);
+    WEAVE_ERROR InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk, ReferencedTLVData * aMetaData);
+    WEAVE_ERROR InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk,
+                            SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback, void * aMetaDataAppState);
 
     WEAVE_ERROR AwaitBdxReceiveInit(ReceiveInitHandler aReceiveInitHandler);
     WEAVE_ERROR AwaitBdxSendInit(SendInitHandler aSendInitHandler);
 
-    static void HandleSendInit(ExchangeContext *anEc, const IPPacketInfo *aPktInfo,
-                               const WeaveMessageInfo *aWeaveMsgInfo,
-                               uint32_t aProfileId, uint8_t aMessageType,
-                               PacketBuffer *aPacketBuffer);
+    static void HandleSendInit(ExchangeContext * anEc, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aWeaveMsgInfo,
+                               uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer);
 
-    static void HandleReceiveInit(ExchangeContext *anEc, const IPPacketInfo *aPktInfo,
-                                  const WeaveMessageInfo *aWeaveMsgInfo,
-                                  uint32_t aProfileId, uint8_t aMessageType,
-                                  PacketBuffer *aPacketBuffer);
+    static void HandleReceiveInit(ExchangeContext * anEc, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aWeaveMsgInfo,
+                                  uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer);
 
 private:
-    WEAVE_ERROR NewTransfer(ExchangeContext *anEc, BDXHandlers aBDXHandlers,
-                            ReferencedString &aFileDesignator, void *anAppState,
-                            BDXTransfer * &aXfer);
+    WEAVE_ERROR NewTransfer(ExchangeContext * anEc, BDXHandlers aBDXHandlers, ReferencedString & aFileDesignator, void * anAppState,
+                            BDXTransfer *& aXfer);
 
-    WEAVE_ERROR AllocTransfer(BDXTransfer * &aXfer);
+    WEAVE_ERROR AllocTransfer(BDXTransfer *& aXfer);
 
-    WEAVE_ERROR InitTransfer(ExchangeContext *anEc, BDXTransfer * &aXfer);
+    WEAVE_ERROR InitTransfer(ExchangeContext * anEc, BDXTransfer *& aXfer);
 
-    WeaveExchangeManager *mExchangeMgr;
+    WeaveExchangeManager * mExchangeMgr;
 
-    bool mIsBdxTransferAllowed;              // True when server is allowed to start transfers
+    bool mIsBdxTransferAllowed; // True when server is allowed to start transfers
     bool mInitialized;
 
     BDXTransfer mTransferPool[WEAVE_CONFIG_BDX_MAX_NUM_TRANSFERS];
@@ -136,16 +125,16 @@ private:
     SendInitHandler mSendInitHandler;
     ReceiveInitHandler mReceiveInitHandler;
 
-    static WEAVE_ERROR SendReject(ExchangeContext *anEc, uint8_t aVersion, uint16_t anErr, uint8_t aMsgType);
-    static WEAVE_ERROR SendReceiveAccept(ExchangeContext *anEc, BDXTransfer *aXfer);
-    static WEAVE_ERROR SendSendAccept(ExchangeContext *anEc, BDXTransfer *aXfer);
+    static WEAVE_ERROR SendReject(ExchangeContext * anEc, uint8_t aVersion, uint16_t anErr, uint8_t aMsgType);
+    static WEAVE_ERROR SendReceiveAccept(ExchangeContext * anEc, BDXTransfer * aXfer);
+    static WEAVE_ERROR SendSendAccept(ExchangeContext * anEc, BDXTransfer * aXfer);
 };
 
 // Typedef to obscure the fact that Client and Server are the same code
 typedef BdxNode BdxClient;
 typedef BdxNode BdxServer;
 
-} // namespace BulkDataTransfer
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

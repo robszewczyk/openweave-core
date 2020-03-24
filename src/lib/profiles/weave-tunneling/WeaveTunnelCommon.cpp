@@ -51,12 +51,11 @@ using namespace nl::Weave::Encoding;
  *
  * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
  */
-WEAVE_ERROR WeaveTunnelHeader::EncodeTunnelHeader (WeaveTunnelHeader *tunHeader,
-                                                   PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelHeader::EncodeTunnelHeader(WeaveTunnelHeader * tunHeader, PacketBuffer * msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = NULL;
-    uint16_t tunHdrLen = 0;
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
+    uint8_t * p         = NULL;
+    uint16_t tunHdrLen  = 0;
     uint16_t payloadLen = msg->DataLength();
 
     // Verify the right tunnel version is selected.
@@ -80,7 +79,7 @@ WEAVE_ERROR WeaveTunnelHeader::EncodeTunnelHeader (WeaveTunnelHeader *tunHeader,
     msg->SetDataLength(tunHdrLen + payloadLen);
 exit:
 
-   return err;
+    return err;
 }
 
 /**
@@ -94,13 +93,12 @@ exit:
  *
  * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
  */
-WEAVE_ERROR WeaveTunnelHeader::DecodeTunnelHeader (WeaveTunnelHeader *tunHeader,
-                                                   PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelHeader::DecodeTunnelHeader(WeaveTunnelHeader * tunHeader, PacketBuffer * msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = NULL;
-    uint16_t msgLen = msg->DataLength();
-    uint8_t *msgEnd = msg->Start() + msgLen;
+    WEAVE_ERROR err  = WEAVE_NO_ERROR;
+    uint8_t * p      = NULL;
+    uint16_t msgLen  = msg->DataLength();
+    uint8_t * msgEnd = msg->Start() + msgLen;
 
     p = msg->Start();
 
@@ -135,12 +133,10 @@ exit:
  *
  * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
  */
-WEAVE_ERROR WeaveTunnelRoute::EncodeFabricTunnelRoutes(uint64_t fabricId,
-                                                       WeaveTunnelRoute *tunRoutes,
-                                                       PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelRoute::EncodeFabricTunnelRoutes(uint64_t fabricId, WeaveTunnelRoute * tunRoutes, PacketBuffer * msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = NULL;
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
+    uint8_t * p         = NULL;
     uint16_t payloadLen = 0;
 
     // FabricId(8 bytes) + numOfPrefixes(1 byte) + (IPv6 prefix(16 bytes) + prefixLen(1 byte) +
@@ -154,8 +150,9 @@ WEAVE_ERROR WeaveTunnelRoute::EncodeFabricTunnelRoutes(uint64_t fabricId,
     if (tunRoutes)
     {
         payloadLen += NUM_OF_PREFIXES_FIELD_SIZE_IN_BYTES +
-                      (NL_INET_IPV6_ADDR_LEN_IN_BYTES + NL_IPV6_PREFIX_LEN_FIELD_SIZE_IN_BYTES +
-                      NL_IPV6_PREFIX_PRIORITY_FIELD_SIZE_IN_BYTES) * tunRoutes->numOfPrefixes;
+            (NL_INET_IPV6_ADDR_LEN_IN_BYTES + NL_IPV6_PREFIX_LEN_FIELD_SIZE_IN_BYTES +
+             NL_IPV6_PREFIX_PRIORITY_FIELD_SIZE_IN_BYTES) *
+                tunRoutes->numOfPrefixes;
     }
     // Error if not enough space after the message payload.
 
@@ -200,22 +197,19 @@ exit:
  *
  * @return WEAVE_ERROR        WEAVE_NO_ERROR on success, else error;
  */
-WEAVE_ERROR WeaveTunnelRoute::DecodeFabricTunnelRoutes(uint64_t *fabricId,
-                                                       WeaveTunnelRoute *tunRoutes,
-                                                       PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelRoute::DecodeFabricTunnelRoutes(uint64_t * fabricId, WeaveTunnelRoute * tunRoutes, PacketBuffer * msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *p = NULL;
-    uint16_t msgLen = msg->DataLength();
-    uint8_t *msgEnd = msg->Start() + msgLen;
+    WEAVE_ERROR err                 = WEAVE_NO_ERROR;
+    uint8_t * p                     = NULL;
+    uint16_t msgLen                 = msg->DataLength();
+    uint8_t * msgEnd                = msg->Start() + msgLen;
     uint16_t expectedRouteFieldsLen = 0;
 
     p = msg->Start();
 
     // Verify that we can at least read the fabric id.
 
-    VerifyOrExit(msgLen >= (FABRIC_ID_FIELD_SIZE_IN_BYTES),
-                 err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
+    VerifyOrExit(msgLen >= (FABRIC_ID_FIELD_SIZE_IN_BYTES), err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
     // Read fabric Id for the routes
 
@@ -228,7 +222,8 @@ WEAVE_ERROR WeaveTunnelRoute::DecodeFabricTunnelRoutes(uint64_t *fabricId,
         // Now verify if the message data length is exactly the size of the routes to be read.
 
         expectedRouteFieldsLen = (NL_INET_IPV6_ADDR_LEN_IN_BYTES + NL_IPV6_PREFIX_LEN_FIELD_SIZE_IN_BYTES +
-                                  NL_IPV6_PREFIX_PRIORITY_FIELD_SIZE_IN_BYTES) * tunRoutes->numOfPrefixes;
+                                  NL_IPV6_PREFIX_PRIORITY_FIELD_SIZE_IN_BYTES) *
+            tunRoutes->numOfPrefixes;
 
         VerifyOrExit((p + expectedRouteFieldsLen) == msgEnd, err = WEAVE_ERROR_INVALID_MESSAGE_LENGTH);
 
@@ -236,7 +231,7 @@ WEAVE_ERROR WeaveTunnelRoute::DecodeFabricTunnelRoutes(uint64_t *fabricId,
         {
             IPAddress::ReadAddress(const_cast<const uint8_t *&>(p), tunRoutes->tunnelRoutePrefix[i].IPAddr);
             tunRoutes->tunnelRoutePrefix[i].Length = Read8(p);
-            tunRoutes->priority[i] = Read8(p);
+            tunRoutes->priority[i]                 = Read8(p);
         }
     }
 

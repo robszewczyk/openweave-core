@@ -36,12 +36,12 @@
 
 using namespace nl::Weave;
 
-static void PacketBufferAlloc(System::PacketBuffer *&aBuffer)
+static void PacketBufferAlloc(System::PacketBuffer *& aBuffer)
 {
     aBuffer = System::PacketBuffer::New();
 }
 
-static void PacketBufferFree(System::PacketBuffer *&aBuffer)
+static void PacketBufferFree(System::PacketBuffer *& aBuffer)
 {
     if (aBuffer != NULL)
     {
@@ -54,7 +54,7 @@ static void PacketBufferFree(System::PacketBuffer *&aBuffer)
  *  Test default construction and, implictly, destruction
  *
  */
-static void CheckDefaultConstruction(nlTestSuite *inSuite, void *inContext)
+static void CheckDefaultConstruction(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theExtent;
 }
@@ -63,10 +63,10 @@ static void CheckDefaultConstruction(nlTestSuite *inSuite, void *inContext)
  *  Test the GetBuffer accessor method
  *
  */
-static void CheckGetBufferAccessor(nlTestSuite *inSuite, void *inContext)
+static void CheckGetBufferAccessor(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer;
-    System::PacketBuffer *theBuffer;
+    System::PacketBuffer * theBuffer;
 
     theBuffer = theRetainedBuffer.GetBuffer();
     NL_TEST_ASSERT(inSuite, theBuffer == NULL);
@@ -76,10 +76,10 @@ static void CheckGetBufferAccessor(nlTestSuite *inSuite, void *inContext)
  *  Test the IsRetaining accessor method.
  *
  */
-static void CheckIsRetainingAccessor(nlTestSuite *inSuite, void *inContext)
+static void CheckIsRetainingAccessor(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer;
-    System::PacketBuffer *theBuffer;
+    System::PacketBuffer * theBuffer;
     bool retaining;
 
     theBuffer = theRetainedBuffer.GetBuffer();
@@ -93,11 +93,11 @@ static void CheckIsRetainingAccessor(nlTestSuite *inSuite, void *inContext)
  *  Test the copy constructor absent retaining a buffer.
  *
  */
-static void CheckCopyConstructionWithoutRetainedBuffer(nlTestSuite *inSuite, void *inContext)
+static void CheckCopyConstructionWithoutRetainedBuffer(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer_1;
     Profiles::RetainedPacketBuffer theRetainedBuffer_2(theRetainedBuffer_1);
-    System::PacketBuffer *theBuffer;
+    System::PacketBuffer * theBuffer;
     bool retaining;
 
     theBuffer = theRetainedBuffer_1.GetBuffer();
@@ -117,11 +117,11 @@ static void CheckCopyConstructionWithoutRetainedBuffer(nlTestSuite *inSuite, voi
  *  Test the assignment operator absent retaining a buffer.
  *
  */
-void CheckAssignmentWithoutRetainedBuffer(nlTestSuite *inSuite, void *inContext)
+void CheckAssignmentWithoutRetainedBuffer(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer_1;
     Profiles::RetainedPacketBuffer theRetainedBuffer_2;
-    System::PacketBuffer *theBuffer;
+    System::PacketBuffer * theBuffer;
     bool retaining;
 
     theBuffer = theRetainedBuffer_1.GetBuffer();
@@ -155,10 +155,10 @@ void CheckAssignmentWithoutRetainedBuffer(nlTestSuite *inSuite, void *inContext)
  *  Test the Release method absent a retained buffer
  *
  */
-void CheckReleaseWithoutRetainedBuffer(nlTestSuite *inSuite, void *inContext)
+void CheckReleaseWithoutRetainedBuffer(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer;
-    System::PacketBuffer *theBuffer;
+    System::PacketBuffer * theBuffer;
     bool retaining;
 
     theBuffer = theRetainedBuffer.GetBuffer();
@@ -180,10 +180,10 @@ void CheckReleaseWithoutRetainedBuffer(nlTestSuite *inSuite, void *inContext)
  *  Test the Retain method with a NULL pointer
  *
  */
-void CheckRetainWithNullPointer(nlTestSuite *inSuite, void *inContext)
+void CheckRetainWithNullPointer(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer;
-    System::PacketBuffer *theBuffer;
+    System::PacketBuffer * theBuffer;
     bool retaining;
 
     theBuffer = theRetainedBuffer.GetBuffer();
@@ -214,10 +214,10 @@ void CheckRetainWithNullPointer(nlTestSuite *inSuite, void *inContext)
  *  release via object destruction
  *
  */
-static void CheckRetainAllocatedBufferWithImplicitRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckRetainAllocatedBufferWithImplicitRelease(nlTestSuite * inSuite, void * inContext)
 {
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     // Add a scope nesting level to get implicit allocated buffer
@@ -266,11 +266,11 @@ static void CheckRetainAllocatedBufferWithImplicitRelease(nlTestSuite *inSuite, 
  *  release via the Release method
  *
  */
-static void CheckRetainAllocatedBufferWithExplicitRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckRetainAllocatedBufferWithExplicitRelease(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer;
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     accessedBuffer = theRetainedBuffer.GetBuffer();
@@ -322,10 +322,10 @@ static void CheckRetainAllocatedBufferWithExplicitRelease(nlTestSuite *inSuite, 
  *  destruction
  *
  */
-static void CheckCopyConstructionWithAllocatedBufferImplicitTargetImplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckCopyConstructionWithAllocatedBufferImplicitTargetImplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     // Add a scope nesting level to get implicit allocated buffer
@@ -412,11 +412,11 @@ static void CheckCopyConstructionWithAllocatedBufferImplicitTargetImplicitSource
  *  first via destruction and then explicitly the source second.
  *
  */
-static void CheckCopyConstructionWithAllocatedBufferImplicitTargetExplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckCopyConstructionWithAllocatedBufferImplicitTargetExplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer_1;
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     accessedBuffer = theRetainedBuffer_1.GetBuffer();
@@ -505,10 +505,10 @@ static void CheckCopyConstructionWithAllocatedBufferImplicitTargetExplicitSource
  *  first and then implicitly the source second via destruction
  *
  */
-static void CheckCopyConstructionWithAllocatedBufferExplicitTargetImplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckCopyConstructionWithAllocatedBufferExplicitTargetImplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     // Add a scope nesting level to get implicit allocated buffer
@@ -581,7 +581,6 @@ static void CheckCopyConstructionWithAllocatedBufferExplicitTargetImplicitSource
             NL_TEST_ASSERT(inSuite, retaining);
         }
 
-
         // theRetainedBuffer_2 is now both released and
         // destroyed. theRetainedBuffer_1 should still be retained.
 
@@ -612,11 +611,11 @@ static void CheckCopyConstructionWithAllocatedBufferExplicitTargetImplicitSource
  *  first and then explicitly the source second
  *
  */
-static void CheckCopyConstructionWithAllocatedBufferExplicitTargetExplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckCopyConstructionWithAllocatedBufferExplicitTargetExplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer_1;
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     accessedBuffer = theRetainedBuffer_1.GetBuffer();
@@ -719,10 +718,10 @@ static void CheckCopyConstructionWithAllocatedBufferExplicitTargetExplicitSource
  *  destruction
  *
  */
-static void CheckAssignmentWithAllocatedBufferImplicitTargetImplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckAssignmentWithAllocatedBufferImplicitTargetImplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     // Add a scope nesting level to get implicit allocated buffer
@@ -811,11 +810,11 @@ static void CheckAssignmentWithAllocatedBufferImplicitTargetImplicitSourceReleas
  *  first via destruction and then explicitly the source second.
  *
  */
-static void CheckAssignmentWithAllocatedBufferImplicitTargetExplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckAssignmentWithAllocatedBufferImplicitTargetExplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer_1;
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     accessedBuffer = theRetainedBuffer_1.GetBuffer();
@@ -906,10 +905,10 @@ static void CheckAssignmentWithAllocatedBufferImplicitTargetExplicitSourceReleas
  *  first and then implicitly the source second via destruction
  *
  */
-static void CheckAssignmentWithAllocatedBufferExplicitTargetImplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckAssignmentWithAllocatedBufferExplicitTargetImplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     // Add a scope nesting level to get implicit allocated buffer
@@ -984,7 +983,6 @@ static void CheckAssignmentWithAllocatedBufferExplicitTargetImplicitSourceReleas
             NL_TEST_ASSERT(inSuite, retaining);
         }
 
-
         // theRetainedBuffer_2 is now both released and
         // destroyed. theRetainedBuffer_1 should still be retained.
 
@@ -1015,11 +1013,11 @@ static void CheckAssignmentWithAllocatedBufferExplicitTargetImplicitSourceReleas
  *  first and then explicitly the source second
  *
  */
-static void CheckAssignmentWithAllocatedBufferExplicitTargetExplicitSourceRelease(nlTestSuite *inSuite, void *inContext)
+static void CheckAssignmentWithAllocatedBufferExplicitTargetExplicitSourceRelease(nlTestSuite * inSuite, void * inContext)
 {
     Profiles::RetainedPacketBuffer theRetainedBuffer_1;
-    System::PacketBuffer *allocatedBuffer;
-    System::PacketBuffer *accessedBuffer;
+    System::PacketBuffer * allocatedBuffer;
+    System::PacketBuffer * accessedBuffer;
     bool retaining;
 
     accessedBuffer = theRetainedBuffer_1.GetBuffer();
@@ -1119,32 +1117,37 @@ static void CheckAssignmentWithAllocatedBufferExplicitTargetExplicitSourceReleas
 }
 
 static const nlTest sTests[] = {
-    NL_TEST_DEF("default construction and destruction",                                                     CheckDefaultConstruction),
-    NL_TEST_DEF("get buffer accessor",                                                                      CheckGetBufferAccessor),
-    NL_TEST_DEF("is retaining accessor",                                                                    CheckIsRetainingAccessor),
-    NL_TEST_DEF("copy construction with no retained buffer",                                                CheckCopyConstructionWithoutRetainedBuffer),
-    NL_TEST_DEF("assignment with no retained buffer",                                                       CheckAssignmentWithoutRetainedBuffer),
-    NL_TEST_DEF("release with no retained buffer",                                                          CheckReleaseWithoutRetainedBuffer),
-    NL_TEST_DEF("retain with a null pointer",                                                               CheckRetainWithNullPointer),
-    NL_TEST_DEF("retain with an allocated buffer and implicit release",                                     CheckRetainAllocatedBufferWithImplicitRelease),
-    NL_TEST_DEF("retain with an allocated buffer and explicit release",                                     CheckRetainAllocatedBufferWithExplicitRelease),
-    NL_TEST_DEF("copy construction with allocated buffer and implicit target then implicit source release", CheckCopyConstructionWithAllocatedBufferImplicitTargetImplicitSourceRelease),
-    NL_TEST_DEF("copy construction with allocated buffer and implicit target then explicit source release", CheckCopyConstructionWithAllocatedBufferImplicitTargetExplicitSourceRelease),
-    NL_TEST_DEF("copy construction with allocated buffer and explicit target then implicit source release", CheckCopyConstructionWithAllocatedBufferExplicitTargetImplicitSourceRelease),
-    NL_TEST_DEF("copy construction with allocated buffer and explicit target then explicit source release", CheckCopyConstructionWithAllocatedBufferExplicitTargetExplicitSourceRelease),
-    NL_TEST_DEF("assignment with allocated buffer and implicit target then implicit source release",        CheckAssignmentWithAllocatedBufferImplicitTargetImplicitSourceRelease),
-    NL_TEST_DEF("assignment with allocated buffer and implicit target then explicit source release",        CheckAssignmentWithAllocatedBufferImplicitTargetExplicitSourceRelease),
-    NL_TEST_DEF("assignment with allocated buffer and explicit target then implicit source release",        CheckAssignmentWithAllocatedBufferExplicitTargetImplicitSourceRelease),
-    NL_TEST_DEF("assignment with allocated buffer and explicit target then explicit source release",        CheckAssignmentWithAllocatedBufferExplicitTargetExplicitSourceRelease),
+    NL_TEST_DEF("default construction and destruction", CheckDefaultConstruction),
+    NL_TEST_DEF("get buffer accessor", CheckGetBufferAccessor),
+    NL_TEST_DEF("is retaining accessor", CheckIsRetainingAccessor),
+    NL_TEST_DEF("copy construction with no retained buffer", CheckCopyConstructionWithoutRetainedBuffer),
+    NL_TEST_DEF("assignment with no retained buffer", CheckAssignmentWithoutRetainedBuffer),
+    NL_TEST_DEF("release with no retained buffer", CheckReleaseWithoutRetainedBuffer),
+    NL_TEST_DEF("retain with a null pointer", CheckRetainWithNullPointer),
+    NL_TEST_DEF("retain with an allocated buffer and implicit release", CheckRetainAllocatedBufferWithImplicitRelease),
+    NL_TEST_DEF("retain with an allocated buffer and explicit release", CheckRetainAllocatedBufferWithExplicitRelease),
+    NL_TEST_DEF("copy construction with allocated buffer and implicit target then implicit source release",
+                CheckCopyConstructionWithAllocatedBufferImplicitTargetImplicitSourceRelease),
+    NL_TEST_DEF("copy construction with allocated buffer and implicit target then explicit source release",
+                CheckCopyConstructionWithAllocatedBufferImplicitTargetExplicitSourceRelease),
+    NL_TEST_DEF("copy construction with allocated buffer and explicit target then implicit source release",
+                CheckCopyConstructionWithAllocatedBufferExplicitTargetImplicitSourceRelease),
+    NL_TEST_DEF("copy construction with allocated buffer and explicit target then explicit source release",
+                CheckCopyConstructionWithAllocatedBufferExplicitTargetExplicitSourceRelease),
+    NL_TEST_DEF("assignment with allocated buffer and implicit target then implicit source release",
+                CheckAssignmentWithAllocatedBufferImplicitTargetImplicitSourceRelease),
+    NL_TEST_DEF("assignment with allocated buffer and implicit target then explicit source release",
+                CheckAssignmentWithAllocatedBufferImplicitTargetExplicitSourceRelease),
+    NL_TEST_DEF("assignment with allocated buffer and explicit target then implicit source release",
+                CheckAssignmentWithAllocatedBufferExplicitTargetImplicitSourceRelease),
+    NL_TEST_DEF("assignment with allocated buffer and explicit target then explicit source release",
+                CheckAssignmentWithAllocatedBufferExplicitTargetExplicitSourceRelease),
     NL_TEST_SENTINEL()
 };
 
 int main(void)
 {
-    nlTestSuite theSuite = {
-        "weave-retained-packet-buffer",
-        &sTests[0]
-    };
+    nlTestSuite theSuite = { "weave-retained-packet-buffer", &sTests[0] };
 
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);

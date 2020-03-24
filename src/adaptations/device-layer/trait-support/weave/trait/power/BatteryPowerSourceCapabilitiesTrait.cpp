@@ -40,19 +40,19 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 //
 
 const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-    { kPropertyHandle_Root, 1 }, // type
-    { kPropertyHandle_Root, 2 }, // description
-    { kPropertyHandle_Root, 3 }, // nominal_voltage
-    { kPropertyHandle_Root, 4 }, // maximum_current
-    { kPropertyHandle_Root, 5 }, // current_type
-    { kPropertyHandle_Root, 6 }, // order
-    { kPropertyHandle_Root, 7 }, // removable
-    { kPropertyHandle_Root, 32 }, // rechargeable
-    { kPropertyHandle_Root, 33 }, // capacity
-    { kPropertyHandle_Root, 34 }, // chemistry
-    { kPropertyHandle_Root, 35 }, // count
-    { kPropertyHandle_Root, 36 }, // replaceable
-    { kPropertyHandle_Root, 37 }, // designations
+    { kPropertyHandle_Root, 1 },         // type
+    { kPropertyHandle_Root, 2 },         // description
+    { kPropertyHandle_Root, 3 },         // nominal_voltage
+    { kPropertyHandle_Root, 4 },         // maximum_current
+    { kPropertyHandle_Root, 5 },         // current_type
+    { kPropertyHandle_Root, 6 },         // order
+    { kPropertyHandle_Root, 7 },         // removable
+    { kPropertyHandle_Root, 32 },        // rechargeable
+    { kPropertyHandle_Root, 33 },        // capacity
+    { kPropertyHandle_Root, 34 },        // chemistry
+    { kPropertyHandle_Root, 35 },        // count
+    { kPropertyHandle_Root, 36 },        // replaceable
+    { kPropertyHandle_Root, 37 },        // designations
     { kPropertyHandle_Designations, 1 }, // designation_description
     { kPropertyHandle_Designations, 2 }, // common_designation_identifier
     { kPropertyHandle_Designations, 3 }, // ansi_designation_identifier
@@ -63,74 +63,58 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsOptional Table
 //
 
-uint8_t IsOptionalHandleBitfield[] = {
-        0xa, 0xf1, 0x1
-};
+uint8_t IsOptionalHandleBitfield[] = { 0xa, 0xf1, 0x1 };
 
 //
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0xa, 0x31, 0x0
-};
+uint8_t IsNullableHandleBitfield[] = { 0xa, 0x31, 0x0 };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        2,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    2,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        9,
+    9,
 #endif
-        NULL,
-        &IsOptionalHandleBitfield[0],
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    &IsOptionalHandleBitfield[0],
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        &Weave::Trait::Power::PowerSourceCapabilitiesTrait::TraitSchema,
+    &Weave::Trait::Power::PowerSourceCapabilitiesTrait::TraitSchema,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
 //
 // Event Structs
 //
 
-const nl::FieldDescriptor BatteryDesignationFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(BatteryDesignation, designationDescription), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 1), 1
-    },
+const nl::FieldDescriptor BatteryDesignationFieldDescriptors[] = {
+    { NULL, offsetof(BatteryDesignation, designationDescription), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 1), 1 },
 
-    {
-        NULL, offsetof(BatteryDesignation, commonDesignationIdentifier), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2
-    },
+    { NULL, offsetof(BatteryDesignation, commonDesignationIdentifier), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2 },
 
-    {
-        NULL, offsetof(BatteryDesignation, ansiDesignationIdentifier), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 3
-    },
+    { NULL, offsetof(BatteryDesignation, ansiDesignationIdentifier), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 3 },
 
-    {
-        NULL, offsetof(BatteryDesignation, iecDesignationIdentifier), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 4
-    },
+    { NULL, offsetof(BatteryDesignation, iecDesignationIdentifier), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 4 },
 
 };
 
-const nl::SchemaFieldDescriptor BatteryDesignation::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(BatteryDesignationFieldDescriptors)/sizeof(BatteryDesignationFieldDescriptors[0]),
-    .mFields = BatteryDesignationFieldDescriptors,
-    .mSize = sizeof(BatteryDesignation)
+const nl::SchemaFieldDescriptor BatteryDesignation::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(BatteryDesignationFieldDescriptors) / sizeof(BatteryDesignationFieldDescriptors[0]),
+    .mFields                     = BatteryDesignationFieldDescriptors,
+    .mSize                       = sizeof(BatteryDesignation)
 };
 
 } // namespace BatteryPowerSourceCapabilitiesTrait

@@ -127,7 +127,7 @@ WEAVE_ERROR IntegrityTypeList::parse(MessageIterator & i, IntegrityTypeList & aL
 bool IntegrityTypeList::operator ==(const IntegrityTypeList & another) const
 {
     bool retval = (theLength == another.theLength);
-    int i = 0;
+    int i       = 0;
 
     while (retval && (i < theLength))
     {
@@ -227,7 +227,7 @@ WEAVE_ERROR UpdateSchemeList::parse(MessageIterator & i, UpdateSchemeList & aLis
 bool UpdateSchemeList::operator ==(const UpdateSchemeList & another) const
 {
     bool retval = (theLength == another.theLength);
-    int i = 0;
+    int i       = 0;
 
     while (retval && (i < theLength))
     {
@@ -432,14 +432,10 @@ inline int integrityLength(uint8_t aType)
 {
     switch (aType)
     {
-    case kIntegrityType_SHA160:
-        return kLength_SHA160;
-    case kIntegrityType_SHA256:
-        return kLength_SHA256;
-    case kIntegrityType_SHA512:
-        return kLength_SHA512;
-    default:
-        return 0;
+    case kIntegrityType_SHA160: return kLength_SHA160;
+    case kIntegrityType_SHA256: return kLength_SHA256;
+    case kIntegrityType_SHA512: return kLength_SHA512;
+    default: return 0;
     }
 }
 /**
@@ -518,7 +514,7 @@ WEAVE_ERROR IntegritySpec::parse(MessageIterator & i, IntegritySpec & aSpec)
 bool IntegritySpec::operator ==(const IntegritySpec & another) const
 {
     bool retval = (type == another.type);
-    int i = 0;
+    int i       = 0;
 
     while (retval && (i < integrityLength(type)))
     {

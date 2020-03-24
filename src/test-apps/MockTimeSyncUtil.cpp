@@ -81,7 +81,8 @@ static OperatingMode gTimeSyncMode = kOperatingMode_AssignedLocalNodes;
 static MockTimeSyncCoordinator gMockCoordinator;
 #endif // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
 
-WEAVE_ERROR MockTimeSync::Init(nl::Weave::WeaveExchangeManager * const exchangeMgr, uint64_t serviceNodeId, const char * serviceNodeAddr)
+WEAVE_ERROR MockTimeSync::Init(nl::Weave::WeaveExchangeManager * const exchangeMgr, uint64_t serviceNodeId,
+                               const char * serviceNodeAddr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -90,7 +91,7 @@ WEAVE_ERROR MockTimeSync::Init(nl::Weave::WeaveExchangeManager * const exchangeM
 #if WEAVE_CONFIG_TIME_ENABLE_SERVER
         printf("Initializing Mock Time Sync Server\n");
         err = gMockServer.Init(exchangeMgr);
-#else // WEAVE_CONFIG_TIME_ENABLE_SERVER
+#else  // WEAVE_CONFIG_TIME_ENABLE_SERVER
         printf("Mock Time Sync Server not supported\n");
         err = WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_TIME_ENABLE_SERVER
@@ -101,7 +102,7 @@ WEAVE_ERROR MockTimeSync::Init(nl::Weave::WeaveExchangeManager * const exchangeM
 #if WEAVE_CONFIG_TIME_ENABLE_CLIENT
         printf("Initializing Mock Time Sync Client\n");
         err = gMockClient.Init(exchangeMgr, gTimeSyncMode, serviceNodeId, serviceNodeAddr);
-#else // WEAVE_CONFIG_TIME_ENABLE_CLIENT
+#else  // WEAVE_CONFIG_TIME_ENABLE_CLIENT
         printf("Mock Time Sync Client not supported\n");
         err = WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_TIME_ENABLE_CLIENT
@@ -112,7 +113,7 @@ WEAVE_ERROR MockTimeSync::Init(nl::Weave::WeaveExchangeManager * const exchangeM
 #if WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
         printf("Initializing Mock Time Sync Coordinator\n");
         err = gMockCoordinator.Init(exchangeMgr);
-#else // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
+#else  // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
         printf("Mock Time Sync Coordinator not supported\n");
         err = WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_TIME_ENABLE_COORDINATOR
@@ -141,10 +142,8 @@ WEAVE_ERROR MockTimeSync::SetMode(const OperatingMode mode)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit((kOperatingMode_Auto == mode) ||
-                 (kOperatingMode_AssignedLocalNodes == mode) ||
-                 (kOperatingMode_Service == mode) ||
-                 (kOperatingMode_ServiceOverTunnel == mode),
+    VerifyOrExit((kOperatingMode_Auto == mode) || (kOperatingMode_AssignedLocalNodes == mode) || (kOperatingMode_Service == mode) ||
+                     (kOperatingMode_ServiceOverTunnel == mode),
                  err = WEAVE_ERROR_INCORRECT_STATE);
 
     gTimeSyncMode = mode;

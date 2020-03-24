@@ -107,7 +107,7 @@ typedef enum
 } Id;
 // clang-format on
 
-NL_DLL_EXPORT nl::FaultInjection::Manager &GetManager(void);
+NL_DLL_EXPORT nl::FaultInjection::Manager & GetManager(void);
 
 /**
  * The number of ways in which Weave Fault Injection fuzzers can
@@ -115,7 +115,7 @@ NL_DLL_EXPORT nl::FaultInjection::Manager &GetManager(void);
  */
 #define WEAVE_FAULT_INJECTION_NUM_FUZZ_VALUES 3
 
-NL_DLL_EXPORT void FuzzExchangeHeader(uint8_t *p, int32_t arg);
+NL_DLL_EXPORT void FuzzExchangeHeader(uint8_t * p, int32_t arg);
 
 } // namespace FaultInjection
 } // namespace Weave
@@ -128,8 +128,7 @@ NL_DLL_EXPORT void FuzzExchangeHeader(uint8_t *p, int32_t arg);
  * @param[in] aFaultID      A Weave fault-injection id
  * @param[in] aStatements   Statements to be executed if the fault is enabled.
  */
-#define WEAVE_FAULT_INJECT( aFaultID, aStatements ) \
-        nlFAULT_INJECT(nl::Weave::FaultInjection::GetManager(), aFaultID, aStatements)
+#define WEAVE_FAULT_INJECT(aFaultID, aStatements) nlFAULT_INJECT(nl::Weave::FaultInjection::GetManager(), aFaultID, aStatements)
 
 /**
  * Execute the statements included if the Weave fault is
@@ -144,16 +143,17 @@ NL_DLL_EXPORT void FuzzExchangeHeader(uint8_t *p, int32_t arg);
  * @param[in] aUnprotectedStatements   Statements to be executed if the fault is enabled without holding the
  *                          Manager's lock
  */
-#define WEAVE_FAULT_INJECT_MAX_ARG( aFaultID, aMaxArg, aProtectedStatements, aUnprotectedStatements ) \
-    do { \
-        nl::FaultInjection::Manager &mgr = nl::Weave::FaultInjection::GetManager(); \
-        const nl::FaultInjection::Record *records = mgr.GetFaultRecords(); \
-        if (records[aFaultID].mNumArguments == 0) \
-        { \
-            int32_t arg = aMaxArg; \
-            mgr.StoreArgsAtFault(aFaultID, 1, &arg); \
-        } \
-        nlFAULT_INJECT_WITH_ARGS(mgr, aFaultID, aProtectedStatements, aUnprotectedStatements ); \
+#define WEAVE_FAULT_INJECT_MAX_ARG(aFaultID, aMaxArg, aProtectedStatements, aUnprotectedStatements)                                \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        nl::FaultInjection::Manager & mgr          = nl::Weave::FaultInjection::GetManager();                                      \
+        const nl::FaultInjection::Record * records = mgr.GetFaultRecords();                                                        \
+        if (records[aFaultID].mNumArguments == 0)                                                                                  \
+        {                                                                                                                          \
+            int32_t arg = aMaxArg;                                                                                                 \
+            mgr.StoreArgsAtFault(aFaultID, 1, &arg);                                                                               \
+        }                                                                                                                          \
+        nlFAULT_INJECT_WITH_ARGS(mgr, aFaultID, aProtectedStatements, aUnprotectedStatements);                                     \
     } while (0)
 
 /**
@@ -166,20 +166,18 @@ NL_DLL_EXPORT void FuzzExchangeHeader(uint8_t *p, int32_t arg);
  * @param[in] aUnprotectedStatements   Statements to be executed if the fault is enabled without holding the
  *                          Manager's lock
  */
-#define WEAVE_FAULT_INJECT_WITH_ARGS( aFaultID, aProtectedStatements, aUnprotectedStatements ) \
-        nlFAULT_INJECT_WITH_ARGS(nl::Weave::FaultInjection::GetManager(), aFaultID,  \
-                                 aProtectedStatements, aUnprotectedStatements );
+#define WEAVE_FAULT_INJECT_WITH_ARGS(aFaultID, aProtectedStatements, aUnprotectedStatements)                                       \
+    nlFAULT_INJECT_WITH_ARGS(nl::Weave::FaultInjection::GetManager(), aFaultID, aProtectedStatements, aUnprotectedStatements);
 
-#define WEAVE_FAULT_INJECTION_EXCH_HEADER_NUM_FIELDS 4
+#define WEAVE_FAULT_INJECTION_EXCH_HEADER_NUM_FIELDS      4
 #define WEAVE_FAULT_INJECTION_EXCH_HEADER_NUM_FIELDS_WRMP 5
 
 #else // WEAVE_CONFIG_TEST
 
-#define WEAVE_FAULT_INJECT( aFaultID, aStatements )
-#define WEAVE_FAULT_INJECT_WITH_ARGS( aFaultID, aProtectedStatements, aUnprotectedStatements )
-#define WEAVE_FAULT_INJECT_MAX_ARG( aFaultID, aMaxArg, aProtectedStatements, aUnprotectedStatements )
+#define WEAVE_FAULT_INJECT(aFaultID, aStatements)
+#define WEAVE_FAULT_INJECT_WITH_ARGS(aFaultID, aProtectedStatements, aUnprotectedStatements)
+#define WEAVE_FAULT_INJECT_MAX_ARG(aFaultID, aMaxArg, aProtectedStatements, aUnprotectedStatements)
 
 #endif // WEAVE_CONFIG_TEST
-
 
 #endif // WEAVE_FAULT_INJECTION_H_

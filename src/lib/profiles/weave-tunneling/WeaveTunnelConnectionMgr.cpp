@@ -58,12 +58,10 @@ WeaveTunnelConnectionMgr::WeaveTunnelConnectionMgr(void)
  *
  * @return WEAVE_NO_ERROR unconditionally.
  */
-WEAVE_ERROR WeaveTunnelConnectionMgr::Init(WeaveTunnelAgent *tunAgent,
-                                           TunnelType tunType,
-                                           SrcInterfaceType srcIntfType,
-                                           const char *connIntfName)
+WEAVE_ERROR WeaveTunnelConnectionMgr::Init(WeaveTunnelAgent * tunAgent, TunnelType tunType, SrcInterfaceType srcIntfType,
+                                           const char * connIntfName)
 {
-    WEAVE_ERROR err                   = WEAVE_NO_ERROR;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Check if the WeaveTunnelAgent object is valid.
 
@@ -95,36 +93,36 @@ WEAVE_ERROR WeaveTunnelConnectionMgr::Init(WeaveTunnelAgent *tunAgent,
     if (tunType == kType_TunnelPrimary)
     {
 #if WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
-        mMaxUserTimeoutSecs           = WEAVE_CONFIG_PRIMARY_TUNNEL_MAX_TIMEOUT_SECS;
+        mMaxUserTimeoutSecs = WEAVE_CONFIG_PRIMARY_TUNNEL_MAX_TIMEOUT_SECS;
 #endif // WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
 
 #if WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
-        mKeepAliveIntervalSecs        = WEAVE_CONFIG_PRIMARY_TUNNEL_KEEPALIVE_INTERVAL_SECS;
+        mKeepAliveIntervalSecs = WEAVE_CONFIG_PRIMARY_TUNNEL_KEEPALIVE_INTERVAL_SECS;
 #endif // WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-        mTunnelLivenessInterval       = WEAVE_CONFIG_PRIMARY_TUNNEL_LIVENESS_INTERVAL_SECS;
+        mTunnelLivenessInterval = WEAVE_CONFIG_PRIMARY_TUNNEL_LIVENESS_INTERVAL_SECS;
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
     }
     else
     {
 #if WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
-        mMaxUserTimeoutSecs           = WEAVE_CONFIG_BACKUP_TUNNEL_MAX_TIMEOUT_SECS;
+        mMaxUserTimeoutSecs = WEAVE_CONFIG_BACKUP_TUNNEL_MAX_TIMEOUT_SECS;
 #endif // WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
 
 #if WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
-        mKeepAliveIntervalSecs        = WEAVE_CONFIG_BACKUP_TUNNEL_KEEPALIVE_INTERVAL_SECS;
+        mKeepAliveIntervalSecs = WEAVE_CONFIG_BACKUP_TUNNEL_KEEPALIVE_INTERVAL_SECS;
 #endif // WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-        mTunnelLivenessInterval       = WEAVE_CONFIG_BACKUP_TUNNEL_LIVENESS_INTERVAL_SECS;
+        mTunnelLivenessInterval = WEAVE_CONFIG_BACKUP_TUNNEL_LIVENESS_INTERVAL_SECS;
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
     }
 
     mOnlineCheckInterval = WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_FAST_FREQ_SECS;
 
 #if WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
-    mMaxNumProbes                     = WEAVE_CONFIG_TUNNEL_MAX_KEEPALIVE_PROBES;
+    mMaxNumProbes = WEAVE_CONFIG_TUNNEL_MAX_KEEPALIVE_PROBES;
 #endif // WEAVE_CONFIG_TUNNEL_TCP_KEEPALIVE_SUPPORTED
 
     // Initialize WeaveTunnelControl
@@ -150,9 +148,8 @@ void WeaveTunnelConnectionMgr::Shutdown(void)
     mTunControl.Close();
 
     // Reset the handle to the TunnelAgent and the Service connection objects.
-    mTunAgent = NULL;
+    mTunAgent   = NULL;
     mServiceCon = NULL;
-
 }
 
 /**
@@ -161,7 +158,7 @@ void WeaveTunnelConnectionMgr::Shutdown(void)
  * @param[in] tunIntf              The InterfaceName for setting the Service tunnel connection.
  *
  */
-void WeaveTunnelConnectionMgr::SetInterfaceName(const char *tunIntf)
+void WeaveTunnelConnectionMgr::SetInterfaceName(const char * tunIntf)
 {
     if (tunIntf)
     {
@@ -175,9 +172,9 @@ void WeaveTunnelConnectionMgr::SetInterfaceName(const char *tunIntf)
  *
  * @param[in] srcIntfType          The network technology type of the interface for Service tunnel connection.
  */
-void WeaveTunnelConnectionMgr::SetInterfaceType (const SrcInterfaceType srcIntfType)
+void WeaveTunnelConnectionMgr::SetInterfaceType(const SrcInterfaceType srcIntfType)
 {
-    mSrcInterfaceType    = srcIntfType;
+    mSrcInterfaceType = srcIntfType;
 }
 
 #if WEAVE_CONFIG_TUNNEL_TCP_USER_TIMEOUT_SUPPORTED
@@ -204,14 +201,11 @@ WEAVE_ERROR WeaveTunnelConnectionMgr::ConfigureConnTimeout(uint16_t maxTimeoutSe
     {
         err = WEAVE_NO_ERROR;
     }
-    VerifyOrExit(err == WEAVE_NO_ERROR,
-                 WeaveLogDetail(WeaveTunnel,
-                               "Error setting TCP user timeout: %d", err);
-                );
+    VerifyOrExit(err == WEAVE_NO_ERROR, WeaveLogDetail(WeaveTunnel, "Error setting TCP user timeout: %d", err); );
 
     // Now set the member configurations
 
-    mMaxUserTimeoutSecs    = maxTimeoutSecs;
+    mMaxUserTimeoutSecs = maxTimeoutSecs;
 
 exit:
     return err;
@@ -270,13 +264,13 @@ void WeaveTunnelConnectionMgr::ConfigureTunnelLivenessInterval(uint16_t liveness
  */
 WEAVE_ERROR WeaveTunnelConnectionMgr::TryConnectingNow(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
     InterfaceId connIntfId = INET_NULL_INTERFACEID;
 #if WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
-    WeaveTunnelCommonStatistics *tunStats = NULL;
+    WeaveTunnelCommonStatistics * tunStats = NULL;
 #endif // WEAVE_CONFIG_TUNNEL_ENABLE_STATISTICS
 
-    WeaveLogDetail(WeaveTunnel, "TryConnectingNow on %s tunnel", mTunType == kType_TunnelPrimary?"primary":"backup");
+    WeaveLogDetail(WeaveTunnel, "TryConnectingNow on %s tunnel", mTunType == kType_TunnelPrimary ? "primary" : "backup");
 
     // Get the InterfaceId from the interface name.
 
@@ -293,21 +287,15 @@ WEAVE_ERROR WeaveTunnelConnectionMgr::TryConnectingNow(void)
 
     if (mTunAgent->mServiceMgr)
     {
-        err = mTunAgent->mServiceMgr->connect(mTunAgent->mPeerNodeId,
-                                              mTunAgent->mAuthMode, this,
-                                              ServiceMgrStatusHandler,
-                                              HandleServiceConnectionComplete,
-                                              WEAVE_CONFIG_TUNNEL_CONNECT_TIMEOUT_SECS * nl::Weave::System::kTimerFactor_milli_per_unit,
-                                              connIntfId);
+        err = mTunAgent->mServiceMgr->connect(
+            mTunAgent->mPeerNodeId, mTunAgent->mAuthMode, this, ServiceMgrStatusHandler, HandleServiceConnectionComplete,
+            WEAVE_CONFIG_TUNNEL_CONNECT_TIMEOUT_SECS * nl::Weave::System::kTimerFactor_milli_per_unit, connIntfId);
     }
     else
 #endif
     {
-        err = StartServiceTunnelConn(mTunAgent->mPeerNodeId,
-                                     mTunAgent->mServiceAddress,
-                                     mTunAgent->mServicePort,
-                                     mTunAgent->mAuthMode,
-                                     connIntfId);
+        err = StartServiceTunnelConn(mTunAgent->mPeerNodeId, mTunAgent->mServiceAddress, mTunAgent->mServicePort,
+                                     mTunAgent->mAuthMode, connIntfId);
     }
 
     SuccessOrExit(err);
@@ -330,17 +318,16 @@ exit:
 }
 
 /* Decide whether and how(fast or slow) to reconnect again to the Service */
-void WeaveTunnelConnectionMgr::DecideOnReconnect(ReconnectParam &reconnParam)
+void WeaveTunnelConnectionMgr::DecideOnReconnect(ReconnectParam & reconnParam)
 {
     uint32_t delayMsecs;
     // Exit if we do not need to reconnect.
 
     if ((mTunType == kType_TunnelPrimary && !mTunAgent->IsPrimaryTunnelEnabled())
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-        ||
-        (mTunType == kType_TunnelBackup && !mTunAgent->IsBackupTunnelEnabled())
+        || (mTunType == kType_TunnelBackup && !mTunAgent->IsBackupTunnelEnabled())
 #endif
-       )
+    )
     {
         ExitNow();
     }
@@ -379,7 +366,7 @@ void WeaveTunnelConnectionMgr::DecideOnReconnect(ReconnectParam &reconnParam)
 
     // Notify application appropriately
 
-    if  (mTunFailedConnAttemptsInRow == mMaxFailedConAttemptsBeforeNotify)
+    if (mTunFailedConnAttemptsInRow == mMaxFailedConAttemptsBeforeNotify)
     {
         // Notify about Tunnel down or failover.
 
@@ -403,10 +390,10 @@ exit:
 }
 
 /* Handler for reconnecting to the Service after wait period timeout */
-void WeaveTunnelConnectionMgr::ServiceConnectTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveTunnelConnectionMgr::ServiceConnectTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     ReconnectParam reconnParam;
-    WeaveTunnelConnectionMgr* tConnMgr = static_cast<WeaveTunnelConnectionMgr*>(aAppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(aAppState);
 
     // Exit if we do not need to reconnect.
     // We need to check to evaluate if, in the meantime, the application has disabled
@@ -414,10 +401,9 @@ void WeaveTunnelConnectionMgr::ServiceConnectTimeout(System::Layer* aSystemLayer
 
     if ((tConnMgr->mTunType == kType_TunnelPrimary && !tConnMgr->mTunAgent->IsPrimaryTunnelEnabled())
 #if WEAVE_CONFIG_TUNNEL_FAILOVER_SUPPORTED
-        ||
-        (tConnMgr->mTunType == kType_TunnelBackup && !tConnMgr->mTunAgent->IsBackupTunnelEnabled())
+        || (tConnMgr->mTunType == kType_TunnelBackup && !tConnMgr->mTunAgent->IsBackupTunnelEnabled())
 #endif
-       )
+    )
     {
         ExitNow();
     }
@@ -432,8 +418,7 @@ void WeaveTunnelConnectionMgr::ServiceConnectTimeout(System::Layer* aSystemLayer
 
     // Reconnect to Service.
 
-    WeaveLogDetail(WeaveTunnel, "Connecting to node %" PRIx64 "\n",
-                   tConnMgr->mTunAgent->mPeerNodeId);
+    WeaveLogDetail(WeaveTunnel, "Connecting to node %" PRIx64 "\n", tConnMgr->mTunAgent->mPeerNodeId);
 
     // Reset the reconnect armed flag.
 
@@ -456,7 +441,7 @@ exit:
 void WeaveTunnelConnectionMgr::ResetCacheAndScheduleConnect(uint32_t delay)
 {
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-        // Reset the Service directory
+    // Reset the Service directory
 
     if (mTunAgent->mServiceMgr)
     {
@@ -479,10 +464,8 @@ void WeaveTunnelConnectionMgr::CancelDelayedReconnect(void)
 }
 
 /* Start the connection to the Service */
-WEAVE_ERROR WeaveTunnelConnectionMgr::StartServiceTunnelConn(uint64_t destNodeId, IPAddress destIPAddr,
-                                                             uint16_t destPort,
-                                                             WeaveAuthMode authMode,
-                                                             InterfaceId connIntfId)
+WEAVE_ERROR WeaveTunnelConnectionMgr::StartServiceTunnelConn(uint64_t destNodeId, IPAddress destIPAddr, uint16_t destPort,
+                                                             WeaveAuthMode authMode, InterfaceId connIntfId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -507,7 +490,6 @@ WEAVE_ERROR WeaveTunnelConnectionMgr::StartServiceTunnelConn(uint64_t destNodeId
     // Setup connection handlers
 
     mServiceCon->OnConnectionComplete = HandleServiceConnectionComplete;
-
 
     // Set app state to WeaveTunnelConnectionMgr
 
@@ -595,7 +577,7 @@ void WeaveTunnelConnectionMgr::ServiceTunnelClose(WEAVE_ERROR err)
             // Set the appropriate connection state to Closing.
 
             mConnectionState = WeaveTunnelConnectionMgr::kState_TunnelClosing;
-            release = false;
+            release          = false;
         }
     }
 
@@ -632,25 +614,23 @@ void WeaveTunnelConnectionMgr::ServiceTunnelClose(WEAVE_ERROR err)
  * @param[in] message                      A pointer to the PacketBuffer object holding the tunneled IPv6 packet.
  *
  */
-void WeaveTunnelConnectionMgr::RecvdFromService (WeaveConnection *con,
-                                                 const WeaveMessageInfo *msgInfo,
-                                                 PacketBuffer *msg)
+void WeaveTunnelConnectionMgr::RecvdFromService(WeaveConnection * con, const WeaveMessageInfo * msgInfo, PacketBuffer * msg)
 {
-    WeaveTunnelConnectionMgr *tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
 
     tConnMgr->mTunAgent->HandleTunneledReceive(msg, tConnMgr->mTunType);
 
     return;
 }
 
-void WeaveTunnelConnectionMgr::ServiceMgrStatusHandler(void* appState, WEAVE_ERROR err, StatusReport *report)
+void WeaveTunnelConnectionMgr::ServiceMgrStatusHandler(void * appState, WEAVE_ERROR err, StatusReport * report)
 {
     ReconnectParam reconnParam;
 
-    WeaveTunnelConnectionMgr *tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(appState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(appState);
 
-    WeaveLogError(WeaveTunnel, "ServiceManager reported err %s, status %s\n",
-            nl::ErrorStr(err), report ? nl::StatusReportStr(report->mProfileId, report->mStatusCode) : "none");
+    WeaveLogError(WeaveTunnel, "ServiceManager reported err %s, status %s\n", nl::ErrorStr(err),
+                  report ? nl::StatusReportStr(report->mProfileId, report->mStatusCode) : "none");
 
     if (err == WEAVE_NO_ERROR)
     {
@@ -686,11 +666,11 @@ void WeaveTunnelConnectionMgr::ServiceMgrStatusHandler(void* appState, WEAVE_ERR
  * @param[in] con                          A pointer to the WeaveConnection object.
  *
  */
-void WeaveTunnelConnectionMgr::HandleTCPSendIdleChanged(TCPEndPoint *tcpEndPoint, bool isIdle)
+void WeaveTunnelConnectionMgr::HandleTCPSendIdleChanged(TCPEndPoint * tcpEndPoint, bool isIdle)
 {
-    WeaveConnection *con = static_cast<WeaveConnection *>(tcpEndPoint->AppState);
+    WeaveConnection * con = static_cast<WeaveConnection *>(tcpEndPoint->AppState);
 
-    WeaveTunnelConnectionMgr *tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
 
     tConnMgr->mTunAgent->WeaveTunnelNotifyTCPSendIdleStateChange(tConnMgr->mTunType, isIdle);
 }
@@ -705,27 +685,27 @@ void WeaveTunnelConnectionMgr::HandleTCPSendIdleChanged(TCPEndPoint *tcpEndPoint
  * @param[in] conErr                       Any error within the WeaveConnection or WEAVE_NO_ERROR.
  *
  */
-void WeaveTunnelConnectionMgr::HandleServiceConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveTunnelConnectionMgr::HandleServiceConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     WeaveTunnelRoute tunRoute;
     ReconnectParam reconnParam;
-    uint64_t globalId = 0;
+    uint64_t globalId     = 0;
     uint8_t routePriority = WeaveTunnelRoute::kRoutePriority_Medium;
 
-    WeaveTunnelConnectionMgr *tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
     tConnMgr->mServiceCon = con;
 
     SuccessOrExit(conErr);
 
-    WeaveLogDetail(WeaveTunnel, "Connection established to node %" PRIx64 " (%s) on %s tunnel\n",
-                   con->PeerNodeId, ipAddrStr, tConnMgr->mTunType == kType_TunnelPrimary?"primary":"backup");
+    WeaveLogDetail(WeaveTunnel, "Connection established to node %" PRIx64 " (%s) on %s tunnel\n", con->PeerNodeId, ipAddrStr,
+                   tConnMgr->mTunType == kType_TunnelPrimary ? "primary" : "backup");
 
     // Set here the Tunneled Data handler and ConnectionClosed handler.
 
-    tConnMgr->mServiceCon->OnConnectionClosed = HandleServiceConnectionClosed;
+    tConnMgr->mServiceCon->OnConnectionClosed        = HandleServiceConnectionClosed;
     tConnMgr->mServiceCon->OnTunneledMessageReceived = RecvdFromService;
 
 #if WEAVE_CONFIG_TUNNEL_ENABLE_TCP_IDLE_CALLBACK
@@ -749,34 +729,38 @@ void WeaveTunnelConnectionMgr::HandleServiceConnectionComplete(WeaveConnection *
         tunRoute.tunnelRoutePrefix[0].Length = NL_INET_IPV6_DEFAULT_PREFIX_LEN;
         tunRoute.tunnelRoutePrefix[1].IPAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi, 0);
         tunRoute.tunnelRoutePrefix[1].Length = NL_INET_IPV6_DEFAULT_PREFIX_LEN;
-        tunRoute.tunnelRoutePrefix[2].IPAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
-                                                           WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
+        tunRoute.tunnelRoutePrefix[2].IPAddr =
+            IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
+                               WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
         tunRoute.tunnelRoutePrefix[2].Length = NL_INET_IPV6_MAX_PREFIX_LEN;
-        tunRoute.tunnelRoutePrefix[3].IPAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_ThreadMesh,
-                                                           WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
+        tunRoute.tunnelRoutePrefix[3].IPAddr =
+            IPAddress::MakeULA(globalId, kWeaveSubnetId_ThreadMesh,
+                               WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
         tunRoute.tunnelRoutePrefix[3].Length = NL_INET_IPV6_MAX_PREFIX_LEN;
         tunRoute.priority[0] = tunRoute.priority[1] = tunRoute.priority[2] = tunRoute.priority[3] = routePriority;
-        tunRoute.numOfPrefixes = 4;
+        tunRoute.numOfPrefixes                                                                    = 4;
     }
     else if (tConnMgr->mTunAgent->mRole == kClientRole_MobileDevice)
     {
-        tunRoute.tunnelRoutePrefix[0].IPAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_MobileDevice,
-                                                           WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
+        tunRoute.tunnelRoutePrefix[0].IPAddr =
+            IPAddress::MakeULA(globalId, kWeaveSubnetId_MobileDevice,
+                               WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
         tunRoute.tunnelRoutePrefix[0].Length = NL_INET_IPV6_MAX_PREFIX_LEN;
-        tunRoute.priority[0] = routePriority;
-        tunRoute.numOfPrefixes = 1;
-
+        tunRoute.priority[0]                 = routePriority;
+        tunRoute.numOfPrefixes               = 1;
     }
     else if (tConnMgr->mTunAgent->mRole == kClientRole_StandaloneDevice)
     {
-        tunRoute.tunnelRoutePrefix[0].IPAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
-                                                           WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
+        tunRoute.tunnelRoutePrefix[0].IPAddr =
+            IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
+                               WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
         tunRoute.tunnelRoutePrefix[0].Length = NL_INET_IPV6_MAX_PREFIX_LEN;
-        tunRoute.tunnelRoutePrefix[1].IPAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_ThreadMesh,
-                                                           WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
+        tunRoute.tunnelRoutePrefix[1].IPAddr =
+            IPAddress::MakeULA(globalId, kWeaveSubnetId_ThreadMesh,
+                               WeaveNodeIdToIPv6InterfaceId(tConnMgr->mTunAgent->mExchangeMgr->FabricState->LocalNodeId));
         tunRoute.tunnelRoutePrefix[1].Length = NL_INET_IPV6_MAX_PREFIX_LEN;
         tunRoute.priority[0] = tunRoute.priority[1] = routePriority;
-        tunRoute.numOfPrefixes = 2;
+        tunRoute.numOfPrefixes                      = 2;
     }
 
     conErr = tConnMgr->mTunControl.SendTunnelOpen(tConnMgr, &tunRoute);
@@ -805,7 +789,8 @@ exit:
     if (conErr != WEAVE_NO_ERROR)
     {
         WeaveLogError(WeaveTunnel, "Connection FAILED to node %" PRIx64 " (%s): %ld: Try to reconnect on %s tunnel\n",
-                      con ? con->PeerNodeId : 0, ipAddrStr, (long)conErr, tConnMgr->mTunType == kType_TunnelPrimary?"primary":"backup");
+                      con ? con->PeerNodeId : 0, ipAddrStr, (long) conErr,
+                      tConnMgr->mTunType == kType_TunnelPrimary ? "primary" : "backup");
 
         // Attempt to reconnect to Service.
         reconnParam.PopulateReconnectParam(conErr);
@@ -825,29 +810,28 @@ exit:
  * @param[in] conErr                       Any error within the WeaveConnection or WEAVE_NO_ERROR.
  *
  */
-void WeaveTunnelConnectionMgr::HandleServiceConnectionClosed (WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveTunnelConnectionMgr::HandleServiceConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     uint64_t peerNodeId;
     ReconnectParam reconnParam;
 
-    WeaveTunnelConnectionMgr *tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(con->AppState);
 
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
     peerNodeId = con->PeerNodeId;
 
     if (conErr == WEAVE_NO_ERROR)
     {
-        WeaveLogDetail(WeaveTunnel, "Connection closed to node %" PRIx64 " (%s) on %s tunnel\n",
-                       peerNodeId, ipAddrStr, tConnMgr->mTunType == kType_TunnelPrimary?"primary":"backup");
+        WeaveLogDetail(WeaveTunnel, "Connection closed to node %" PRIx64 " (%s) on %s tunnel\n", peerNodeId, ipAddrStr,
+                       tConnMgr->mTunType == kType_TunnelPrimary ? "primary" : "backup");
 
         conErr = WEAVE_ERROR_CONNECTION_CLOSED_UNEXPECTEDLY;
-
     }
     else
     {
-        WeaveLogError(WeaveTunnel, "Connection ABORTED to node %" PRIx64 " (%s): %ld on %s tunnel\n",
-                      peerNodeId, ipAddrStr, (long)conErr, tConnMgr->mTunType == kType_TunnelPrimary?"primary":"backup");
+        WeaveLogError(WeaveTunnel, "Connection ABORTED to node %" PRIx64 " (%s): %ld on %s tunnel\n", peerNodeId, ipAddrStr,
+                      (long) conErr, tConnMgr->mTunType == kType_TunnelPrimary ? "primary" : "backup");
     }
 
     reconnParam.PopulateReconnectParam(conErr);
@@ -869,9 +853,9 @@ void WeaveTunnelConnectionMgr::ReleaseResourcesAndStopTunnelConn(WEAVE_ERROR err
     }
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-        // Stop the Tunnel Liveness timer
+    // Stop the Tunnel Liveness timer
 
-        StopLivenessTimer();
+    StopLivenessTimer();
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
 
     // Cancel the Reconnect timer
@@ -886,7 +870,7 @@ void WeaveTunnelConnectionMgr::ReleaseResourcesAndStopTunnelConn(WEAVE_ERROR err
 /**
  * Increment the connection attempt counter and try to reconnect to Service
  */
-void WeaveTunnelConnectionMgr::AttemptReconnect(ReconnectParam &reconnParam)
+void WeaveTunnelConnectionMgr::AttemptReconnect(ReconnectParam & reconnParam)
 {
     mTunFailedConnAttemptsInRow++;
 
@@ -900,7 +884,7 @@ void WeaveTunnelConnectionMgr::AttemptReconnect(ReconnectParam &reconnParam)
  */
 WEAVE_ERROR WeaveTunnelConnectionMgr::ResetReconnectBackoff(bool reconnectImmediately)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
     uint32_t waitTimeInMsec = 0;
 
     /* A reconnect reset request is not honored when a previous one has
@@ -925,8 +909,8 @@ WEAVE_ERROR WeaveTunnelConnectionMgr::ResetReconnectBackoff(bool reconnectImmedi
     }
     else
     {
-        waitTimeInMsec = GetRandU32() % (WEAVE_CONFIG_TUNNELING_RESET_RECONNECT_TIMEOUT_SECS *
-                                         nl::Weave::System::kTimerFactor_milli_per_unit);
+        waitTimeInMsec =
+            GetRandU32() % (WEAVE_CONFIG_TUNNELING_RESET_RECONNECT_TIMEOUT_SECS * nl::Weave::System::kTimerFactor_milli_per_unit);
 
         ResetCacheAndScheduleConnect(waitTimeInMsec);
     }
@@ -937,12 +921,12 @@ exit:
 }
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-void WeaveTunnelConnectionMgr::TunnelLivenessTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveTunnelConnectionMgr::TunnelLivenessTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     ReconnectParam reconnParam;
 
-    WeaveTunnelConnectionMgr* tConnMgr = static_cast<WeaveTunnelConnectionMgr*>(aAppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(aAppState);
 
     WeaveLogDetail(WeaveTunnel, "Sending Tunnel liveness probe on %s tunnel\n",
                    tConnMgr->mTunType == kType_TunnelPrimary ? "primary" : "backup");
@@ -962,7 +946,8 @@ void WeaveTunnelConnectionMgr::TunnelLivenessTimeout(System::Layer* aSystemLayer
 /* Schedule a timer for sending a Tunnel Liveness control message */
 void WeaveTunnelConnectionMgr::StartLivenessTimer(void)
 {
-    mTunAgent->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(mTunnelLivenessInterval * nl::Weave::System::kTimerFactor_milli_per_unit, TunnelLivenessTimeout, this);
+    mTunAgent->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(
+        mTunnelLivenessInterval * nl::Weave::System::kTimerFactor_milli_per_unit, TunnelLivenessTimeout, this);
 }
 
 /* Stop the Tunnel Liveness timer for sending a Tunnel Liveness control message */
@@ -980,9 +965,9 @@ void WeaveTunnelConnectionMgr::RestartLivenessTimer(void)
 }
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
 
-void WeaveTunnelConnectionMgr::OnlineCheckTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void WeaveTunnelConnectionMgr::OnlineCheckTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    WeaveTunnelConnectionMgr* tConnMgr = static_cast<WeaveTunnelConnectionMgr*>(aAppState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(aAppState);
 
     WeaveLogDetail(WeaveTunnel, "Sending Online check probe for %s tunnel\n",
                    tConnMgr->mTunType == kType_TunnelPrimary ? "primary" : "backup");
@@ -999,17 +984,18 @@ void WeaveTunnelConnectionMgr::OnlineCheckTimeout(System::Layer* aSystemLayer, v
 
 void WeaveTunnelConnectionMgr::SetOnlineCheckIntervalFast(bool aProbeFast)
 {
-    mOnlineCheckInterval = aProbeFast ? WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_FAST_FREQ_SECS :
-                                       (mTunType == kType_TunnelPrimary ? WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_PRIMARY_SLOW_FREQ_SECS :
-                                                                          WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_BACKUP_SLOW_FREQ_SECS);
+    mOnlineCheckInterval = aProbeFast
+        ? WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_FAST_FREQ_SECS
+        : (mTunType == kType_TunnelPrimary ? WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_PRIMARY_SLOW_FREQ_SECS
+                                           : WEAVE_CONFIG_TUNNELING_ONLINE_CHECK_BACKUP_SLOW_FREQ_SECS);
 }
 
 void WeaveTunnelConnectionMgr::StartOnlineCheck(void)
 {
     if (mTunAgent->NetworkOnlineCheck)
     {
-        mTunAgent->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(mOnlineCheckInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
-                                                                       OnlineCheckTimeout, this);
+        mTunAgent->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(
+            mOnlineCheckInterval * nl::Weave::System::kTimerFactor_milli_per_unit, OnlineCheckTimeout, this);
     }
     else
     {
@@ -1031,7 +1017,7 @@ void WeaveTunnelConnectionMgr::ReStartOnlineCheck(void)
 
 void WeaveTunnelConnectionMgr::HandleOnlineCheckResult(bool isOnline)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
     bool reconnectImmediately = true;
 
     if (isOnline)
@@ -1074,16 +1060,15 @@ void WeaveTunnelConnectionMgr::HandleOnlineCheckResult(bool isOnline)
  *                              reconnect attempt.
  */
 
-void WeaveTunnelConnectionMgr::DefaultReconnectPolicyCallback(void * const appState,
-                                                              ReconnectParam & reconnParam,
+void WeaveTunnelConnectionMgr::DefaultReconnectPolicyCallback(void * const appState, ReconnectParam & reconnParam,
                                                               uint32_t & delayMsec)
 {
-    uint32_t fibonacciNum = 0;
+    uint32_t fibonacciNum      = 0;
     uint32_t maxWaitTimeInMsec = 0;
-    uint32_t waitTimeInMsec = 0;
+    uint32_t waitTimeInMsec    = 0;
     uint32_t minWaitTimeInMsec = 0;
 
-    WeaveTunnelConnectionMgr* tConnMgr = static_cast<WeaveTunnelConnectionMgr*>(appState);
+    WeaveTunnelConnectionMgr * tConnMgr = static_cast<WeaveTunnelConnectionMgr *>(appState);
 
     if (tConnMgr->mTunReconnectFibonacciIndex > WEAVE_CONFIG_TUNNELING_RECONNECT_MAX_FIBONACCI_INDEX)
     {
@@ -1092,7 +1077,8 @@ void WeaveTunnelConnectionMgr::DefaultReconnectPolicyCallback(void * const appSt
 
     fibonacciNum = GetFibonacciForIndex(tConnMgr->mTunReconnectFibonacciIndex);
 
-    maxWaitTimeInMsec = fibonacciNum * WEAVE_CONFIG_TUNNELING_CONNECT_WAIT_TIME_MULTIPLIER_SECS * System::kTimerFactor_milli_per_unit;
+    maxWaitTimeInMsec =
+        fibonacciNum * WEAVE_CONFIG_TUNNELING_CONNECT_WAIT_TIME_MULTIPLIER_SECS * System::kTimerFactor_milli_per_unit;
 
     if (maxWaitTimeInMsec != 0)
     {
@@ -1101,9 +1087,9 @@ void WeaveTunnelConnectionMgr::DefaultReconnectPolicyCallback(void * const appSt
         // maxWaitTime), then preferentially use the one in the reconnectParam.
 
         minWaitTimeInMsec = (reconnParam.mMinDelayToConnectSecs * System::kTimerFactor_milli_per_unit) >
-                            (WEAVE_CONFIG_TUNNELING_MIN_WAIT_TIME_INTERVAL_PERCENT * maxWaitTimeInMsec) / 100 ?
-                            reconnParam.mMinDelayToConnectSecs * System::kTimerFactor_milli_per_unit :
-                            (WEAVE_CONFIG_TUNNELING_MIN_WAIT_TIME_INTERVAL_PERCENT * maxWaitTimeInMsec) / 100;
+                (WEAVE_CONFIG_TUNNELING_MIN_WAIT_TIME_INTERVAL_PERCENT * maxWaitTimeInMsec) / 100
+            ? reconnParam.mMinDelayToConnectSecs * System::kTimerFactor_milli_per_unit
+            : (WEAVE_CONFIG_TUNNELING_MIN_WAIT_TIME_INTERVAL_PERCENT * maxWaitTimeInMsec) / 100;
 
         waitTimeInMsec = minWaitTimeInMsec + (GetRandU32() % (maxWaitTimeInMsec - minWaitTimeInMsec));
     }
@@ -1112,7 +1098,8 @@ void WeaveTunnelConnectionMgr::DefaultReconnectPolicyCallback(void * const appSt
 
     tConnMgr->mTunReconnectFibonacciIndex++;
 
-    WeaveLogDetail(WeaveTunnel, "Tunnel reconnect policy: attempts %" PRIu32 ", max wait time %" PRIu32 " ms, selected wait time %" PRIu32 " ms",
+    WeaveLogDetail(WeaveTunnel,
+                   "Tunnel reconnect policy: attempts %" PRIu32 ", max wait time %" PRIu32 " ms, selected wait time %" PRIu32 " ms",
                    tConnMgr->mTunFailedConnAttemptsInRow, maxWaitTimeInMsec, waitTimeInMsec);
 
     return;
@@ -1121,14 +1108,12 @@ void WeaveTunnelConnectionMgr::DefaultReconnectPolicyCallback(void * const appSt
 /**
  * Populate the fields of the ReconnectParam structure
  */
-void ReconnectParam::PopulateReconnectParam(WEAVE_ERROR lastConnectError,
-                                            uint32_t profileId,
-                                            uint16_t statusCode,
+void ReconnectParam::PopulateReconnectParam(WEAVE_ERROR lastConnectError, uint32_t profileId, uint16_t statusCode,
                                             uint32_t minDelayToConnectSecs)
 {
-    mStatusProfileId = profileId;
-    mStatusCode = statusCode;
-    mLastConnectError = lastConnectError;
+    mStatusProfileId       = profileId;
+    mStatusCode            = statusCode;
+    mLastConnectError      = lastConnectError;
     mMinDelayToConnectSecs = minDelayToConnectSecs;
 }
 

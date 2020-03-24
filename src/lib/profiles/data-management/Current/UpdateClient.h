@@ -54,14 +54,14 @@ public:
 
     enum UpdateClientState
     {
-        kState_Uninitialized = 0,    ///< The update client has not been initialized
-        kState_Initialized,          ///< The update client has been initialized and is ready
-        kState_AwaitingResponse,     ///< The update client has sent the update request, and pending for response
+        kState_Uninitialized = 0, ///< The update client has not been initialized
+        kState_Initialized,       ///< The update client has been initialized and is ready
+        kState_AwaitingResponse,  ///< The update client has sent the update request, and pending for response
     };
 
-    typedef void (*EventCallback)(void *apAppState, EventType aEvent, const InEventParam & aInParam, OutEventParam & aOutParam);
+    typedef void (*EventCallback)(void * apAppState, EventType aEvent, const InEventParam & aInParam, OutEventParam & aOutParam);
 
-    static void DefaultEventHandler(void *apAppState, EventType aEvent, const InEventParam & aInParam, OutEventParam & aOutParam);
+    static void DefaultEventHandler(void * apAppState, EventType aEvent, const InEventParam & aInParam, OutEventParam & aOutParam);
 
     UpdateClient(void);
 
@@ -73,13 +73,13 @@ public:
 
     void CancelUpdate(void);
 
-    WEAVE_ERROR SendUpdate(bool aIsPartialUpdate, PacketBuffer *aPBuf, bool aIsFirstPayload);
+    WEAVE_ERROR SendUpdate(bool aIsPartialUpdate, PacketBuffer * aPBuf, bool aIsFirstPayload);
 
     void * mpAppState;
 
     Binding * mpBinding;
-private:
 
+private:
     EventCallback mEventCallback;
     nl::Weave::ExchangeContext * mEC;
     UpdateClientState mState;
@@ -87,11 +87,8 @@ private:
 
     static void OnSendError(ExchangeContext * aEC, WEAVE_ERROR aErrorCode, void * aMsgSpecificContext);
     static void OnResponseTimeout(nl::Weave::ExchangeContext * aEC);
-    static void OnMessageReceived(nl::Weave::ExchangeContext * aEC,
-                                  const nl::Inet::IPPacketInfo * aPktInfo,
-                                  const nl::Weave::WeaveMessageInfo * aMsgInfo,
-                                  uint32_t aProfileId,
-                                  uint8_t aMsgType,
+    static void OnMessageReceived(nl::Weave::ExchangeContext * aEC, const nl::Inet::IPPacketInfo * aPktInfo,
+                                  const nl::Weave::WeaveMessageInfo * aMsgInfo, uint32_t aProfileId, uint8_t aMsgType,
                                   PacketBuffer * aPayload);
 
     void MoveToState(const UpdateClientState aTargetState);
@@ -106,7 +103,7 @@ private:
 struct UpdateClient::InEventParam
 {
 
-    UpdateClient *Source;
+    UpdateClient * Source;
     union
     {
         struct

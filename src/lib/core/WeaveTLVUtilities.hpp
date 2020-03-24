@@ -48,19 +48,20 @@ namespace TLV {
  */
 namespace Utilities {
 
-typedef WEAVE_ERROR (*IterateHandler)(const TLVReader &aReader, size_t aDepth, void *aContext);
+typedef WEAVE_ERROR (*IterateHandler)(const TLVReader & aReader, size_t aDepth, void * aContext);
 
-extern WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aContext);
-extern WEAVE_ERROR Iterate(const TLVReader &aReader, IterateHandler aHandler, void *aContext, const bool aRecurse);
+extern WEAVE_ERROR Iterate(const TLVReader & aReader, IterateHandler aHandler, void * aContext);
+extern WEAVE_ERROR Iterate(const TLVReader & aReader, IterateHandler aHandler, void * aContext, const bool aRecurse);
 
-extern WEAVE_ERROR Count(const TLVReader &aReader, size_t &aCount);
-extern WEAVE_ERROR Count(const TLVReader &aReader, size_t &aCount, const bool aRecurse);
+extern WEAVE_ERROR Count(const TLVReader & aReader, size_t & aCount);
+extern WEAVE_ERROR Count(const TLVReader & aReader, size_t & aCount, const bool aRecurse);
 
-extern WEAVE_ERROR Find(const TLVReader &aReader, const uint64_t &aTag, TLVReader &aResult);
-extern WEAVE_ERROR Find(const TLVReader &aReader, const uint64_t &aTag, TLVReader &aResult, const bool aRecurse);
+extern WEAVE_ERROR Find(const TLVReader & aReader, const uint64_t & aTag, TLVReader & aResult);
+extern WEAVE_ERROR Find(const TLVReader & aReader, const uint64_t & aTag, TLVReader & aResult, const bool aRecurse);
 
-extern WEAVE_ERROR Find(const TLVReader &aReader, IterateHandler aHandler, void *aContext, TLVReader &aResult);
-extern WEAVE_ERROR Find(const TLVReader &aReader, IterateHandler aHandler, void *aContext, TLVReader &aResult, const bool aRecurse);
+extern WEAVE_ERROR Find(const TLVReader & aReader, IterateHandler aHandler, void * aContext, TLVReader & aResult);
+extern WEAVE_ERROR Find(const TLVReader & aReader, IterateHandler aHandler, void * aContext, TLVReader & aResult,
+                        const bool aRecurse);
 } // namespace Utilities
 
 } // namespace TLV

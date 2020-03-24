@@ -44,7 +44,7 @@ WEAVE_ERROR DeviceDescriptionServer::Init()
     OnIdentifyRequestReceived = HandleIdentifyRequest;
 
     // Initialize various members.
-    mUserSelectedModeEndTime = 0;
+    mUserSelectedModeEndTime    = 0;
     mUserSelectedModeTimeoutSec = WEAVE_DEVICE_CONFIG_USER_SELECTED_MODE_TIMEOUT_SEC;
 
 exit:
@@ -69,11 +69,10 @@ void DeviceDescriptionServer::SetUserSelectedMode(bool val)
     if (val)
     {
         WeaveLogProgress(DeviceLayer, "User selected mode %s (timeout %" PRId16 " seconds)",
-                IsUserSelectedModeActive() ? "extended" : "activated",
-                mUserSelectedModeTimeoutSec);
+                         IsUserSelectedModeActive() ? "extended" : "activated", mUserSelectedModeTimeoutSec);
 
-        uint32_t timeoutMS = mUserSelectedModeTimeoutSec * kMillisecondPerSecond;
-        uint64_t endTimeMS = System::Platform::Layer::GetClock_MonotonicMS() + timeoutMS;
+        uint32_t timeoutMS       = mUserSelectedModeTimeoutSec * kMillisecondPerSecond;
+        uint64_t endTimeMS       = System::Platform::Layer::GetClock_MonotonicMS() + timeoutMS;
         mUserSelectedModeEndTime = static_cast<uint32_t>(endTimeMS >> kUserSelectedModeTimeShift);
     }
     else
@@ -94,8 +93,9 @@ void DeviceDescriptionServer::SetUserSelectedModeTimeout(uint16_t val)
     mUserSelectedModeTimeoutSec = val;
 }
 
-void DeviceDescriptionServer::HandleIdentifyRequest(void *appState, uint64_t nodeId, const IPAddress& nodeAddr,
-        const IdentifyRequestMessage& reqMsg, bool& sendResp, IdentifyResponseMessage& respMsg)
+void DeviceDescriptionServer::HandleIdentifyRequest(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                                    const IdentifyRequestMessage & reqMsg, bool & sendResp,
+                                                    IdentifyResponseMessage & respMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     WeaveDeviceDescriptor deviceDesc;
@@ -179,7 +179,6 @@ void DeviceDescriptionServer::OnPlatformEvent(const WeaveDeviceEvent * event)
 {
     // Nothing to do so far.
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

@@ -79,7 +79,7 @@ using ::nl::Weave::System::PacketBuffer;
  *  versions encapsulated in a BleTransportCapabilitiesRequest. Defined by Weave
  *  over BLE protocol specification.
  */
-#define NUM_SUPPORTED_PROTOCOL_VERSIONS     8
+#define NUM_SUPPORTED_PROTOCOL_VERSIONS 8
 /// Version(s) of the Nest BLE Transport Protocol that this stack supports.
 #define NL_BLE_TRANSPORT_PROTOCOL_MIN_SUPPORTED_VERSION kBleTransportProtocolVersion_V2
 #define NL_BLE_TRANSPORT_PROTOCOL_MAX_SUPPORTED_VERSION kBleTransportProtocolVersion_V3
@@ -262,7 +262,7 @@ public:
 
     BLE_ERROR NewBleEndPoint(BLEEndPoint ** retEndPoint, BLE_CONNECTION_OBJECT connObj, BleRole role, bool autoClose);
 
-    nl::Weave::System::Error ScheduleWork(nl::Weave::System::Layer::TimerCompleteFunct aComplete, void* aAppState)
+    nl::Weave::System::Error ScheduleWork(nl::Weave::System::Layer::TimerCompleteFunct aComplete, void * aAppState)
     {
         return mSystemLayer->ScheduleWork(aComplete, aAppState);
     }

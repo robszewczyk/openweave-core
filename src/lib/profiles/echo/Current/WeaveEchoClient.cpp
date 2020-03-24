@@ -32,36 +32,36 @@ namespace Profiles {
 
 WeaveEchoClient::WeaveEchoClient()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
-    EncryptionType = kWeaveEncryptionType_None;
-    KeyId = WeaveKeyId::kNone;
+    FabricState            = NULL;
+    ExchangeMgr            = NULL;
+    EncryptionType         = kWeaveEncryptionType_None;
+    KeyId                  = WeaveKeyId::kNone;
     OnEchoResponseReceived = NULL;
-    ExchangeCtx = NULL;
+    ExchangeCtx            = NULL;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    OnAckRcvdReceived = NULL;
-    RequestAck = false;
-    AckReceived = false;
-    ResponseReceived = false;
-    WRMPACKDelay = WEAVE_CONFIG_WRMP_DEFAULT_ACK_TIMEOUT;
+    OnAckRcvdReceived   = NULL;
+    RequestAck          = false;
+    AckReceived         = false;
+    ResponseReceived    = false;
+    WRMPACKDelay        = WEAVE_CONFIG_WRMP_DEFAULT_ACK_TIMEOUT;
     WRMPRetransInterval = WEAVE_CONFIG_WRMP_DEFAULT_ACTIVE_RETRANS_TIMEOUT;
-    WRMPRetransCount = WEAVE_CONFIG_WRMP_DEFAULT_MAX_RETRANS;
-    appContext = 0xcafebabe;
+    WRMPRetransCount    = WEAVE_CONFIG_WRMP_DEFAULT_MAX_RETRANS;
+    appContext          = 0xcafebabe;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 }
 
-WEAVE_ERROR WeaveEchoClient::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR WeaveEchoClient::Init(WeaveExchangeManager * exchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
-    EncryptionType = kWeaveEncryptionType_None;
-    KeyId = WeaveKeyId::kNone;
+    ExchangeMgr            = exchangeMgr;
+    FabricState            = exchangeMgr->FabricState;
+    EncryptionType         = kWeaveEncryptionType_None;
+    KeyId                  = WeaveKeyId::kNone;
     OnEchoResponseReceived = NULL;
-    ExchangeCtx = NULL;
+    ExchangeCtx            = NULL;
 
     return WEAVE_NO_ERROR;
 }
@@ -89,7 +89,7 @@ WEAVE_ERROR WeaveEchoClient::Shutdown()
  * @return WEAVE_ERROR_NO_MEMORY if no ExchangeContext is available.
  *         Other WEAVE_ERROR codes as returned by the lower layers.
  */
-WEAVE_ERROR WeaveEchoClient::SendEchoRequest(WeaveConnection *con, PacketBuffer *payload)
+WEAVE_ERROR WeaveEchoClient::SendEchoRequest(WeaveConnection * con, PacketBuffer * payload)
 {
     // Discard any existing exchange context. Effectively we can only have one Echo exchange with
     // a single node at any one time.
@@ -123,7 +123,7 @@ WEAVE_ERROR WeaveEchoClient::SendEchoRequest(WeaveConnection *con, PacketBuffer 
  * @return WEAVE_ERROR_NO_MEMORY if no ExchangeContext is available.
  *         Other WEAVE_ERROR codes as returned by the lower layers.
  */
-WEAVE_ERROR WeaveEchoClient::SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+WEAVE_ERROR WeaveEchoClient::SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     return SendEchoRequest(nodeId, nodeAddr, WEAVE_PORT, INET_NULL_INTERFACEID, payload);
 }
@@ -140,7 +140,8 @@ WEAVE_ERROR WeaveEchoClient::SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr
  * @return WEAVE_ERROR_NO_MEMORY if no ExchangeContext is available.
  *         Other WEAVE_ERROR codes as returned by the lower layers.
  */
-WEAVE_ERROR WeaveEchoClient::SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port, InterfaceId sendIntfId, PacketBuffer *payload)
+WEAVE_ERROR WeaveEchoClient::SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr, uint16_t port, InterfaceId sendIntfId,
+                                             PacketBuffer * payload)
 {
     // Discard any existing exchange context. Effectively we can only have one Echo exchange with
     // a single node at any one time.
@@ -163,13 +164,13 @@ WEAVE_ERROR WeaveEchoClient::SendEchoRequest(uint64_t nodeId, IPAddress nodeAddr
     return SendEchoRequest(payload);
 }
 
-WEAVE_ERROR WeaveEchoClient::SendEchoRequest(PacketBuffer *payload)
+WEAVE_ERROR WeaveEchoClient::SendEchoRequest(PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Configure the encryption and signature types to be used to send the request.
     ExchangeCtx->EncryptionType = EncryptionType;
-    ExchangeCtx->KeyId = KeyId;
+    ExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     ExchangeCtx->OnMessageReceived = HandleResponse;
@@ -178,22 +179,23 @@ WEAVE_ERROR WeaveEchoClient::SendEchoRequest(PacketBuffer *payload)
 
     // Send an Echo Request message.  Discard the exchange context if the send fails.
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    AckReceived = false;
+    AckReceived      = false;
     ResponseReceived = false;
 
     if (RequestAck)
     {
-        ExchangeCtx->OnAckRcvd = HandleAckRcvd;
-        ExchangeCtx->OnSendError = HandleSendError;
-        ExchangeCtx->mWRMPConfig.mAckPiggybackTimeout = WRMPACKDelay;
+        ExchangeCtx->OnAckRcvd                          = HandleAckRcvd;
+        ExchangeCtx->OnSendError                        = HandleSendError;
+        ExchangeCtx->mWRMPConfig.mAckPiggybackTimeout   = WRMPACKDelay;
         ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = WRMPRetransInterval;
-        ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = WRMPRetransInterval;
-        ExchangeCtx->mWRMPConfig.mMaxRetrans = WRMPRetransCount;
-        err = ExchangeCtx->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payload, ExchangeContext::kSendFlag_RequestAck, &appContext);
+        ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = WRMPRetransInterval;
+        ExchangeCtx->mWRMPConfig.mMaxRetrans            = WRMPRetransCount;
+        err = ExchangeCtx->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payload,
+                                       ExchangeContext::kSendFlag_RequestAck, &appContext);
     }
     else
         err = ExchangeCtx->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payload);
-#else // !WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
+#else  // !WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     err = ExchangeCtx->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payload);
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     payload = NULL;
@@ -206,9 +208,10 @@ WEAVE_ERROR WeaveEchoClient::SendEchoRequest(PacketBuffer *payload)
     return err;
 }
 
-void WeaveEchoClient::HandleResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveEchoClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                     uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WeaveEchoClient *echoApp = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * echoApp = (WeaveEchoClient *) ec->AppState;
 
     // Assert that the exchange context matches the client's current context.
     // This should never fail because even if SendEchoRequest is called
@@ -248,24 +251,24 @@ exit:
     PacketBuffer::Free(payload);
 }
 
-void WeaveEchoClient::HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveEchoClient::HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
     HandleError(ec, conErr);
 }
 
-void WeaveEchoClient::HandleSendError(ExchangeContext *ec, WEAVE_ERROR sendErr, void *msgCtxt)
+void WeaveEchoClient::HandleSendError(ExchangeContext * ec, WEAVE_ERROR sendErr, void * msgCtxt)
 {
     HandleError(ec, sendErr);
 }
 
-void WeaveEchoClient::HandleKeyError(ExchangeContext *ec, WEAVE_ERROR keyErr)
+void WeaveEchoClient::HandleKeyError(ExchangeContext * ec, WEAVE_ERROR keyErr)
 {
     HandleError(ec, keyErr);
 }
 
-void WeaveEchoClient::HandleError(ExchangeContext *ec, WEAVE_ERROR err)
+void WeaveEchoClient::HandleError(ExchangeContext * ec, WEAVE_ERROR err)
 {
-    WeaveEchoClient *echoApp = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * echoApp = (WeaveEchoClient *) ec->AppState;
 
     VerifyOrExit(echoApp && echoApp->ExchangeCtx, /* no action */);
 
@@ -284,9 +287,9 @@ exit:
 }
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-void WeaveEchoClient::HandleAckRcvd(ExchangeContext *ec, void *msgCtxt)
+void WeaveEchoClient::HandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
 {
-    WeaveEchoClient *echoApp = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * echoApp = (WeaveEchoClient *) ec->AppState;
 
     // Assert that the exchange context matches the client's current context.
     // This should never fail because even if SendEchoRequest is called

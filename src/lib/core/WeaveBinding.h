@@ -51,9 +51,8 @@ namespace Security {
 namespace TAKE {
 class WeaveTAKEChallengerAuthDelegate;
 }
-}
-}
-
+} // namespace Security
+} // namespace Profiles
 
 /**
  * @class Binding
@@ -126,29 +125,28 @@ class WeaveTAKEChallengerAuthDelegate;
 class Binding
 {
 public:
-
     class Configuration;
     struct InEventParam;
     struct OutEventParam;
 
     enum State
     {
-        kState_NotAllocated                         = 0,
-        kState_NotConfigured                        = 1,
-        kState_Configuring                          = 2,
-        kState_Preparing                            = 3,
-        kState_PreparingAddress                     = 4,
-        kState_PreparingAddress_ResolveHostName     = 5,
-        kState_PreparingTransport                   = 6,
-        kState_PreparingTransport_TCPConnect        = 7,
-        kState_PreparingSecurity                    = 8,
-        kState_PreparingSecurity_EstablishSession   = 9,
-        kState_PreparingSecurity_WaitSecurityMgr    = 10,
-        kState_Ready                                = 11,
-        kState_Resetting                            = 12,
-        kState_Closed                               = 13,
-        kState_Failed                               = 14,
-        kState_MaxState                             = 15, // limited to 4 bits
+        kState_NotAllocated                       = 0,
+        kState_NotConfigured                      = 1,
+        kState_Configuring                        = 2,
+        kState_Preparing                          = 3,
+        kState_PreparingAddress                   = 4,
+        kState_PreparingAddress_ResolveHostName   = 5,
+        kState_PreparingTransport                 = 6,
+        kState_PreparingTransport_TCPConnect      = 7,
+        kState_PreparingSecurity                  = 8,
+        kState_PreparingSecurity_EstablishSession = 9,
+        kState_PreparingSecurity_WaitSecurityMgr  = 10,
+        kState_Ready                              = 11,
+        kState_Resetting                          = 12,
+        kState_Closed                             = 13,
+        kState_Failed                             = 14,
+        kState_MaxState                           = 15, // limited to 4 bits
     };
 
     // clang-format off
@@ -166,9 +164,9 @@ public:
     };
     // clang-format on
 
-    typedef void (*EventCallback)(void *apAppState, EventType aEvent, const InEventParam& aInParam, OutEventParam& aOutParam);
+    typedef void (*EventCallback)(void * apAppState, EventType aEvent, const InEventParam & aInParam, OutEventParam & aOutParam);
 
-    void *AppState;
+    void * AppState;
 
     void AddRef(void);
     void Release(void);
@@ -193,13 +191,13 @@ public:
     uint32_t GetDefaultResponseTimeout() const;
     void SetDefaultResponseTimeout(uint32_t msec);
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    const WRMPConfig& GetDefaultWRMPConfig(void) const;
-    void SetDefaultWRMPConfig(const WRMPConfig& wrmpConfig);
+    const WRMPConfig & GetDefaultWRMPConfig(void) const;
+    void SetDefaultWRMPConfig(const WRMPConfig & wrmpConfig);
 #endif // #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     EventCallback GetEventCallback() const;
     void SetEventCallback(EventCallback aEventCallback);
-    WeaveConnection *GetConnection() const;
-    WeaveExchangeManager *GetExchangeManager() const;
+    WeaveConnection * GetConnection() const;
+    WeaveExchangeManager * GetExchangeManager() const;
     bool IsConnectionTransport() const;
     bool IsUDPTransport() const;
     bool IsWRMTransport() const;
@@ -208,67 +206,65 @@ public:
     enum
     {
         kGetPeerDescription_MaxLength = nl::Weave::kWeavePeerDescription_MaxLength,
-                                                             /**< Maximum length of string (including NUL character)
-                                                                  returned by GetPeerDescription(). */
+        /**< Maximum length of string (including NUL character)
+             returned by GetPeerDescription(). */
     };
 
     void GetPeerDescription(char * buf, uint32_t bufSize) const;
 
-    void GetProtocolLayerCallback(EventCallback& callback, void *& state) const;
-    void SetProtocolLayerCallback(EventCallback callback, void *state);
+    void GetProtocolLayerCallback(EventCallback & callback, void *& state) const;
+    void SetProtocolLayerCallback(EventCallback callback, void * state);
 
     WEAVE_ERROR NewExchangeContext(ExchangeContext *& appExchangeContext);
 
     WEAVE_ERROR AdjustResponseTimeout(ExchangeContext * apExchangeContext) const;
 
-    bool IsAuthenticMessageFromPeer(const WeaveMessageInfo *msgInfo);
+    bool IsAuthenticMessageFromPeer(const WeaveMessageInfo * msgInfo);
 
-    uint32_t GetMaxWeavePayloadSize(const System::PacketBuffer *msgBuf);
+    uint32_t GetMaxWeavePayloadSize(const System::PacketBuffer * msgBuf);
 
-    static void DefaultEventHandler(void *apAppState, EventType aEvent, const InEventParam& aInParam, OutEventParam& aOutParam);
+    static void DefaultEventHandler(void * apAppState, EventType aEvent, const InEventParam & aInParam, OutEventParam & aOutParam);
 
-    WEAVE_ERROR AllocateRightSizedBuffer(PacketBuffer *& buf,
-                                         const uint32_t desiredSize,
-                                         const uint32_t minSize,
+    WEAVE_ERROR AllocateRightSizedBuffer(PacketBuffer *& buf, const uint32_t desiredSize, const uint32_t minSize,
                                          uint32_t & outMaxPayloadSize);
-private:
 
+private:
     friend class WeaveExchangeManager;
 
     enum AddressingOption
     {
-        kAddressing_NotSpecified                    = 0,
-        kAddressing_UnicastIP                       = 1,
-        kAddressing_HostName                        = 2,
-        kAddressing_WeaveFabric                     = 3,
-        kAddressing_ServiceDirectory                = 4,
-        kAddressing_MulticastIP                     = 5,
+        kAddressing_NotSpecified     = 0,
+        kAddressing_UnicastIP        = 1,
+        kAddressing_HostName         = 2,
+        kAddressing_WeaveFabric      = 3,
+        kAddressing_ServiceDirectory = 4,
+        kAddressing_MulticastIP      = 5,
     };
 
     enum TransportOption
     {
-        kTransport_NotSpecified                     = 0,
-        kTransport_UDP                              = 1,
-        kTransport_UDP_WRM                          = 2,
-        kTransport_TCP                              = 3,
-        kTransport_ExistingConnection               = 4,
+        kTransport_NotSpecified       = 0,
+        kTransport_UDP                = 1,
+        kTransport_UDP_WRM            = 2,
+        kTransport_TCP                = 3,
+        kTransport_ExistingConnection = 4,
     };
 
     enum SecurityOption
     {
-        kSecurityOption_NotSpecified                = 0,
-        kSecurityOption_None                        = 1,
-        kSecurityOption_SpecificKey                 = 2,
-        kSecurityOption_CASESession                 = 3,
-        kSecurityOption_SharedCASESession           = 4,
-        kSecurityOption_PASESession                 = 5,
-        kSecurityOption_TAKESession                 = 6,
+        kSecurityOption_NotSpecified      = 0,
+        kSecurityOption_None              = 1,
+        kSecurityOption_SpecificKey       = 2,
+        kSecurityOption_CASESession       = 3,
+        kSecurityOption_SharedCASESession = 4,
+        kSecurityOption_PASESession       = 5,
+        kSecurityOption_TAKESession       = 6,
     };
 
     enum Flags
     {
-        kFlag_KeyReserved                           = 0x1,
-        kFlag_ConnectionReferenced                  = 0x2,
+        kFlag_KeyReserved          = 0x1,
+        kFlag_ConnectionReferenced = 0x2,
     };
 
     WeaveExchangeManager * mExchangeManager;
@@ -285,7 +281,7 @@ private:
 
     EventCallback mAppEventCallback;
     EventCallback mProtocolLayerCallback;
-    void *mProtocolLayerState;
+    void * mProtocolLayerState;
 
     uint64_t mPeerNodeId;
 
@@ -295,8 +291,8 @@ private:
 
     // Transport-specific configuration
     nl::Inet::IPAddress mPeerAddress;
-    const char *mHostName;
-    WeaveConnection *mCon;
+    const char * mHostName;
+    WeaveConnection * mCon;
     uint32_t mDefaultResponseTimeoutMsec;
     uint32_t mUDPPathMTU;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
@@ -323,22 +319,22 @@ private:
     void PrepareTransport(void);
     void PrepareSecurity(void);
     void HandleBindingReady(void);
-    void HandleBindingFailed(WEAVE_ERROR err, Profiles::StatusReporting::StatusReport *statusReport, bool raiseEvent);
+    void HandleBindingFailed(WEAVE_ERROR err, Profiles::StatusReporting::StatusReport * statusReport, bool raiseEvent);
     void OnKeyFailed(uint64_t peerNodeId, uint32_t keyId, WEAVE_ERROR keyErr);
     void OnSecurityManagerAvailable(void);
-    void OnConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+    void OnConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
     uint32_t GetWeaveTrailerSize(void);
     uint32_t GetWeaveHeaderSize(void);
 
-    static void OnSecureSessionReady(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState,
-            uint16_t keyId, uint64_t peerNodeId, uint8_t encType);
-    static void OnSecureSessionFailed(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState,
-            WEAVE_ERROR localErr, uint64_t peerNodeId, Profiles::StatusReporting::StatusReport *statusReport);
+    static void OnSecureSessionReady(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t keyId,
+                                     uint64_t peerNodeId, uint8_t encType);
+    static void OnSecureSessionFailed(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                      uint64_t peerNodeId, Profiles::StatusReporting::StatusReport * statusReport);
     void OnSecureSessionReady(uint64_t peerNodeId, uint8_t encType, WeaveAuthMode authMode, uint16_t keyId);
     void OnKeyError(const uint32_t aKeyId, const uint64_t aPeerNodeId, const WEAVE_ERROR aKeyErr);
 
-    static void OnResolveComplete(void *appState, INET_ERROR err, uint8_t addrCount, IPAddress *addrArray);
-    static void OnConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
+    static void OnResolveComplete(void * appState, INET_ERROR err, uint8_t addrCount, IPAddress * addrArray);
+    static void OnConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
 };
 
 /**
@@ -354,43 +350,45 @@ private:
 class Binding::Configuration
 {
 public:
-
     // NOTE TO IMPLEMENTERS: Binding::Configuration uses a declarative-style interface.  This means
     // the application is free to call the object's configuration methods IN ANY ORDER.  Any new
     // methods added to the class must follow this pattern.
 
-    Configuration& Target_NodeId(uint64_t aPeerNodeId);
-    Configuration& Target_ServiceEndpoint(uint64_t aPeerNodeId);
+    Configuration & Target_NodeId(uint64_t aPeerNodeId);
+    Configuration & Target_ServiceEndpoint(uint64_t aPeerNodeId);
 
-    Configuration& TargetAddress_WeaveService(void);
-    Configuration& TargetAddress_WeaveFabric(uint16_t aSubnetId);
-    Configuration& TargetAddress_IP(nl::Inet::IPAddress aPeerAddress, uint16_t aPeerPort = WEAVE_PORT, InterfaceId aInterfaceId = INET_NULL_INTERFACEID);
-    Configuration& TargetAddress_IP(const char *aHostName, uint16_t aPeerPort = WEAVE_PORT, InterfaceId aInterfaceId = INET_NULL_INTERFACEID);
-    Configuration& TargetAddress_IP(const char *aHostName, size_t aHostNameLen, uint16_t aPeerPort = WEAVE_PORT, InterfaceId aInterfaceId = INET_NULL_INTERFACEID);
+    Configuration & TargetAddress_WeaveService(void);
+    Configuration & TargetAddress_WeaveFabric(uint16_t aSubnetId);
+    Configuration & TargetAddress_IP(nl::Inet::IPAddress aPeerAddress, uint16_t aPeerPort = WEAVE_PORT,
+                                     InterfaceId aInterfaceId = INET_NULL_INTERFACEID);
+    Configuration & TargetAddress_IP(const char * aHostName, uint16_t aPeerPort = WEAVE_PORT,
+                                     InterfaceId aInterfaceId = INET_NULL_INTERFACEID);
+    Configuration & TargetAddress_IP(const char * aHostName, size_t aHostNameLen, uint16_t aPeerPort = WEAVE_PORT,
+                                     InterfaceId aInterfaceId = INET_NULL_INTERFACEID);
 
-    Configuration& DNS_Options(uint8_t dnsOptions);
+    Configuration & DNS_Options(uint8_t dnsOptions);
 
-    Configuration& Transport_TCP(void);
-    Configuration& Transport_UDP(void);
-    Configuration& Transport_UDP_WRM(void);
-    Configuration& Transport_UDP_PathMTU(uint32_t aPathMTU);
-    Configuration& Transport_DefaultWRMPConfig(const WRMPConfig& aWRMPConfig);
-    Configuration& Transport_ExistingConnection(WeaveConnection *apConnection);
+    Configuration & Transport_TCP(void);
+    Configuration & Transport_UDP(void);
+    Configuration & Transport_UDP_WRM(void);
+    Configuration & Transport_UDP_PathMTU(uint32_t aPathMTU);
+    Configuration & Transport_DefaultWRMPConfig(const WRMPConfig & aWRMPConfig);
+    Configuration & Transport_ExistingConnection(WeaveConnection * apConnection);
 
-    Configuration& Exchange_ResponseTimeoutMsec(uint32_t aResponseTimeoutMsec);
+    Configuration & Exchange_ResponseTimeoutMsec(uint32_t aResponseTimeoutMsec);
 
-    Configuration& Security_None(void);
-    Configuration& Security_CASESession(void);
-    Configuration& Security_SharedCASESession(void);
-    Configuration& Security_SharedCASESession(uint64_t aRouterNodeId);
-    Configuration& Security_PASESession(uint8_t aPasswordSource);
-    Configuration& Security_TAKESession();
-    Configuration& Security_Key(uint32_t aKeyId);
-    Configuration& Security_AppGroupKey(uint32_t aAppGroupGlobalId, uint32_t aRootKeyId, bool aUseRotatingKey);
-    Configuration& Security_EncryptionType(uint8_t aEncType);
-    Configuration& Security_AuthenticationMode(WeaveAuthMode aAuthMode);
+    Configuration & Security_None(void);
+    Configuration & Security_CASESession(void);
+    Configuration & Security_SharedCASESession(void);
+    Configuration & Security_SharedCASESession(uint64_t aRouterNodeId);
+    Configuration & Security_PASESession(uint8_t aPasswordSource);
+    Configuration & Security_TAKESession();
+    Configuration & Security_Key(uint32_t aKeyId);
+    Configuration & Security_AppGroupKey(uint32_t aAppGroupGlobalId, uint32_t aRootKeyId, bool aUseRotatingKey);
+    Configuration & Security_EncryptionType(uint8_t aEncType);
+    Configuration & Security_AuthenticationMode(WeaveAuthMode aAuthMode);
 
-    Configuration& ConfigureFromMessage(const WeaveMessageInfo *aMsgInfo, const Inet::IPPacketInfo *aPacketInfo);
+    Configuration & ConfigureFromMessage(const WeaveMessageInfo * aMsgInfo, const Inet::IPPacketInfo * aPacketInfo);
 
     WEAVE_ERROR PrepareBinding(void);
 
@@ -399,10 +397,10 @@ public:
 private:
     friend class Binding;
 
-    Binding& mBinding;
+    Binding & mBinding;
     WEAVE_ERROR mError;
 
-    Configuration(Binding& aBinding);
+    Configuration(Binding & aBinding);
 };
 
 /**
@@ -410,13 +408,13 @@ private:
  */
 struct Binding::InEventParam
 {
-    Binding *Source;
+    Binding * Source;
     union
     {
         struct
         {
             WEAVE_ERROR Reason;
-            Profiles::StatusReporting::StatusReport *StatusReport;
+            Profiles::StatusReporting::StatusReport * StatusReport;
         } PrepareFailed;
 
         struct
@@ -458,13 +456,12 @@ struct Binding::OutEventParam
             bool EncryptCommPhase;
             bool TimeLimitedIK;
             bool SendChallengerId;
-            nl::Weave::Profiles::Security::TAKE::WeaveTAKEChallengerAuthDelegate *AuthDelegate;
+            nl::Weave::Profiles::Security::TAKE::WeaveTAKEChallengerAuthDelegate * AuthDelegate;
         } TAKEParametersRequested;
     };
 
     void Clear() { memset(this, 0, sizeof(*this)); }
 };
-
 
 /*
  * Inline Functions
@@ -499,8 +496,8 @@ inline uint64_t Binding::GetPeerNodeId() const
 
 inline void Binding::GetPeerIPAddress(nl::Inet::IPAddress & address, uint16_t & port, InterfaceId & interfaceId) const
 {
-    address = mPeerAddress;
-    port = mPeerPort;
+    address     = mPeerAddress;
+    port        = mPeerPort;
     interfaceId = mInterfaceId;
 }
 
@@ -526,12 +523,12 @@ inline void Binding::SetDefaultResponseTimeout(uint32_t timeout)
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-inline const WRMPConfig& Binding::GetDefaultWRMPConfig(void) const
+inline const WRMPConfig & Binding::GetDefaultWRMPConfig(void) const
 {
     return mDefaultWRMPConfig;
 }
 
-inline void Binding::SetDefaultWRMPConfig(const WRMPConfig& aWRMPConfig)
+inline void Binding::SetDefaultWRMPConfig(const WRMPConfig & aWRMPConfig)
 {
     mDefaultWRMPConfig = aWRMPConfig;
 }
@@ -548,19 +545,19 @@ inline void Binding::SetEventCallback(EventCallback aEventCallback)
     mAppEventCallback = aEventCallback;
 }
 
-inline void Binding::GetProtocolLayerCallback(EventCallback& callback, void *& state) const
+inline void Binding::GetProtocolLayerCallback(EventCallback & callback, void *& state) const
 {
     callback = mProtocolLayerCallback;
-    state = mProtocolLayerState;
+    state    = mProtocolLayerState;
 }
 
-inline void Binding::SetProtocolLayerCallback(EventCallback callback, void *state)
+inline void Binding::SetProtocolLayerCallback(EventCallback callback, void * state)
 {
     mProtocolLayerCallback = callback;
-    mProtocolLayerState = state;
+    mProtocolLayerState    = state;
 }
 
-inline WeaveConnection *Binding::GetConnection() const
+inline WeaveConnection * Binding::GetConnection() const
 {
     return mCon;
 }
@@ -580,7 +577,7 @@ inline void Binding::ClearFlag(uint8_t flag)
     mFlags &= ~flag;
 }
 
-inline WeaveExchangeManager *Binding::GetExchangeManager() const
+inline WeaveExchangeManager * Binding::GetExchangeManager() const
 {
     return mExchangeManager;
 }
@@ -620,7 +617,7 @@ inline WEAVE_ERROR Binding::Configuration::GetError(void) const
     return mError;
 }
 
-}; // Weave
-}; // nl
+}; // namespace Weave
+}; // namespace nl
 
 #endif // WEAVE_BINDING_H_

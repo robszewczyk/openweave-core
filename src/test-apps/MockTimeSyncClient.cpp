@@ -40,12 +40,13 @@ const uint32_t RESPONSE_TIMEOUT_MSEC = 5000;
 
 MockSingleSourceTimeSyncClient::MockSingleSourceTimeSyncClient(void)
 {
-    mBinding = NULL;
+    mBinding     = NULL;
     mExchangeMgr = NULL;
 }
 
-void MockSingleSourceTimeSyncClient::BindingEventCallback (void * const apAppState, const Binding::EventType aEvent,
-        const Binding::InEventParam & aInParam, Binding::OutEventParam & aOutParam)
+void MockSingleSourceTimeSyncClient::BindingEventCallback(void * const apAppState, const Binding::EventType aEvent,
+                                                          const Binding::InEventParam & aInParam,
+                                                          Binding::OutEventParam & aOutParam)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -55,25 +56,26 @@ void MockSingleSourceTimeSyncClient::BindingEventCallback (void * const apAppSta
 
     switch (aEvent)
     {
-    case Binding::kEvent_BindingReady  :
+    case Binding::kEvent_BindingReady:
 
         WeaveLogDetail(TimeService, "Arming sync timer", __func__, aEvent);
 
-        mockClient->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(RESPONSE_TIMEOUT_MSEC * 2 + 1000, HandleSyncTimer, mockClient);
+        mockClient->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(RESPONSE_TIMEOUT_MSEC * 2 + 1000, HandleSyncTimer,
+                                                                        mockClient);
 
         err = mockClient->mClient.Sync(mockClient->mBinding, HandleSyncCompleted);
         SuccessOrExit(err);
         break;
 
-    default:
-        Binding::DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
+    default: Binding::DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
     }
 
 exit:
     WeaveLogFunctError(err);
 }
 
-WEAVE_ERROR MockSingleSourceTimeSyncClient::Init(nl::Weave::WeaveExchangeManager * const aExchangeMgr, const uint64_t aPublisherNodeId, const uint16_t aSubnetId)
+WEAVE_ERROR MockSingleSourceTimeSyncClient::Init(nl::Weave::WeaveExchangeManager * const aExchangeMgr,
+                                                 const uint64_t aPublisherNodeId, const uint16_t aSubnetId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -86,12 +88,13 @@ WEAVE_ERROR MockSingleSourceTimeSyncClient::Init(nl::Weave::WeaveExchangeManager
     VerifyOrExit(NULL != mBinding, err = WEAVE_ERROR_NO_MEMORY);
 
     {
-        Binding::Configuration bindingConfig = mBinding->BeginConfiguration()
-            .Target_NodeId(aPublisherNodeId)
-            .Transport_UDP()
-            // (default) max num of msec between any outgoing message and next incoming message (could be a response to it)
-            .Exchange_ResponseTimeoutMsec(RESPONSE_TIMEOUT_MSEC)
-            .Security_None();
+        Binding::Configuration bindingConfig =
+            mBinding->BeginConfiguration()
+                .Target_NodeId(aPublisherNodeId)
+                .Transport_UDP()
+                // (default) max num of msec between any outgoing message and next incoming message (could be a response to it)
+                .Exchange_ResponseTimeoutMsec(RESPONSE_TIMEOUT_MSEC)
+                .Security_None();
 
         if (nl::Weave::kWeaveSubnetId_NotSpecified != aSubnetId)
             bindingConfig.TargetAddress_WeaveFabric(aSubnetId);
@@ -114,7 +117,8 @@ WEAVE_ERROR MockSingleSourceTimeSyncClient::Shutdown(void)
     return WEAVE_NO_ERROR;
 }
 
-void MockSingleSourceTimeSyncClient::HandleSyncTimer(nl::Weave::System::Layer* aSystemLayer, void* aAppState, nl::Weave::System::Error aError)
+void MockSingleSourceTimeSyncClient::HandleSyncTimer(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                                     nl::Weave::System::Error aError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -125,7 +129,8 @@ void MockSingleSourceTimeSyncClient::HandleSyncTimer(nl::Weave::System::Layer* a
     err = mockClient->mClient.Sync(mockClient->mBinding, HandleSyncCompleted);
     WeaveLogFunctError(err);
 
-    err = mockClient->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(RESPONSE_TIMEOUT_MSEC * 2 + 1000, HandleSyncTimer, mockClient);
+    err = mockClient->mExchangeMgr->MessageLayer->SystemLayer->StartTimer(RESPONSE_TIMEOUT_MSEC * 2 + 1000, HandleSyncTimer,
+                                                                          mockClient);
     WeaveLogFunctError(err);
 }
 
@@ -137,10 +142,11 @@ void MockSingleSourceTimeSyncClient::HandleTimeChangeNotificationReceived(void *
     WeaveLogProgress(TimeService, "++++  OnTimeChangeNotificationReceived  ++++");
     WeaveLogProgress(TimeService, "++++++++++++++++++++++++++++++++++++++++++++");
 
-    (void)mockClient->mClient.Sync(mockClient->mBinding, HandleSyncCompleted);
+    (void) mockClient->mClient.Sync(mockClient->mBinding, HandleSyncCompleted);
 }
 
-void MockSingleSourceTimeSyncClient::HandleSyncCompleted(void * const aApp, const WEAVE_ERROR aErrorCode, const nl::Weave::Profiles::Time::timesync_t aCorrectedSystemTime)
+void MockSingleSourceTimeSyncClient::HandleSyncCompleted(void * const aApp, const WEAVE_ERROR aErrorCode,
+                                                         const nl::Weave::Profiles::Time::timesync_t aCorrectedSystemTime)
 {
     if ((WEAVE_NO_ERROR == aErrorCode) && (TIMESYNC_INVALID != aCorrectedSystemTime))
     {
@@ -149,7 +155,7 @@ void MockSingleSourceTimeSyncClient::HandleSyncCompleted(void * const aApp, cons
         WeaveLogProgress(TimeService, "++++   Corrected time: %" PRId64 " usec", aCorrectedSystemTime);
         WeaveLogProgress(TimeService, "++++++++++++++++++++++++++++++++++++++++++++");
 
-        (void)System::Layer::SetClock_RealTime((uint64_t)aCorrectedSystemTime);
+        (void) System::Layer::SetClock_RealTime((uint64_t) aCorrectedSystemTime);
     }
     else
     {
@@ -215,19 +221,16 @@ void MockTimeSyncClient::SetupServiceContact(uint64_t serviceNodeId, const char 
     IPAddress::FromString(serviceNodeAddr, mServiceContact.mNodeAddr);
 }
 
-WEAVE_ERROR MockTimeSyncClient::Init(
-    nl::Weave::WeaveExchangeManager *exchangeMgr,
-    OperatingMode mode,
-    uint64_t serviceNodeId,
-    const char * serviceNodeAddr,
-    const uint8_t encryptionType,
-    const uint16_t keyId)
+WEAVE_ERROR MockTimeSyncClient::Init(nl::Weave::WeaveExchangeManager * exchangeMgr, OperatingMode mode, uint64_t serviceNodeId,
+                                     const char * serviceNodeAddr, const uint8_t encryptionType, const uint16_t keyId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
-    if (mode == kOperatingMode_ServiceOverTunnel) {
-        if ((serviceNodeId == kAnyNodeId) || (serviceNodeAddr == NULL)) {
+    if (mode == kOperatingMode_ServiceOverTunnel)
+    {
+        if ((serviceNodeId == kAnyNodeId) || (serviceNodeAddr == NULL))
+        {
             printf("--ts-server-node-id and --ts-server-node-addr are MANDATORY when using --time-sync-mode-service-over-tunnel\n");
             ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
         }
@@ -240,11 +243,11 @@ WEAVE_ERROR MockTimeSyncClient::Init(
     err = mClient.InitClient(this, exchangeMgr, encryptionType, keyId);
     SuccessOrExit(err);
 
-    mOperatingMode = mode;
+    mOperatingMode                           = mode;
     mClient.OnTimeChangeNotificationReceived = OnTimeChangeNotificationReceived;
-    mClient.OnSyncSucceeded = OnSyncSucceeded;
-    mClient.OnSyncFailed = OnSyncFailed;
-    mClient.FilterTimeCorrectionContributor = OnResponseReadyForCalculation;
+    mClient.OnSyncSucceeded                  = OnSyncSucceeded;
+    mClient.OnSyncFailed                     = OnSyncFailed;
+    mClient.FilterTimeCorrectionContributor  = OnResponseReadyForCalculation;
 
     WeaveLogProgress(TimeService, "--------------------------------------------");
 
@@ -256,9 +259,10 @@ WEAVE_ERROR MockTimeSyncClient::Init(
         // Discovery period in the existence of communication error: 10 seconds
         err = mClient.EnableAutoSync(20000
 #if WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-            , 120000, 10000
+                                     ,
+                                     120000, 10000
 #endif // WEAVE_CONFIG_TIME_CLIENT_FABRIC_LOCAL_DISCOVERY
-            );
+        );
         SuccessOrExit(err);
         break;
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
@@ -283,9 +287,7 @@ WEAVE_ERROR MockTimeSyncClient::Init(
         err = mClient.SyncWithNodes(1, &(mContacts[1]));
         SuccessOrExit(err);
         break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
-        break;
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE); break;
     }
 
 exit:
@@ -307,14 +309,14 @@ WEAVE_ERROR MockTimeSyncClient::Shutdown(void)
 }
 
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
-void MockTimeSyncClient::HandleConnectionComplete(nl::Weave::WeaveConnection *con, WEAVE_ERROR conErr)
+void MockTimeSyncClient::HandleConnectionComplete(nl::Weave::WeaveConnection * con, WEAVE_ERROR conErr)
 {
     MockTimeSyncClient * const mockClient = reinterpret_cast<MockTimeSyncClient *>(con->AppState);
     WeaveLogProgress(TimeService, "Connection to service completed");
     mockClient->mClient.SyncWithService(con);
 }
 
-void MockTimeSyncClient::HandleConnectionClosed(nl::Weave::WeaveConnection *con, WEAVE_ERROR conErr)
+void MockTimeSyncClient::HandleConnectionClosed(nl::Weave::WeaveConnection * con, WEAVE_ERROR conErr)
 {
     MockTimeSyncClient * const mockClient = reinterpret_cast<MockTimeSyncClient *>(con->AppState);
     WeaveLogProgress(TimeService, "Connection to service closed unexpectedly");
@@ -351,7 +353,7 @@ void MockTimeSyncClient::SetupConnectionToService(void)
     err = mConnectionToService->Connect(mContacts[0].mNodeId, mContacts[0].mNodeAddr);
     SuccessOrExit(err);
 
-    mConnectionToService->OnConnectionClosed = HandleConnectionClosed;
+    mConnectionToService->OnConnectionClosed   = HandleConnectionClosed;
     mConnectionToService->OnConnectionComplete = HandleConnectionComplete;
 
     WeaveLogProgress(TimeService, "App opening connection to service");
@@ -363,7 +365,7 @@ exit:
 }
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
 
-void MockTimeSyncClient::HandleSyncTimer(nl::Weave::System::Layer* aSystemLayer, void* aAppState, nl::Weave::System::Error aError)
+void MockTimeSyncClient::HandleSyncTimer(nl::Weave::System::Layer * aSystemLayer, void * aAppState, nl::Weave::System::Error aError)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -383,29 +385,24 @@ void MockTimeSyncClient::HandleSyncTimer(nl::Weave::System::Layer* aSystemLayer,
 
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
     case kOperatingMode_Service:
-        err = client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(15000,
-            HandleSyncTimer, &client->mClient);
+        err = client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(15000, HandleSyncTimer, &client->mClient);
         SuccessOrExit(err);
         client->SetupConnectionToService();
         break;
     case kOperatingMode_ServiceOverTunnel:
-        err = client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(15000,
-            HandleSyncTimer, &client->mClient);
+        err = client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(15000, HandleSyncTimer, &client->mClient);
         SuccessOrExit(err);
         err = client->mClient.SyncWithNodes(1, &(client->mServiceContact));
         SuccessOrExit(err);
         break;
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
     case kOperatingMode_AssignedLocalNodes:
-        err = client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(30000,
-            HandleSyncTimer, &client->mClient);
+        err = client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(30000, HandleSyncTimer, &client->mClient);
         SuccessOrExit(err);
         err = client->mClient.SyncWithNodes(1, &(client->mContacts[1]));
         SuccessOrExit(err);
         break;
-    default:
-        ExitNow(err = WEAVE_ERROR_INCORRECT_STATE);
-        break;
+    default: ExitNow(err = WEAVE_ERROR_INCORRECT_STATE); break;
     }
 
 exit:
@@ -414,8 +411,7 @@ exit:
     return;
 }
 
-void MockTimeSyncClient::OnTimeChangeNotificationReceived(void * const aApp, const uint64_t aNodeId,
-    const IPAddress & aNodeAddr)
+void MockTimeSyncClient::OnTimeChangeNotificationReceived(void * const aApp, const uint64_t aNodeId, const IPAddress & aNodeAddr)
 {
     WeaveLogProgress(TimeService, "++++++++++++++++++++++++++++++++++++++++++++");
     WeaveLogProgress(TimeService, "++++ OnTiomeChangeNotificationReceived  ++++");
@@ -432,12 +428,10 @@ void MockTimeSyncClient::OnTimeChangeNotificationReceived(void * const aApp, con
         client->mClient.Abort();
 
         // cancel existing timer
-        client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->CancelTimer(
-            HandleSyncTimer, &client->mClient);
+        client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->CancelTimer(HandleSyncTimer, &client->mClient);
 
         // start a new timer
-        client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(30000,
-                    HandleSyncTimer, &client->mClient);
+        client->mClient.GetExchangeMgr()->MessageLayer->SystemLayer->StartTimer(30000, HandleSyncTimer, &client->mClient);
 
         // sync based on known contacts
         // note the originator of this notification would natually be used!
@@ -446,7 +440,7 @@ void MockTimeSyncClient::OnTimeChangeNotificationReceived(void * const aApp, con
 }
 
 bool MockTimeSyncClient::OnSyncSucceeded(void * const aApp, const timesync_t aOffsetUsec, const bool aIsReliable,
-    const bool aIsServer, const uint8_t aNumContributor)
+                                         const bool aIsServer, const uint8_t aNumContributor)
 {
 #if WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
     MockTimeSyncClient * const mockClient = reinterpret_cast<MockTimeSyncClient *>(aApp);
@@ -456,7 +450,7 @@ bool MockTimeSyncClient::OnSyncSucceeded(void * const aApp, const timesync_t aOf
     {
         WeaveLogProgress(TimeService, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         WeaveLogProgress(TimeService, "++++ Sync Succeeded: Reliable: %c, # Contributors: %2d      ++++", aIsReliable ? 'Y' : 'N',
-            aNumContributor);
+                         aNumContributor);
         WeaveLogProgress(TimeService, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
     else
@@ -488,8 +482,7 @@ void MockTimeSyncClient::OnSyncFailed(void * const aApp, const WEAVE_ERROR aErro
 #endif // WEAVE_CONFIG_TIME_CLIENT_CONNECTION_FOR_SERVICE
 }
 
-void MockTimeSyncClient::OnResponseReadyForCalculation(void * const aApp,
-    Contact aContact[], const int aSize)
+void MockTimeSyncClient::OnResponseReadyForCalculation(void * const aApp, Contact aContact[], const int aSize)
 {
     timesync_t unadjTimestamp_usec;
 
@@ -497,21 +490,19 @@ void MockTimeSyncClient::OnResponseReadyForCalculation(void * const aApp,
     WeaveLogProgress(TimeService, "++++           Capacity: %3d            ++++", aSize);
     WeaveLogProgress(TimeService, "++++++++++++++++++++++++++++++++++++++++++++");
 
-    unadjTimestamp_usec = (timesync_t)System::Layer::GetClock_MonotonicHiRes();
+    unadjTimestamp_usec = (timesync_t) System::Layer::GetClock_MonotonicHiRes();
 
     for (int i = 0; i < aSize; ++i)
     {
         if ((aContact[i].mCommState == uint8_t(TimeSyncNode::kCommState_Completed)) &&
             (aContact[i].mResponseStatus != uint8_t(TimeSyncNode::kResponseStatus_Invalid)))
         {
-            const timesync_t correctedRemoteSystemTime_usec = (aContact[i].mRemoteTimestamp_usec
-                + aContact[i].mFlightTime_usec)
-                + (unadjTimestamp_usec - aContact[i].mUnadjTimestampLastContact_usec);
+            const timesync_t correctedRemoteSystemTime_usec = (aContact[i].mRemoteTimestamp_usec + aContact[i].mFlightTime_usec) +
+                (unadjTimestamp_usec - aContact[i].mUnadjTimestampLastContact_usec);
 
             WeaveLogDetail(TimeService, "Node %llu Role:%d corrected system time:%f",
-                static_cast<unsigned long long>(aContact[i].mNodeId),
-                aContact[i].mRole,
-                correctedRemoteSystemTime_usec * 1e-6);
+                           static_cast<unsigned long long>(aContact[i].mNodeId), aContact[i].mRole,
+                           correctedRemoteSystemTime_usec * 1e-6);
         }
     }
 }

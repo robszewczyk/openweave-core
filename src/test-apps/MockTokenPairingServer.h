@@ -39,15 +39,15 @@ class MockTokenPairingServer : private TokenPairingServer, private TokenPairingD
 public:
     MockTokenPairingServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
 protected:
     bool mIsPaired;
-    virtual WEAVE_ERROR OnPairTokenRequest(TokenPairingServer *server, uint8_t *pairingToken, uint32_t pairingTokenLength);
-    virtual WEAVE_ERROR OnUnpairTokenRequest(TokenPairingServer *server);
-    virtual void EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual WEAVE_ERROR OnPairTokenRequest(TokenPairingServer * server, uint8_t * pairingToken, uint32_t pairingTokenLength);
+    virtual WEAVE_ERROR OnUnpairTokenRequest(TokenPairingServer * server);
+    virtual void EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result);
 };
 
 #endif /* MOCKTOKENPAIRINGSERVER_H_ */

@@ -34,13 +34,12 @@ namespace Time {
 // Inherent the TimeSyncNode for the sake of demonstration
 // we can also just aggregate an instance of TimeSyncNode, just like what has been
 // demonstrated in MockTimeSyncServer
-class MockTimeSyncServer:
-    TimeSyncNode
+class MockTimeSyncServer : TimeSyncNode
 {
 public:
     MockTimeSyncServer();
 
-    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 };
 

@@ -29,8 +29,6 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Common {
@@ -41,15 +39,13 @@ struct ProfileSpecificStatusCode
     uint16_t statusCode;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct ProfileSpecificStatusCode_array {
+struct ProfileSpecificStatusCode_array
+{
     uint32_t num;
-    ProfileSpecificStatusCode *buf;
+    ProfileSpecificStatusCode * buf;
 };
-
-
 
 } // namespace Common
 } // namespace Weave

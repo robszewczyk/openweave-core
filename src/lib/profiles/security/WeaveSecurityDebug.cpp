@@ -50,13 +50,13 @@ using namespace nl::Weave::Crypto;
 
 #if WEAVE_CONFIG_ENABLE_SECURITY_DEBUG_FUNCS
 
-static void Indent(FILE *out, uint16_t count)
+static void Indent(FILE * out, uint16_t count)
 {
     while (count--)
         fputc(' ', out);
 }
 
-static void PrintHexField(FILE *out, const char *name, uint16_t indent, uint16_t count, const uint8_t *data)
+static void PrintHexField(FILE * out, const char * name, uint16_t indent, uint16_t count, const uint8_t * data)
 {
     Indent(out, indent);
     fprintf(out, "%s: ", name);
@@ -75,33 +75,19 @@ static void PrintHexField(FILE *out, const char *name, uint16_t indent, uint16_t
     fprintf(out, "\n");
 }
 
-static void PrintCertType(FILE *out, uint8_t certType)
+static void PrintCertType(FILE * out, uint8_t certType)
 {
-    const char *certTypeStr;
+    const char * certTypeStr;
 
     switch (certType)
     {
-    case kCertType_NotSpecified:
-        certTypeStr = "Not specified";
-        break;
-    case kCertType_General:
-        certTypeStr = "General";
-        break;
-    case kCertType_Device:
-        certTypeStr = "Device";
-        break;
-    case kCertType_ServiceEndpoint:
-        certTypeStr = "Service Endpoint";
-        break;
-    case kCertType_FirmwareSigning:
-        certTypeStr = "Firmware Signing";
-        break;
-    case kCertType_AccessToken:
-        certTypeStr = "Access Token";
-        break;
-    case kCertType_CA:
-        certTypeStr = "CA";
-        break;
+    case kCertType_NotSpecified: certTypeStr = "Not specified"; break;
+    case kCertType_General: certTypeStr = "General"; break;
+    case kCertType_Device: certTypeStr = "Device"; break;
+    case kCertType_ServiceEndpoint: certTypeStr = "Service Endpoint"; break;
+    case kCertType_FirmwareSigning: certTypeStr = "Firmware Signing"; break;
+    case kCertType_AccessToken: certTypeStr = "Access Token"; break;
+    case kCertType_CA: certTypeStr = "CA"; break;
     default:
         if (certType < kCertType_AppDefinedBase)
             fprintf(out, "Unknown (0x%02X)", certType);
@@ -113,7 +99,8 @@ static void PrintCertType(FILE *out, uint8_t certType)
     fputs(certTypeStr, out);
 }
 
-NL_DLL_EXPORT void PrintCert(FILE *out, const WeaveCertificateData& cert, const WeaveCertificateSet *certSet, uint16_t indent, bool verbose)
+NL_DLL_EXPORT void PrintCert(FILE * out, const WeaveCertificateData & cert, const WeaveCertificateSet * certSet, uint16_t indent,
+                             bool verbose)
 {
     Indent(out, indent);
     fprintf(out, "Subject: ");
@@ -148,9 +135,9 @@ NL_DLL_EXPORT void PrintCert(FILE *out, const WeaveCertificateData& cert, const 
             fprintf(out, "%02X", cert.AuthKeyId.Id[i]);
         if (certSet != NULL)
         {
-            WeaveCertificateData *authCert = certSet->FindCert(cert.AuthKeyId);
+            WeaveCertificateData * authCert = certSet->FindCert(cert.AuthKeyId);
             if (authCert != NULL)
-                fprintf(out, " (Cert %u)", (unsigned)(authCert - certSet->Certs));
+                fprintf(out, " (Cert %u)", (unsigned) (authCert - certSet->Certs));
             else
                 fprintf(out, " (no match)");
         }
@@ -160,9 +147,13 @@ NL_DLL_EXPORT void PrintCert(FILE *out, const WeaveCertificateData& cert, const 
     Indent(out, indent);
     fprintf(out, "Validity:\n");
     Indent(out, indent + 2);
-    fprintf(out, "Not Before: "); PrintPackedDate(out, cert.NotBeforeDate); fprintf(out, "\n");
+    fprintf(out, "Not Before: ");
+    PrintPackedDate(out, cert.NotBeforeDate);
+    fprintf(out, "\n");
     Indent(out, indent + 2);
-    fprintf(out, "Not After: "); PrintPackedDate(out, cert.NotAfterDate); fprintf(out, "\n");
+    fprintf(out, "Not After: ");
+    PrintPackedDate(out, cert.NotAfterDate);
+    fprintf(out, "\n");
 
     if (cert.CertType != kCertType_NotSpecified)
     {
@@ -181,7 +172,7 @@ NL_DLL_EXPORT void PrintCert(FILE *out, const WeaveCertificateData& cert, const 
     if (cert.CertFlags & kCertFlag_PathLenConstPresent)
     {
         Indent(out, indent);
-        fprintf(out, "Path Length Constraint: %u\n", (unsigned)cert.PathLenConstraint);
+        fprintf(out, "Path Length Constraint: %u\n", (unsigned) cert.PathLenConstraint);
     }
 
     if (cert.CertFlags & kCertFlag_IsTrusted)
@@ -240,8 +231,7 @@ NL_DLL_EXPORT void PrintCert(FILE *out, const WeaveCertificateData& cert, const 
     Indent(out, indent);
     fprintf(out, "Signature Algorithm: %s\n", GetOIDName(cert.SigAlgoOID));
 
-    if (cert.PubKeyAlgoOID == kOID_PubKeyAlgo_ECPublicKey ||
-        cert.PubKeyAlgoOID == kOID_PubKeyAlgo_ECDH ||
+    if (cert.PubKeyAlgoOID == kOID_PubKeyAlgo_ECPublicKey || cert.PubKeyAlgoOID == kOID_PubKeyAlgo_ECDH ||
         cert.PubKeyAlgoOID == kOID_PubKeyAlgo_ECMQV)
     {
         Indent(out, indent);
@@ -259,15 +249,16 @@ NL_DLL_EXPORT void PrintCert(FILE *out, const WeaveCertificateData& cert, const 
     }
 }
 
-NL_DLL_EXPORT void PrintCertValidationResults(FILE *out, const WeaveCertificateSet& certSet, const ValidationContext& validContext, uint16_t indent)
+NL_DLL_EXPORT void PrintCertValidationResults(FILE * out, const WeaveCertificateSet & certSet,
+                                              const ValidationContext & validContext, uint16_t indent)
 {
 #if WEAVE_CONFIG_DEBUG_CERT_VALIDATION
 
-    WEAVE_ERROR *certValidRes = validContext.CertValidationResults;
+    WEAVE_ERROR * certValidRes = validContext.CertValidationResults;
 
     for (uint8_t i = 0; i < certSet.CertCount && i < validContext.CertValidationResultsLen; i++)
     {
-        const WeaveCertificateData& cert = certSet.Certs[i];
+        const WeaveCertificateData & cert = certSet.Certs[i];
         Indent(out, indent);
         if (certValidRes[i] == WEAVE_NO_ERROR)
             printf("Cert %d: Validation successful\n", i);
@@ -287,10 +278,10 @@ NL_DLL_EXPORT void PrintCertValidationResults(FILE *out, const WeaveCertificateS
 #endif // WEAVE_CONFIG_DEBUG_CERT_VALIDATION
 }
 
-void PrintWeaveDN(FILE *out, const WeaveDN& dn)
+void PrintWeaveDN(FILE * out, const WeaveDN & dn)
 {
     char valueStr[1024];
-    const char *certDesc = NULL;
+    const char * certDesc = NULL;
 
     if (IsWeaveIdX509Attr(dn.AttrOID))
     {
@@ -306,12 +297,12 @@ void PrintWeaveDN(FILE *out, const WeaveDN& dn)
         valueStr[len] = 0;
     }
 
-    fprintf(out, "%s=%s", nl::Weave::ASN1::GetOIDName((OID)dn.AttrOID), valueStr);
+    fprintf(out, "%s=%s", nl::Weave::ASN1::GetOIDName((OID) dn.AttrOID), valueStr);
     if (certDesc != NULL)
         fprintf(out, " (%s)", certDesc);
 }
 
-WEAVE_ERROR PrintWeaveDN(FILE *out, TLVReader & reader)
+WEAVE_ERROR PrintWeaveDN(FILE * out, TLVReader & reader)
 {
     WEAVE_ERROR err;
     WeaveDN dn;
@@ -325,24 +316,22 @@ exit:
     return err;
 }
 
-void PrintPackedTime(FILE *out, uint32_t t)
+void PrintPackedTime(FILE * out, uint32_t t)
 {
     nl::Weave::ASN1::ASN1UniversalTime asn1Time;
     UnpackCertTime(t, asn1Time);
-    fprintf(out, "%04" PRId16 "/%02" PRId8 "/%02" PRId8 " %02" PRId8 ":%02" PRId8 ":%02" PRId8 "",
-            asn1Time.Year, asn1Time.Month, asn1Time.Day,
-            asn1Time.Hour, asn1Time.Minute, asn1Time.Second);
+    fprintf(out, "%04" PRId16 "/%02" PRId8 "/%02" PRId8 " %02" PRId8 ":%02" PRId8 ":%02" PRId8 "", asn1Time.Year, asn1Time.Month,
+            asn1Time.Day, asn1Time.Hour, asn1Time.Minute, asn1Time.Second);
 }
 
-void PrintPackedDate(FILE *out, uint16_t t)
+void PrintPackedDate(FILE * out, uint16_t t)
 {
     nl::Weave::ASN1::ASN1UniversalTime asn1Time;
     UnpackCertTime(PackedCertDateToTime(t), asn1Time);
-    fprintf(out, "%04" PRId16 "/%02" PRId8 "/%02" PRId8,
-            asn1Time.Year, asn1Time.Month, asn1Time.Day);
+    fprintf(out, "%04" PRId16 "/%02" PRId8 "/%02" PRId8, asn1Time.Year, asn1Time.Month, asn1Time.Day);
 }
 
-const char *DescribeWeaveCertId(OID attrOID, uint64_t weaveCertId)
+const char * DescribeWeaveCertId(OID attrOID, uint64_t weaveCertId)
 {
     switch (attrOID)
     {
@@ -364,8 +353,7 @@ const char *DescribeWeaveCertId(OID attrOID, uint64_t weaveCertId)
         if (weaveCertId == 0x18B430EEEE000004ULL)
             return "Nest Development Firmware Signing CA";
         return NULL;
-    case kOID_AttributeType_WeaveDeviceId:
-        return "Device";
+    case kOID_AttributeType_WeaveDeviceId: return "Device";
     case kOID_AttributeType_WeaveServiceEndpointId:
         if (weaveCertId == 0x18B4300200000001ULL)
             return "Nest Directory Endpoint";
@@ -393,8 +381,7 @@ const char *DescribeWeaveCertId(OID attrOID, uint64_t weaveCertId)
             return "Nest Production Firmware Signing";
         if (weaveCertId == 0x18B4300302000001ULL)
             return "Nest Development Firmware Signing";
-    default:
-        return NULL;
+    default: return NULL;
     }
 }
 
@@ -478,14 +465,9 @@ WEAVE_ERROR PrintECDSASignature(FILE * out, TLVReader & reader, uint16_t indent)
 
         switch (tagNum)
         {
-        case kTag_ECDSASignature_r:
-            label = "r";
-            break;
-        case kTag_ECDSASignature_s:
-            label = "s";
-            break;
-        default:
-            continue;
+        case kTag_ECDSASignature_r: label = "r"; break;
+        case kTag_ECDSASignature_s: label = "s"; break;
+        default: continue;
         }
 
         VerifyOrExit(reader.GetType() == kTLVType_ByteString, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -557,8 +539,7 @@ WEAVE_ERROR PrintCertReference(FILE * out, TLVReader & reader, uint16_t indent)
                 fprintf(out, "%02X", data[i]);
             fprintf(out, "\n");
             break;
-        default:
-            break;
+        default: break;
         }
     }
 
@@ -648,8 +629,7 @@ WEAVE_ERROR PrintWeaveSignature(FILE * out, TLVReader & reader, uint16_t indent)
             break;
         }
 
-        default:
-            break;
+        default: break;
         }
     }
 

@@ -30,26 +30,18 @@ namespace Schema {
 namespace Google {
 namespace Protobuf {
 
-
-const nl::FieldDescriptor FieldMaskFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(FieldMask, paths) + offsetof(nl::SerializedFieldTypeUTF8String_array, num), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 1
-    },
-    {
-        NULL, offsetof(FieldMask, paths) + offsetof(nl::SerializedFieldTypeUTF8String_array, buf), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1
-    },
+const nl::FieldDescriptor FieldMaskFieldDescriptors[] = {
+    { NULL, offsetof(FieldMask, paths) + offsetof(nl::SerializedFieldTypeUTF8String_array, num),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 1 },
+    { NULL, offsetof(FieldMask, paths) + offsetof(nl::SerializedFieldTypeUTF8String_array, buf),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1 },
 
 };
 
-const nl::SchemaFieldDescriptor FieldMask::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(FieldMaskFieldDescriptors)/sizeof(FieldMaskFieldDescriptors[0]),
-    .mFields = FieldMaskFieldDescriptors,
-    .mSize = sizeof(FieldMask)
-};
-
-
+const nl::SchemaFieldDescriptor FieldMask::FieldSchema = { .mNumFieldDescriptorElements = sizeof(FieldMaskFieldDescriptors) /
+                                                               sizeof(FieldMaskFieldDescriptors[0]),
+                                                           .mFields = FieldMaskFieldDescriptors,
+                                                           .mSize   = sizeof(FieldMask) };
 
 } // namespace Protobuf
 } // namespace Google

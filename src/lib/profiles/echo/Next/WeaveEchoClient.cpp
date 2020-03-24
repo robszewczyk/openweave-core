@@ -52,14 +52,14 @@ WEAVE_ERROR WeaveEchoClient::Init(Binding * binding, EventCallback eventCallback
     VerifyOrExit(binding != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(eventCallback != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    AppState = appState;
-    mBinding = binding;
-    mEventCallback = eventCallback;
+    AppState        = appState;
+    mBinding        = binding;
+    mEventCallback  = eventCallback;
     mSendIntervalMS = 0;
-    mEC = NULL;
-    mQueuedPayload = NULL;
-    mState = kState_NotInitialized;
-    mFlags = 0;
+    mEC             = NULL;
+    mQueuedPayload  = NULL;
+    mState          = kState_NotInitialized;
+    mFlags          = 0;
 
 #if DEBUG
     // Verify that the application's event callback function correctly calls the default handler.
@@ -106,7 +106,7 @@ void WeaveEchoClient::Shutdown(void)
     }
 
     mEventCallback = NULL;
-    mState = kState_NotInitialized;
+    mState         = kState_NotInitialized;
 }
 
 /**
@@ -243,16 +243,16 @@ void WeaveEchoClient::Stop(void)
  *  @param[in]  outParam    Reference of output event parameters passed by the event callback
  *
  */
-void WeaveEchoClient::DefaultEventHandler(void * appState, EventType eventType, const InEventParam & inParam, OutEventParam & outParam)
+void WeaveEchoClient::DefaultEventHandler(void * appState, EventType eventType, const InEventParam & inParam,
+                                          OutEventParam & outParam)
 {
     outParam.DefaultHandlerCalled = true;
 
     // If the application didn't handle the PreparePayload event, arrange to send a zero-length payload.
     if (eventType == kEvent_PreparePayload)
     {
-        outParam.PreparePayload.Payload = PacketBuffer::NewWithAvailableSize(0);
-        outParam.PreparePayload.PrepareError = (outParam.PreparePayload.Payload != NULL)
-                ? WEAVE_NO_ERROR : WEAVE_ERROR_NO_MEMORY;
+        outParam.PreparePayload.Payload      = PacketBuffer::NewWithAvailableSize(0);
+        outParam.PreparePayload.PrepareError = (outParam.PreparePayload.Payload != NULL) ? WEAVE_NO_ERROR : WEAVE_ERROR_NO_MEMORY;
     }
 }
 
@@ -263,9 +263,9 @@ void WeaveEchoClient::DefaultEventHandler(void * appState, EventType eventType, 
  */
 WEAVE_ERROR WeaveEchoClient::DoSend(bool callbackOnError)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
     PacketBuffer * payloadBuf = NULL;
-    bool reqSent = false;
+    bool reqSent              = false;
 
     // Set the protocol callback on the binding object.  NOTE: This needs to happen after the
     // app has explicitly started the sending process by calling either Send() or SendRepeating().
@@ -310,7 +310,7 @@ WEAVE_ERROR WeaveEchoClient::DoSend(bool callbackOnError)
     if (mBinding->IsReady())
     {
         // "Dequeue" any queued payload buffer.
-        payloadBuf = mQueuedPayload;
+        payloadBuf     = mQueuedPayload;
         mQueuedPayload = NULL;
 
         // If a payload hasn't been supplied, call back to the application to prepare one.
@@ -332,13 +332,13 @@ WEAVE_ERROR WeaveEchoClient::DoSend(bool callbackOnError)
         // Allocate and initialize a new exchange context.
         err = mBinding->NewExchangeContext(mEC);
         SuccessOrExit(err);
-        mEC->AppState = this;
-        mEC->OnMessageReceived = HandleResponse;
-        mEC->OnResponseTimeout = HandleResponseTimeout;
-        mEC->OnKeyError = HandleKeyError;
+        mEC->AppState           = this;
+        mEC->OnMessageReceived  = HandleResponse;
+        mEC->OnResponseTimeout  = HandleResponseTimeout;
+        mEC->OnKeyError         = HandleKeyError;
         mEC->OnConnectionClosed = HandleConnectionClosed;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-        mEC->OnAckRcvd = HandleAckRcvd;
+        mEC->OnAckRcvd   = HandleAckRcvd;
         mEC->OnSendError = HandleSendError;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
@@ -349,7 +349,8 @@ WEAVE_ERROR WeaveEchoClient::DoSend(bool callbackOnError)
         mState = kState_RequestInProgress;
 
         // Send an EchoRequest message to the peer containing the specified payload.
-        err = mEC->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payloadBuf, ExchangeContext::kSendFlag_ExpectResponse);
+        err        = mEC->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payloadBuf,
+                               ExchangeContext::kSendFlag_ExpectResponse);
         payloadBuf = NULL;
         SuccessOrExit(err);
 
@@ -470,7 +471,7 @@ void WeaveEchoClient::ClearRequestState()
     }
 
     // Clear the received flags.
-    ClearFlag(kFlag_ResponseReceived|kFlag_AckReceived|kFlag_MultiResponse);
+    ClearFlag(kFlag_ResponseReceived | kFlag_AckReceived | kFlag_MultiResponse);
 }
 
 /**
@@ -485,8 +486,7 @@ WEAVE_ERROR WeaveEchoClient::ArmSendTimer()
 
     // If the current state is WaitingToSend or RequestInProgress, and SendRepeating mode is
     // enabled, then arm the send timer for the specified interval.
-    if ((mState == kState_WaitingToSend || mState == kState_RequestInProgress) &&
-        GetFlag(kFlag_SendRepeating))
+    if ((mState == kState_WaitingToSend || mState == kState_RequestInProgress) && GetFlag(kFlag_SendRepeating))
     {
         err = mBinding->GetExchangeManager()->MessageLayer->SystemLayer->StartTimer(mSendIntervalMS, HandleSendTimerExpired, this);
     }
@@ -511,7 +511,7 @@ void WeaveEchoClient::DeliverCommunicationError(WEAVE_ERROR err)
     OutEventParam outParam;
 
     inParam.Clear();
-    inParam.Source = this;
+    inParam.Source                    = this;
     inParam.CommunicationError.Reason = err;
 
     outParam.Clear();
@@ -522,10 +522,10 @@ void WeaveEchoClient::DeliverCommunicationError(WEAVE_ERROR err)
 /**
  * Process an event delivered from the binding associated with a WeaveEchoClient.
  */
-void WeaveEchoClient::HandleBindingEvent(void * const appState, const Binding::EventType eventType, const Binding::InEventParam & inParam,
-                                         Binding::OutEventParam & outParam)
+void WeaveEchoClient::HandleBindingEvent(void * const appState, const Binding::EventType eventType,
+                                         const Binding::InEventParam & inParam, Binding::OutEventParam & outParam)
 {
-    WeaveEchoClient * client = (WeaveEchoClient *)appState;
+    WeaveEchoClient * client = (WeaveEchoClient *) appState;
 
     switch (eventType)
     {
@@ -565,17 +565,17 @@ void WeaveEchoClient::HandleBindingEvent(void * const appState, const Binding::E
 
         break;
 
-    default:
-        Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
+    default: Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
     }
 }
 
 /**
  * Called by the Weave messaging layer when a response is received on an Echo exchange.
  */
-void WeaveEchoClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
+void WeaveEchoClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                     uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WeaveEchoClient * client = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * client = (WeaveEchoClient *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -605,7 +605,7 @@ void WeaveEchoClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * 
         InEventParam inParam;
         OutEventParam outParam;
         inParam.Clear();
-        inParam.Source = client;
+        inParam.Source                   = client;
         inParam.ResponseReceived.MsgInfo = msgInfo;
         inParam.ResponseReceived.Payload = payload;
         outParam.Clear();
@@ -618,7 +618,7 @@ void WeaveEchoClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * 
  */
 void WeaveEchoClient::HandleResponseTimeout(ExchangeContext * ec)
 {
-    WeaveEchoClient * client = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * client = (WeaveEchoClient *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -644,7 +644,7 @@ void WeaveEchoClient::HandleResponseTimeout(ExchangeContext * ec)
  */
 void WeaveEchoClient::HandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
 {
-    WeaveEchoClient * client = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * client = (WeaveEchoClient *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -667,7 +667,7 @@ void WeaveEchoClient::HandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
  */
 void WeaveEchoClient::HandleSendError(ExchangeContext * ec, WEAVE_ERROR sendErr, void * msgCtxt)
 {
-    WeaveEchoClient * client = (WeaveEchoClient *)ec->AppState;
+    WeaveEchoClient * client = (WeaveEchoClient *) ec->AppState;
 
     VerifyOrDie(client->mState == kState_RequestInProgress);
     VerifyOrDie(client->mEC == ec);
@@ -692,7 +692,7 @@ void WeaveEchoClient::HandleKeyError(ExchangeContext * ec, WEAVE_ERROR keyErr)
 /**
  * Called by the Weave messaging layer if an underlying Weave connection closes while waiting for an EchoResponse message.
  */
-void WeaveEchoClient::HandleConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr)
+void WeaveEchoClient::HandleConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr)
 {
     // If the other side simply closed the connection without responding, deliver a "closed unexpectedly"
     // error to the application.
@@ -710,7 +710,7 @@ void WeaveEchoClient::HandleConnectionClosed(ExchangeContext *ec, WeaveConnectio
  */
 void WeaveEchoClient::HandleSendTimerExpired(System::Layer * systemLayer, void * appState, System::Error err)
 {
-    WeaveEchoClient * client = (WeaveEchoClient *)appState;
+    WeaveEchoClient * client = (WeaveEchoClient *) appState;
 
     VerifyOrDie(client->mState != kState_NotInitialized);
 
@@ -727,13 +727,11 @@ void WeaveEchoClient::HandleSendTimerExpired(System::Layer * systemLayer, void *
 bool WeaveEchoClient::IsMultiResponseAddress(const IPAddress & addr)
 {
 #if INET_CONFIG_ENABLE_IPV4
-   return addr.IsMulticast() ||  addr.IsIPv4Broadcast();
+    return addr.IsMulticast() || addr.IsIPv4Broadcast();
 #else
-   return addr.IsMulticast();
+    return addr.IsMulticast();
 #endif
 }
-
-
 
 // ==================== Documentation for Inline Public Members ====================
 
@@ -772,7 +770,6 @@ bool WeaveEchoClient::IsMultiResponseAddress(const IPAddress & addr)
  *
  * Sets the API event callback function on the WeaveEchoClient object.
  */
-
 
 } // namespace Echo_Next
 } // namespace Profiles

@@ -48,24 +48,18 @@ namespace System {
  */
 
 #if WEAVE_SYSTEM_CONFIG_POSIX_LOCKING
-NL_DLL_EXPORT Error Mutex::Init(Mutex& aThis)
+NL_DLL_EXPORT Error Mutex::Init(Mutex & aThis)
 {
     int lSysError = pthread_mutex_init(&aThis.mPOSIXMutex, NULL);
     Error lError;
 
     switch (lSysError)
     {
-    case 0:
-        lError = WEAVE_SYSTEM_NO_ERROR;
-        break;
+    case 0: lError = WEAVE_SYSTEM_NO_ERROR; break;
 
-    case ENOMEM:
-        lError = WEAVE_SYSTEM_ERROR_NO_MEMORY;
-        break;
+    case ENOMEM: lError = WEAVE_SYSTEM_ERROR_NO_MEMORY; break;
 
-    default:
-        lError = WEAVE_SYSTEM_ERROR_UNEXPECTED_STATE;
-        break;
+    default: lError = WEAVE_SYSTEM_ERROR_UNEXPECTED_STATE; break;
     }
 
     return lError;
@@ -73,7 +67,7 @@ NL_DLL_EXPORT Error Mutex::Init(Mutex& aThis)
 #endif // WEAVE_SYSTEM_CONFIG_POSIX_LOCKING
 
 #if WEAVE_SYSTEM_CONFIG_FREERTOS_LOCKING
-NL_DLL_EXPORT Error Mutex::Init(Mutex& aThis)
+NL_DLL_EXPORT Error Mutex::Init(Mutex & aThis)
 {
 restart:
     if (__sync_bool_compare_and_swap(&aThis.mInitialized, 0, 1))
@@ -89,7 +83,9 @@ restart:
 
             return WEAVE_SYSTEM_ERROR_NO_MEMORY;
         }
-    } else {
+    }
+    else
+    {
         while (aThis.mFreeRTOSSemaphore == NULL)
         {
             vTaskDelay(1);

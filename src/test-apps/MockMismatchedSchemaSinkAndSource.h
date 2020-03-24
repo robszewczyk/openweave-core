@@ -43,7 +43,7 @@ public:
     void Reset(void) { SetVersion(0); };
 
 private:
-    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter) __OVERRIDE;
+    WEAVE_ERROR GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter) __OVERRIDE;
 
     bool tc_a;
     TestCTrait::EnumC tc_b;
@@ -58,13 +58,12 @@ public:
     TestCTraitDataSink(void);
     void Reset(void);
 
-    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader);
-    WEAVE_ERROR OnEvent(uint16_t aType, void *aInEventParam);
+    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader);
+    WEAVE_ERROR OnEvent(uint16_t aType, void * aInEventParam);
     bool WasPathHandleSet(PropertyPathHandle aLeafHandle);
     bool WasAnyPathHandleSet(void);
 
 private:
-
     bool mPathHandleSet[TestMismatchedCTrait::kPropertyHandle_TcC_ScB];
 };
 
@@ -77,13 +76,12 @@ public:
     TestMismatchedCTraitDataSink(void);
     void Reset(void);
 
-    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader);
-    WEAVE_ERROR OnEvent(uint16_t aType, void *aInEventParam);
+    WEAVE_ERROR SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader);
+    WEAVE_ERROR OnEvent(uint16_t aType, void * aInEventParam);
     bool WasPathHandleSet(PropertyPathHandle aLeafHandle);
     bool WasAnyPathHandleSet(void);
 
 private:
-
     bool mPathHandleSet[TestMismatchedCTrait::kPropertyHandle_TcE_ScC];
 };
 #endif // MOCK_MISMATCHED_SCHEMA_H_

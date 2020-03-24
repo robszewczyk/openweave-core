@@ -55,7 +55,6 @@ namespace Weave {
 namespace Profiles {
 namespace DeviceDescription {
 
-
 class IdentifyRequestMessage;
 class IdentifyResponseMessage;
 
@@ -64,10 +63,9 @@ class IdentifyResponseMessage;
  */
 enum
 {
-    kMessageType_IdentifyRequest                = 1,
-    kMessageType_IdentifyResponse               = 2
+    kMessageType_IdentifyRequest  = 1,
+    kMessageType_IdentifyResponse = 2
 };
-
 
 /**
  * Data Element Tags for the Device Description Profile.
@@ -122,7 +120,6 @@ enum
     kTag_DeviceFeature_LinePowered          = 101   /**< [ boolean ] Indicates a device that requires line power. Feature Tag */
 };
 // clang-format on
-
 
 /**
  *  Contains descriptive information about a Weave device.
@@ -186,20 +183,19 @@ public:
     // clang-format on
     void Clear(void);
 
-    static WEAVE_ERROR EncodeText(const WeaveDeviceDescriptor& desc, char *buf, uint32_t bufLen, uint32_t& outEncodedLen);
-    static WEAVE_ERROR EncodeTLV(const WeaveDeviceDescriptor& desc, uint8_t *buf, uint32_t bufLen, uint32_t& outEncodedLen);
-    static WEAVE_ERROR EncodeTLV(const WeaveDeviceDescriptor& desc, nl::Weave::TLV::TLVWriter& writer);
-    static WEAVE_ERROR Decode(const uint8_t *data, uint32_t dataLen, WeaveDeviceDescriptor& outDesc);
-    static WEAVE_ERROR DecodeText(const char *data, uint32_t dataLen, WeaveDeviceDescriptor& outDesc);
-    static WEAVE_ERROR DecodeTLV(const uint8_t *data, uint32_t dataLen, WeaveDeviceDescriptor& outDesc);
-    static WEAVE_ERROR DecodeTLV(nl::Weave::TLV::TLVReader& reader, WeaveDeviceDescriptor& outDesc);
-    static bool IsZeroBytes(const uint8_t *buf, uint32_t len);
+    static WEAVE_ERROR EncodeText(const WeaveDeviceDescriptor & desc, char * buf, uint32_t bufLen, uint32_t & outEncodedLen);
+    static WEAVE_ERROR EncodeTLV(const WeaveDeviceDescriptor & desc, uint8_t * buf, uint32_t bufLen, uint32_t & outEncodedLen);
+    static WEAVE_ERROR EncodeTLV(const WeaveDeviceDescriptor & desc, nl::Weave::TLV::TLVWriter & writer);
+    static WEAVE_ERROR Decode(const uint8_t * data, uint32_t dataLen, WeaveDeviceDescriptor & outDesc);
+    static WEAVE_ERROR DecodeText(const char * data, uint32_t dataLen, WeaveDeviceDescriptor & outDesc);
+    static WEAVE_ERROR DecodeTLV(const uint8_t * data, uint32_t dataLen, WeaveDeviceDescriptor & outDesc);
+    static WEAVE_ERROR DecodeTLV(nl::Weave::TLV::TLVReader & reader, WeaveDeviceDescriptor & outDesc);
+    static bool IsZeroBytes(const uint8_t * buf, uint32_t len);
 
 private:
-    static WEAVE_ERROR EncodeManufacturingDate(uint16_t year, uint8_t month, uint8_t day, uint16_t& outEncodedDate);
-    static WEAVE_ERROR DecodeManufacturingDate(uint16_t encodedDate, uint16_t& outYear, uint8_t& outMonth, uint8_t& outDay);
+    static WEAVE_ERROR EncodeManufacturingDate(uint16_t year, uint8_t month, uint8_t day, uint16_t & outEncodedDate);
+    static WEAVE_ERROR DecodeManufacturingDate(uint16_t encodedDate, uint16_t & outYear, uint8_t & outMonth, uint8_t & outDay);
 };
-
 
 /**
  * Client object for issuing Device Description requests.
@@ -212,16 +208,16 @@ public:
     /**
      * Application defined state object.
      */
-    void *AppState;
+    void * AppState;
 
-    const WeaveFabricState *FabricState;            /**< [READ ONLY] Fabric state object */
-    WeaveExchangeManager *ExchangeMgr;              /**< [READ ONLY] Exchange manager object */
+    const WeaveFabricState * FabricState; /**< [READ ONLY] Fabric state object */
+    WeaveExchangeManager * ExchangeMgr;   /**< [READ ONLY] Exchange manager object */
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    WEAVE_ERROR SendIdentifyRequest(const IPAddress& nodeAddr, const IdentifyRequestMessage& msg);
-    WEAVE_ERROR SendIdentifyRequest(const IdentifyRequestMessage& msg);
+    WEAVE_ERROR SendIdentifyRequest(const IPAddress & nodeAddr, const IdentifyRequestMessage & msg);
+    WEAVE_ERROR SendIdentifyRequest(const IdentifyRequestMessage & msg);
     WEAVE_ERROR CancelExchange(void);
 
     /**
@@ -234,17 +230,18 @@ public:
      *  @param[in]    msg          A reference to the incoming IdentifyResponse message.
      *
      */
-    typedef void (*HandleIdentifyResponseFunct)(void *appState, uint64_t nodeId, const IPAddress& nodeAddr, const IdentifyResponseMessage& msg);
+    typedef void (*HandleIdentifyResponseFunct)(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                                const IdentifyResponseMessage & msg);
     HandleIdentifyResponseFunct OnIdentifyResponseReceived;
 
 private:
-    ExchangeContext *ExchangeCtx;
+    ExchangeContext * ExchangeCtx;
 
-    static void HandleResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-    DeviceDescriptionClient(const DeviceDescriptionClient&);   // not defined
+    DeviceDescriptionClient(const DeviceDescriptionClient &); // not defined
 };
-
 
 /**
  * Server object for responding to Device Description requests.
@@ -254,12 +251,14 @@ class NL_DLL_EXPORT DeviceDescriptionServer : public WeaveServerBase
 public:
     DeviceDescriptionServer(void);
 
-    void *AppState;                                 /**< Application defined state pointer to provide context for callbacks. */
+    void * AppState; /**< Application defined state pointer to provide context for callbacks. */
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    typedef void (*HandleIdentifyRequestFunct)(void *appState, uint64_t nodeId, const IPAddress& nodeAddr, const IdentifyRequestMessage& reqMsg, bool& sendResp, IdentifyResponseMessage& respMsg);
+    typedef void (*HandleIdentifyRequestFunct)(void * appState, uint64_t nodeId, const IPAddress & nodeAddr,
+                                               const IdentifyRequestMessage & reqMsg, bool & sendResp,
+                                               IdentifyResponseMessage & respMsg);
 
     /**
      * This function is responsible for processing IdentityRequest messages.
@@ -269,27 +268,30 @@ public:
      *  @param[in]    nodeId       The Weave node ID of the message source.
      *  @param[in]    nodeAddr     The IP address of the message source.
      *  @param[in]    reqMsg       A reference to the incoming IdentifyRequest message.
-     *  @param[out]   sendResp     A reference to a boolean that should be set to true if a response message should be sent to the initiator.
+     *  @param[out]   sendResp     A reference to a boolean that should be set to true if a response message should be sent to the
+     * initiator.
      *  @param[out]   respMsg      A reference to the IdentifyResponse message to be sent to the initiator.
      *
      */
     HandleIdentifyRequestFunct OnIdentifyRequestReceived;
 
 private:
-    static void HandleRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                              uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-    DeviceDescriptionServer(const DeviceDescriptionServer&);   // not defined
+    DeviceDescriptionServer(const DeviceDescriptionServer &); // not defined
 };
-
 
 /**
  * Special target fabric IDs.
  */
 enum TargetFabricIds
 {
-    kTargetFabricId_NotInFabric = kFabricIdNotSpecified,        /**< Specifies that only devices that are __not__ a member of a fabric should respond. */
-    kTargetFabricId_AnyFabric   = kReservedFabricIdStart,       /**< Specifies that only devices that __are_ a member of a fabric should respond. */
-    kTargetFabricId_Any         = kMaxFabricId,                 /**< Specifies that all devices should respond regardless of fabric membership. */
+    kTargetFabricId_NotInFabric =
+        kFabricIdNotSpecified, /**< Specifies that only devices that are __not__ a member of a fabric should respond. */
+    kTargetFabricId_AnyFabric =
+        kReservedFabricIdStart,         /**< Specifies that only devices that __are_ a member of a fabric should respond. */
+    kTargetFabricId_Any = kMaxFabricId, /**< Specifies that all devices should respond regardless of fabric membership. */
 };
 
 extern bool MatchTargetFabricId(uint64_t fabricId, uint64_t targetFabricId);
@@ -303,10 +305,10 @@ extern bool MatchTargetFabricId(uint64_t fabricId, uint64_t targetFabricId);
  */
 enum TargetDeviceModes
 {
-    kTargetDeviceMode_Any               = 0x00000000,           /**< Locate all devices regardless of mode. */
+    kTargetDeviceMode_Any = 0x00000000, /**< Locate all devices regardless of mode. */
 
-    kTargetDeviceMode_UserSelectedMode  = 0x00000001            /**< Locate all devices in 'user-selected' mode -- that is, where the device has
-                                                                     been directly identified by a user by pressing a button (or equivalent). */
+    kTargetDeviceMode_UserSelectedMode = 0x00000001 /**< Locate all devices in 'user-selected' mode -- that is, where the device has
+                                                         been directly identified by a user by pressing a button (or equivalent). */
 };
 
 /**
@@ -357,17 +359,15 @@ public:
     void Reset(void);
 };
 
-
 /**
  * Parsed form of an IdentifyRequest Message.
  */
 class NL_DLL_EXPORT IdentifyRequestMessage : public IdentifyDeviceCriteria
 {
 public:
-    WEAVE_ERROR Encode(PacketBuffer *msgBuf) const;
-    static WEAVE_ERROR Decode(PacketBuffer *msgBuf, uint64_t msgDestNodeId, IdentifyRequestMessage& msg);
+    WEAVE_ERROR Encode(PacketBuffer * msgBuf) const;
+    static WEAVE_ERROR Decode(PacketBuffer * msgBuf, uint64_t msgDestNodeId, IdentifyRequestMessage & msg);
 };
-
 
 /**
  * Parsed form of an IdentifyResponse Message.
@@ -380,10 +380,9 @@ public:
      */
     WeaveDeviceDescriptor DeviceDesc;
 
-    WEAVE_ERROR Encode(PacketBuffer *msgBuf);
-    static WEAVE_ERROR Decode(PacketBuffer *msgBuf, IdentifyResponseMessage& msg);
+    WEAVE_ERROR Encode(PacketBuffer * msgBuf);
+    static WEAVE_ERROR Decode(PacketBuffer * msgBuf, IdentifyResponseMessage & msg);
 };
-
 
 } // namespace DeviceDescription
 } // namespace Profiles

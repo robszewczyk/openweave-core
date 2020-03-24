@@ -30,7 +30,7 @@
 
 #include "Verhoeff.h"
 
-#ifndef  VERHOEFF36_NO_MULTIPLY_TABLE
+#ifndef VERHOEFF36_NO_MULTIPLY_TABLE
 
 // clang-format off
 uint8_t Verhoeff36::sMultiplyTable[] =
@@ -97,12 +97,12 @@ int8_t Verhoeff36::sCharToValTable[] =
 
 char Verhoeff36::sValToCharTable[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-char Verhoeff36::ComputeCheckChar(const char *str)
+char Verhoeff36::ComputeCheckChar(const char * str)
 {
     return ComputeCheckChar(str, strlen(str));
 }
 
-char Verhoeff36::ComputeCheckChar(const char *str, size_t strLen)
+char Verhoeff36::ComputeCheckChar(const char * str, size_t strLen)
 {
     int c = 0;
 
@@ -128,22 +128,22 @@ char Verhoeff36::ComputeCheckChar(const char *str, size_t strLen)
     return ValToChar(c);
 }
 
-bool Verhoeff36::ValidateCheckChar(char checkChar, const char *str)
+bool Verhoeff36::ValidateCheckChar(char checkChar, const char * str)
 {
     return ValidateCheckChar(checkChar, str, strlen(str));
 }
 
-bool Verhoeff36::ValidateCheckChar(char checkChar, const char *str, size_t strLen)
+bool Verhoeff36::ValidateCheckChar(char checkChar, const char * str, size_t strLen)
 {
     return (ComputeCheckChar(str, strLen) == checkChar);
 }
 
-bool Verhoeff36::ValidateCheckChar(const char *str)
+bool Verhoeff36::ValidateCheckChar(const char * str)
 {
     return ValidateCheckChar(str, strlen(str));
 }
 
-bool Verhoeff36::ValidateCheckChar(const char *str, size_t strLen)
+bool Verhoeff36::ValidateCheckChar(const char * str, size_t strLen)
 {
     if (strLen == 0)
         return false;
@@ -153,7 +153,7 @@ bool Verhoeff36::ValidateCheckChar(const char *str, size_t strLen)
 int Verhoeff36::CharToVal(char ch)
 {
     if (ch >= '0' && ch <= 'z')
-        return sCharToValTable[(int)ch - '0'];
+        return sCharToValTable[(int) ch - '0'];
     else
         return -1;
 }

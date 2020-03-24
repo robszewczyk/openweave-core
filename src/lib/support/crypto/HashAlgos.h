@@ -48,7 +48,8 @@
 #include "WeaveCrypto.h"
 
 #if WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL && !WEAVE_WITH_OPENSSL
-#error "INVALID WEAVE CONFIG: OpenSSL hash implementation enabled but OpenSSL not available (WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL == 1 && WEAVE_WITH_OPENSSL == 0)."
+#error                                                                                                                             \
+    "INVALID WEAVE CONFIG: OpenSSL hash implementation enabled but OpenSSL not available (WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL == 1 && WEAVE_WITH_OPENSSL == 0)."
 #endif
 
 #if WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL
@@ -58,7 +59,7 @@
 #if WEAVE_CONFIG_HASH_IMPLEMENTATION_MINCRYPT
 // Map mincrypt's SHA_CTX/SHA256_CTX types to unique names so that they can co-exist with OpenSSL's similarly named types.
 // This allows the use of mincrypt's SHA implementations while still using OpenSSL for other crypto functions.
-#define SHA_CTX MINCRYPT_SHA_CTX
+#define SHA_CTX    MINCRYPT_SHA_CTX
 #define SHA256_CTX MINCRYPT_SHA256_CTX
 #include "mincrypt/sha.h"
 #include "mincrypt/sha256.h"
@@ -88,19 +89,19 @@ class NL_DLL_EXPORT SHA1
 public:
     enum
     {
-        kHashLength             = 20,
-        kBlockLength            = 64
+        kHashLength  = 20,
+        kBlockLength = 64
     };
 
     SHA1(void);
     ~SHA1(void);
 
     void Begin(void);
-    void AddData(const uint8_t *data, uint16_t dataLen);
+    void AddData(const uint8_t * data, uint16_t dataLen);
 #if WEAVE_WITH_OPENSSL
-    void AddData(const BIGNUM& num);
+    void AddData(const BIGNUM & num);
 #endif
-    void Finish(uint8_t *hashBuf);
+    void Finish(uint8_t * hashBuf);
     void Reset(void);
 
 private:
@@ -120,19 +121,19 @@ class SHA256
 public:
     enum
     {
-        kHashLength             = 32,
-        kBlockLength            = 64
+        kHashLength  = 32,
+        kBlockLength = 64
     };
 
     SHA256(void);
     ~SHA256(void);
 
     void Begin(void);
-    void AddData(const uint8_t *data, uint16_t dataLen);
+    void AddData(const uint8_t * data, uint16_t dataLen);
 #if WEAVE_WITH_OPENSSL
-    void AddData(const BIGNUM& num);
+    void AddData(const BIGNUM & num);
 #endif
-    void Finish(uint8_t *hashBuf);
+    void Finish(uint8_t * hashBuf);
     void Reset(void);
 
 private:

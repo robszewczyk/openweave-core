@@ -57,7 +57,6 @@ public:
      *  @return The current value of the counter.
      */
     virtual uint32_t GetValue(void) = 0;
-
 };
 
 /**
@@ -101,10 +100,9 @@ public:
 
 protected:
     uint32_t mCounterValue;
-
 };
 
-} // Weave
-} // nl
+} // namespace Weave
+} // namespace nl
 
 #endif // WEAVE_COUNTER_H

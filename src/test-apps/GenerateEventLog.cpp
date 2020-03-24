@@ -352,18 +352,19 @@ static OptionDef gToolOptionDefs[] = { { "loglevel", kArgumentRequired, 'l' },
                                        { "wdm", kNoArgument, 'w' },
                                        { } };
 
-static const char * gToolOptionHelp = "  -l, --loglevel <logLevel>\n"
-                                      "       Configured default log level, 1 - PRODUCTION, 2 - INFO, 3 - DEBUG\n"
-                                      "  -o, --output <filename>\n"
-                                      "       Save the output in the file\n"
-                                      "  -r, --raw\n"
-                                      "       Emit raw bytes\n"
-                                      "  -t, --test <num>\n"
-                                      "       The test log to use, valid range: 1 to %d\n"
-                                      "  -V, --verbose\n"
-                                      "       Verbose output\n"
-                                      "  -w, --wdm\n"
-                                      "       Enclose the output in the WDM Notification envelope\n";
+static const char * gToolOptionHelp =
+    "  -l, --loglevel <logLevel>\n"
+    "       Configured default log level, 1 - PRODUCTION, 2 - INFO, 3 - DEBUG\n"
+    "  -o, --output <filename>\n"
+    "       Save the output in the file\n"
+    "  -r, --raw\n"
+    "       Emit raw bytes\n"
+    "  -t, --test <num>\n"
+    "       The test log to use, valid range: 1 to %d\n"
+    "  -V, --verbose\n"
+    "       Verbose output\n"
+    "  -w, --wdm\n"
+    "       Enclose the output in the WDM Notification envelope\n";
 
 static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
@@ -387,13 +388,9 @@ bool HandleOption(const char * progName, OptionSet * optSet, int id, const char 
         gLogContext.mLogLevel = static_cast<nl::Weave::Profiles::DataManagement::ImportanceType>(level);
         break;
 
-    case 'o':
-        gLogContext.mOutputFilename = arg;
-        break;
+    case 'o': gLogContext.mOutputFilename = arg; break;
 
-    case 'r':
-        gLogContext.mRaw = true;
-        break;
+    case 'r': gLogContext.mRaw = true; break;
 
     case 't':
         if (!ParseInt(arg, testNum) || testNum == 0 || testNum > gNumTests)
@@ -404,17 +401,11 @@ bool HandleOption(const char * progName, OptionSet * optSet, int id, const char 
         gLogContext.mTestNum = testNum - 1;
         break;
 
-    case 'V':
-        gLogContext.mVerbose = true;
-        break;
+    case 'V': gLogContext.mVerbose = true; break;
 
-    case 'w':
-        gLogContext.mWDMOutput = true;
-        break;
+    case 'w': gLogContext.mWDMOutput = true; break;
 
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

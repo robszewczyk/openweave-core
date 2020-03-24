@@ -30,10 +30,9 @@
 class MockWdmViewServer
 {
 public:
-    static MockWdmViewServer * GetInstance ();
+    static MockWdmViewServer * GetInstance();
 
-    virtual WEAVE_ERROR Init (nl::Weave::WeaveExchangeManager *aExchangeMgr, const char * const aTestCaseId) = 0;
+    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, const char * const aTestCaseId) = 0;
 };
-
 
 #endif /* MOCKWDMRESPONDER_H_ */

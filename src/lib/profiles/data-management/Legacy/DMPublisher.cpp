@@ -54,14 +54,10 @@ using namespace ::nl::Weave::Profiles::StatusReporting;
  * CancelSubscription and Update requests.
  */
 
-static void PublisherListener(ExchangeContext *ec,
-                              const IPPacketInfo *pktInfo,
-                              const WeaveMessageInfo *msgInfo,
-                              uint32_t profileId,
-                              uint8_t msgType,
-                              PacketBuffer *payload)
+static void PublisherListener(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                              uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    DMPublisher *scribners = static_cast<DMPublisher*>(ec->AppState);
+    DMPublisher * scribners = static_cast<DMPublisher *>(ec->AppState);
 
     scribners->OnMsgReceived(ec, profileId, msgType, payload);
 }
@@ -77,9 +73,9 @@ static void PublisherListener(ExchangeContext *ec,
  *  notifications before it is ready.
  */
 
-static void SubscriptionSuccess(ExchangeContext *ec, void *aSubscription)
+static void SubscriptionSuccess(ExchangeContext * ec, void * aSubscription)
 {
-    DMPublisher::Subscription *s = static_cast<DMPublisher::Subscription*>(aSubscription);
+    DMPublisher::Subscription * s = static_cast<DMPublisher::Subscription *>(aSubscription);
 
     s->Activate();
 
@@ -94,16 +90,12 @@ static void SubscriptionSuccess(ExchangeContext *ec, void *aSubscription)
  *  error
  */
 
-static void SubscriptionFailure(ExchangeContext *ec, WEAVE_ERROR aError, void *aSubscription)
+static void SubscriptionFailure(ExchangeContext * ec, WEAVE_ERROR aError, void * aSubscription)
 {
-    DMPublisher::Subscription *s = static_cast<DMPublisher::Subscription*>(aSubscription);
+    DMPublisher::Subscription * s = static_cast<DMPublisher::Subscription *>(aSubscription);
 
-    WeaveLogError(DataManagement,
-                  "Subscription [0x%" PRIx64 ", 0x%" PRIx64 ", 0x%" PRIx64 "] failed - %s",
-                  s->mAssignedId,
-                  s->mRequestedId,
-                  s->mClientId,
-                  ErrorStr(aError));
+    WeaveLogError(DataManagement, "Subscription [0x%" PRIx64 ", 0x%" PRIx64 ", 0x%" PRIx64 "] failed - %s", s->mAssignedId,
+                  s->mRequestedId, s->mClientId, ErrorStr(aError));
 
     s->mSubscriptionCtx->Abort();
     s->Free();
@@ -120,7 +112,10 @@ static void SubscriptionFailure(ExchangeContext *ec, WEAVE_ERROR aError, void *a
  *  Clears all internal state.
  */
 
-DMPublisher::DMPublisher(void) { Clear(); }
+DMPublisher::DMPublisher(void)
+{
+    Clear();
+}
 
 /**
  * @brief
@@ -130,7 +125,10 @@ DMPublisher::DMPublisher(void) { Clear(); }
  *  exchange manager if one is in place.
  */
 
-DMPublisher::~DMPublisher(void) { Finalize(); }
+DMPublisher::~DMPublisher(void)
+{
+    Finalize();
+}
 
 /**
  *  @brief
@@ -155,7 +153,7 @@ DMPublisher::~DMPublisher(void) { Finalize(); }
  *  publisher.
  */
 
-WEAVE_ERROR DMPublisher::Init(WeaveExchangeManager *aExchangeMgr, uint32_t aResponseTimeout)
+WEAVE_ERROR DMPublisher::Init(WeaveExchangeManager * aExchangeMgr, uint32_t aResponseTimeout)
 {
     WEAVE_ERROR err;
 
@@ -170,9 +168,7 @@ WEAVE_ERROR DMPublisher::Init(WeaveExchangeManager *aExchangeMgr, uint32_t aResp
 
 #if WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_LEGACY_MESSAGE_TYPES
 
-    err = aExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM,
-                                                          kMsgType_UpdateRequest_Deprecated,
-                                                          PublisherListener,
+    err = aExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM, kMsgType_UpdateRequest_Deprecated, PublisherListener,
                                                           this);
     SuccessOrExit(err);
 
@@ -187,7 +183,8 @@ WEAVE_ERROR DMPublisher::Init(WeaveExchangeManager *aExchangeMgr, uint32_t aResp
     err = aExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM, kMsgType_SubscribeRequest, PublisherListener, this);
     SuccessOrExit(err);
 
-    err = aExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM, kMsgType_CancelSubscriptionRequest, PublisherListener, this);
+    err = aExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_WDM, kMsgType_CancelSubscriptionRequest, PublisherListener,
+                                                          this);
     SuccessOrExit(err);
 
 exit:
@@ -210,11 +207,10 @@ void DMPublisher::Clear(void)
 
     ClearSubscriptionTable();
 
-    for (i = 0; i<kNotifyPoolSize; i++)
+    for (i = 0; i < kNotifyPoolSize; i++)
         mNotifyPool[i].Free();
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
-
 }
 
 /**
@@ -240,7 +236,7 @@ void DMPublisher::Finalize(void)
     ProtocolEngine::Finalize();
 }
 
-void DMPublisher::IncompleteIndication(Binding *aBinding, StatusReport &aReport)
+void DMPublisher::IncompleteIndication(Binding * aBinding, StatusReport & aReport)
 {
 
 #if WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
@@ -248,7 +244,6 @@ void DMPublisher::IncompleteIndication(Binding *aBinding, StatusReport &aReport)
     FailSubscription(kTopicIdNotSpecified, aBinding->mPeerNodeId, aReport);
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
-
 }
 
 /**
@@ -289,10 +284,10 @@ void DMPublisher::IncompleteIndication(Binding *aBinding, StatusReport &aReport)
  *                  allocated.
  */
 
-WEAVE_ERROR DMPublisher::ViewResponse(ExchangeContext *aResponseCtx, StatusReport &aStatus, ReferencedTLVData *aDataList)
+WEAVE_ERROR DMPublisher::ViewResponse(ExchangeContext * aResponseCtx, StatusReport & aStatus, ReferencedTLVData * aDataList)
 {
-    WEAVE_ERROR     err = WEAVE_NO_ERROR;
-    PacketBuffer*   buf = NULL;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    PacketBuffer * buf = NULL;
 
     VerifyOrExit((aDataList || !aStatus.success()), err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -340,7 +335,7 @@ exit:
  *  #WEAVE_ERROR reflecting a failure to send the response message.
  */
 
-WEAVE_ERROR DMPublisher::UpdateResponse(ExchangeContext *aResponseCtx, StatusReport &aStatus)
+WEAVE_ERROR DMPublisher::UpdateResponse(ExchangeContext * aResponseCtx, StatusReport & aStatus)
 {
     return StatusResponse(aResponseCtx, aStatus);
 }
@@ -351,7 +346,7 @@ WEAVE_ERROR DMPublisher::UpdateResponse(ExchangeContext *aResponseCtx, StatusRep
  * methods. the NHL IS responsible for managing this exchange context.
  */
 
-void DMPublisher::OnMsgReceived(ExchangeContext *aExchangeCtx, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer *aMsg)
+void DMPublisher::OnMsgReceived(ExchangeContext * aExchangeCtx, uint32_t aProfileId, uint8_t aMsgType, PacketBuffer * aMsg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     MessageIterator i(aMsg);
@@ -507,10 +502,10 @@ exit:
  *  @retval         #WEAVE_ERROR_NO_MEMORY If a subscription could not be added.
  */
 
-WEAVE_ERROR DMPublisher::BeginSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId)
+WEAVE_ERROR DMPublisher::BeginSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    Subscription *s;
+    Subscription * s;
 
     s = AddSubscription(aTopicId, aTopicId, aClientId);
     VerifyOrExit(s, err = WEAVE_ERROR_NO_MEMORY);
@@ -541,7 +536,7 @@ exit:
  *  #WEAVE_ERROR reflecting a failure to remove the subscription.
  */
 
-WEAVE_ERROR DMPublisher::EndSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId)
+WEAVE_ERROR DMPublisher::EndSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -559,7 +554,7 @@ void DMPublisher::ClearSubscriptionTable(void)
 {
     for (int i = 0; i < kSubscriptionMgrTableSize; i++)
     {
-        Subscription &s = mSubscriptionTable[i];
+        Subscription & s = mSubscriptionTable[i];
 
         s.Free();
     }
@@ -580,7 +575,7 @@ bool DMPublisher::SubscriptionTableEmpty(void) const
 
     for (int i = 0; i < kSubscriptionMgrTableSize; i++)
     {
-        const Subscription &s = mSubscriptionTable[i];
+        const Subscription & s = mSubscriptionTable[i];
 
         if (s.mAssignedId != kTopicIdNotSpecified && s.mClientId != kNodeIdNotSpecified)
         {
@@ -591,7 +586,6 @@ bool DMPublisher::SubscriptionTableEmpty(void) const
     }
 
     return result;
-
 }
 
 /**
@@ -639,16 +633,14 @@ bool DMPublisher::SubscriptionTableEmpty(void) const
  *  @retval         #WEAVE_ERROR_INVALID_ARGUMENT If the given parameters are inconsistent.
  */
 
-WEAVE_ERROR DMPublisher::SubscribeResponse(ExchangeContext *aResponseCtx,
-                                           StatusReport &aStatus,
-                                           const TopicIdentifier &aTopicId,
-                                           ReferencedTLVData *aDataList)
+WEAVE_ERROR DMPublisher::SubscribeResponse(ExchangeContext * aResponseCtx, StatusReport & aStatus, const TopicIdentifier & aTopicId,
+                                           ReferencedTLVData * aDataList)
 {
-    WEAVE_ERROR     err     = WEAVE_NO_ERROR;
-    PacketBuffer*   buf     = NULL;
-    TopicIdentifier topic   = PublisherSpecificTopicId();
-    Binding*        binding;
-    Subscription*   subscription;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * buf    = NULL;
+    TopicIdentifier topic = PublisherSpecificTopicId();
+    Binding * binding;
+    Subscription * subscription;
 
     VerifyOrExit((aDataList || !aStatus.success()), err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -689,15 +681,13 @@ WEAVE_ERROR DMPublisher::SubscribeResponse(ExchangeContext *aResponseCtx,
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
         if (binding->mTransport == kTransport_WRMP)
         {
-            aResponseCtx->OnAckRcvd = SubscriptionSuccess;
+            aResponseCtx->OnAckRcvd   = SubscriptionSuccess;
             aResponseCtx->OnSendError = SubscriptionFailure;
 
             subscription->mSubscriptionCtx = aResponseCtx;
 
-            err = aResponseCtx->SendMessage(kWeaveProfile_WDM,
-                                            kMsgType_SubscribeResponse,
-                                            buf, ExchangeContext::kSendFlag_RequestAck,
-                                            subscription);
+            err = aResponseCtx->SendMessage(kWeaveProfile_WDM, kMsgType_SubscribeResponse, buf,
+                                            ExchangeContext::kSendFlag_RequestAck, subscription);
             buf = NULL;
         }
         else
@@ -755,7 +745,7 @@ exit:
  *  #WEAVE_ERROR reflecting a failure to end the subscription.
  */
 
-WEAVE_ERROR DMPublisher::CancelSubscriptionIndication(ExchangeContext *aResponseCtx, const TopicIdentifier &aTopicId)
+WEAVE_ERROR DMPublisher::CancelSubscriptionIndication(ExchangeContext * aResponseCtx, const TopicIdentifier & aTopicId)
 {
     return EndSubscription(aTopicId, aResponseCtx->PeerNodeId);
 }
@@ -792,15 +782,12 @@ WEAVE_ERROR DMPublisher::CancelSubscriptionIndication(ExchangeContext *aResponse
  *  @retval         #WEAVE_ERROR_NO_MEMORY If a new notify transaction cannot be allocated.
  */
 
-WEAVE_ERROR DMPublisher::NotifyRequest(const uint64_t &aDestinationId,
-                                       const TopicIdentifier &aTopicId,
-                                       ReferencedTLVData &aDataList,
-                                       uint16_t aTxnId,
-                                       uint32_t aTimeout)
+WEAVE_ERROR DMPublisher::NotifyRequest(const uint64_t & aDestinationId, const TopicIdentifier & aTopicId,
+                                       ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout)
 {
-    WEAVE_ERROR err = WEAVE_ERROR_INCORRECT_STATE;
-    Binding *binding = GetBinding(aDestinationId);
-    Notify *notify = NULL;
+    WEAVE_ERROR err   = WEAVE_ERROR_INCORRECT_STATE;
+    Binding * binding = GetBinding(aDestinationId);
+    Notify * notify   = NULL;
 
     if (binding)
     {
@@ -860,13 +847,14 @@ exit:
  *  @retval         #WEAVE_ERROR_NO_MEMORY If a new notify transaction cannot be allocated.
  */
 
-WEAVE_ERROR DMPublisher::NotifyRequest(const TopicIdentifier &aTopicId, ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMPublisher::NotifyRequest(const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList, uint16_t aTxnId,
+                                       uint32_t aTimeout)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     for (int i = 0; i < kSubscriptionMgrTableSize; i++)
     {
-        Subscription &s = mSubscriptionTable[i];
+        Subscription & s = mSubscriptionTable[i];
 
         if (s.IsActive())
         {
@@ -880,7 +868,7 @@ WEAVE_ERROR DMPublisher::NotifyRequest(const TopicIdentifier &aTopicId, Referenc
                      * a default binding.
                      */
 
-                    Notify *notify = NewNotify();
+                    Notify * notify = NewNotify();
 
                     if (notify)
                     {
@@ -940,7 +928,7 @@ WEAVE_ERROR DMPublisher::NotifyRequest(const TopicIdentifier &aTopicId, Referenc
  *
  */
 
-WEAVE_ERROR DMPublisher::NotifyRequest(ReferencedTLVData &aDataList, uint16_t aTxnId, uint32_t aTimeout)
+WEAVE_ERROR DMPublisher::NotifyRequest(ReferencedTLVData & aDataList, uint16_t aTxnId, uint32_t aTimeout)
 {
     // jira://WEAV-265 has been created to track this
     return WEAVE_ERROR_NOT_IMPLEMENTED;
@@ -990,9 +978,7 @@ WEAVE_ERROR DMPublisher::NotifyRequest(ReferencedTLVData &aDataList, uint16_t aT
  *                  failure to end the subscription in the case where this is called for.
  */
 
-WEAVE_ERROR DMPublisher::NotifyConfirm(const uint64_t &aResponderId,
-                                       const TopicIdentifier &aAssignedId,
-                                       StatusReport &aStatus,
+WEAVE_ERROR DMPublisher::NotifyConfirm(const uint64_t & aResponderId, const TopicIdentifier & aAssignedId, StatusReport & aStatus,
                                        uint16_t aTxnId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
@@ -1026,43 +1012,41 @@ DMPublisher::Subscription::~Subscription(void)
     Free();
 }
 
-WEAVE_ERROR DMPublisher::Subscription::Init(const TopicIdentifier &aAssignedId,
-                                            const TopicIdentifier &aRequestedId,
-                                            const uint64_t &aClientId)
+WEAVE_ERROR DMPublisher::Subscription::Init(const TopicIdentifier & aAssignedId, const TopicIdentifier & aRequestedId,
+                                            const uint64_t & aClientId)
 {
-    mFlags = kSubscriptionFlags_Allocated;
-    mAssignedId = aAssignedId;
+    mFlags       = kSubscriptionFlags_Allocated;
+    mAssignedId  = aAssignedId;
     mRequestedId = aRequestedId;
-    mClientId = aClientId;
+    mClientId    = aClientId;
 
     return WEAVE_NO_ERROR;
 }
 
 void DMPublisher::Subscription::Free(void)
 {
-    mFlags = kSubscriptionFlags_Free;
-    mAssignedId = kTopicIdNotSpecified;
-    mRequestedId = kTopicIdNotSpecified;
-    mClientId = kNodeIdNotSpecified;
+    mFlags           = kSubscriptionFlags_Free;
+    mAssignedId      = kTopicIdNotSpecified;
+    mRequestedId     = kTopicIdNotSpecified;
+    mClientId        = kNodeIdNotSpecified;
     mSubscriptionCtx = NULL;
 }
 
-DMPublisher::Subscription *DMPublisher::AddSubscription(const TopicIdentifier &aAssignedId,
-                                                        const TopicIdentifier &aRequestedId,
-                                                        const uint64_t &aClientId)
+DMPublisher::Subscription * DMPublisher::AddSubscription(const TopicIdentifier & aAssignedId, const TopicIdentifier & aRequestedId,
+                                                         const uint64_t & aClientId)
 {
     int i;
-    Subscription *result = NULL;
+    Subscription * result = NULL;
 
     // look to see if it's already there.
 
     for (i = 0; i < kSubscriptionMgrTableSize; i++)
     {
-        Subscription &s = mSubscriptionTable[i];
+        Subscription & s = mSubscriptionTable[i];
 
-        if (s.mAssignedId == aAssignedId && s.mRequestedId == aRequestedId &&s.mClientId == aClientId)
+        if (s.mAssignedId == aAssignedId && s.mRequestedId == aRequestedId && s.mClientId == aClientId)
         {
-            result = &s;
+            result                   = &s;
             result->mSubscriptionCtx = NULL;
             break;
         }
@@ -1074,13 +1058,13 @@ DMPublisher::Subscription *DMPublisher::AddSubscription(const TopicIdentifier &a
     {
         for (i = 0; i < kSubscriptionMgrTableSize; i++)
         {
-            Subscription &s = mSubscriptionTable[i];
+            Subscription & s = mSubscriptionTable[i];
 
             if (s.IsFree())
             {
                 s.Init(aAssignedId, aRequestedId, aClientId);
 
-                result = &s;
+                result                   = &s;
                 result->mSubscriptionCtx = NULL;
                 break;
             }
@@ -1090,22 +1074,22 @@ DMPublisher::Subscription *DMPublisher::AddSubscription(const TopicIdentifier &a
     return result;
 }
 
-void DMPublisher::RemoveSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId)
+void DMPublisher::RemoveSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId)
 {
     for (int i = 0; i < kSubscriptionMgrTableSize; i++)
     {
-        Subscription &s = mSubscriptionTable[i];
+        Subscription & s = mSubscriptionTable[i];
 
         if (s.MatchSubscription(aTopicId, aClientId))
             s.Free();
     }
 }
 
-void DMPublisher::FailSubscription(const TopicIdentifier &aTopicId, const uint64_t &aClientId, StatusReport &aReport)
+void DMPublisher::FailSubscription(const TopicIdentifier & aTopicId, const uint64_t & aClientId, StatusReport & aReport)
 {
     for (int i = 0; i < kSubscriptionMgrTableSize; i++)
     {
-        Subscription &s = mSubscriptionTable[i];
+        Subscription & s = mSubscriptionTable[i];
 
         if (s.MatchSubscription(aTopicId, aClientId))
         {
@@ -1121,16 +1105,13 @@ void DMPublisher::FailSubscription(const TopicIdentifier &aTopicId, const uint64
  * interface.
  */
 
-WEAVE_ERROR DMPublisher::Notify::Init(DMPublisher *aPublisher,
-                                      const TopicIdentifier &aTopicId,
-                                      ReferencedTLVData &aDataList,
-                                      uint16_t aTxnId,
-                                      uint32_t aTimeout)
+WEAVE_ERROR DMPublisher::Notify::Init(DMPublisher * aPublisher, const TopicIdentifier & aTopicId, ReferencedTLVData & aDataList,
+                                      uint16_t aTxnId, uint32_t aTimeout)
 {
     DMTransaction::Init(aPublisher, aTxnId, aTimeout);
 
     mDataList = aDataList;
-    mTopicId = aTopicId;
+    mTopicId  = aTopicId;
 
     return WEAVE_NO_ERROR;
 }
@@ -1143,7 +1124,7 @@ void DMPublisher::Notify::Free(void)
     mTopicId = kTopicIdNotSpecified;
 }
 
-WEAVE_ERROR DMPublisher::Notify::SendRequest(PacketBuffer *aBuffer, uint16_t aSendFlags)
+WEAVE_ERROR DMPublisher::Notify::SendRequest(PacketBuffer * aBuffer, uint16_t aSendFlags)
 {
     WEAVE_ERROR err;
     StatusReport report;
@@ -1161,7 +1142,7 @@ WEAVE_ERROR DMPublisher::Notify::SendRequest(PacketBuffer *aBuffer, uint16_t aSe
         SuccessOrExit(err);
     }
 
-    err = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_NotifyRequest, aBuffer, aSendFlags);
+    err     = mExchangeCtx->SendMessage(kWeaveProfile_WDM, kMsgType_NotifyRequest, aBuffer, aSendFlags);
     aBuffer = NULL;
 
 exit:
@@ -1181,10 +1162,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR DMPublisher::Notify::OnStatusReceived(const uint64_t &aResponderId, StatusReport &aStatus)
+WEAVE_ERROR DMPublisher::Notify::OnStatusReceived(const uint64_t & aResponderId, StatusReport & aStatus)
 {
-    DMPublisher *publisher = static_cast<DMPublisher *>(mEngine);
-    uint16_t txnId = mTxnId;
+    DMPublisher * publisher = static_cast<DMPublisher *>(mEngine);
+    uint16_t txnId          = mTxnId;
     TopicIdentifier topicId = mTopicId;
 
     Finalize();
@@ -1192,10 +1173,10 @@ WEAVE_ERROR DMPublisher::Notify::OnStatusReceived(const uint64_t &aResponderId, 
     return publisher->NotifyConfirm(aResponderId, topicId, aStatus, txnId);
 }
 
-DMPublisher::Notify *DMPublisher::NewNotify(void)
+DMPublisher::Notify * DMPublisher::NewNotify(void)
 {
     int i;
-    Notify *result = NULL;
+    Notify * result = NULL;
 
     for (i = 0; i < kNotifyPoolSize; i++)
     {
@@ -1238,7 +1219,7 @@ WEAVE_ERROR DMPublisher::CancelTransactionRequest(uint16_t aTxnId, WEAVE_ERROR a
 
     for (i = 0; i < kNotifyPoolSize; i++)
     {
-        Notify &n = mNotifyPool[i];
+        Notify & n = mNotifyPool[i];
 
         VerifyOrExit(n.mTxnId != aTxnId, err = n.Finalize());
     }

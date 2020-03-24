@@ -41,14 +41,15 @@
 #define NL_DNS_HOSTNAME_MAX_LEN 254
 #endif
 
-#define VerifyOrQuit(TST) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stderr, "CHECK FAILED: %s at %s:%d\n", #TST, __FUNCTION__, __LINE__); \
-        exit(EXIT_FAILURE); \
-    } \
-} while (0)
+#define VerifyOrQuit(TST)                                                                                                          \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stderr, "CHECK FAILED: %s at %s:%d\n", #TST, __FUNCTION__, __LINE__);                                          \
+            exit(EXIT_FAILURE);                                                                                                    \
+        }                                                                                                                          \
+    } while (0)
 
 #define TOOL_NAME "TestBinding"
 
@@ -61,16 +62,16 @@ enum TestMode
 class BindingTestDriver
 {
 public:
-    nl::Weave::Binding *binding;
-    ExchangeContext *ec;
+    nl::Weave::Binding * binding;
+    ExchangeContext * ec;
     uint32_t echosSent;
     bool defaultCheckDelivered;
 
     BindingTestDriver()
     {
-        binding = NULL;
-        ec = NULL;
-        echosSent = 0;
+        binding               = NULL;
+        ec                    = NULL;
+        echosSent             = 0;
         defaultCheckDelivered = false;
     }
 
@@ -81,76 +82,74 @@ private:
     void PrepareBinding();
     void SendEcho();
     void Complete();
-    void Failed(WEAVE_ERROR err, const char *desc);
+    void Failed(WEAVE_ERROR err, const char * desc);
 
-    static void AsyncDoStart(System::Layer* aLayer, void* aAppState, System::Error aError);
-    static void DoOnDemandPrepare(System::Layer* aLayer, void* aAppState, System::Error aError);
-    static void BindingEventCallback(void *apAppState, Binding::EventType aEvent, const Binding::InEventParam& aInParam, Binding::OutEventParam& aOutParam);
-    static void SendDelayComplete(System::Layer* aLayer, void* aAppState, System::Error aError);
-    static void OnEchoResponseReceived(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-            uint8_t msgType, PacketBuffer *payload);
-    static void OnResponseTimeout(ExchangeContext *ec);
-    static void OnMessageSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt);
+    static void AsyncDoStart(System::Layer * aLayer, void * aAppState, System::Error aError);
+    static void DoOnDemandPrepare(System::Layer * aLayer, void * aAppState, System::Error aError);
+    static void BindingEventCallback(void * apAppState, Binding::EventType aEvent, const Binding::InEventParam & aInParam,
+                                     Binding::OutEventParam & aOutParam);
+    static void SendDelayComplete(System::Layer * aLayer, void * aAppState, System::Error aError);
+    static void OnEchoResponseReceived(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                       uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void OnResponseTimeout(ExchangeContext * ec);
+    static void OnMessageSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt);
 };
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static bool ParseDestAddress(const char *destAddr);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static bool ParseDestAddress(const char * destAddr);
 static void StartTest();
 
-static bool gUseTCP = true;
-static bool gUseUDP = false;
-static bool gUseWRMP = false;
+static bool gUseTCP         = true;
+static bool gUseUDP         = false;
+static bool gUseWRMP        = false;
 static uint64_t gDestNodeId = kNodeIdNotSpecified;
-static char gDestHost[NL_DNS_HOSTNAME_MAX_LEN + 10];  // +10 for padding characters
-static uint16_t gDestHostLen = 0;
-static uint16_t gDestPort = WEAVE_PORT;
-static InterfaceId gDestIntf = INET_NULL_INTERFACEID;
-static uint32_t gTestCount = 1;
-static uint32_t gEchoCount = 5;
-static uint32_t gEchoSendDelay = 100; // in ms
-static uint32_t gEchoResponseTimeout = 5000; // in ms
-static uint32_t gStartDelay = 0; // in ms
-static bool gOnDemandPrepare = false;
+static char gDestHost[NL_DNS_HOSTNAME_MAX_LEN + 10]; // +10 for padding characters
+static uint16_t gDestHostLen           = 0;
+static uint16_t gDestPort              = WEAVE_PORT;
+static InterfaceId gDestIntf           = INET_NULL_INTERFACEID;
+static uint32_t gTestCount             = 1;
+static uint32_t gEchoCount             = 5;
+static uint32_t gEchoSendDelay         = 100;  // in ms
+static uint32_t gEchoResponseTimeout   = 5000; // in ms
+static uint32_t gStartDelay            = 0;    // in ms
+static bool gOnDemandPrepare           = false;
 static bool gCloseBindingDuringRequest = false;
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
 static uint8_t gDNSOptions = ::nl::Inet::kDNSOption_Default;
 #endif
 
-static TestMode gSelectedTestMode = kTestMode_Sequential;
+static TestMode gSelectedTestMode   = kTestMode_Sequential;
 static uint32_t gTestDriversStarted = 0;
-static uint32_t gTestDriversActive = 0;
+static uint32_t gTestDriversActive  = 0;
 
 enum
 {
-    kToolOpt_EchoCount               = 1000,
-    kToolOpt_EchoResponseTimeout     = 1001,
-    kToolOpt_OnDemandPrepare         = 1002,
-    kToolOpt_StartDelay              = 1003,
-    kToolOpt_DNSOptions              = 1004,
+    kToolOpt_EchoCount           = 1000,
+    kToolOpt_EchoResponseTimeout = 1001,
+    kToolOpt_OnDemandPrepare     = 1002,
+    kToolOpt_StartDelay          = 1003,
+    kToolOpt_DNSOptions          = 1004,
 };
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "test-mode",              kArgumentRequired, 'm'                          },
-    { "test-count",             kArgumentRequired, 'C'                          },
-    { "echo-count",             kArgumentRequired, kToolOpt_EchoCount           },
-    { "resp-timeout",           kArgumentRequired, kToolOpt_EchoResponseTimeout },
-    { "on-demand-prepare",      kNoArgument,       kToolOpt_OnDemandPrepare     },
-    { "start-delay",            kArgumentRequired, kToolOpt_StartDelay          },
-    { "dest-addr",              kArgumentRequired, 'D'                          },
-    { "tcp",                    kNoArgument,       't'                          },
-    { "udp",                    kNoArgument,       'u'                          },
+static OptionDef gToolOptionDefs[] = { { "test-mode", kArgumentRequired, 'm' },
+                                       { "test-count", kArgumentRequired, 'C' },
+                                       { "echo-count", kArgumentRequired, kToolOpt_EchoCount },
+                                       { "resp-timeout", kArgumentRequired, kToolOpt_EchoResponseTimeout },
+                                       { "on-demand-prepare", kNoArgument, kToolOpt_OnDemandPrepare },
+                                       { "start-delay", kArgumentRequired, kToolOpt_StartDelay },
+                                       { "dest-addr", kArgumentRequired, 'D' },
+                                       { "tcp", kNoArgument, 't' },
+                                       { "udp", kNoArgument, 'u' },
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    { "wrmp",                   kNoArgument,       'w'                          },
+                                       { "wrmp", kNoArgument, 'w' },
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 #if WEAVE_CONFIG_ENABLE_DNS_RESOLVER
-    { "dns-options",            kArgumentRequired, kToolOpt_DNSOptions          },
+                                       { "dns-options", kArgumentRequired, kToolOpt_DNSOptions },
 #endif // WEAVE_CONFIG_ENABLE_DNS_RESOLVER
-    { }
-};
+                                       { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -m, --test-mode <mode>\n"
     "       Binding test mode.  The following modes are available:\n"
     "\n"
@@ -216,53 +215,34 @@ static const char *const gToolOptionHelp =
 #endif // WEAVE_CONFIG_ENABLE_DNS_RESOLVER
     ;
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<ip-addr>[:<port>][%<interface>]]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Test the Weave Binding interface.\n"
-    "\n"
-    "This tool performs one or more test sequences involving the use of a Weave Binding object.\n"
-    "Each test sequence performs the following steps:\n"
-    "\n"
-    "    - Create and prepare a Binding object\n"
-    "    - Use the binding to send and receive a sequence of Weave Echo request/responses\n"
-    "    - Close the binding\n"
-    "\n"
-    "Command line options can be used to configure the behavior of the test sequence and/or\n"
-    "introduce failures.  At each step, various checks are made to ensure correct operation\n"
-    "of the Binding object.\n"
-    "\n"
-    "The " TOOL_NAME " tool is typically used in conjunction with the weave-ping tool acting\n"
-    "as a responder.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<ip-addr>[:<port>][%<interface>]]\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Test the Weave Binding interface.\n"
+                                "\n"
+                                "This tool performs one or more test sequences involving the use of a Weave Binding object.\n"
+                                "Each test sequence performs the following steps:\n"
+                                "\n"
+                                "    - Create and prepare a Binding object\n"
+                                "    - Use the binding to send and receive a sequence of Weave Echo request/responses\n"
+                                "    - Close the binding\n"
+                                "\n"
+                                "Command line options can be used to configure the behavior of the test sequence and/or\n"
+                                "introduce failures.  At each step, various checks are made to ensure correct operation\n"
+                                "of the Binding object.\n"
+                                "\n"
+                                "The " TOOL_NAME
+                                " tool is typically used in conjunction with the weave-ping tool acting\n"
+                                "as a responder.\n"
+                                "\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gWRMPOptions,
-    &gWeaveSecurityMode,
-    &gCASEOptions,
-    &gTAKEOptions,
-    &gGroupKeyEncOptions,
-    &gDeviceDescOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,       &gNetworkOptions,        &gWeaveNodeOptions, &gWRMPOptions,
+                                         &gWeaveSecurityMode, &gCASEOptions,           &gTAKEOptions,      &gGroupKeyEncOptions,
+                                         &gDeviceDescOptions, &gFaultInjectionOptions, &gHelpOptions,      NULL };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_CONFIG_TEST
     nl::Weave::System::Stats::Snapshot before;
@@ -294,11 +274,8 @@ int main(int argc, char *argv[])
     case WeaveSecurityMode::kNone:
     case WeaveSecurityMode::kCASE:
     case WeaveSecurityMode::kCASEShared:
-    case WeaveSecurityMode::kGroupEnc:
-        break;
-    default:
-        printf("ERROR: Unsupported security mode specified\n");
-        exit(EXIT_FAILURE);
+    case WeaveSecurityMode::kGroupEnc: break;
+    default: printf("ERROR: Unsupported security mode specified\n"); exit(EXIT_FAILURE);
     }
 
     InitSystemLayer();
@@ -335,7 +312,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -375,9 +352,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case kToolOpt_OnDemandPrepare:
-        gOnDemandPrepare = true;
-        break;
+    case kToolOpt_OnDemandPrepare: gOnDemandPrepare = true; break;
     case kToolOpt_StartDelay:
         if (!ParseInt(arg, gStartDelay))
         {
@@ -386,19 +361,19 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         }
         break;
     case 't':
-        gUseTCP = true;
-        gUseUDP = false;
+        gUseTCP  = true;
+        gUseUDP  = false;
         gUseWRMP = false;
         break;
     case 'u':
-        gUseTCP = false;
-        gUseUDP = true;
+        gUseTCP  = false;
+        gUseUDP  = true;
         gUseWRMP = false;
         break;
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     case 'w':
-        gUseTCP = false;
-        gUseUDP = false;
+        gUseTCP  = false;
+        gUseUDP  = false;
         gUseWRMP = true;
         break;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
@@ -417,15 +392,13 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         }
         break;
 #endif // WEAVE_CONFIG_ENABLE_DNS_RESOLVER
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {
@@ -439,8 +412,8 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    const char *nodeId = argv[0];
-    char *destAddr = (char *)strchr(nodeId, '@');
+    const char * nodeId = argv[0];
+    char * destAddr     = (char *) strchr(nodeId, '@');
     if (destAddr != NULL)
     {
         *destAddr = 0;
@@ -462,9 +435,9 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-bool ParseDestAddress(const char *destAddr)
+bool ParseDestAddress(const char * destAddr)
 {
-    const char *host;
+    const char * host;
 
     if (ParseHostAndPort(destAddr, strlen(destAddr), host, gDestHostLen, gDestPort) != WEAVE_NO_ERROR)
     {
@@ -486,10 +459,10 @@ bool ParseDestAddress(const char *destAddr)
 
 void StartTest()
 {
-    BindingTestDriver *bindingProc;
+    BindingTestDriver * bindingProc;
 
     gTestDriversStarted = 0;
-    gTestDriversActive = 0;
+    gTestDriversActive  = 0;
 
     switch (gSelectedTestMode)
     {
@@ -519,9 +492,9 @@ void BindingTestDriver::Start(uint32_t startDelay)
     }
 }
 
-void BindingTestDriver::AsyncDoStart(System::Layer* aLayer, void* aAppState, System::Error aError)
+void BindingTestDriver::AsyncDoStart(System::Layer * aLayer, void * aAppState, System::Error aError)
 {
-    BindingTestDriver *_this = (BindingTestDriver *)aAppState;
+    BindingTestDriver * _this = (BindingTestDriver *) aAppState;
     _this->DoStart();
 }
 
@@ -598,18 +571,10 @@ void BindingTestDriver::PrepareBinding()
     switch (gWeaveSecurityMode.SecurityMode)
     {
     case WeaveSecurityMode::kNone:
-    default:
-        bindingConf.Security_None();
-        break;
-    case WeaveSecurityMode::kCASE:
-        bindingConf.Security_CASESession();
-        break;
-    case WeaveSecurityMode::kCASEShared:
-        bindingConf.Security_SharedCASESession();
-        break;
-    case WeaveSecurityMode::kGroupEnc:
-        bindingConf.Security_Key(gGroupKeyEncOptions.GetEncKeyId());
-        break;
+    default: bindingConf.Security_None(); break;
+    case WeaveSecurityMode::kCASE: bindingConf.Security_CASESession(); break;
+    case WeaveSecurityMode::kCASEShared: bindingConf.Security_SharedCASESession(); break;
+    case WeaveSecurityMode::kGroupEnc: bindingConf.Security_Key(gGroupKeyEncOptions.GetEncKeyId()); break;
     }
 
     bindingConf.Exchange_ResponseTimeoutMsec(gEchoResponseTimeout);
@@ -625,10 +590,10 @@ void BindingTestDriver::PrepareBinding()
     VerifyOrQuit(binding->GetState() != Binding::kState_Configuring);
 }
 
-void BindingTestDriver::DoOnDemandPrepare(System::Layer* aLayer, void* aAppState, System::Error aError)
+void BindingTestDriver::DoOnDemandPrepare(System::Layer * aLayer, void * aAppState, System::Error aError)
 {
     WEAVE_ERROR err;
-    BindingTestDriver *_this = (BindingTestDriver *)aAppState;
+    BindingTestDriver * _this = (BindingTestDriver *) aAppState;
 
     err = _this->binding->RequestPrepare();
     if (err != WEAVE_NO_ERROR)
@@ -637,10 +602,11 @@ void BindingTestDriver::DoOnDemandPrepare(System::Layer* aLayer, void* aAppState
     }
 }
 
-void BindingTestDriver::BindingEventCallback(void *apAppState, Binding::EventType aEvent, const Binding::InEventParam& aInParam, Binding::OutEventParam& aOutParam)
+void BindingTestDriver::BindingEventCallback(void * apAppState, Binding::EventType aEvent, const Binding::InEventParam & aInParam,
+                                             Binding::OutEventParam & aOutParam)
 {
-    BindingTestDriver *_this = (BindingTestDriver *)apAppState;
-    Binding *binding = aInParam.Source;
+    BindingTestDriver * _this = (BindingTestDriver *) apAppState;
+    Binding * binding         = aInParam.Source;
 
     switch (aEvent)
     {
@@ -683,16 +649,14 @@ void BindingTestDriver::BindingEventCallback(void *apAppState, Binding::EventTyp
         _this->defaultCheckDelivered = true;
         binding->DefaultEventHandler(apAppState, aEvent, aInParam, aOutParam);
         break;
-    default:
-        fprintf(stderr, "UNEXPECTED BINDING EVENT: %d\n", (int)aEvent);
-        exit(EXIT_FAILURE);
+    default: fprintf(stderr, "UNEXPECTED BINDING EVENT: %d\n", (int) aEvent); exit(EXIT_FAILURE);
     }
 }
 
 void BindingTestDriver::SendEcho()
 {
     WEAVE_ERROR err;
-    PacketBuffer *msgBuf = NULL;
+    PacketBuffer * msgBuf = NULL;
 
     err = binding->NewExchangeContext(ec);
     if (err != WEAVE_NO_ERROR)
@@ -705,7 +669,7 @@ void BindingTestDriver::SendEcho()
 
     ec->OnMessageReceived = OnEchoResponseReceived;
     ec->OnResponseTimeout = OnResponseTimeout;
-    ec->OnSendError = OnMessageSendError;
+    ec->OnSendError       = OnMessageSendError;
 
     // Allocate a buffer for the echo request message
     msgBuf = PacketBuffer::NewWithAvailableSize(0);
@@ -716,9 +680,7 @@ void BindingTestDriver::SendEcho()
     }
 
     // Send the null message
-    err = ec->SendMessage(nl::Weave::Profiles::kWeaveProfile_Echo,
-                          nl::Weave::Profiles::kEchoMessageType_EchoRequest,
-                          msgBuf,
+    err = ec->SendMessage(nl::Weave::Profiles::kWeaveProfile_Echo, nl::Weave::Profiles::kEchoMessageType_EchoRequest, msgBuf,
                           ExchangeContext::kSendFlag_ExpectResponse);
     if (err != WEAVE_NO_ERROR)
     {
@@ -733,16 +695,16 @@ void BindingTestDriver::SendEcho()
     }
 }
 
-void BindingTestDriver::SendDelayComplete(System::Layer* aLayer, void* aAppState, System::Error aError)
+void BindingTestDriver::SendDelayComplete(System::Layer * aLayer, void * aAppState, System::Error aError)
 {
-    BindingTestDriver *_this = (BindingTestDriver *)aAppState;
+    BindingTestDriver * _this = (BindingTestDriver *) aAppState;
     _this->SendEcho();
 }
 
-void BindingTestDriver::OnEchoResponseReceived(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-        uint8_t msgType, PacketBuffer *payload)
+void BindingTestDriver::OnEchoResponseReceived(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    BindingTestDriver *_this = (BindingTestDriver *)ec->AppState;
+    BindingTestDriver * _this = (BindingTestDriver *) ec->AppState;
 
     PacketBuffer::Free(payload);
 
@@ -792,7 +754,7 @@ void BindingTestDriver::Complete()
     case kTestMode_Sequential:
         if (gTestDriversStarted < gTestCount)
         {
-            BindingTestDriver *testDriver = new BindingTestDriver();
+            BindingTestDriver * testDriver = new BindingTestDriver();
             testDriver->Start(gStartDelay);
         }
         else
@@ -811,7 +773,7 @@ void BindingTestDriver::Complete()
     delete this;
 }
 
-void BindingTestDriver::Failed(WEAVE_ERROR err, const char *reason)
+void BindingTestDriver::Failed(WEAVE_ERROR err, const char * reason)
 {
     gTestDriversActive--;
 
@@ -831,14 +793,14 @@ void BindingTestDriver::Failed(WEAVE_ERROR err, const char *reason)
     exit(EXIT_FAILURE);
 }
 
-void BindingTestDriver::OnResponseTimeout(ExchangeContext *ec)
+void BindingTestDriver::OnResponseTimeout(ExchangeContext * ec)
 {
-    BindingTestDriver *_this = (BindingTestDriver *)ec->AppState;
+    BindingTestDriver * _this = (BindingTestDriver *) ec->AppState;
     _this->Failed(WEAVE_ERROR_TIMEOUT, "Failed to receive response for Echo request");
 }
 
-void BindingTestDriver::OnMessageSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt)
+void BindingTestDriver::OnMessageSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt)
 {
-    BindingTestDriver *_this = (BindingTestDriver *)ec->AppState;
+    BindingTestDriver * _this = (BindingTestDriver *) ec->AppState;
     _this->Failed(err, "Failed to receive ACK for Echo request");
 }

@@ -48,11 +48,11 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
  * @return      A pointer to the TraitUpdatableDataSink; NULL if the handle does not exist or
  *              it points to a non updatable TraitDataSink.
  */
-TraitUpdatableDataSink *Locate(TraitDataHandle aTraitDataHandle, const TraitCatalogBase<TraitDataSink> *aDataSinkCatalog)
+TraitUpdatableDataSink * Locate(TraitDataHandle aTraitDataHandle, const TraitCatalogBase<TraitDataSink> * aDataSinkCatalog)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    TraitDataSink *dataSink = NULL;
-    TraitUpdatableDataSink *updatableDataSink = NULL;
+    WEAVE_ERROR err                            = WEAVE_NO_ERROR;
+    TraitDataSink * dataSink                   = NULL;
+    TraitUpdatableDataSink * updatableDataSink = NULL;
 
     err = aDataSinkCatalog->Locate(aTraitDataHandle, &dataSink);
     SuccessOrExit(err);
@@ -75,7 +75,7 @@ exit:
  * @retval WEAVE_ERROR_INVALID_ARGUMENT  aContext was initialized with invalid values.
  * @retval other             Other errors from lower level objects (TLVWriter, SchemaEngine, etc).
  */
-WEAVE_ERROR UpdateEncoder::EncodeRequest(Context &aContext)
+WEAVE_ERROR UpdateEncoder::EncodeRequest(Context & aContext)
 {
     WEAVE_ERROR err;
 
@@ -112,7 +112,7 @@ exit:
  * @retval WEAVE_NO_ERROR   The item was inserted successfully.
  * @retval WEAVE_NO_MEMORY  There was no space in the TraitPathStore to insert the item.
  */
-WEAVE_ERROR UpdateEncoder::InsertInProgressUpdateItem(const TraitPath &aItem)
+WEAVE_ERROR UpdateEncoder::InsertInProgressUpdateItem(const TraitPath & aItem)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TraitPath traitPath;
@@ -122,10 +122,8 @@ WEAVE_ERROR UpdateEncoder::InsertInProgressUpdateItem(const TraitPath &aItem)
     SuccessOrExit(err);
 
 exit:
-    WeaveLogDetail(DataManagement, "%s %u t%u, p%u  numItems: %u, err %d", __func__,
-            mContext->mItemInProgress,
-            aItem.mTraitDataHandle, aItem.mPropertyPathHandle,
-            mContext->mInProgressUpdateList->GetNumItems(), err);
+    WeaveLogDetail(DataManagement, "%s %u t%u, p%u  numItems: %u, err %d", __func__, mContext->mItemInProgress,
+                   aItem.mTraitDataHandle, aItem.mPropertyPathHandle, mContext->mInProgressUpdateList->GetNumItems(), err);
 
     return err;
 }
@@ -142,19 +140,16 @@ WEAVE_ERROR UpdateEncoder::EncodePreamble()
 
     mWriter.Init(mContext->mBuf, mContext->mMaxPayloadSize);
 
-    err = mWriter.StartContainer(TLV::AnonymousTag, nl::Weave::TLV::kTLVType_Structure,
-                                 mPayloadOuterContainerType);
+    err = mWriter.StartContainer(TLV::AnonymousTag, nl::Weave::TLV::kTLVType_Structure, mPayloadOuterContainerType);
     SuccessOrExit(err);
 
     if (mContext->mExpiryTimeMicroSecond != 0)
     {
-        err = mWriter.Put(nl::Weave::TLV::ContextTag(UpdateRequest::kCsTag_ExpiryTime),
-                          mContext->mExpiryTimeMicroSecond);
+        err = mWriter.Put(nl::Weave::TLV::ContextTag(UpdateRequest::kCsTag_ExpiryTime), mContext->mExpiryTimeMicroSecond);
         SuccessOrExit(err);
     }
 
-    err = mWriter.Put(nl::Weave::TLV::ContextTag(UpdateRequest::kCsTag_UpdateRequestIndex),
-                      mContext->mUpdateRequestIndex);
+    err = mWriter.Put(nl::Weave::TLV::ContextTag(UpdateRequest::kCsTag_UpdateRequestIndex), mContext->mUpdateRequestIndex);
     SuccessOrExit(err);
 
 exit:
@@ -175,8 +170,8 @@ WEAVE_ERROR UpdateEncoder::EncodeDataList()
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    err = mWriter.StartContainer(nl::Weave::TLV::ContextTag(UpdateRequest::kCsTag_DataList),
-                                 nl::Weave::TLV::kTLVType_Array, mDataListOuterContainerType);
+    err = mWriter.StartContainer(nl::Weave::TLV::ContextTag(UpdateRequest::kCsTag_DataList), nl::Weave::TLV::kTLVType_Array,
+                                 mDataListOuterContainerType);
     SuccessOrExit(err);
 
     err = EncodeDataElements();
@@ -202,18 +197,16 @@ exit:
  */
 WEAVE_ERROR UpdateEncoder::EncodeDataElements()
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool dictionaryOverflowed = false;
-    TraitPathStore &traitPathList = *(mContext->mInProgressUpdateList);
+    WEAVE_ERROR err                = WEAVE_NO_ERROR;
+    bool dictionaryOverflowed      = false;
+    TraitPathStore & traitPathList = *(mContext->mInProgressUpdateList);
 
-    WeaveLogDetail(DataManagement, "Num items in progress = %u/%u; current: %u",
-            traitPathList.GetNumItems(),
-            traitPathList.GetPathStoreSize(),
-            mContext->mItemInProgress);
+    WeaveLogDetail(DataManagement, "Num items in progress = %u/%u; current: %u", traitPathList.GetNumItems(),
+                   traitPathList.GetPathStoreSize(), mContext->mItemInProgress);
 
     while (mContext->mItemInProgress < traitPathList.GetPathStoreSize())
     {
-        size_t &i = mContext->mItemInProgress;
+        size_t & i = mContext->mItemInProgress;
 
         if (!(traitPathList.IsItemValid(i)))
         {
@@ -221,8 +214,9 @@ WEAVE_ERROR UpdateEncoder::EncodeDataElements()
             continue;
         }
 
-        WeaveLogDetail(DataManagement, "Encoding item %u, ForceMerge: %d, Private: %d", i, traitPathList.AreFlagsSet(i, SubscriptionClient::kFlag_ForceMerge),
-                traitPathList.AreFlagsSet(i, SubscriptionClient::kFlag_Private));
+        WeaveLogDetail(DataManagement, "Encoding item %u, ForceMerge: %d, Private: %d", i,
+                       traitPathList.AreFlagsSet(i, SubscriptionClient::kFlag_ForceMerge),
+                       traitPathList.AreFlagsSet(i, SubscriptionClient::kFlag_Private));
 
         if (mContext->mNextDictionaryElementPathHandle != kNullPropertyPathHandle)
         {
@@ -247,8 +241,7 @@ WEAVE_ERROR UpdateEncoder::EncodeDataElements()
 
 exit:
 
-    if (mContext->mNumDataElementsAddedToPayload > 0 &&
-            (err == WEAVE_ERROR_BUFFER_TOO_SMALL))
+    if (mContext->mNumDataElementsAddedToPayload > 0 && (err == WEAVE_ERROR_BUFFER_TOO_SMALL))
     {
         WeaveLogDetail(DataManagement, "DataElement didn't fit; will try again later");
         RemoveInProgressPrivateItemsAfter(*(mContext->mInProgressUpdateList), mContext->mItemInProgress);
@@ -256,7 +249,6 @@ exit:
     }
 
     return err;
-
 }
 
 /**
@@ -292,34 +284,29 @@ WEAVE_ERROR UpdateEncoder::EncodeDataElement()
 
     pathContext.mProfileId = dataContext.mSchemaEngine->GetProfileId();
 
-    WEAVE_FAULT_INJECT(FaultInjection::kFault_WDM_UpdateRequestBadProfile,
-                       pathContext.mProfileId = 0xFFFFFFFF);
+    WEAVE_FAULT_INJECT(FaultInjection::kFault_WDM_UpdateRequestBadProfile, pathContext.mProfileId = 0xFFFFFFFF);
 
-    err = mContext->mDataSinkCatalog->GetResourceId(dataContext.mTraitPath.mTraitDataHandle,
-                                                    pathContext.mResourceId);
+    err = mContext->mDataSinkCatalog->GetResourceId(dataContext.mTraitPath.mTraitDataHandle, pathContext.mResourceId);
     SuccessOrExit(err);
 
-    err = mContext->mDataSinkCatalog->GetInstanceId(dataContext.mTraitPath.mTraitDataHandle,
-                                                    pathContext.mInstanceId);
+    err = mContext->mDataSinkCatalog->GetInstanceId(dataContext.mTraitPath.mTraitDataHandle, pathContext.mInstanceId);
     SuccessOrExit(err);
 
-    dataContext.mUpdateRequiredVersion = dataContext.mDataSink->GetUpdateRequiredVersion();
+    dataContext.mUpdateRequiredVersion           = dataContext.mDataSink->GetUpdateRequiredVersion();
     dataContext.mNextDictionaryElementPathHandle = mContext->mNextDictionaryElementPathHandle;
 
     {
         uint64_t tags[dataContext.mSchemaEngine->mSchema.mTreeDepth];
 
         pathContext.mTags = &(tags[0]);
-        err = dataContext.mSchemaEngine->GetRelativePathTags(dataContext.mTraitPath.mPropertyPathHandle,
-                pathContext.mTags,
-                dataContext.mSchemaEngine->mSchema.mTreeDepth,
-                pathContext.mNumTags);
+        err = dataContext.mSchemaEngine->GetRelativePathTags(dataContext.mTraitPath.mPropertyPathHandle, pathContext.mTags,
+                                                             dataContext.mSchemaEngine->mSchema.mTreeDepth, pathContext.mNumTags);
         SuccessOrExit(err);
 
-        dataContext.mForceMerge = mContext->mInProgressUpdateList->AreFlagsSet(mContext->mItemInProgress, SubscriptionClient::kFlag_ForceMerge);
+        dataContext.mForceMerge =
+            mContext->mInProgressUpdateList->AreFlagsSet(mContext->mItemInProgress, SubscriptionClient::kFlag_ForceMerge);
 
-        if (dataContext.mSchemaEngine->IsDictionary(dataContext.mTraitPath.mPropertyPathHandle) &&
-                false == dataContext.mForceMerge)
+        if (dataContext.mSchemaEngine->IsDictionary(dataContext.mTraitPath.mPropertyPathHandle) && false == dataContext.mForceMerge)
         {
             // If the property being updated is a dictionary, we need to use the "replace"
             // scheme explicitly so that the whole property is replaced on the responder.
@@ -328,8 +315,8 @@ WEAVE_ERROR UpdateEncoder::EncodeDataElement()
             pathContext.mNumTags--;
         }
 
-        err = mWriter.StartContainer(nl::Weave::TLV::AnonymousTag,
-                                     nl::Weave::TLV::kTLVType_Structure, mDataElementOuterContainerType);
+        err = mWriter.StartContainer(nl::Weave::TLV::AnonymousTag, nl::Weave::TLV::kTLVType_Structure,
+                                     mDataElementOuterContainerType);
         SuccessOrExit(err);
 
         err = EncodeElementPath(pathContext, mWriter);
@@ -364,7 +351,7 @@ exit:
  * @retval #WEAVE_NO_ERROR On success.
  * @retval #WEAVE_ERROR_BUFFER_TOO_SMALL In case the buffer is too small.
  */
-WEAVE_ERROR UpdateEncoder::EncodeElementPath(const DataElementPathContext &aElementContext, TLV::TLVWriter &aWriter)
+WEAVE_ERROR UpdateEncoder::EncodeElementPath(const DataElementPathContext & aElementContext, TLV::TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Path::Builder pathBuilder;
@@ -378,7 +365,7 @@ WEAVE_ERROR UpdateEncoder::EncodeElementPath(const DataElementPathContext &aElem
         pathBuilder.ProfileID(aElementContext.mProfileId, *aElementContext.mSchemaVersionRange);
 
     if (aElementContext.mResourceId != ResourceIdentifier::SELF_NODE_ID)
-       pathBuilder.ResourceID(aElementContext.mResourceId);
+        pathBuilder.ResourceID(aElementContext.mResourceId);
 
     if (aElementContext.mInstanceId != 0x0)
         pathBuilder.InstanceID(aElementContext.mInstanceId);
@@ -387,7 +374,7 @@ WEAVE_ERROR UpdateEncoder::EncodeElementPath(const DataElementPathContext &aElem
     {
         pathBuilder.TagSection();
 
-        for (size_t pathIndex = 0; pathIndex < aElementContext.mNumTags;  pathIndex++)
+        for (size_t pathIndex = 0; pathIndex < aElementContext.mNumTags; pathIndex++)
         {
             pathBuilder.AdditionalTag(aElementContext.mTags[pathIndex]);
         }
@@ -414,10 +401,10 @@ exit:
  * @retval #WEAVE_NO_ERROR On success.
  * @retval #WEAVE_ERROR_BUFFER_TOO_SMALL In case the buffer is too small.
  */
-WEAVE_ERROR UpdateEncoder::EncodeElementData(DataElementDataContext &aElementContext, TLV::TLVWriter &aWriter)
+WEAVE_ERROR UpdateEncoder::EncodeElementData(DataElementDataContext & aElementContext, TLV::TLVWriter & aWriter)
 {
     WEAVE_ERROR err;
-    bool isDictionary = false;
+    bool isDictionary        = false;
     bool isDictionaryReplace = false;
     nl::Weave::TLV::TLVType dataContainerType;
     uint64_t tag = nl::Weave::TLV::ContextTag(DataElement::kCsTag_Data);
@@ -434,14 +421,14 @@ WEAVE_ERROR UpdateEncoder::EncodeElementData(DataElementDataContext &aElementCon
     }
 
     WeaveLogDetail(DataManagement, "<EncodeElementData> with property path handle 0x%08x",
-            aElementContext.mTraitPath.mPropertyPathHandle);
+                   aElementContext.mTraitPath.mPropertyPathHandle);
 
     isDictionary = aElementContext.mSchemaEngine->IsDictionary(aElementContext.mTraitPath.mPropertyPathHandle);
 
     if (false == isDictionary)
     {
         VerifyOrExit(aElementContext.mNextDictionaryElementPathHandle == kNullPropertyPathHandle,
-                err = WEAVE_ERROR_WDM_SCHEMA_MISMATCH);
+                     err = WEAVE_ERROR_WDM_SCHEMA_MISMATCH);
     }
 
     if (isDictionary && (false == aElementContext.mForceMerge))
@@ -462,10 +449,8 @@ WEAVE_ERROR UpdateEncoder::EncodeElementData(DataElementDataContext &aElementCon
     }
 
     err = aElementContext.mDataSink->ReadData(aElementContext.mTraitPath.mTraitDataHandle,
-                                      aElementContext.mTraitPath.mPropertyPathHandle,
-                                      tag,
-                                      aWriter,
-                                      aElementContext.mNextDictionaryElementPathHandle);
+                                              aElementContext.mTraitPath.mPropertyPathHandle, tag, aWriter,
+                                              aElementContext.mNextDictionaryElementPathHandle);
     SuccessOrExit(err);
 
     if (isDictionaryReplace)
@@ -510,13 +495,11 @@ exit:
  * @param[in] aList            The list to edit.
  * @param[in] aItemInProgress  The index after which all private items are removed.
  */
-void UpdateEncoder::RemoveInProgressPrivateItemsAfter(TraitPathStore &aList, size_t aItemInProgress)
+void UpdateEncoder::RemoveInProgressPrivateItemsAfter(TraitPathStore & aList, size_t aItemInProgress)
 {
     int count = 0;
 
-    for (size_t i = aList.GetNextValidItem(aItemInProgress);
-            i < aList.GetPathStoreSize();
-            i = aList.GetNextValidItem(i))
+    for (size_t i = aList.GetNextValidItem(aItemInProgress); i < aList.GetPathStoreSize(); i = aList.GetNextValidItem(i))
     {
         if (aList.AreFlagsSet(i, SubscriptionClient::kFlag_Private))
         {
@@ -530,8 +513,8 @@ void UpdateEncoder::RemoveInProgressPrivateItemsAfter(TraitPathStore &aList, siz
         aList.Compact();
     }
 
-    WeaveLogDetail(DataManagement, "Removed %d private InProgress items after %u; numItems: %u",
-            count, aItemInProgress, aList.GetNumItems());
+    WeaveLogDetail(DataManagement, "Removed %d private InProgress items after %u; numItems: %u", count, aItemInProgress,
+                   aList.GetNumItems());
 }
 
 }; // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)

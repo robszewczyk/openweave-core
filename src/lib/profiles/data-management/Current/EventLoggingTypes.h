@@ -237,14 +237,15 @@ struct EventOptions
 
 struct EventLoadOutContext
 {
-    EventLoadOutContext(nl::Weave::TLV::TLVWriter & inWriter, ImportanceType inImportance, uint32_t inStartingEventID, ExternalEvents * ioExternalEvent);
+    EventLoadOutContext(nl::Weave::TLV::TLVWriter & inWriter, ImportanceType inImportance, uint32_t inStartingEventID,
+                        ExternalEvents * ioExternalEvent);
 
     nl::Weave::TLV::TLVWriter & mWriter;
     ImportanceType mImportance;
     uint32_t mStartingEventID;
     uint32_t mCurrentTime;
     uint32_t mCurrentEventID;
-    ExternalEvents *mExternalEvents;
+    ExternalEvents * mExternalEvents;
 #if WEAVE_CONFIG_EVENT_LOGGING_UTC_TIMESTAMPS
     uint64_t mCurrentUTCTime;
     bool mFirstUtc;
@@ -361,7 +362,9 @@ typedef void (*NotifyExternalEventsEvictedFunct)(ExternalEvents * inEv);
  */
 struct ExternalEvents
 {
-    ExternalEvents(void) : mFirstEventID(1), mLastEventID(0), mFetchEventsFunct(NULL), mNotifyEventsDeliveredFunct(NULL), mNotifyEventsEvictedFunct(NULL) { };
+    ExternalEvents(void) :
+        mFirstEventID(1), mLastEventID(0), mFetchEventsFunct(NULL), mNotifyEventsDeliveredFunct(NULL),
+        mNotifyEventsEvictedFunct(NULL) { };
 
     event_id_t mFirstEventID; /**< The first event ID stored externally. */
     event_id_t mLastEventID;  /**< The last event ID stored externally. */
@@ -370,7 +373,11 @@ struct ExternalEvents
     NotifyExternalEventsDeliveredFunct mNotifyEventsDeliveredFunct;
     NotifyExternalEventsEvictedFunct mNotifyEventsEvictedFunct;
     bool IsValid(void) const { return mFirstEventID <= mLastEventID; };
-    void Invalidate(void) { mFirstEventID = 1; mLastEventID = 0; };
+    void Invalidate(void)
+    {
+        mFirstEventID = 1;
+        mLastEventID  = 0;
+    };
 };
 
 // internal API

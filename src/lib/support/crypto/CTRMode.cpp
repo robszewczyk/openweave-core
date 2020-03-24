@@ -37,32 +37,27 @@ namespace nl {
 namespace Weave {
 namespace Crypto {
 
-template <class BlockCipher>
-CTRMode<BlockCipher>::CTRMode()
+template <class BlockCipher> CTRMode<BlockCipher>::CTRMode()
 {
     memset(this, 0, sizeof(*this));
 }
 
-template <class BlockCipher>
-CTRMode<BlockCipher>::~CTRMode()
+template <class BlockCipher> CTRMode<BlockCipher>::~CTRMode()
 {
     Reset();
 }
 
-template <class BlockCipher>
-void CTRMode<BlockCipher>::SetKey(const uint8_t *key)
+template <class BlockCipher> void CTRMode<BlockCipher>::SetKey(const uint8_t * key)
 {
     mBlockCipher.SetKey(key);
 }
 
-template <class BlockCipher>
-void CTRMode<BlockCipher>::SetCounter(const uint8_t *counter)
+template <class BlockCipher> void CTRMode<BlockCipher>::SetCounter(const uint8_t * counter)
 {
     memcpy(Counter, counter, kCounterLength);
 }
 
-template <class BlockCipher>
-void CTRMode<BlockCipher>::SetWeaveMessageCounter(uint64_t sendingNodeId, uint32_t msgId)
+template <class BlockCipher> void CTRMode<BlockCipher>::SetWeaveMessageCounter(uint64_t sendingNodeId, uint32_t msgId)
 {
     // Initialize the CTR-mode encryption counter for encrypting/decrypting a Weave message. In this mode
     // the counter consists of a 128-bit big-endian number with the following format:
@@ -70,26 +65,25 @@ void CTRMode<BlockCipher>::SetWeaveMessageCounter(uint64_t sendingNodeId, uint32
     //        (64-bits)     |   (32 bits)  |   (32 bits)
     //    <sending-node-id> | <message-id> | <block-counter>
     //
-    Counter[0]  = (uint8_t) (sendingNodeId >> (7 * 8));
-    Counter[1]  = (uint8_t) (sendingNodeId >> (6 * 8));
-    Counter[2]  = (uint8_t) (sendingNodeId >> (5 * 8));
-    Counter[3]  = (uint8_t) (sendingNodeId >> (4 * 8));
-    Counter[4]  = (uint8_t) (sendingNodeId >> (3 * 8));
-    Counter[5]  = (uint8_t) (sendingNodeId >> (2 * 8));
-    Counter[6]  = (uint8_t) (sendingNodeId >> (1 * 8));
-    Counter[7]  = (uint8_t) (sendingNodeId);
-    Counter[8]  = (uint8_t) (msgId >> (3 * 8));
-    Counter[9]  = (uint8_t) (msgId >> (2 * 8));
-    Counter[10] = (uint8_t) (msgId >> (1 * 8));
-    Counter[11] = (uint8_t) (msgId);
+    Counter[0]  = (uint8_t)(sendingNodeId >> (7 * 8));
+    Counter[1]  = (uint8_t)(sendingNodeId >> (6 * 8));
+    Counter[2]  = (uint8_t)(sendingNodeId >> (5 * 8));
+    Counter[3]  = (uint8_t)(sendingNodeId >> (4 * 8));
+    Counter[4]  = (uint8_t)(sendingNodeId >> (3 * 8));
+    Counter[5]  = (uint8_t)(sendingNodeId >> (2 * 8));
+    Counter[6]  = (uint8_t)(sendingNodeId >> (1 * 8));
+    Counter[7]  = (uint8_t)(sendingNodeId);
+    Counter[8]  = (uint8_t)(msgId >> (3 * 8));
+    Counter[9]  = (uint8_t)(msgId >> (2 * 8));
+    Counter[10] = (uint8_t)(msgId >> (1 * 8));
+    Counter[11] = (uint8_t)(msgId);
     Counter[12] = 0;
     Counter[13] = 0;
     Counter[14] = 0;
     Counter[15] = 0;
 }
 
-template <class BlockCipher>
-void CTRMode<BlockCipher>::EncryptData(const uint8_t *inData, uint16_t dataLen, uint8_t *outData)
+template <class BlockCipher> void CTRMode<BlockCipher>::EncryptData(const uint8_t * inData, uint16_t dataLen, uint8_t * outData)
 {
     // Index to next byte of encrypted counter to be used.
     uint32_t encryptedCounterIndex = mMsgIndex % kCounterLength;
@@ -105,16 +99,16 @@ void CTRMode<BlockCipher>::EncryptData(const uint8_t *inData, uint16_t dataLen, 
 
             // Bump the counter. Since the message size is at most UINT32_MAX (and the counter counts blocks)
             // we will never need to update more than the four least-significant bytes.
-            Counter[kCounterLength-1]++;
-            if (Counter[kCounterLength-1] == 0)
+            Counter[kCounterLength - 1]++;
+            if (Counter[kCounterLength - 1] == 0)
             {
-                Counter[kCounterLength-2]++;
-                if (Counter[kCounterLength-2] == 0)
+                Counter[kCounterLength - 2]++;
+                if (Counter[kCounterLength - 2] == 0)
                 {
-                    Counter[kCounterLength-3]++;
-                    if (Counter[kCounterLength-3] == 0)
+                    Counter[kCounterLength - 3]++;
+                    if (Counter[kCounterLength - 3] == 0)
                     {
-                        Counter[kCounterLength-4]++;
+                        Counter[kCounterLength - 4]++;
                     }
                 }
             }
@@ -130,8 +124,7 @@ void CTRMode<BlockCipher>::EncryptData(const uint8_t *inData, uint16_t dataLen, 
     }
 }
 
-template <class BlockCipher>
-void CTRMode<BlockCipher>::Reset()
+template <class BlockCipher> void CTRMode<BlockCipher>::Reset()
 {
     mBlockCipher.Reset();
     mMsgIndex = 0;
@@ -141,7 +134,6 @@ void CTRMode<BlockCipher>::Reset()
 
 template class CTRMode<Platform::Security::AES128BlockCipherEnc>;
 template class CTRMode<Platform::Security::AES256BlockCipherEnc>;
-
 
 } /* namespace Crypto */
 } /* namespace Weave */

@@ -31,55 +31,54 @@
 #if HAVE_NEW
 #include <new>
 #else
-inline void * operator new     (size_t, void * p) throw() { return p; }
-inline void * operator new[]   (size_t, void * p) throw() { return p; }
+inline void * operator new(size_t, void * p) throw()
+{
+    return p;
+}
+inline void * operator new[](size_t, void * p) throw()
+{
+    return p;
+}
 #endif
 
 namespace nl {
 namespace Weave {
 namespace Crypto {
 
-template <class H>
-HKDF<H>::HKDF()
+template <class H> HKDF<H>::HKDF()
 {
     memset(PseudoRandomKey, 0, kPseudoRandomKeyLength);
 }
 
-template <class H>
-HKDF<H>::~HKDF()
+template <class H> HKDF<H>::~HKDF()
 {
     Reset();
 }
 
-template <class H>
-void HKDF<H>::BeginExtractKey(const uint8_t *salt, uint16_t saltLen)
+template <class H> void HKDF<H>::BeginExtractKey(const uint8_t * salt, uint16_t saltLen)
 {
     mHMAC.Begin(salt, saltLen);
 }
 
-template <class H>
-void HKDF<H>::AddKeyMaterial(const uint8_t *keyData, uint16_t keyDataLen)
+template <class H> void HKDF<H>::AddKeyMaterial(const uint8_t * keyData, uint16_t keyDataLen)
 {
     mHMAC.AddData(keyData, keyDataLen);
 }
 
 #if WEAVE_WITH_OPENSSL
-template <class H>
-void HKDF<H>::AddKeyMaterial(const BIGNUM& num)
+template <class H> void HKDF<H>::AddKeyMaterial(const BIGNUM & num)
 {
     mHMAC.AddData(num);
 }
 #endif
 
-template <class H>
-WEAVE_ERROR HKDF<H>::FinishExtractKey()
+template <class H> WEAVE_ERROR HKDF<H>::FinishExtractKey()
 {
     mHMAC.Finish(PseudoRandomKey);
     return WEAVE_NO_ERROR;
 }
 
-template <class H>
-WEAVE_ERROR HKDF<H>::ExpandKey(const uint8_t *info, uint16_t infoLen, uint16_t keyLen, uint8_t *outKey)
+template <class H> WEAVE_ERROR HKDF<H>::ExpandKey(const uint8_t * info, uint16_t infoLen, uint16_t keyLen, uint8_t * outKey)
 {
     uint8_t hashNum = 1;
 
@@ -119,11 +118,9 @@ WEAVE_ERROR HKDF<H>::ExpandKey(const uint8_t *info, uint16_t infoLen, uint16_t k
 }
 
 template <class H>
-WEAVE_ERROR HKDF<H>::DeriveKey(const uint8_t *salt, uint16_t saltLen,
-                               const uint8_t *keyMaterial1, uint16_t keyMaterial1Len,
-                               const uint8_t *keyMaterial2, uint16_t keyMaterial2Len,
-                               const uint8_t *info, uint16_t infoLen,
-                               uint8_t *outKey, uint16_t outKeyBufSize, uint16_t outKeyLen)
+WEAVE_ERROR HKDF<H>::DeriveKey(const uint8_t * salt, uint16_t saltLen, const uint8_t * keyMaterial1, uint16_t keyMaterial1Len,
+                               const uint8_t * keyMaterial2, uint16_t keyMaterial2Len, const uint8_t * info, uint16_t infoLen,
+                               uint8_t * outKey, uint16_t outKeyBufSize, uint16_t outKeyLen)
 {
     WEAVE_ERROR err;
     HKDF<H> hkdf;
@@ -146,8 +143,7 @@ exit:
     return err;
 }
 
-template <class H>
-void HKDF<H>::Reset()
+template <class H> void HKDF<H>::Reset()
 {
     mHMAC.Reset();
     ClearSecretData(PseudoRandomKey, kPseudoRandomKeyLength);
@@ -157,17 +153,16 @@ template class HKDF<Platform::Security::SHA1>;
 
 template class HKDF<Platform::Security::SHA256>;
 
-
 HKDFSHA1Or256::HKDFSHA1Or256(bool useSHA1)
 {
     mUseSHA1 = useSHA1;
     if (useSHA1)
-        new(ObjBuf()) HKDFSHA1;
+        new (ObjBuf()) HKDFSHA1;
     else
-        new(ObjBuf()) HKDFSHA256;
+        new (ObjBuf()) HKDFSHA256;
 }
 
-void HKDFSHA1Or256::BeginExtractKey(const uint8_t* salt, uint16_t saltLen)
+void HKDFSHA1Or256::BeginExtractKey(const uint8_t * salt, uint16_t saltLen)
 {
     if (mUseSHA1)
         HKDFSHA1Obj()->BeginExtractKey(salt, saltLen);
@@ -175,7 +170,7 @@ void HKDFSHA1Or256::BeginExtractKey(const uint8_t* salt, uint16_t saltLen)
         HKDFSHA256Obj()->BeginExtractKey(salt, saltLen);
 }
 
-void HKDFSHA1Or256::AddKeyMaterial(const uint8_t* keyData, uint16_t keyDataLen)
+void HKDFSHA1Or256::AddKeyMaterial(const uint8_t * keyData, uint16_t keyDataLen)
 {
     if (mUseSHA1)
         HKDFSHA1Obj()->AddKeyMaterial(keyData, keyDataLen);
@@ -191,7 +186,7 @@ WEAVE_ERROR HKDFSHA1Or256::FinishExtractKey(void)
         return HKDFSHA256Obj()->FinishExtractKey();
 }
 
-WEAVE_ERROR HKDFSHA1Or256::ExpandKey(const uint8_t* info, uint16_t infoLen, uint16_t keyLen, uint8_t* outKey)
+WEAVE_ERROR HKDFSHA1Or256::ExpandKey(const uint8_t * info, uint16_t infoLen, uint16_t keyLen, uint8_t * outKey)
 {
     if (mUseSHA1)
         return HKDFSHA1Obj()->ExpandKey(info, infoLen, keyLen, outKey);
@@ -206,7 +201,6 @@ void HKDFSHA1Or256::Reset(void)
     else
         HKDFSHA256Obj()->Reset();
 }
-
 
 } /* namespace Crypto */
 } /* namespace Weave */

@@ -87,13 +87,13 @@ public:
     };
     // clang-format on
 
-    typedef void (*EventCallback)(void *appState, EventType eventType, const InEventParam& inParam, OutEventParam& outParam);
+    typedef void (*EventCallback)(void * appState, EventType eventType, const InEventParam & inParam, OutEventParam & outParam);
 
-    void *AppState;
+    void * AppState;
 
     WeaveHeartbeatSender(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr, Binding *binding, EventCallback eventCallback, void *appState);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr, Binding * binding, EventCallback eventCallback, void * appState);
     WEAVE_ERROR Shutdown(void);
 
     WEAVE_ERROR StartHeartbeat(void);
@@ -107,39 +107,39 @@ public:
     bool GetRequestAck() const;
     void SetRequestAck(bool val);
 
-    void GetConfiguration(uint32_t& interval, uint32_t& phase, uint32_t& window) const;
+    void GetConfiguration(uint32_t & interval, uint32_t & phase, uint32_t & window) const;
     void SetConfiguration(uint32_t interval, uint32_t phase, uint32_t window);
 
-    Binding *GetBinding() const;
+    Binding * GetBinding() const;
 
     EventCallback GetEventCallback() const;
     void SetEventCallback(EventCallback eventCallback);
 
-    static void DefaultEventHandler(void *appState, EventType eventType, const InEventParam& inParam, OutEventParam& outParam);
+    static void DefaultEventHandler(void * appState, EventType eventType, const InEventParam & inParam, OutEventParam & outParam);
 
 private:
-
     void SendHeartbeat(bool scheduleNextHeartbeat);
     uint32_t GetRandomInterval(uint32_t minVal, uint32_t maxVal);
     uint64_t GetHeartbeatBase(void);
-    static void HandleHeartbeatTimer(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void HandleHeartbeatTimer(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
     static uint64_t GetPlatformTimeMs(void);
-    static void BindingEventCallback(void *appState, Binding::EventType eventType, const Binding::InEventParam& inParam, Binding::OutEventParam& outParam);
-    static void HandleAckReceived(ExchangeContext *ec, void *msgCtxt);
-    static void HandleSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt);
-    WeaveHeartbeatSender(const WeaveHeartbeatSender&); // Not defined.
+    static void BindingEventCallback(void * appState, Binding::EventType eventType, const Binding::InEventParam & inParam,
+                                     Binding::OutEventParam & outParam);
+    static void HandleAckReceived(ExchangeContext * ec, void * msgCtxt);
+    static void HandleSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt);
+    WeaveHeartbeatSender(const WeaveHeartbeatSender &); // Not defined.
 
-    uint64_t                    mHeartbeatBase;
-    const WeaveFabricState *    mFabricState;
-    WeaveExchangeManager *      mExchangeMgr;
-    Binding *                   mBinding;
-    ExchangeContext *           mExchangeCtx;
-    EventCallback               mEventCallback;
-    uint32_t                    mHeartbeatInterval_msec;
-    uint32_t                    mHeartbeatPhase_msec;
-    uint32_t                    mHeartbeatWindow_msec;
-    uint8_t                     mSubscriptionState;
-    bool                        mRequestAck;
+    uint64_t mHeartbeatBase;
+    const WeaveFabricState * mFabricState;
+    WeaveExchangeManager * mExchangeMgr;
+    Binding * mBinding;
+    ExchangeContext * mExchangeCtx;
+    EventCallback mEventCallback;
+    uint32_t mHeartbeatInterval_msec;
+    uint32_t mHeartbeatPhase_msec;
+    uint32_t mHeartbeatWindow_msec;
+    uint8_t mSubscriptionState;
+    bool mRequestAck;
 };
 
 /**
@@ -147,12 +147,12 @@ private:
  */
 struct WeaveHeartbeatSender::InEventParam
 {
-    WeaveHeartbeatSender *Source;
+    WeaveHeartbeatSender * Source;
     union
     {
         struct
         {
-            WEAVE_ERROR Reason;                         ///< An error describing why the heartbeat message couldn't be sent.
+            WEAVE_ERROR Reason; ///< An error describing why the heartbeat message couldn't be sent.
         } HeartbeatFailed;
     };
 
@@ -169,8 +169,6 @@ struct WeaveHeartbeatSender::OutEventParam
     void Clear() { memset(this, 0, sizeof(*this)); }
 };
 
-
-
 /**
  * Weave Heartbeat Receiver class
  */
@@ -178,17 +176,17 @@ class NL_DLL_EXPORT WeaveHeartbeatReceiver : public WeaveServerBase
 {
 public:
     WeaveHeartbeatReceiver(void);
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    typedef void (*OnHeartbeatReceivedHandler)(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState, WEAVE_ERROR err);
+    typedef void (*OnHeartbeatReceivedHandler)(const WeaveMessageInfo * aMsgInfo, uint8_t nodeState, WEAVE_ERROR err);
     OnHeartbeatReceivedHandler OnHeartbeatReceived;
 
 private:
-    static void HandleHeartbeat(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    WeaveHeartbeatReceiver(const WeaveHeartbeatReceiver&);
+    static void HandleHeartbeat(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    WeaveHeartbeatReceiver(const WeaveHeartbeatReceiver &);
 };
-
 
 /*
  * Inline Functions
@@ -196,7 +194,7 @@ private:
  * Documentation for these functions can be found in the .cpp file.
  */
 
-inline Binding *WeaveHeartbeatSender::GetBinding() const
+inline Binding * WeaveHeartbeatSender::GetBinding() const
 {
     return mBinding;
 }
@@ -231,11 +229,9 @@ inline void WeaveHeartbeatSender::SetEventCallback(EventCallback eventCallback)
     mEventCallback = eventCallback;
 }
 
-
 } // namespace Heartbeat
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_HEARTBEAT_H_

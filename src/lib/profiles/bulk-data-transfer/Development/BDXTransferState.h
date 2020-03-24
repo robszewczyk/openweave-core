@@ -60,7 +60,7 @@ struct BDXTransfer; // forward declaration for inclusion in callbacks
  * @param[in]   aXfer           Pointer to the BDXTransfer associated with this transfer
  * @param[in]   aSendInitMsg    Pointer to the SendInit message that we are processing
  */
-typedef uint16_t (*SendInitHandler)(BDXTransfer *aXfer, SendInit *aSendInitMsg);
+typedef uint16_t (*SendInitHandler)(BDXTransfer * aXfer, SendInit * aSendInitMsg);
 
 /**
  * @brief
@@ -79,7 +79,7 @@ typedef uint16_t (*SendInitHandler)(BDXTransfer *aXfer, SendInit *aSendInitMsg);
  * @param[in]   aXfer               Pointer to the BDXTransfer associated with this transfer
  * @param[in]   aReceiveInitMsg     Pointer to the ReceiveInit message that we are processing
  */
-typedef uint16_t (*ReceiveInitHandler)(BDXTransfer *aXfer, ReceiveInit *aReceiveInitMsg);
+typedef uint16_t (*ReceiveInitHandler)(BDXTransfer * aXfer, ReceiveInit * aReceiveInitMsg);
 
 /**
  * @brief
@@ -91,7 +91,7 @@ typedef uint16_t (*ReceiveInitHandler)(BDXTransfer *aXfer, ReceiveInit *aReceive
  * @param[in]   aXfer               Pointer to the BDXTransfer associated with this transfer
  * @param[in]   aSendAcceptMsg      Pointer to the SendAccept message that we are processing
  */
-typedef WEAVE_ERROR (*SendAcceptHandler)(BDXTransfer *aXfer, SendAccept *aSendAcceptMsg);
+typedef WEAVE_ERROR (*SendAcceptHandler)(BDXTransfer * aXfer, SendAccept * aSendAcceptMsg);
 
 /**
  * @brief
@@ -103,7 +103,7 @@ typedef WEAVE_ERROR (*SendAcceptHandler)(BDXTransfer *aXfer, SendAccept *aSendAc
  * @param[in]   aXfer               Pointer to the BDXTransfer associated with this transfer
  * @param[in]   aReceiveAcceptMsg   Pointer to the ReceiveAccept message that we are processing
  */
-typedef WEAVE_ERROR (*ReceiveAcceptHandler)(BDXTransfer *aXfer, ReceiveAccept *aReceiveAcceptMsg);
+typedef WEAVE_ERROR (*ReceiveAcceptHandler)(BDXTransfer * aXfer, ReceiveAccept * aReceiveAcceptMsg);
 
 /**
  * @brief
@@ -116,7 +116,7 @@ typedef WEAVE_ERROR (*ReceiveAcceptHandler)(BDXTransfer *aXfer, ReceiveAccept *a
  * @param[in]   aXfer               Pointer to the BDXTransfer associated with this transfer
  * @param[in]   aReport             Pointer to the StatusReport message rejection that we are processing
  */
-typedef void (*RejectHandler)(BDXTransfer *aXfer, StatusReport *aReport);
+typedef void (*RejectHandler)(BDXTransfer * aXfer, StatusReport * aReport);
 
 /**
  * @brief
@@ -149,12 +149,9 @@ typedef void (*RejectHandler)(BDXTransfer *aXfer, StatusReport *aReport);
  *                            `BlockEOF` and the transfer completed,
  *                            false otherwise
  */
-//TODO: define a contract for how to tell the caller not to send the block and/or
-//that we encountered an error
-typedef void (*GetBlockHandler)(BDXTransfer *aXfer,
-                                uint64_t *aLength,
-                                uint8_t **aDataBlock,
-                                bool *aLastBlock);
+// TODO: define a contract for how to tell the caller not to send the block and/or
+// that we encountered an error
+typedef void (*GetBlockHandler)(BDXTransfer * aXfer, uint64_t * aLength, uint8_t ** aDataBlock, bool * aLastBlock);
 
 /**
  * @brief
@@ -170,8 +167,7 @@ typedef void (*GetBlockHandler)(BDXTransfer *aXfer,
  *                          keeping in mind that the XferDoneHandler will be called
  *                          after this
  */
-typedef void (*PutBlockHandler)(BDXTransfer *aXfer, uint64_t aLength,
-                                uint8_t *aDataBlock, bool aLastBlock);
+typedef void (*PutBlockHandler)(BDXTransfer * aXfer, uint64_t aLength, uint8_t * aDataBlock, bool aLastBlock);
 
 /**
  * @brief
@@ -192,7 +188,7 @@ typedef void (*PutBlockHandler)(BDXTransfer *aXfer, uint64_t aLength,
  * @param[in]   aXfer           Pointer to the BDXTransfer associated with this transfer
  * @param[in]   aXferError      Pointer to the StatusReport message error that we are processing
  */
-typedef void (*XferErrorHandler)(BDXTransfer *aXfer, StatusReport *aXferError);
+typedef void (*XferErrorHandler)(BDXTransfer * aXfer, StatusReport * aXferError);
 
 /**
  * @brief
@@ -205,7 +201,7 @@ typedef void (*XferErrorHandler)(BDXTransfer *aXfer, StatusReport *aXferError);
  *
  * @param[in]   aXfer           Pointer to the BDXTransfer associated with this transfer
  */
-typedef void (*XferDoneHandler)(BDXTransfer *aXfer);
+typedef void (*XferDoneHandler)(BDXTransfer * aXfer);
 
 /**
  * @brief
@@ -225,18 +221,18 @@ typedef void (*XferDoneHandler)(BDXTransfer *aXfer);
  * @param[in]   anErrorCode     The error code that we need to process
  */
 
-typedef void (*ErrorHandler)(BDXTransfer *aXfer, WEAVE_ERROR anErrorCode);
+typedef void (*ErrorHandler)(BDXTransfer * aXfer, WEAVE_ERROR anErrorCode);
 
 struct BDXHandlers
 {
-    SendAcceptHandler       mSendAcceptHandler;
-    ReceiveAcceptHandler    mReceiveAcceptHandler;
-    RejectHandler           mRejectHandler;
-    GetBlockHandler         mGetBlockHandler;
-    PutBlockHandler         mPutBlockHandler;
-    XferErrorHandler        mXferErrorHandler;
-    XferDoneHandler         mXferDoneHandler;
-    ErrorHandler            mErrorHandler;
+    SendAcceptHandler mSendAcceptHandler;
+    ReceiveAcceptHandler mReceiveAcceptHandler;
+    RejectHandler mRejectHandler;
+    GetBlockHandler mGetBlockHandler;
+    PutBlockHandler mPutBlockHandler;
+    XferErrorHandler mXferErrorHandler;
+    XferDoneHandler mXferDoneHandler;
+    ErrorHandler mErrorHandler;
 };
 
 /** This structure contains data members representing an active BDX transfer.
@@ -251,25 +247,25 @@ struct BDXHandlers
  */
 struct BDXTransfer
 {
-    ExchangeContext *   mExchangeContext;
-    void *              mAppState;
+    ExchangeContext * mExchangeContext;
+    void * mAppState;
 
     // data members related to the transfer handling
-    uint8_t             mTransferMode;
+    uint8_t mTransferMode;
     // Version being used for this transfer
-    uint8_t             mVersion;
+    uint8_t mVersion;
     // TODO: perhaps compact these more efficiently as flags to save memory?
-    bool                mIsInitiated;
-    bool                mIsAccepted;
-    bool                mIsCompletedSuccessfully; // true iff a BlockEOF or BlockEOFAck was received
-    bool                mAmInitiator;
-    bool                mAmSender;
-    bool                mIsWideRange; // true is widths and offsets are 64 bits
-    bool                mFirstQuery; // true if we haven't received our first query
-    //TODO: bool mAckRcvd;  // may want to keep track of ACKs to support
-                            // retransmission of old blocks in the future
-    //TODO: int mSendFlags; // may want to configure SendFlags to be used in calls to
-                            // SendMessage, e.g. to support WRMP
+    bool mIsInitiated;
+    bool mIsAccepted;
+    bool mIsCompletedSuccessfully; // true iff a BlockEOF or BlockEOFAck was received
+    bool mAmInitiator;
+    bool mAmSender;
+    bool mIsWideRange; // true is widths and offsets are 64 bits
+    bool mFirstQuery;  // true if we haven't received our first query
+    // TODO: bool mAckRcvd;  // may want to keep track of ACKs to support
+    // retransmission of old blocks in the future
+    // TODO: int mSendFlags; // may want to configure SendFlags to be used in calls to
+    // SendMessage, e.g. to support WRMP
 
     /** file/block related data members
      * TODO: remove this? or should we just establish a contract of what
@@ -277,23 +273,23 @@ struct BDXTransfer
      * Specifically, is it backed by an PacketBuffer?  If so, it probably
      * shouldn't stick around for the whole xfer as that takes up a pbuf
      */
-    ReferencedString    mFileDesignator;
-    uint16_t            mMaxBlockSize; // Max block size to be used during this transfer
-    uint64_t            mStartOffset; // Offset to start at for transfer, typically 0
-    uint64_t            mLength; // Expected length of the transfer, 0 if unkown
-    uint64_t            mBytesSent; // How many bytes have been sent so far in this transfer
+    ReferencedString mFileDesignator;
+    uint16_t mMaxBlockSize; // Max block size to be used during this transfer
+    uint64_t mStartOffset;  // Offset to start at for transfer, typically 0
+    uint64_t mLength;       // Expected length of the transfer, 0 if unkown
+    uint64_t mBytesSent;    // How many bytes have been sent so far in this transfer
     /** The next block number we expect to receive a BlockQuery or BlockACK for
      * when sending (once the transfer has officially started).
      * When receiving, it is the next BlockSend we expect to receive
      * or the latest BlockQuery we sent (after the transfer has officially started
      * and the first query sent that is).
      */
-    uint32_t            mBlockCounter;
+    uint32_t mBlockCounter;
 
     // application-supplied handlers
-    //TODO: make these private when BdxProtocol doesn't inspect them directly
-    //before calling DispatchGetBlockHandler().  We'll have to remove that check
-    //anyway if we move to a delegate model.
+    // TODO: make these private when BdxProtocol doesn't inspect them directly
+    // before calling DispatchGetBlockHandler().  We'll have to remove that check
+    // anyway if we move to a delegate model.
     BDXHandlers mHandlers;
 
     WEAVE_ERROR (*mNext)(BDXTransfer &); // Next action to take after the processing of the response
@@ -318,17 +314,13 @@ struct BDXTransfer
      * rather than storing individual pointers to each of the callbacks.
      */
 
-    WEAVE_ERROR DispatchReceiveAccept(ReceiveAccept *aReceiveAcceptMsg);
-    WEAVE_ERROR DispatchSendAccept(SendAccept *aSendAcceptMsg);
-    void DispatchRejectHandler(StatusReport *aReport);
-    void DispatchPutBlockHandler(uint64_t aLength,
-                                 uint8_t *aDataBlock,
-                                 bool aLastBlock);
-    void DispatchGetBlockHandler(uint64_t *aLength,
-                                 uint8_t **aDataBlock,
-                                 bool *aLastBlock);
+    WEAVE_ERROR DispatchReceiveAccept(ReceiveAccept * aReceiveAcceptMsg);
+    WEAVE_ERROR DispatchSendAccept(SendAccept * aSendAcceptMsg);
+    void DispatchRejectHandler(StatusReport * aReport);
+    void DispatchPutBlockHandler(uint64_t aLength, uint8_t * aDataBlock, bool aLastBlock);
+    void DispatchGetBlockHandler(uint64_t * aLength, uint8_t ** aDataBlock, bool * aLastBlock);
     void DispatchErrorHandler(WEAVE_ERROR anErrorCode);
-    void DispatchXferErrorHandler(StatusReport *aXferError);
+    void DispatchXferErrorHandler(StatusReport * aXferError);
     void DispatchXferDoneHandler(void);
 };
 
@@ -342,7 +334,7 @@ struct BDXTransfer
  *
  * @return 0 or kSendFlag_RequestAck
  */
-inline uint16_t GetBDXAckFlag(ExchangeContext *anEc)
+inline uint16_t GetBDXAckFlag(ExchangeContext * anEc)
 {
     uint16_t flags = 0;
 
@@ -356,7 +348,7 @@ inline uint16_t GetBDXAckFlag(ExchangeContext *anEc)
     return flags;
 }
 
-} // namespace BulkDataTransfer
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

@@ -33,11 +33,11 @@
 namespace nl {
 namespace PairingCode {
 
-enum {
+enum
+{
     kCharacterValueMask = (1 << kBitsPerCharacter) - 1,
-    kUInt64OverflowMask = (uint64_t)kCharacterValueMask << (64ULL - kBitsPerCharacter),
+    kUInt64OverflowMask = (uint64_t) kCharacterValueMask << (64ULL - kBitsPerCharacter),
 };
-
 
 /** Verify a Weave pairing code against its check character.
  *
@@ -51,7 +51,7 @@ enum {
  *                                      of the pairing code are not consistent with the value
  *                                      of the check character.
  */
-WEAVE_ERROR VerifyPairingCode(const char *pairingCode, size_t pairingCodeLen)
+WEAVE_ERROR VerifyPairingCode(const char * pairingCode, size_t pairingCodeLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -83,7 +83,7 @@ exit:
  *                                      normalized string.
  *
  */
-void NormalizePairingCode(char *pairingCode, size_t& pairingCodeLen)
+void NormalizePairingCode(char * pairingCode, size_t & pairingCodeLen)
 {
     size_t newLen = 0;
 
@@ -91,7 +91,7 @@ void NormalizePairingCode(char *pairingCode, size_t& pairingCodeLen)
     {
         char ch = pairingCode[i];
 
-        ch = (char)toupper(ch);
+        ch = (char) toupper(ch);
 
         if (ch == 'I')
             ch = '1';
@@ -101,7 +101,7 @@ void NormalizePairingCode(char *pairingCode, size_t& pairingCodeLen)
             ch = '2';
 
         if (Verhoeff32::CharToVal(ch) < 0)
-        	continue;
+            continue;
 
         pairingCode[newLen] = ch;
 
@@ -135,7 +135,7 @@ void NormalizePairingCode(char *pairingCode, size_t& pairingCodeLen)
  *                                      by pairingCodeLen, minus 1 for the check character.
  *
  */
-WEAVE_ERROR IntToPairingCode(uint64_t val, uint8_t pairingCodeLen, char *outBuf)
+WEAVE_ERROR IntToPairingCode(uint64_t val, uint8_t pairingCodeLen, char * outBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -183,7 +183,7 @@ exit:
  *                                      the max value that can be stored in a uint64_t.
  *
  */
-WEAVE_ERROR PairingCodeToInt(const char *pairingCode, size_t pairingCodeLen, uint64_t& val)
+WEAVE_ERROR PairingCodeToInt(const char * pairingCode, size_t pairingCodeLen, uint64_t & val)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -206,7 +206,7 @@ WEAVE_ERROR PairingCodeToInt(const char *pairingCode, size_t pairingCodeLen, uin
         VerifyOrExit((val & kUInt64OverflowMask) == 0, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
         // Add the character value to the accumulated total.
-        val = (val << kBitsPerCharacter) | (uint64_t)chVal;
+        val = (val << kBitsPerCharacter) | (uint64_t) chVal;
     }
 
 exit:
@@ -286,7 +286,7 @@ WEAVE_ERROR GeneratePairingCode(uint8_t pairingCodeLen, char * outBuf)
     VerifyOrExit(pairingCodeLen >= kPairingCodeLenMin, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     // Get a string of random bytes equal to the desired pairing code length, not including the check character.
-    err = ::nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *)outBuf, pairingCodeLen - 1);
+    err = ::nl::Weave::Platform::Security::GetSecureRandomData((uint8_t *) outBuf, pairingCodeLen - 1);
     SuccessOrExit(err);
 
     // Convert each random byte to a corresponding pairing code character.  (Note that this discards the upper
@@ -305,7 +305,6 @@ WEAVE_ERROR GeneratePairingCode(uint8_t pairingCodeLen, char * outBuf)
 exit:
     return err;
 }
-
 
 } // namespace PairingCode
 } // namespace nl

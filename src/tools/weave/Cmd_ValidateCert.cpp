@@ -39,18 +39,14 @@ using namespace nl::Weave::Profiles::Security;
 
 #define CMD_NAME "weave validate-cert"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "cert",           kArgumentRequired,  'c' },
-    { "trusted-cert",   kArgumentRequired,  't' },
-    { "verbose",        kNoArgument,        'V' },
-    { }
+static OptionDef gCmdOptionDefs[] = {
+    { "cert", kArgumentRequired, 'c' }, { "trusted-cert", kArgumentRequired, 't' }, { "verbose", kNoArgument, 'V' }, { }
 };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "  -c, --cert <cert-file>\n"
     "\n"
     "       A file containing an untrusted Weave certificate to be used during\n"
@@ -64,56 +60,43 @@ static const char *const gCmdOptionHelp =
     "  -V, --verbose\n"
     "\n"
     "       Display detailed validation results for each input certificate.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
+
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ] <target-cert-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Validate a chain of Weave certificates.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <target-cert-file>\n"
+                                "\n"
+                                "      A file containing the certificate to be validated. The certificate\n"
+                                "      must be a Weave certificate in either base-64 or TLV format.\n"
+                                "\n");
+
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
+
+enum
 {
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
+    kMaxCerts = 64
 };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ] <target-cert-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Validate a chain of Weave certificates.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <target-cert-file>\n"
-    "\n"
-    "      A file containing the certificate to be validated. The certificate\n"
-    "      must be a Weave certificate in either base-64 or TLV format.\n"
-    "\n"
-);
-
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
-
-
-enum { kMaxCerts = 64 };
-
-static const char *gTargetCertFileName = NULL;
-static const char *gCACertFileNames[kMaxCerts];
+static const char * gTargetCertFileName = NULL;
+static const char * gCACertFileNames[kMaxCerts];
 static bool gCACertIsTrusted[kMaxCerts];
 static size_t gNumCertFileNames = 0;
-static bool gVerbose = false;
+static bool gVerbose            = false;
 
-bool Cmd_ValidateCert(int argc, char *argv[])
+bool Cmd_ValidateCert(int argc, char * argv[])
 {
     bool res = true;
     WEAVE_ERROR err;
     WeaveCertificateSet certSet;
-    WeaveCertificateData *certToBeValidated;
-    WeaveCertificateData *validatedCert;
-    uint8_t *certBufs[kMaxCerts];
+    WeaveCertificateData * certToBeValidated;
+    WeaveCertificateData * validatedCert;
+    uint8_t * certBufs[kMaxCerts];
     WEAVE_ERROR certValidationRes[kMaxCerts];
     ValidationContext context;
 
@@ -152,7 +135,7 @@ bool Cmd_ValidateCert(int argc, char *argv[])
     context.EffectiveTime = SecondsSinceEpochToPackedCertTime(time(NULL));
     if (gVerbose)
     {
-        context.CertValidationResults = certValidationRes;
+        context.CertValidationResults    = certValidationRes;
         context.CertValidationResultsLen = kMaxCerts;
     }
 
@@ -180,27 +163,23 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
     case 'c':
     case 't':
-        gCACertFileNames[gNumCertFileNames] = arg;
+        gCACertFileNames[gNumCertFileNames]   = arg;
         gCACertIsTrusted[gNumCertFileNames++] = (id == 't');
         break;
-    case 'V':
-        gVerbose = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'V': gVerbose = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {

@@ -132,7 +132,7 @@ const WRMPConfig gDefaultWRMPConfig = { WEAVE_CONFIG_WRMP_DEFAULT_INITIAL_RETRAN
 
 // clang-format on
 
-}; // Weave
-}; // nl
+}; // namespace Weave
+}; // namespace nl
 
 #endif // WEAVE_WRM_CONFIG_H_

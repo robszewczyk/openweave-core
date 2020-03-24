@@ -29,8 +29,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Nest {
 namespace Trait {
@@ -39,8 +37,9 @@ namespace TelemetryNetworkWifiTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0x602U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0x602U
 };
 
 //
@@ -63,19 +62,20 @@ struct NetworkWiFiStatsEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x602U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x602U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWiFiStatsEvent_array {
+struct NetworkWiFiStatsEvent_array
+{
     uint32_t num;
-    NetworkWiFiStatsEvent *buf;
+    NetworkWiFiStatsEvent * buf;
 };
-
 
 struct NetworkWiFiDeauthEvent
 {
@@ -84,19 +84,20 @@ struct NetworkWiFiDeauthEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x602U,
-        kEventTypeId = 0x2U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x602U,
+        kEventTypeId    = 0x2U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWiFiDeauthEvent_array {
+struct NetworkWiFiDeauthEvent_array
+{
     uint32_t num;
-    NetworkWiFiDeauthEvent *buf;
+    NetworkWiFiDeauthEvent * buf;
 };
-
 
 struct NetworkWiFiInvalidKeyEvent
 {
@@ -105,19 +106,20 @@ struct NetworkWiFiInvalidKeyEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x602U,
-        kEventTypeId = 0x3U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x602U,
+        kEventTypeId    = 0x3U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWiFiInvalidKeyEvent_array {
+struct NetworkWiFiInvalidKeyEvent_array
+{
     uint32_t num;
-    NetworkWiFiInvalidKeyEvent *buf;
+    NetworkWiFiInvalidKeyEvent * buf;
 };
-
 
 struct NetworkWiFiConnectionStatusChangeEvent
 {
@@ -126,19 +128,20 @@ struct NetworkWiFiConnectionStatusChangeEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x602U,
-        kEventTypeId = 0x4U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x602U,
+        kEventTypeId    = 0x4U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct NetworkWiFiConnectionStatusChangeEvent_array {
+struct NetworkWiFiConnectionStatusChangeEvent_array
+{
     uint32_t num;
-    NetworkWiFiConnectionStatusChangeEvent *buf;
+    NetworkWiFiConnectionStatusChangeEvent * buf;
 };
-
 
 } // namespace TelemetryNetworkWifiTrait
 } // namespace Network

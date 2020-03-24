@@ -51,7 +51,6 @@
 #include <Weave/Support/CodeUtils.h>
 #include <Weave/Support/WeaveFaultInjection.h>
 
-
 namespace nl {
 namespace Weave {
 
@@ -79,15 +78,14 @@ using namespace nl::Weave::Encoding;
  *
  */
 #if WEAVE_BIND_DETAIL_LOGGING && WEAVE_DETAIL_LOGGING
-#define WeaveBindLog(MSG, ...) WeaveLogProgress(MessageLayer, MSG, ## __VA_ARGS__ )
+#define WeaveBindLog(MSG, ...) WeaveLogProgress(MessageLayer, MSG, ##__VA_ARGS__)
 #else
 #define WeaveBindLog(MSG, ...)
 #endif
 
-
 enum
 {
-    kKeyIdLen = 2,
+    kKeyIdLen      = 2,
     kMinPayloadLen = 1
 };
 
@@ -115,7 +113,7 @@ WeaveMessageLayer::WeaveMessageLayer()
  *  @retval  other errors generated from the lower Inet layer during endpoint creation.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::Init(InitContext *context)
+WEAVE_ERROR WeaveMessageLayer::Init(InitContext * context)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -125,7 +123,7 @@ WEAVE_ERROR WeaveMessageLayer::Init(InitContext *context)
     State = kState_Initializing;
 
     SystemLayer = context->systemLayer;
-    Inet = context->inet;
+    Inet        = context->inet;
 #if CONFIG_NETWORK_LAYER_BLE
     mBle = context->ble;
 #endif
@@ -137,26 +135,26 @@ WEAVE_ERROR WeaveMessageLayer::Init(InitContext *context)
     }
 #endif // WEAVE_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
 
-    FabricState = context->fabricState;
-    FabricState->MessageLayer = this;
-    OnMessageReceived = NULL;
-    OnReceiveError = NULL;
-    OnConnectionReceived = NULL;
-    OnUnsecuredConnectionReceived = NULL;
+    FabricState                           = context->fabricState;
+    FabricState->MessageLayer             = this;
+    OnMessageReceived                     = NULL;
+    OnReceiveError                        = NULL;
+    OnConnectionReceived                  = NULL;
+    OnUnsecuredConnectionReceived         = NULL;
     OnUnsecuredConnectionCallbacksRemoved = NULL;
-    OnAcceptError = NULL;
-    OnMessageLayerActivityChange = NULL;
+    OnAcceptError                         = NULL;
+    OnMessageLayerActivityChange          = NULL;
     memset(mConPool, 0, sizeof(mConPool));
     memset(mTunnelPool, 0, sizeof(mTunnelPool));
-    AppState = NULL;
-    ExchangeMgr = NULL;
-    SecurityMgr = NULL;
-    IsListening = context->listenTCP || context->listenUDP;
+    AppState               = NULL;
+    ExchangeMgr            = NULL;
+    SecurityMgr            = NULL;
+    IsListening            = context->listenTCP || context->listenUDP;
     IncomingConIdleTimeout = WEAVE_CONFIG_DEFAULT_INCOMING_CONNECTION_IDLE_TIMEOUT;
 
-    //Internal and for Debug Only; When set, Message Layer drops message and returns.
+    // Internal and for Debug Only; When set, Message Layer drops message and returns.
     mDropMessage = false;
-    mFlags = 0;
+    mFlags       = 0;
     SetTCPListenEnabled(context->listenTCP);
     SetUDPListenEnabled(context->listenUDP);
 #if WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
@@ -164,11 +162,11 @@ WEAVE_ERROR WeaveMessageLayer::Init(InitContext *context)
 #endif
 
     mIPv6TCPListen = NULL;
-    mIPv6UDP = NULL;
+    mIPv6UDP       = NULL;
 
 #if INET_CONFIG_ENABLE_IPV4
     mIPv4TCPListen = NULL;
-    mIPv4UDP = NULL;
+    mIPv4UDP       = NULL;
 #endif // INET_CONFIG_ENABLE_IPV4
 
 #if WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
@@ -176,7 +174,7 @@ WEAVE_ERROR WeaveMessageLayer::Init(InitContext *context)
 #if INET_CONFIG_ENABLE_IPV4
     mIPv4UDPBroadcastRcv = NULL;
 #endif // INET_CONFIG_ENABLE_IPV4
-#endif //WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
+#endif // WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
 
 #if WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
     mIPv6EphemeralUDP = NULL;
@@ -195,7 +193,7 @@ WEAVE_ERROR WeaveMessageLayer::Init(InitContext *context)
 #if CONFIG_NETWORK_LAYER_BLE
     if (context->listenBLE && mBle != NULL)
     {
-        mBle->mAppState = this;
+        mBle->mAppState                 = this;
         mBle->OnWeaveBleConnectReceived = HandleIncomingBleConnection;
         WeaveLogProgress(MessageLayer, "Accepting WoBLE connections");
     }
@@ -231,25 +229,25 @@ WEAVE_ERROR WeaveMessageLayer::Shutdown()
 #if CONFIG_NETWORK_LAYER_BLE
     if (mBle != NULL && mBle->mAppState == this)
     {
-        mBle->mAppState = NULL;
+        mBle->mAppState                 = NULL;
         mBle->OnWeaveBleConnectReceived = NULL;
     }
 #endif // CONFIG_NETWORK_LAYER_BLE
 
-    State = kState_NotInitialized;
-    IsListening = false;
-    FabricState = NULL;
-    OnMessageReceived = NULL;
-    OnReceiveError = NULL;
+    State                         = kState_NotInitialized;
+    IsListening                   = false;
+    FabricState                   = NULL;
+    OnMessageReceived             = NULL;
+    OnReceiveError                = NULL;
     OnUnsecuredConnectionReceived = NULL;
-    OnConnectionReceived = NULL;
-    OnAcceptError = NULL;
-    OnMessageLayerActivityChange = NULL;
+    OnConnectionReceived          = NULL;
+    OnAcceptError                 = NULL;
+    OnMessageLayerActivityChange  = NULL;
     memset(mConPool, 0, sizeof(mConPool));
     memset(mTunnelPool, 0, sizeof(mTunnelPool));
     ExchangeMgr = NULL;
-    AppState = NULL;
-    mFlags = 0;
+    AppState    = NULL;
+    mFlags      = 0;
 
     return WEAVE_NO_ERROR;
 }
@@ -271,17 +269,17 @@ WEAVE_ERROR WeaveMessageLayer::Shutdown()
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::SendUDPTunneledMessage(const IPAddress &destAddr, WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveMessageLayer::SendUDPTunneledMessage(const IPAddress & destAddr, WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR res = WEAVE_NO_ERROR;
 
-    //Set message version to V2
+    // Set message version to V2
     msgInfo->MessageVersion = kWeaveMessageVersion_V2;
 
-    //Set the tunneling flag
+    // Set the tunneling flag
     msgInfo->Flags |= kWeaveMessageFlag_TunneledData;
 
-    res = SendMessage(destAddr, msgInfo, msgBuf);
+    res    = SendMessage(destAddr, msgInfo, msgBuf);
     msgBuf = NULL;
 
     return res;
@@ -312,8 +310,8 @@ WEAVE_ERROR WeaveMessageLayer::SendUDPTunneledMessage(const IPAddress &destAddr,
  *  @retval  other errors generated by the fabric state object when fetching the session state.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::EncodeMessage(const IPAddress &destAddr, uint16_t destPort, InterfaceId sendIntId,
-                                             WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::EncodeMessage(const IPAddress & destAddr, uint16_t destPort, InterfaceId sendIntId,
+                                             WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
     WEAVE_ERROR res = WEAVE_NO_ERROR;
 
@@ -357,7 +355,7 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(const IPAddress &destAddr, uint16_t
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::SendMessage(WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::SendMessage(WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
     return SendMessage(IPAddress::Any, msgInfo, payload);
 }
@@ -386,8 +384,7 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(WeaveMessageInfo *msgInfo, PacketBuff
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress &destAddr, WeaveMessageInfo *msgInfo,
-                                           PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress & destAddr, WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
     return SendMessage(destAddr, WEAVE_PORT, INET_NULL_INTERFACEID, msgInfo, payload);
 }
@@ -421,10 +418,10 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress &destAddr, WeaveMessa
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress &aDestAddr, uint16_t destPort, InterfaceId sendIntfId,
-                                           WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress & aDestAddr, uint16_t destPort, InterfaceId sendIntfId,
+                                           WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
-    WEAVE_ERROR res = WEAVE_NO_ERROR;
+    WEAVE_ERROR res    = WEAVE_NO_ERROR;
     IPAddress destAddr = aDestAddr;
 
     // Determine the message destination address based on the destination nodeId.
@@ -447,9 +444,7 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress &aDestAddr, uint16_t 
     return SendMessage(destAddr, destPort, sendIntfId, payload, msgInfo->Flags);
 
 exit:
-    if ((res != WEAVE_NO_ERROR) &&
-        (payload != NULL) &&
-        ((msgInfo->Flags & kWeaveMessageFlag_RetainBuffer) == 0))
+    if ((res != WEAVE_NO_ERROR) && (payload != NULL) && ((msgInfo->Flags & kWeaveMessageFlag_RetainBuffer) == 0))
     {
         PacketBuffer::Free(payload);
     }
@@ -461,11 +456,11 @@ bool WeaveMessageLayer::IsIgnoredMulticastSendError(WEAVE_ERROR err)
 {
     return err == WEAVE_NO_ERROR ||
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
-           err == System::MapErrorLwIP(ERR_RTE)
+        err == System::MapErrorLwIP(ERR_RTE)
 #else
-           err == System::MapErrorPOSIX(ENETUNREACH) || err == System::MapErrorPOSIX(EADDRNOTAVAIL)
+        err == System::MapErrorPOSIX(ENETUNREACH) || err == System::MapErrorPOSIX(EADDRNOTAVAIL)
 #endif
-           ;
+        ;
 }
 
 WEAVE_ERROR WeaveMessageLayer::FilterUDPSendError(WEAVE_ERROR err, bool isMulticast)
@@ -493,7 +488,6 @@ WEAVE_ERROR WeaveMessageLayer::FilterUDPSendError(WEAVE_ERROR err, bool isMultic
     return err;
 }
 
-
 /**
  *  Checks if error, while sending, is critical enough to report to the application.
  *
@@ -505,8 +499,7 @@ WEAVE_ERROR WeaveMessageLayer::FilterUDPSendError(WEAVE_ERROR err, bool isMultic
 bool WeaveMessageLayer::IsSendErrorNonCritical(WEAVE_ERROR err)
 {
     return (err == INET_ERROR_NOT_IMPLEMENTED || err == INET_ERROR_OUTBOUND_MESSAGE_TRUNCATED ||
-            err == INET_ERROR_MESSAGE_TOO_LONG || err == INET_ERROR_NO_MEMORY ||
-            WEAVE_CONFIG_IsPlatformErrorNonCritical(err));
+            err == INET_ERROR_MESSAGE_TOO_LONG || err == INET_ERROR_NO_MEMORY || WEAVE_CONFIG_IsPlatformErrorNonCritical(err));
 }
 
 /**
@@ -564,17 +557,15 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress & destAddr, uint16_t 
     IPPacketInfo pktInfo;
     pktInfo.Clear();
     pktInfo.DestAddress = destAddr;
-    pktInfo.DestPort = destPort;
-    pktInfo.Interface = sendIntfId;
+    pktInfo.DestPort    = destPort;
+    pktInfo.Interface   = sendIntfId;
 
     // Check if drop flag is set; If so, do not send message; return WEAVE_NO_ERROR;
     VerifyOrExit(!mDropMessage, err = WEAVE_NO_ERROR);
 
     // Drop the message and return. Free the buffer if it does not need to be
     // retained(e.g., for WRM retransmissions).
-    WEAVE_FAULT_INJECT(FaultInjection::kFault_DropOutgoingUDPMsg,
-            ExitNow(err = WEAVE_NO_ERROR);
-            );
+    WEAVE_FAULT_INJECT(FaultInjection::kFault_DropOutgoingUDPMsg, ExitNow(err = WEAVE_NO_ERROR); );
 
     // Select a UDP endpoint object for sending a message based on the destination address type
     // and the message send flags.
@@ -634,8 +625,8 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress & destAddr, uint16_t 
         // Send the message once. If requested by the caller, instruct the end point code to not free the
         // message buffer. If a send interface was specified, the message is sent over that interface.
         udpSendFlags = GetFlag(msgFlags, kWeaveMessageFlag_RetainBuffer) ? UDPEndPoint::kSendFlag_RetainBuffer : 0;
-        err = ep->SendMsg(&pktInfo, payload, udpSendFlags);
-        payload = NULL; // Prevent call to Free() in exit code
+        err          = ep->SendMsg(&pktInfo, payload, udpSendFlags);
+        payload      = NULL; // Prevent call to Free() in exit code
         CheckForceRefreshUDPEndPointsNeeded(err);
         err = FilterUDPSendError(err, sendAction == kMulticast_OneInterface);
         break;
@@ -647,7 +638,7 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress & destAddr, uint16_t 
         {
             if (intfIter.SupportsMulticast())
             {
-                pktInfo.Interface = intfIter.GetInterface();
+                pktInfo.Interface   = intfIter.GetInterface();
                 WEAVE_ERROR sendErr = ep->SendMsg(&pktInfo, payload, UDPEndPoint::kSendFlag_RetainBuffer);
                 CheckForceRefreshUDPEndPointsNeeded(sendErr);
                 if (err == WEAVE_NO_ERROR)
@@ -667,9 +658,8 @@ WEAVE_ERROR WeaveMessageLayer::SendMessage(const IPAddress & destAddr, uint16_t 
         for (InterfaceAddressIterator addrIter; addrIter.HasCurrent(); addrIter.Next())
         {
             pktInfo.SrcAddress = addrIter.GetAddress();
-            pktInfo.Interface = addrIter.GetInterface();
-            if (addrIter.SupportsMulticast() &&
-                FabricState->IsLocalFabricAddress(pktInfo.SrcAddress) &&
+            pktInfo.Interface  = addrIter.GetInterface();
+            if (addrIter.SupportsMulticast() && FabricState->IsLocalFabricAddress(pktInfo.SrcAddress) &&
                 (sendIntfId == INET_NULL_INTERFACEID || pktInfo.Interface == sendIntfId))
             {
                 WEAVE_ERROR sendErr = ep->SendMsg(&pktInfo, payload, UDPEndPoint::kSendFlag_RetainBuffer);
@@ -740,8 +730,7 @@ WEAVE_ERROR WeaveMessageLayer::SelectOutboundUDPEndPoint(const IPAddress & destA
         }
         break;
 
-    default:
-        ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
+    default: ExitNow(err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
 
     VerifyOrExit(ep != NULL, err = WEAVE_ERROR_NO_ENDPOINT);
@@ -749,7 +738,6 @@ WEAVE_ERROR WeaveMessageLayer::SelectOutboundUDPEndPoint(const IPAddress & destA
 exit:
     return err;
 }
-
 
 /**
  *  Resend an encoded Weave message using the underlying Inetlayer UDP endpoint.
@@ -762,7 +750,7 @@ exit:
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::ResendMessage(WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::ResendMessage(WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
     IPAddress destAddr = IPAddress::Any;
     return ResendMessage(destAddr, msgInfo, payload);
@@ -784,7 +772,7 @@ WEAVE_ERROR WeaveMessageLayer::ResendMessage(WeaveMessageInfo *msgInfo, PacketBu
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress &destAddr, WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress & destAddr, WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
     return ResendMessage(destAddr, WEAVE_PORT, msgInfo, payload);
 }
@@ -804,7 +792,8 @@ WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress &destAddr, WeaveMes
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress &destAddr, uint16_t destPort, WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress & destAddr, uint16_t destPort, WeaveMessageInfo * msgInfo,
+                                             PacketBuffer * payload)
 {
     return ResendMessage(destAddr, WEAVE_PORT, INET_NULL_INTERFACEID, msgInfo, payload);
 }
@@ -833,10 +822,10 @@ WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress &destAddr, uint16_t
  *  @retval  errors generated from the lower Inet layer UDP endpoint during sending.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress &aDestAddr, uint16_t destPort, InterfaceId interfaceId,
-                                             WeaveMessageInfo *msgInfo, PacketBuffer *payload)
+WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress & aDestAddr, uint16_t destPort, InterfaceId interfaceId,
+                                             WeaveMessageInfo * msgInfo, PacketBuffer * payload)
 {
-    WEAVE_ERROR res = WEAVE_NO_ERROR;
+    WEAVE_ERROR res    = WEAVE_NO_ERROR;
     IPAddress destAddr = aDestAddr;
 
     res = SelectDestNodeIdAndAddress(msgInfo->DestNodeId, destAddr);
@@ -844,9 +833,7 @@ WEAVE_ERROR WeaveMessageLayer::ResendMessage(const IPAddress &aDestAddr, uint16_
 
     return SendMessage(destAddr, destPort, interfaceId, payload, msgInfo->Flags);
 exit:
-    if ((res != WEAVE_NO_ERROR) &&
-        (payload != NULL) &&
-        ((msgInfo->Flags & kWeaveMessageFlag_RetainBuffer) == 0))
+    if ((res != WEAVE_NO_ERROR) && (payload != NULL) && ((msgInfo->Flags & kWeaveMessageFlag_RetainBuffer) == 0))
     {
         PacketBuffer::Free(payload);
     }
@@ -860,11 +847,11 @@ exit:
  *                         connections in use is stored.
  *
  */
-void WeaveMessageLayer::GetConnectionPoolStats(nl::Weave::System::Stats::count_t &aOutInUse) const
+void WeaveMessageLayer::GetConnectionPoolStats(nl::Weave::System::Stats::count_t & aOutInUse) const
 {
     aOutInUse = 0;
 
-    const WeaveConnection *con = (WeaveConnection *) mConPool;
+    const WeaveConnection * con = (WeaveConnection *) mConPool;
     for (int i = 0; i < WEAVE_CONFIG_MAX_CONNECTIONS; i++, con++)
     {
         if (con->mRefCount != 0)
@@ -881,9 +868,9 @@ void WeaveMessageLayer::GetConnectionPoolStats(nl::Weave::System::Stats::count_t
  *           NULL.
  *
  */
-WeaveConnection *WeaveMessageLayer::NewConnection()
+WeaveConnection * WeaveMessageLayer::NewConnection()
 {
-    WeaveConnection *con = (WeaveConnection *) mConPool;
+    WeaveConnection * con = (WeaveConnection *) mConPool;
     for (int i = 0; i < WEAVE_CONFIG_MAX_CONNECTIONS; i++, con++)
     {
         if (con->mRefCount == 0)
@@ -897,17 +884,15 @@ WeaveConnection *WeaveMessageLayer::NewConnection()
     return NULL;
 }
 
-void WeaveMessageLayer::GetIncomingTCPConCount(const IPAddress &peerAddr, uint16_t &count, uint16_t &countFromIP)
+void WeaveMessageLayer::GetIncomingTCPConCount(const IPAddress & peerAddr, uint16_t & count, uint16_t & countFromIP)
 {
-    count = 0;
+    count       = 0;
     countFromIP = 0;
 
-    WeaveConnection *con = (WeaveConnection *) mConPool;
+    WeaveConnection * con = (WeaveConnection *) mConPool;
     for (int i = 0; i < WEAVE_CONFIG_MAX_CONNECTIONS; i++, con++)
     {
-        if (con->mRefCount > 0 &&
-            con->NetworkType == WeaveConnection::kNetworkType_IP &&
-            con->IsIncoming())
+        if (con->mRefCount > 0 && con->NetworkType == WeaveConnection::kNetworkType_IP && con->IsIncoming())
         {
             count++;
             if (con->PeerAddr == peerAddr)
@@ -925,9 +910,9 @@ void WeaveMessageLayer::GetIncomingTCPConCount(const IPAddress &peerAddr, uint16
  *           otherwise NULL.
  *
  */
-WeaveConnectionTunnel *WeaveMessageLayer::NewConnectionTunnel()
+WeaveConnectionTunnel * WeaveMessageLayer::NewConnectionTunnel()
 {
-    WeaveConnectionTunnel *tun = (WeaveConnectionTunnel *) mTunnelPool;
+    WeaveConnectionTunnel * tun = (WeaveConnectionTunnel *) mTunnelPool;
     for (int i = 0; i < WEAVE_CONFIG_MAX_TUNNELS; i++, tun++)
     {
         if (tun->IsInUse() == false)
@@ -962,14 +947,14 @@ WeaveConnectionTunnel *WeaveMessageLayer::NewConnectionTunnel()
  *  @retval    #WEAVE_ERROR_NO_MEMORY       if a new WeaveConnectionTunnel object cannot be created.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::CreateTunnel(WeaveConnectionTunnel **tunPtr, WeaveConnection &conOne,
-        WeaveConnection &conTwo, uint32_t inactivityTimeoutMS)
+WEAVE_ERROR WeaveMessageLayer::CreateTunnel(WeaveConnectionTunnel ** tunPtr, WeaveConnection & conOne, WeaveConnection & conTwo,
+                                            uint32_t inactivityTimeoutMS)
 {
     WeaveLogDetail(ExchangeManager, "Entering CreateTunnel");
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    VerifyOrExit(conOne.State == WeaveConnection::kState_Connected && conTwo.State ==
-            WeaveConnection::kState_Connected, err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(conOne.State == WeaveConnection::kState_Connected && conTwo.State == WeaveConnection::kState_Connected,
+                 err = WEAVE_ERROR_INCORRECT_STATE);
 
     *tunPtr = NewConnectionTunnel();
     VerifyOrExit(*tunPtr != NULL, err = WEAVE_ERROR_NO_MEMORY);
@@ -978,8 +963,8 @@ WEAVE_ERROR WeaveMessageLayer::CreateTunnel(WeaveConnectionTunnel **tunPtr, Weav
     err = (*tunPtr)->MakeTunnelConnected(conOne.mTcpEndPoint, conTwo.mTcpEndPoint);
     SuccessOrExit(err);
 
-    WeaveLogProgress(ExchangeManager, "Created Weave tunnel from Cons (%04X, %04X) with EPs (%04X, %04X)",
-            conOne.LogId(), conTwo.LogId(), conOne.mTcpEndPoint->LogId(), conTwo.mTcpEndPoint->LogId());
+    WeaveLogProgress(ExchangeManager, "Created Weave tunnel from Cons (%04X, %04X) with EPs (%04X, %04X)", conOne.LogId(),
+                     conTwo.LogId(), conOne.mTcpEndPoint->LogId(), conTwo.mTcpEndPoint->LogId());
 
     if (inactivityTimeoutMS > 0)
     {
@@ -1002,14 +987,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::SetUnsecuredConnectionListener(ConnectionReceiveFunct
-        newOnUnsecuredConnectionReceived, CallbackRemovedFunct newOnUnsecuredConnectionCallbacksRemoved, bool force,
-        void *listenerState)
+WEAVE_ERROR WeaveMessageLayer::SetUnsecuredConnectionListener(ConnectionReceiveFunct newOnUnsecuredConnectionReceived,
+                                                              CallbackRemovedFunct newOnUnsecuredConnectionCallbacksRemoved,
+                                                              bool force, void * listenerState)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    WeaveLogProgress(ExchangeManager, "Entered SetUnsecuredConnectionReceived, cb = %p, %p",
-            newOnUnsecuredConnectionReceived, newOnUnsecuredConnectionCallbacksRemoved);
+    WeaveLogProgress(ExchangeManager, "Entered SetUnsecuredConnectionReceived, cb = %p, %p", newOnUnsecuredConnectionReceived,
+                     newOnUnsecuredConnectionCallbacksRemoved);
 
     if (UnsecuredListenEnabled() == false)
     {
@@ -1034,26 +1019,26 @@ WEAVE_ERROR WeaveMessageLayer::SetUnsecuredConnectionListener(ConnectionReceiveF
         }
     }
 
-    OnUnsecuredConnectionReceived = newOnUnsecuredConnectionReceived;
+    OnUnsecuredConnectionReceived         = newOnUnsecuredConnectionReceived;
     OnUnsecuredConnectionCallbacksRemoved = newOnUnsecuredConnectionCallbacksRemoved;
-    UnsecuredConnectionReceivedAppState = listenerState;
+    UnsecuredConnectionReceivedAppState   = listenerState;
 
 exit:
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::ClearUnsecuredConnectionListener(ConnectionReceiveFunct
-        oldOnUnsecuredConnectionReceived, CallbackRemovedFunct oldOnUnsecuredConnectionCallbacksRemoved)
+WEAVE_ERROR WeaveMessageLayer::ClearUnsecuredConnectionListener(ConnectionReceiveFunct oldOnUnsecuredConnectionReceived,
+                                                                CallbackRemovedFunct oldOnUnsecuredConnectionCallbacksRemoved)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    WeaveLogProgress(ExchangeManager, "Entered ClearUnsecuredConnectionListener, cbs = %p, %p",
-            oldOnUnsecuredConnectionReceived, oldOnUnsecuredConnectionCallbacksRemoved);
+    WeaveLogProgress(ExchangeManager, "Entered ClearUnsecuredConnectionListener, cbs = %p, %p", oldOnUnsecuredConnectionReceived,
+                     oldOnUnsecuredConnectionCallbacksRemoved);
 
     // Only clear callbacks and suppress OnUnsecuredConnectionCallbacksRemoved if caller can prove it owns current
     // callbacks. For proof of identification, we accept copies of callback function pointers.
-    if (oldOnUnsecuredConnectionReceived != OnUnsecuredConnectionReceived || oldOnUnsecuredConnectionCallbacksRemoved
-            != OnUnsecuredConnectionCallbacksRemoved)
+    if (oldOnUnsecuredConnectionReceived != OnUnsecuredConnectionReceived ||
+        oldOnUnsecuredConnectionCallbacksRemoved != OnUnsecuredConnectionCallbacksRemoved)
     {
         if (oldOnUnsecuredConnectionReceived != OnUnsecuredConnectionReceived)
             WeaveLogError(ExchangeManager, "bad arg: OnUnsecuredConnectionReceived");
@@ -1069,15 +1054,15 @@ WEAVE_ERROR WeaveMessageLayer::ClearUnsecuredConnectionListener(ConnectionReceiv
         SuccessOrExit(err);
     }
 
-    OnUnsecuredConnectionReceived = NULL;
+    OnUnsecuredConnectionReceived         = NULL;
     OnUnsecuredConnectionCallbacksRemoved = NULL;
-    UnsecuredConnectionReceivedAppState = NULL;
+    UnsecuredConnectionReceivedAppState   = NULL;
 
 exit:
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::SelectDestNodeIdAndAddress(uint64_t& destNodeId, IPAddress& destAddr)
+WEAVE_ERROR WeaveMessageLayer::SelectDestNodeIdAndAddress(uint64_t & destNodeId, IPAddress & destAddr)
 {
     // If the destination address has not been supplied, attempt to determine it from the node id.
     // Fail if this can't be done.
@@ -1097,17 +1082,17 @@ WEAVE_ERROR WeaveMessageLayer::SelectDestNodeIdAndAddress(uint64_t& destNodeId, 
 }
 
 // Encode and return message header field value.
-static uint16_t EncodeHeaderField(const WeaveMessageInfo *msgInfo)
+static uint16_t EncodeHeaderField(const WeaveMessageInfo * msgInfo)
 {
-    return ((((uint16_t)msgInfo->Flags) << kMsgHeaderField_FlagsShift) & kMsgHeaderField_FlagsMask) |
-           ((((uint16_t)msgInfo->EncryptionType) << kMsgHeaderField_EncryptionTypeShift) & kMsgHeaderField_EncryptionTypeMask) |
-           ((((uint16_t)msgInfo->MessageVersion) << kMsgHeaderField_MessageVersionShift) & kMsgHeaderField_MessageVersionMask);
+    return ((((uint16_t) msgInfo->Flags) << kMsgHeaderField_FlagsShift) & kMsgHeaderField_FlagsMask) |
+        ((((uint16_t) msgInfo->EncryptionType) << kMsgHeaderField_EncryptionTypeShift) & kMsgHeaderField_EncryptionTypeMask) |
+        ((((uint16_t) msgInfo->MessageVersion) << kMsgHeaderField_MessageVersionShift) & kMsgHeaderField_MessageVersionMask);
 }
 
 // Decode message header field value.
-static void DecodeHeaderField(const uint16_t headerField, WeaveMessageInfo *msgInfo)
+static void DecodeHeaderField(const uint16_t headerField, WeaveMessageInfo * msgInfo)
 {
-    msgInfo->Flags = (uint16_t)((headerField & kMsgHeaderField_FlagsMask) >> kMsgHeaderField_FlagsShift);
+    msgInfo->Flags          = (uint16_t)((headerField & kMsgHeaderField_FlagsMask) >> kMsgHeaderField_FlagsShift);
     msgInfo->EncryptionType = (uint8_t)((headerField & kMsgHeaderField_EncryptionTypeMask) >> kMsgHeaderField_EncryptionTypeShift);
     msgInfo->MessageVersion = (uint8_t)((headerField & kMsgHeaderField_MessageVersionMask) >> kMsgHeaderField_MessageVersionShift);
 }
@@ -1130,13 +1115,13 @@ static void DecodeHeaderField(const uint16_t headerField, WeaveMessageInfo *msgI
  *                              If the Weave Message header format version is not supported.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::DecodeHeader(PacketBuffer *msgBuf, WeaveMessageInfo *msgInfo, uint8_t **payloadStart)
+WEAVE_ERROR WeaveMessageLayer::DecodeHeader(PacketBuffer * msgBuf, WeaveMessageInfo * msgInfo, uint8_t ** payloadStart)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t *msgStart = msgBuf->Start();
-    uint16_t msgLen = msgBuf->DataLength();
-    uint8_t *msgEnd = msgStart + msgLen;
-    uint8_t *p = msgStart;
+    WEAVE_ERROR err    = WEAVE_NO_ERROR;
+    uint8_t * msgStart = msgBuf->Start();
+    uint16_t msgLen    = msgBuf->DataLength();
+    uint8_t * msgEnd   = msgStart + msgLen;
+    uint8_t * p        = msgStart;
     uint16_t headerField;
 
     if (msgLen < 6)
@@ -1152,8 +1137,7 @@ WEAVE_ERROR WeaveMessageLayer::DecodeHeader(PacketBuffer *msgBuf, WeaveMessageIn
     DecodeHeaderField(headerField, msgInfo);
 
     // Error if the message version is unsupported.
-    if (msgInfo->MessageVersion != kWeaveMessageVersion_V1 &&
-        msgInfo->MessageVersion != kWeaveMessageVersion_V2)
+    if (msgInfo->MessageVersion != kWeaveMessageVersion_V1 && msgInfo->MessageVersion != kWeaveMessageVersion_V2)
     {
         ExitNow(err = WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION);
     }
@@ -1214,14 +1198,14 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::ReEncodeMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveMessageLayer::ReEncodeMessage(PacketBuffer * msgBuf)
 {
     WeaveMessageInfo msgInfo;
     WEAVE_ERROR err;
-    uint8_t *p;
+    uint8_t * p;
     WeaveSessionState sessionState;
-    uint16_t msgLen = msgBuf->DataLength();
-    uint8_t *msgStart = msgBuf->Start();
+    uint16_t msgLen    = msgBuf->DataLength();
+    uint8_t * msgStart = msgBuf->Start();
     uint16_t encryptionLen;
 
     msgInfo.Clear();
@@ -1239,22 +1223,20 @@ WEAVE_ERROR WeaveMessageLayer::ReEncodeMessage(PacketBuffer *msgBuf)
 
     switch (msgInfo.EncryptionType)
     {
-    case kWeaveEncryptionType_None:
-        break;
+    case kWeaveEncryptionType_None: break;
 
     case kWeaveEncryptionType_AES128CTRSHA1:
-        {
-            // TODO: re-validate MIC to ensure that no part of the message has been altered since the time it was received.
+    {
+        // TODO: re-validate MIC to ensure that no part of the message has been altered since the time it was received.
 
-            // Re-encrypt the payload.
-            AES128CTRMode aes128CTR;
-            aes128CTR.SetKey(sessionState.MsgEncKey->EncKey.AES128CTRSHA1.DataKey);
-            aes128CTR.SetWeaveMessageCounter(msgInfo.SourceNodeId, msgInfo.MessageId);
-            aes128CTR.EncryptData(p, encryptionLen, p);
-        }
-        break;
-    default:
-        return WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE;
+        // Re-encrypt the payload.
+        AES128CTRMode aes128CTR;
+        aes128CTR.SetKey(sessionState.MsgEncKey->EncKey.AES128CTRSHA1.DataKey);
+        aes128CTR.SetWeaveMessageCounter(msgInfo.SourceNodeId, msgInfo.MessageId);
+        aes128CTR.EncryptData(p, encryptionLen, p);
+    }
+    break;
+    default: return WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE;
     }
 
     // signature remains untouched -- we have not modified it.
@@ -1289,14 +1271,13 @@ WEAVE_ERROR WeaveMessageLayer::ReEncodeMessage(PacketBuffer *msgBuf)
  *  @retval  other errors generated by the fabric state object when fetching the session state.
  *
  */
-WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf, WeaveConnection *con,
-        uint16_t maxLen, uint16_t reserve)
+WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf, WeaveConnection * con,
+                                             uint16_t maxLen, uint16_t reserve)
 {
     WEAVE_ERROR err;
-    uint8_t *p1;
+    uint8_t * p1;
     // Error if an unsupported message version requested.
-    if (msgInfo->MessageVersion != kWeaveMessageVersion_V1 &&
-        msgInfo->MessageVersion != kWeaveMessageVersion_V2)
+    if (msgInfo->MessageVersion != kWeaveMessageVersion_V1 && msgInfo->MessageVersion != kWeaveMessageVersion_V2)
         return WEAVE_ERROR_UNSUPPORTED_MESSAGE_VERSION;
 
     // Message already encoded, don't do anything
@@ -1315,8 +1296,8 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
 
     // Compute the number of bytes that will appear before and after the message payload
     // in the final encoded message.
-    uint16_t headLen = 6;
-    uint16_t tailLen = 0;
+    uint16_t headLen    = 6;
+    uint16_t tailLen    = 0;
     uint16_t payloadLen = msgBuf->DataLength();
     if (msgInfo->Flags & kWeaveMessageFlag_SourceNodeId)
         headLen += 8;
@@ -1324,8 +1305,7 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
         headLen += 8;
     switch (msgInfo->EncryptionType)
     {
-    case kWeaveEncryptionType_None:
-        break;
+    case kWeaveEncryptionType_None: break;
     case kWeaveEncryptionType_AES128CTRSHA1:
         // Can only encrypt non-zero length payloads.
         if (payloadLen == 0)
@@ -1333,8 +1313,7 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
         headLen += 2;
         tailLen += HMACSHA1::kDigestLength;
         break;
-    default:
-        return WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE;
+    default: return WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE;
     }
 
     // Error if the encoded message would be longer than the requested maximum.
@@ -1350,7 +1329,7 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
     if ((msgBuf->DataLength() + tailLen) > msgBuf->MaxDataLength())
         return WEAVE_ERROR_BUFFER_TOO_SMALL;
 
-    uint8_t *payloadStart = msgBuf->Start();
+    uint8_t * payloadStart = msgBuf->Start();
 
     // Get the session state for the given destination node and encryption key.
     WeaveSessionState sessionState;
@@ -1367,7 +1346,7 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
         return err;
 
     // Starting encoding at the appropriate point in the buffer before the payload data.
-    uint8_t *p = payloadStart - headLen;
+    uint8_t * p = payloadStart - headLen;
 
     // Allocate a new message identifier and write the message identifier field.
     if ((msgInfo->Flags & kWeaveMessageFlag_ReuseMessageId) == 0)
@@ -1431,13 +1410,13 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
         p += payloadLen;
 
         // Compute the integrity check value and store it immediately after the payload data.
-        ComputeIntegrityCheck_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.IntegrityKey,
-                                            payloadStart, payloadLen, p);
+        ComputeIntegrityCheck_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.IntegrityKey, payloadStart,
+                                            payloadLen, p);
         p += HMACSHA1::kDigestLength;
 
         // Encrypt the message payload and the integrity check value that follows it, in place, in the message buffer.
-        Encrypt_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.DataKey,
-                              payloadStart, payloadLen + HMACSHA1::kDigestLength, payloadStart);
+        Encrypt_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.DataKey, payloadStart,
+                              payloadLen + HMACSHA1::kDigestLength, payloadStart);
 
         break;
     }
@@ -1454,17 +1433,18 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessage(WeaveMessageInfo *msgInfo, PacketBu
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveMessageLayer::DecodeMessage(PacketBuffer *msgBuf, uint64_t sourceNodeId, WeaveConnection *con,
-        WeaveMessageInfo *msgInfo, uint8_t **rPayload, uint16_t *rPayloadLen) // TODO: use references
+WEAVE_ERROR WeaveMessageLayer::DecodeMessage(PacketBuffer * msgBuf, uint64_t sourceNodeId, WeaveConnection * con,
+                                             WeaveMessageInfo * msgInfo, uint8_t ** rPayload,
+                                             uint16_t * rPayloadLen) // TODO: use references
 {
     WEAVE_ERROR err;
-    uint8_t *msgStart = msgBuf->Start();
-    uint16_t msgLen = msgBuf->DataLength();
-    uint8_t *msgEnd = msgStart + msgLen;
-    uint8_t *p = msgStart;
+    uint8_t * msgStart    = msgBuf->Start();
+    uint16_t msgLen       = msgBuf->DataLength();
+    uint8_t * msgEnd      = msgStart + msgLen;
+    uint8_t * p           = msgStart;
     msgInfo->SourceNodeId = sourceNodeId;
-    err = DecodeHeader(msgBuf, msgInfo, &p);
-    sourceNodeId = msgInfo->SourceNodeId;
+    err                   = DecodeHeader(msgBuf, msgInfo, &p);
+    sourceNodeId          = msgInfo->SourceNodeId;
 
     if (err != WEAVE_NO_ERROR)
         return err;
@@ -1481,7 +1461,7 @@ WEAVE_ERROR WeaveMessageLayer::DecodeMessage(PacketBuffer *msgBuf, uint64_t sour
     case kWeaveEncryptionType_None:
         // Return the position and length of the payload within the message.
         *rPayloadLen = msgLen - (p - msgStart);
-        *rPayload = p;
+        *rPayload    = p;
 
         // Skip over the payload.
         p += *rPayloadLen;
@@ -1495,17 +1475,17 @@ WEAVE_ERROR WeaveMessageLayer::DecodeMessage(PacketBuffer *msgBuf, uint64_t sour
 
         // Return the position and length of the payload within the message.
         uint16_t payloadLen = msgLen - ((p - msgStart) + HMACSHA1::kDigestLength);
-        *rPayloadLen = payloadLen;
-        *rPayload = p;
+        *rPayloadLen        = payloadLen;
+        *rPayload           = p;
 
         // Decrypt the message payload and the integrity check value that follows it, in place, in the message buffer.
-        Encrypt_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.DataKey,
-                              p, payloadLen + HMACSHA1::kDigestLength, p);
+        Encrypt_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.DataKey, p,
+                              payloadLen + HMACSHA1::kDigestLength, p);
 
         // Compute the expected integrity check value from the decrypted payload.
         uint8_t expectedIntegrityCheck[HMACSHA1::kDigestLength];
-        ComputeIntegrityCheck_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.IntegrityKey,
-                                            p, payloadLen, expectedIntegrityCheck);
+        ComputeIntegrityCheck_AES128CTRSHA1(msgInfo, sessionState.MsgEncKey->EncKey.AES128CTRSHA1.IntegrityKey, p, payloadLen,
+                                            expectedIntegrityCheck);
         // Error if the expected integrity check doesn't match the integrity check in the message.
         if (!ConstantTimeCompare(p + payloadLen, expectedIntegrityCheck, HMACSHA1::kDigestLength))
             return WEAVE_ERROR_INTEGRITY_CHECK_FAILED;
@@ -1515,8 +1495,7 @@ WEAVE_ERROR WeaveMessageLayer::DecodeMessage(PacketBuffer *msgBuf, uint64_t sour
         break;
     }
 
-    default:
-        return WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE;
+    default: return WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE;
     }
 
     // Set flag in the message header indicating that the message is a duplicate if:
@@ -1537,8 +1516,8 @@ WEAVE_ERROR WeaveMessageLayer::DecodeMessage(PacketBuffer *msgBuf, uint64_t sour
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::EncodeMessageWithLength(WeaveMessageInfo *msgInfo, PacketBuffer *msgBuf,
-        WeaveConnection *con, uint16_t maxLen)
+WEAVE_ERROR WeaveMessageLayer::EncodeMessageWithLength(WeaveMessageInfo * msgInfo, PacketBuffer * msgBuf, WeaveConnection * con,
+                                                       uint16_t maxLen)
 {
     // Encode the message, reserving 2 bytes for the length.
     WEAVE_ERROR err = EncodeMessage(msgInfo, msgBuf, con, maxLen - 2, 2);
@@ -1547,18 +1526,19 @@ WEAVE_ERROR WeaveMessageLayer::EncodeMessageWithLength(WeaveMessageInfo *msgInfo
 
     // Prepend the message length to the beginning of the message.
     uint8_t * newMsgStart = msgBuf->Start() - 2;
-    uint16_t msgLen = msgBuf->DataLength();
+    uint16_t msgLen       = msgBuf->DataLength();
     msgBuf->SetStart(newMsgStart);
     LittleEndian::Put16(newMsgStart, msgLen);
 
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WeaveMessageLayer::DecodeMessageWithLength(PacketBuffer *msgBuf, uint64_t sourceNodeId, WeaveConnection *con,
-        WeaveMessageInfo *msgInfo, uint8_t **rPayload, uint16_t *rPayloadLen, uint32_t *rFrameLen)
+WEAVE_ERROR WeaveMessageLayer::DecodeMessageWithLength(PacketBuffer * msgBuf, uint64_t sourceNodeId, WeaveConnection * con,
+                                                       WeaveMessageInfo * msgInfo, uint8_t ** rPayload, uint16_t * rPayloadLen,
+                                                       uint32_t * rFrameLen)
 {
-    uint8_t *dataStart = msgBuf->Start();
-    uint16_t dataLen = msgBuf->DataLength();
+    uint8_t * dataStart = msgBuf->Start();
+    uint16_t dataLen    = msgBuf->DataLength();
 
     // Error if the message buffer doesn't contain the entire message length field.
     if (dataLen < 2)
@@ -1608,18 +1588,16 @@ WEAVE_ERROR WeaveMessageLayer::DecodeMessageWithLength(PacketBuffer *msgBuf, uin
     return err;
 }
 
-void WeaveMessageLayer::HandleUDPMessage(UDPEndPoint *endPoint, PacketBuffer *msg, const IPPacketInfo *pktInfo)
+void WeaveMessageLayer::HandleUDPMessage(UDPEndPoint * endPoint, PacketBuffer * msg, const IPPacketInfo * pktInfo)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveMessageLayer *msgLayer = (WeaveMessageLayer *) endPoint->AppState;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    WeaveMessageLayer * msgLayer = (WeaveMessageLayer *) endPoint->AppState;
     WeaveMessageInfo msgInfo;
     uint64_t sourceNodeId;
-    uint8_t *payload;
+    uint8_t * payload;
     uint16_t payloadLen;
 
-    WEAVE_FAULT_INJECT(FaultInjection::kFault_DropIncomingUDPMsg,
-                       PacketBuffer::Free(msg);
-                       ExitNow(err = WEAVE_NO_ERROR));
+    WEAVE_FAULT_INJECT(FaultInjection::kFault_DropIncomingUDPMsg, PacketBuffer::Free(msg); ExitNow(err = WEAVE_NO_ERROR));
 
     msgInfo.Clear();
     msgInfo.InPacketInfo = pktInfo;
@@ -1641,7 +1619,8 @@ void WeaveMessageLayer::HandleUDPMessage(UDPEndPoint *endPoint, PacketBuffer *ms
     {
         // If the source address is a ULA, derive a node identifier from it.  Depending on what's in the
         // message header, this may in fact be the node identifier of the sending node.
-        sourceNodeId = (pktInfo->SrcAddress.IsIPv6ULA()) ? IPv6InterfaceIdToWeaveNodeId(pktInfo->SrcAddress.InterfaceId()) : kNodeIdNotSpecified;
+        sourceNodeId = (pktInfo->SrcAddress.IsIPv6ULA()) ? IPv6InterfaceIdToWeaveNodeId(pktInfo->SrcAddress.InterfaceId())
+                                                         : kNodeIdNotSpecified;
 
         // Attempt to decode the message.
         err = msgLayer->DecodeMessage(msg, sourceNodeId, NULL, &msgInfo, &payload, &payloadLen);
@@ -1671,10 +1650,10 @@ void WeaveMessageLayer::HandleUDPMessage(UDPEndPoint *endPoint, PacketBuffer *ms
 #if INET_CONFIG_ENABLE_IPV4
              || endPoint == msgLayer->mIPv4EphemeralUDP
 #endif // INET_CONFIG_ENABLE_IPV4
-            ));
+             ));
 #endif // WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
 
-    //Check if message carries tunneled data and needs to be sent to Tunnel Agent
+    // Check if message carries tunneled data and needs to be sent to Tunnel Agent
     if (msgInfo.MessageVersion == kWeaveMessageVersion_V2)
     {
         if (msgInfo.Flags & kWeaveMessageFlag_TunneledData)
@@ -1741,19 +1720,19 @@ exit:
     return;
 }
 
-void WeaveMessageLayer::HandleUDPReceiveError(UDPEndPoint *endPoint, INET_ERROR err, const IPPacketInfo *pktInfo)
+void WeaveMessageLayer::HandleUDPReceiveError(UDPEndPoint * endPoint, INET_ERROR err, const IPPacketInfo * pktInfo)
 {
     WeaveLogError(MessageLayer, "HandleUDPReceiveError Error %s", nl::ErrorStr(err));
 
-    WeaveMessageLayer *msgLayer = (WeaveMessageLayer *) endPoint->AppState;
+    WeaveMessageLayer * msgLayer = (WeaveMessageLayer *) endPoint->AppState;
     if (msgLayer->OnReceiveError != NULL)
         msgLayer->OnReceiveError(msgLayer, err, pktInfo);
 }
 
 #if CONFIG_NETWORK_LAYER_BLE
-void WeaveMessageLayer::HandleIncomingBleConnection(BLEEndPoint *bleEP)
+void WeaveMessageLayer::HandleIncomingBleConnection(BLEEndPoint * bleEP)
 {
-    WeaveMessageLayer *msgLayer = (WeaveMessageLayer *) bleEP->mAppState;
+    WeaveMessageLayer * msgLayer = (WeaveMessageLayer *) bleEP->mAppState;
 
     // Immediately close the connection if there's no callback registered.
     if (msgLayer->OnConnectionReceived == NULL && msgLayer->ExchangeMgr == NULL)
@@ -1765,7 +1744,7 @@ void WeaveMessageLayer::HandleIncomingBleConnection(BLEEndPoint *bleEP)
     }
 
     // Attempt to allocate a connection object. Fail if too many connections.
-    WeaveConnection *con = msgLayer->NewConnection();
+    WeaveConnection * con = msgLayer->NewConnection();
     if (con == NULL)
     {
         bleEP->Close();
@@ -1799,14 +1778,15 @@ void WeaveMessageLayer::HandleIncomingBleConnection(BLEEndPoint *bleEP)
 }
 #endif /* CONFIG_NETWORK_LAYER_BLE */
 
-void WeaveMessageLayer::HandleIncomingTcpConnection(TCPEndPoint *listeningEP, TCPEndPoint *conEP, const IPAddress &peerAddr, uint16_t peerPort)
+void WeaveMessageLayer::HandleIncomingTcpConnection(TCPEndPoint * listeningEP, TCPEndPoint * conEP, const IPAddress & peerAddr,
+                                                    uint16_t peerPort)
 {
     INET_ERROR err;
     IPAddress localAddr;
     uint16_t localPort;
     uint16_t incomingTCPConCount;
     uint16_t incomingTCPConCountFromIP;
-    WeaveMessageLayer *msgLayer = (WeaveMessageLayer *) listeningEP->AppState;
+    WeaveMessageLayer * msgLayer = (WeaveMessageLayer *) listeningEP->AppState;
 
     // Immediately close the connection if there's no callback registered.
     if (msgLayer->OnConnectionReceived == NULL && msgLayer->ExchangeMgr == NULL)
@@ -1829,7 +1809,7 @@ void WeaveMessageLayer::HandleIncomingTcpConnection(TCPEndPoint *listeningEP, TC
     }
 
     // Attempt to allocate a connection object. Fail if too many connections.
-    WeaveConnection *con = msgLayer->NewConnection();
+    WeaveConnection * con = msgLayer->NewConnection();
     if (con == NULL)
     {
         conEP->Free();
@@ -1855,7 +1835,7 @@ void WeaveMessageLayer::HandleIncomingTcpConnection(TCPEndPoint *listeningEP, TC
     {
         char ipAddrStr[64];
         peerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
-        WeaveLogProgress(MessageLayer, "Con %s %04" PRIX16 " %s %d", "rcvd", con->LogId(), ipAddrStr, (int)peerPort);
+        WeaveLogProgress(MessageLayer, "Con %s %04" PRIX16 " %s %d", "rcvd", con->LogId(), ipAddrStr, (int) peerPort);
     }
 #endif
 
@@ -1874,15 +1854,14 @@ void WeaveMessageLayer::HandleIncomingTcpConnection(TCPEndPoint *listeningEP, TC
         msgLayer->OnConnectionReceived(msgLayer, con);
 
     // If connection was received on unsecured port, call the app's OnUnsecuredConnectionReceived callback.
-    if (msgLayer->OnUnsecuredConnectionReceived != NULL && conEP->GetLocalInfo(&localAddr, &localPort) ==
-            WEAVE_NO_ERROR && localPort == WEAVE_UNSECURED_PORT)
+    if (msgLayer->OnUnsecuredConnectionReceived != NULL && conEP->GetLocalInfo(&localAddr, &localPort) == WEAVE_NO_ERROR &&
+        localPort == WEAVE_UNSECURED_PORT)
         msgLayer->OnUnsecuredConnectionReceived(msgLayer, con);
-
 }
 
-void WeaveMessageLayer::HandleAcceptError(TCPEndPoint *ep, INET_ERROR err)
+void WeaveMessageLayer::HandleAcceptError(TCPEndPoint * ep, INET_ERROR err)
 {
-    WeaveMessageLayer *msgLayer = (WeaveMessageLayer *) ep->AppState;
+    WeaveMessageLayer * msgLayer = (WeaveMessageLayer *) ep->AppState;
     if (msgLayer->OnAcceptError != NULL)
         msgLayer->OnAcceptError(msgLayer, err);
 }
@@ -1903,7 +1882,7 @@ void WeaveMessageLayer::HandleAcceptError(TCPEndPoint *ep, INET_ERROR err)
  */
 WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
     const bool listenIPv6 = IPv6ListenEnabled();
 #if INET_CONFIG_ENABLE_IPV4
     const bool listenIPv4 = IPv4ListenEnabled();
@@ -1940,7 +1919,7 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
     // ================================================================================
 
     {
-        const bool listenTCP = TCPListenEnabled();
+        const bool listenTCP     = TCPListenEnabled();
         const bool listenIPv6TCP = (listenTCP && listenIPv6);
 
 #if INET_CONFIG_ENABLE_IPV4
@@ -1952,8 +1931,8 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // The Weave IPv4 TCP listening endpoint is use to listen for incoming IPv4 TCP connections
         // to the local node's Weave port.
         //
-        err = RefreshEndpoint(mIPv4TCPListen, listenIPv4TCP,
-                "Weave IPv4 TCP listen", kIPAddressType_IPv4, listenIPv4Addr, WEAVE_PORT);
+        err = RefreshEndpoint(mIPv4TCPListen, listenIPv4TCP, "Weave IPv4 TCP listen", kIPAddressType_IPv4, listenIPv4Addr,
+                              WEAVE_PORT);
         SuccessOrExit(err);
 
 #endif // INET_CONFIG_ENABLE_IPV4
@@ -1963,8 +1942,8 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // The Weave IPv6 TCP listening endpoint is use to listen for incoming IPv6 TCP connections
         // to the local node's Weave port.
         //
-        err = RefreshEndpoint(mIPv6TCPListen, listenIPv6TCP,
-                "Weave IPv6 TCP listen", kIPAddressType_IPv6, listenIPv6Addr, WEAVE_PORT);
+        err = RefreshEndpoint(mIPv6TCPListen, listenIPv6TCP, "Weave IPv6 TCP listen", kIPAddressType_IPv6, listenIPv6Addr,
+                              WEAVE_PORT);
         SuccessOrExit(err);
 
 #if WEAVE_CONFIG_ENABLE_UNSECURED_TCP_LISTEN
@@ -1976,12 +1955,11 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // listen feature has been enabled.
         //
         const bool listenUnsecuredIPv6TCP = (listenIPv6TCP && UnsecuredListenEnabled());
-        err = RefreshEndpoint(mUnsecuredIPv6TCPListen, listenUnsecuredIPv6TCP,
-                "unsecured IPv6 TCP listen", kIPAddressType_IPv6, listenIPv6Addr, WEAVE_UNSECURED_PORT);
+        err = RefreshEndpoint(mUnsecuredIPv6TCPListen, listenUnsecuredIPv6TCP, "unsecured IPv6 TCP listen", kIPAddressType_IPv6,
+                              listenIPv6Addr, WEAVE_UNSECURED_PORT);
         SuccessOrExit(err);
 
 #endif // WEAVE_CONFIG_ENABLE_UNSECURED_TCP_LISTEN
-
     }
 
     // ================================================================================
@@ -2001,8 +1979,8 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // feature has been enabled.
         //
         const bool listenIPv4UDP = (listenIPv4 && listenUDP);
-        err = RefreshEndpoint(mIPv4UDP, listenIPv4UDP,
-                "Weave IPv4 UDP", kIPAddressType_IPv4, listenIPv4Addr, WEAVE_PORT, INET_NULL_INTERFACEID);
+        err = RefreshEndpoint(mIPv4UDP, listenIPv4UDP, "Weave IPv4 UDP", kIPAddressType_IPv4, listenIPv4Addr, WEAVE_PORT,
+                              INET_NULL_INTERFACEID);
         SuccessOrExit(err);
 
 #if WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
@@ -2014,8 +1992,8 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // enabled.
         //
         const bool listenIPv4EphemeralUDP = (listenIPv4UDP && EphemeralUDPPortEnabled());
-        err = RefreshEndpoint(mIPv4EphemeralUDP, listenIPv4EphemeralUDP,
-                "ephemeral IPv4 UDP", kIPAddressType_IPv4, listenIPv4Addr, 0, INET_NULL_INTERFACEID);
+        err = RefreshEndpoint(mIPv4EphemeralUDP, listenIPv4EphemeralUDP, "ephemeral IPv4 UDP", kIPAddressType_IPv4, listenIPv4Addr,
+                              0, INET_NULL_INTERFACEID);
         SuccessOrExit(err);
 
 #endif // WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
@@ -2030,8 +2008,8 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // feature has been enabled.
         //
         const bool listenIPv6UDP = (listenIPv6 && listenUDP);
-        err = RefreshEndpoint(mIPv6UDP, listenIPv6UDP,
-                "Weave IPv6 UDP", kIPAddressType_IPv6, listenIPv6Addr, WEAVE_PORT, listenIPv6Intf);
+        err = RefreshEndpoint(mIPv6UDP, listenIPv6UDP, "Weave IPv6 UDP", kIPAddressType_IPv6, listenIPv6Addr, WEAVE_PORT,
+                              listenIPv6Intf);
         SuccessOrExit(err);
 
 #if WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
@@ -2043,8 +2021,8 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // enabled.
         //
         const bool listenIPv6EphemeralUDP = (listenIPv6UDP && EphemeralUDPPortEnabled());
-        err = RefreshEndpoint(mIPv6EphemeralUDP, listenIPv6EphemeralUDP,
-                "ephemeral IPv6 UDP", kIPAddressType_IPv6, listenIPv6Addr, 0, listenIPv6Intf);
+        err = RefreshEndpoint(mIPv6EphemeralUDP, listenIPv6EphemeralUDP, "ephemeral IPv6 UDP", kIPAddressType_IPv6, listenIPv6Addr,
+                              0, listenIPv6Intf);
         SuccessOrExit(err);
 
 #endif // WEAVE_CONFIG_ENABLE_EPHEMERAL_UDP_PORT
@@ -2058,10 +2036,11 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // to a specific IPv6 address.  This is required because the Weave IPv6 UDP endpoint will not receive multicast
         // messages in this configuration.
         //
-        IPAddress ipv6LinkLocalAllNodes = IPAddress::MakeIPv6WellKnownMulticast(kIPv6MulticastScope_Link, kIPV6MulticastGroup_AllNodes);
+        IPAddress ipv6LinkLocalAllNodes =
+            IPAddress::MakeIPv6WellKnownMulticast(kIPv6MulticastScope_Link, kIPV6MulticastGroup_AllNodes);
         const bool listenWeaveIPv6UDPMulticastEP = (listenIPv6UDP && IsBoundToLocalIPv6Address());
-        err = RefreshEndpoint(mIPv6UDPMulticastRcv, listenWeaveIPv6UDPMulticastEP,
-                "Weave IPv6 UDP multicast", kIPAddressType_IPv6, ipv6LinkLocalAllNodes, WEAVE_PORT, listenIPv6Intf);
+        err = RefreshEndpoint(mIPv6UDPMulticastRcv, listenWeaveIPv6UDPMulticastEP, "Weave IPv6 UDP multicast", kIPAddressType_IPv6,
+                              ipv6LinkLocalAllNodes, WEAVE_PORT, listenIPv6Intf);
         SuccessOrExit(err);
 
 #if INET_CONFIG_ENABLE_IPV4
@@ -2071,16 +2050,15 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoints()
         // Similar to the IPv6 UDP multicast endpoint, this endpoint is used to receive IPv4 broadcast messages
         // when the message layer has been bound to a specific IPv4 address.
         //
-        IPAddress ipv4Broadcast = IPAddress::MakeIPv4Broadcast();
+        IPAddress ipv4Broadcast                  = IPAddress::MakeIPv4Broadcast();
         const bool listenWeaveIPv4UDPBroadcastEP = (listenIPv4UDP && IsBoundToLocalIPv4Address());
-        err = RefreshEndpoint(mIPv4UDPBroadcastRcv, listenWeaveIPv4UDPBroadcastEP,
-                "Weave IPv4 UDP broadcast", kIPAddressType_IPv4, ipv4Broadcast, WEAVE_PORT, INET_NULL_INTERFACEID);
+        err = RefreshEndpoint(mIPv4UDPBroadcastRcv, listenWeaveIPv4UDPBroadcastEP, "Weave IPv4 UDP broadcast", kIPAddressType_IPv4,
+                              ipv4Broadcast, WEAVE_PORT, INET_NULL_INTERFACEID);
         SuccessOrExit(err);
 
 #endif // INET_CONFIG_ENABLE_IPV4
 
 #endif // WEAVE_CONFIG_ENABLE_TARGETED_LISTEN
-
     }
 
 exit:
@@ -2089,7 +2067,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::RefreshEndpoint(TCPEndPoint *& endPoint, bool enable, const char * name, IPAddressType addrType, IPAddress addr, uint16_t port)
+WEAVE_ERROR WeaveMessageLayer::RefreshEndpoint(TCPEndPoint *& endPoint, bool enable, const char * name, IPAddressType addrType,
+                                               IPAddress addr, uint16_t port)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2112,10 +2091,10 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoint(TCPEndPoint *& endPoint, bool ena
         SuccessOrExit(err);
 
         // Accept incoming TCP connections.
-        endPoint->AppState = this;
+        endPoint->AppState             = this;
         endPoint->OnConnectionReceived = HandleIncomingTcpConnection;
-        endPoint->OnAcceptError = HandleAcceptError;
-        err = endPoint->Listen(1);
+        endPoint->OnAcceptError        = HandleAcceptError;
+        err                            = endPoint->Listen(1);
         SuccessOrExit(err);
 
 #if WEAVE_BIND_DETAIL_LOGGING && WEAVE_DETAIL_LOGGING
@@ -2140,7 +2119,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveMessageLayer::RefreshEndpoint(UDPEndPoint *& endPoint, bool enable, const char * name, IPAddressType addrType, IPAddress addr, uint16_t port, InterfaceId intfId)
+WEAVE_ERROR WeaveMessageLayer::RefreshEndpoint(UDPEndPoint *& endPoint, bool enable, const char * name, IPAddressType addrType,
+                                               IPAddress addr, uint16_t port, InterfaceId intfId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -2163,10 +2143,10 @@ WEAVE_ERROR WeaveMessageLayer::RefreshEndpoint(UDPEndPoint *& endPoint, bool ena
         SuccessOrExit(err);
 
         // Accept incoming packets on the endpoint.
-        endPoint->AppState = this;
+        endPoint->AppState          = this;
         endPoint->OnMessageReceived = reinterpret_cast<IPEndPointBasis::OnMessageReceivedFunct>(HandleUDPMessage);
-        endPoint->OnReceiveError = reinterpret_cast<IPEndPointBasis::OnReceiveErrorFunct>(HandleUDPReceiveError);
-        err = endPoint->Listen();
+        endPoint->OnReceiveError    = reinterpret_cast<IPEndPointBasis::OnReceiveErrorFunct>(HandleUDPReceiveError);
+        err                         = endPoint->Listen();
         SuccessOrExit(err);
 
 #if WEAVE_BIND_DETAIL_LOGGING && WEAVE_DETAIL_LOGGING
@@ -2201,8 +2181,8 @@ exit:
     return err;
 }
 
-void WeaveMessageLayer::Encrypt_AES128CTRSHA1(const WeaveMessageInfo *msgInfo, const uint8_t *key,
-                                              const uint8_t *inData, uint16_t inLen, uint8_t *outBuf)
+void WeaveMessageLayer::Encrypt_AES128CTRSHA1(const WeaveMessageInfo * msgInfo, const uint8_t * key, const uint8_t * inData,
+                                              uint16_t inLen, uint8_t * outBuf)
 {
     AES128CTRMode aes128CTR;
     aes128CTR.SetKey(key);
@@ -2210,12 +2190,12 @@ void WeaveMessageLayer::Encrypt_AES128CTRSHA1(const WeaveMessageInfo *msgInfo, c
     aes128CTR.EncryptData(inData, inLen, outBuf);
 }
 
-void WeaveMessageLayer::ComputeIntegrityCheck_AES128CTRSHA1(const WeaveMessageInfo *msgInfo, const uint8_t *key,
-                                                            const uint8_t *inData, uint16_t inLen, uint8_t *outBuf)
+void WeaveMessageLayer::ComputeIntegrityCheck_AES128CTRSHA1(const WeaveMessageInfo * msgInfo, const uint8_t * key,
+                                                            const uint8_t * inData, uint16_t inLen, uint8_t * outBuf)
 {
     HMACSHA1 hmacSHA1;
     uint8_t encodedBuf[2 * sizeof(uint64_t) + sizeof(uint16_t) + sizeof(uint32_t)];
-    uint8_t *p = encodedBuf;
+    uint8_t * p = encodedBuf;
 
     // Initialize HMAC Key.
     hmacSHA1.Begin(key, WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
@@ -2267,13 +2247,13 @@ WEAVE_ERROR WeaveMessageLayer::CloseEndpoints()
     CloseListeningEndpoints();
 
     // Abort any open connections.
-    WeaveConnection *con = static_cast<WeaveConnection *>(mConPool);
+    WeaveConnection * con = static_cast<WeaveConnection *>(mConPool);
     for (int i = 0; i < WEAVE_CONFIG_MAX_CONNECTIONS; i++, con++)
         if (con->mRefCount > 0)
             con->Abort();
 
     // Shut down any open tunnels.
-    WeaveConnectionTunnel *tun = static_cast<WeaveConnectionTunnel *>(mTunnelPool);
+    WeaveConnectionTunnel * tun = static_cast<WeaveConnectionTunnel *>(mTunnelPool);
     for (int i = 0; i < WEAVE_CONFIG_MAX_TUNNELS; i++, tun++)
     {
         if (tun->mMessageLayer != NULL)
@@ -2401,7 +2381,8 @@ WEAVE_ERROR WeaveMessageLayer::DisableUnsecuredListen()
  *
  *  @retval None.
  */
-void WeaveMessageLayer::SetSignalMessageLayerActivityChanged(MessageLayerActivityChangeHandlerFunct messageLayerActivityChangeHandler)
+void WeaveMessageLayer::SetSignalMessageLayerActivityChanged(
+    MessageLayerActivityChangeHandlerFunct messageLayerActivityChangeHandler)
 {
     OnMessageLayerActivityChange = messageLayerActivityChangeHandler;
 }
@@ -2410,9 +2391,9 @@ bool WeaveMessageLayer::IsMessageLayerActive(void)
 {
     return (ExchangeMgr->mContextsInUse != 0)
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-           || FabricState->IsMsgCounterSyncReqInProgress()
+        || FabricState->IsMsgCounterSyncReqInProgress()
 #endif
-           ;
+        ;
 }
 
 /**
@@ -2456,15 +2437,13 @@ void WeaveMessageLayer::SignalMessageLayerActivityChanged(void)
  *
  *  @return the max Weave payload size.
  */
-uint32_t WeaveMessageLayer::GetMaxWeavePayloadSize(const PacketBuffer *msgBuf, bool isUDP, uint32_t udpMTU)
+uint32_t WeaveMessageLayer::GetMaxWeavePayloadSize(const PacketBuffer * msgBuf, bool isUDP, uint32_t udpMTU)
 {
-    uint32_t maxWeaveMessageSize = isUDP ? udpMTU - INET_CONFIG_MAX_IP_AND_UDP_HEADER_SIZE : UINT16_MAX;
-    uint32_t maxWeavePayloadSize = maxWeaveMessageSize - WEAVE_HEADER_RESERVE_SIZE - WEAVE_TRAILER_RESERVE_SIZE;
+    uint32_t maxWeaveMessageSize      = isUDP ? udpMTU - INET_CONFIG_MAX_IP_AND_UDP_HEADER_SIZE : UINT16_MAX;
+    uint32_t maxWeavePayloadSize      = maxWeaveMessageSize - WEAVE_HEADER_RESERVE_SIZE - WEAVE_TRAILER_RESERVE_SIZE;
     uint32_t maxBufferablePayloadSize = msgBuf->AvailableDataLength() - WEAVE_TRAILER_RESERVE_SIZE;
 
-    return maxBufferablePayloadSize < maxWeavePayloadSize
-        ? maxBufferablePayloadSize
-        : maxWeavePayloadSize;
+    return maxBufferablePayloadSize < maxWeavePayloadSize ? maxBufferablePayloadSize : maxWeavePayloadSize;
 }
 
 /**
@@ -2491,11 +2470,14 @@ uint32_t WeaveMessageLayer::GetMaxWeavePayloadSize(const PacketBuffer *msgBuf, b
  * @param[in] con                       A pointer to a WeaveConnection object whose logging id should be printed;
  *                                      or NULL if no connection id should be printed.
  */
-void WeaveMessageLayer::GetPeerDescription(char * buf, size_t bufSize, uint64_t nodeId,
-    const IPAddress * addr, uint16_t port, InterfaceId interfaceId, const WeaveConnection * con)
+void WeaveMessageLayer::GetPeerDescription(char * buf, size_t bufSize, uint64_t nodeId, const IPAddress * addr, uint16_t port,
+                                           InterfaceId interfaceId, const WeaveConnection * con)
 {
-    enum { kMaxInterfaceNameLength = 20 }; // Arbitrarily capped at 20 characters so long interface
-                                           // names do not blow out the available space.
+    enum
+    {
+        kMaxInterfaceNameLength = 20
+    }; // Arbitrarily capped at 20 characters so long interface
+       // names do not blow out the available space.
 
     uint32_t len;
     const char * sep = "";
@@ -2530,7 +2512,7 @@ void WeaveMessageLayer::GetPeerDescription(char * buf, size_t bufSize, uint64_t 
 
         if (interfaceId != INET_NULL_INTERFACEID)
         {
-            char interfaceName[kMaxInterfaceNameLength+1];
+            char interfaceName[kMaxInterfaceNameLength + 1];
             Inet::GetInterfaceName(interfaceId, interfaceName, sizeof(interfaceName));
             interfaceName[kMaxInterfaceNameLength] = 0;
             len += snprintf(buf + len, bufSize - len, "%%%s", interfaceName);
@@ -2542,16 +2524,12 @@ void WeaveMessageLayer::GetPeerDescription(char * buf, size_t bufSize, uint64_t 
 
     if (con != NULL)
     {
-        const char *conType;
+        const char * conType;
         switch (con->NetworkType)
         {
-        case WeaveConnection::kNetworkType_BLE:
-            conType = "ble ";
-            break;
+        case WeaveConnection::kNetworkType_BLE: conType = "ble "; break;
         case WeaveConnection::kNetworkType_IP:
-        default:
-            conType = "";
-            break;
+        default: conType = ""; break;
         }
 
         len += snprintf(buf + len, bufSize - len, "%s%scon %04" PRIX16, sep, conType, con->LogId());
@@ -2582,10 +2560,9 @@ exit:
 void WeaveMessageLayer::GetPeerDescription(char * buf, size_t bufSize, const WeaveMessageInfo * msgInfo)
 {
     GetPeerDescription(buf, bufSize, msgInfo->SourceNodeId,
-        (msgInfo->InPacketInfo != NULL) ? &msgInfo->InPacketInfo->SrcAddress : NULL,
-        (msgInfo->InPacketInfo != NULL) ? msgInfo->InPacketInfo->SrcPort : 0,
-        (msgInfo->InPacketInfo != NULL) ? msgInfo->InPacketInfo->Interface : INET_NULL_INTERFACEID,
-        msgInfo->InCon);
+                       (msgInfo->InPacketInfo != NULL) ? &msgInfo->InPacketInfo->SrcAddress : NULL,
+                       (msgInfo->InPacketInfo != NULL) ? msgInfo->InPacketInfo->SrcPort : 0,
+                       (msgInfo->InPacketInfo != NULL) ? msgInfo->InPacketInfo->Interface : INET_NULL_INTERFACEID, msgInfo->InCon);
 }
 
 /**
@@ -2608,7 +2585,7 @@ NL_DLL_EXPORT WEAVE_ERROR GenerateWeaveNodeId(uint64_t & nodeId)
 
     while (id <= kMaxAlwaysLocalWeaveNodeId)
     {
-        err = nl::Weave::Platform::Security::GetSecureRandomData(reinterpret_cast<uint8_t*>(&id), sizeof(id));
+        err = nl::Weave::Platform::Security::GetSecureRandomData(reinterpret_cast<uint8_t *>(&id), sizeof(id));
         SuccessOrExit(err);
 
         id &= ~kEUI64_UL_Local;
@@ -2620,5 +2597,5 @@ exit:
     return err;
 }
 
-} // namespace nl
 } // namespace Weave
+} // namespace nl

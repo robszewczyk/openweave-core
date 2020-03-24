@@ -40,38 +40,32 @@ using namespace nl::Weave::Profiles::Security;
 
 #define TOOL_NAME "weave-swu-client"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
 static void StartClientConnection();
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
 
-bool Listening = false;
-bool UseTCP = true;
-bool Debug = false;
-const char *DestIPAddrStr = NULL;
+bool Listening             = false;
+bool UseTCP                = true;
+bool Debug                 = false;
+const char * DestIPAddrStr = NULL;
 uint16_t DestPort; // only used for UDP
 SoftwareUpdateClient SWUClient;
 MockImageAnnounceServer MIAServer;
 
-//Globals used by SWU-client
-bool WaitingForSWUResp = false;
+// Globals used by SWU-client
+bool WaitingForSWUResp     = false;
 static uint64_t DestNodeId = 1;
 IPAddress DestIPAddr;
-WeaveConnection *Con = NULL;
+WeaveConnection * Con = NULL;
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "listen",     kNoArgument,       'L' },
-    { "dest-addr",  kArgumentRequired, 'D' },
-    { "debug",      kArgumentRequired, 'd' },
-    { "tcp",        kNoArgument,       't' },
-    { "udp",        kNoArgument,       'u' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "listen", kNoArgument, 'L' },      { "dest-addr", kArgumentRequired, 'D' },
+                                       { "debug", kArgumentRequired, 'd' }, { "tcp", kNoArgument, 't' },
+                                       { "udp", kNoArgument, 'u' },         { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -D, --dest-addr <host>[:<port>]\n"
     "       Send an ImageQuery request to a specific address rather than one\n"
     "       derived from the destination node id.  <host> can be a hostname,\n"
@@ -94,32 +88,18 @@ static const char *gToolOptionHelp =
     "       Enable debug messages.\n"
     "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%%<interface>]]\n"
-    "       " TOOL_NAME " [<options...>] --listen\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%%<interface>]]\n"
+                                "       " TOOL_NAME " [<options...>] --listen\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions, &gWeaveNodeOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,    NULL };
 
-static void HandleImageAnnounce(ExchangeContext *ec)
+static void HandleImageAnnounce(ExchangeContext * ec)
 {
     WEAVE_ERROR err;
 
@@ -137,7 +117,8 @@ static void HandleImageAnnounce(ExchangeContext *ec)
         else
         {
             char buffer[64];
-            printf("3 SWU HandleImageAnnounce  (destIPAddr: %s (printed as a string))\n", DestIPAddr.ToString(buffer, strlen(buffer)));
+            printf("3 SWU HandleImageAnnounce  (destIPAddr: %s (printed as a string))\n",
+                   DestIPAddr.ToString(buffer, strlen(buffer)));
             err = SWUClient.SendImageQueryRequest(DestNodeId, DestIPAddr);
         }
         if (err == WEAVE_NO_ERROR)
@@ -159,7 +140,7 @@ static void HandleImageAnnounce(ExchangeContext *ec)
     printf("6 SWU HandleImageAnnounce exiting\n");
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
 
@@ -188,8 +169,8 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     // Initialize the SWU-client application.
     err = SWUClient.Init(&ExchangeMgr);
@@ -218,7 +199,7 @@ int main(int argc, char *argv[])
         else
             printf("Sending SWU requests to node %" PRIX64 " at %s\n", DestNodeId, DestIPAddrStr);
 
-        //Set up connection and connect callbacks to handle success/failure cases
+        // Set up connection and connect callbacks to handle success/failure cases
         StartClientConnection();
     }
     else
@@ -233,7 +214,7 @@ int main(int argc, char *argv[])
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -278,10 +259,10 @@ void StartClientConnection()
             return;
         }
         Con->OnConnectionComplete = HandleConnectionComplete;
-        Con->OnConnectionClosed = HandleConnectionClosed;
+        Con->OnConnectionClosed   = HandleConnectionClosed;
         printf("  4 Con: %p\n", Con);
 
-        printf("  5 (DestNodeId: %ld, DestIPAddrStr: %s)\n", (long)DestNodeId, DestIPAddrStr);
+        printf("  5 (DestNodeId: %ld, DestIPAddrStr: %s)\n", (long) DestNodeId, DestIPAddrStr);
         IPAddress::FromString(DestIPAddrStr, DestIPAddr);
         WEAVE_ERROR err = Con->Connect(DestNodeId, kWeaveAuthMode_Unauthenticated, DestIPAddr);
         if (err != WEAVE_NO_ERROR)
@@ -301,31 +282,21 @@ void StartClientConnection()
     printf("8 StartClientConnection exiting\n");
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 't':
-        UseTCP = true;
-        break;
-    case 'u':
-        UseTCP = false;
-        break;
-    case 'L':
-        Listening = true;
-        break;
-    case 'D':
-        DestIPAddrStr = arg;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 't': UseTCP = true; break;
+    case 'u': UseTCP = false; break;
+    case 'L': Listening = true; break;
+    case 'D': DestIPAddrStr = arg; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -341,12 +312,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
             return false;
         }
 
-        const char *nodeId = argv[0];
-        char *p = (char *)strchr(nodeId, '@');
+        const char * nodeId = argv[0];
+        char * p            = (char *) strchr(nodeId, '@');
         if (p != NULL)
         {
-            *p = 0;
-            DestIPAddrStr = p+1;
+            *p            = 0;
+            DestIPAddrStr = p + 1;
         }
 
         if (!ParseNodeId(nodeId, DestNodeId))
@@ -368,7 +339,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
     return true;
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -376,11 +347,11 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     printf("Connection received from node %" PRIX64 " (%s)\n", con->PeerNodeId, ipAddrStr);
 
     con->OnConnectionClosed = HandleConnectionClosed;
-    Con = con;
+    Con                     = con;
     MIAServer.CreateExchangeCtx(con);
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     printf("0 HandleConnectionComplete entering\n");
 
@@ -425,7 +396,7 @@ void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr)
     printf("8 HandleConnectionComplete exiting\n");
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));

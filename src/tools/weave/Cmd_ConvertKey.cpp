@@ -37,21 +37,18 @@ using namespace nl::Weave::Profiles::Security;
 
 #define CMD_NAME "weave convert-key"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "der",            kNoArgument, 'x' },
-    { "pem",            kNoArgument, 'p' },
-    { "weave",          kNoArgument, 'w' },
-    { "weave-b64",      kNoArgument, 'b' },
-    { "pkcs8-der",      kNoArgument, 'X' },
-    { "pkcs8-pem",      kNoArgument, 'P' },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "der", kNoArgument, 'x' },
+                                      { "pem", kNoArgument, 'p' },
+                                      { "weave", kNoArgument, 'w' },
+                                      { "weave-b64", kNoArgument, 'b' },
+                                      { "pkcs8-der", kNoArgument, 'X' },
+                                      { "pkcs8-pem", kNoArgument, 'P' },
+                                      { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "   -p, --pem\n"
     "\n"
     "       Output the private key in SEC1/RFC-5915 PEM format.\n"
@@ -76,60 +73,45 @@ static const char *const gCmdOptionHelp =
     "   -X, --pkcs8-der\n"
     "\n"
     "       Output the private key in PKCS#8 DER format.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
-{
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ] <in-file> <out-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Convert a private key between Weave and PEM/DER forms."
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "   <in-file>\n"
-    "\n"
-    "       The input private key file name, or - to read from stdin. The\n"
-    "       format of the input key is auto-detected and can be any\n"
-    "       of: PEM, DER, Weave base-64 or Weave raw TLV.\n"
-    "\n"
-    "   <out-file>\n"
-    "\n"
-    "       The output private key file name, or - to write to stdout.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ] <in-file> <out-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Convert a private key between Weave and PEM/DER forms."
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "   <in-file>\n"
+                                "\n"
+                                "       The input private key file name, or - to read from stdin. The\n"
+                                "       format of the input key is auto-detected and can be any\n"
+                                "       of: PEM, DER, Weave base-64 or Weave raw TLV.\n"
+                                "\n"
+                                "   <out-file>\n"
+                                "\n"
+                                "       The output private key file name, or - to write to stdout.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
 
-const char *gInFileName;
-const char *gOutFileName;
+const char * gInFileName;
+const char * gOutFileName;
 KeyFormat gOutFormat = kKeyFormat_Weave_Raw;
 
-bool Cmd_ConvertKey(int argc, char *argv[])
+bool Cmd_ConvertKey(int argc, char * argv[])
 {
     static uint8_t inKey[MAX_KEY_SIZE];
 
-    bool res = true;
-    FILE *inFile = NULL;
+    bool res      = true;
+    FILE * inFile = NULL;
     KeyFormat inFormat;
-    uint32_t inKeyLen = 0;
-    FILE *outFile = NULL;
-    uint8_t *outKey = NULL;
-    uint32_t outKeyLen = 0;
-    EVP_PKEY *key = NULL;
+    uint32_t inKeyLen   = 0;
+    FILE * outFile      = NULL;
+    uint8_t * outKey    = NULL;
+    uint32_t outKeyLen  = 0;
+    EVP_PKEY * key      = NULL;
     bool outFileCreated = false;
 
     if (argc == 1)
@@ -175,7 +157,7 @@ bool Cmd_ConvertKey(int argc, char *argv[])
 
     if (inFormat == gOutFormat)
     {
-        outKey = inKey;
+        outKey    = inKey;
         outKeyLen = inKeyLen;
     }
 
@@ -219,37 +201,23 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'p':
-        gOutFormat = kKeyFormat_PEM;
-        break;
-    case 'x':
-        gOutFormat = kKeyFormat_DER;
-        break;
-    case 'b':
-        gOutFormat = kKeyFormat_Weave_Base64;
-        break;
-    case 'w':
-        gOutFormat = kKeyFormat_Weave_Raw;
-        break;
-    case 'P':
-        gOutFormat = kKeyFormat_PEM_PKCS8;
-        break;
-    case 'X':
-        gOutFormat = kKeyFormat_DER_PKCS8;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'p': gOutFormat = kKeyFormat_PEM; break;
+    case 'x': gOutFormat = kKeyFormat_DER; break;
+    case 'b': gOutFormat = kKeyFormat_Weave_Base64; break;
+    case 'w': gOutFormat = kKeyFormat_Weave_Raw; break;
+    case 'P': gOutFormat = kKeyFormat_PEM_PKCS8; break;
+    case 'X': gOutFormat = kKeyFormat_DER_PKCS8; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {
@@ -269,7 +237,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    gInFileName = argv[0];
+    gInFileName  = argv[0];
     gOutFileName = argv[1];
 
     return true;

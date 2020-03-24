@@ -44,7 +44,7 @@ WEAVE_ERROR ThreadStackManagerImpl::_InitThreadStack(void)
     return InitThreadStack(NULL);
 }
 
-WEAVE_ERROR ThreadStackManagerImpl::InitThreadStack(otInstance *otInst)
+WEAVE_ERROR ThreadStackManagerImpl::InitThreadStack(otInstance * otInst)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -73,7 +73,7 @@ using namespace ::nl::Weave::DeviceLayer;
  * Glue function called directly by the OpenThread stack when tasklet processing work
  * is pending.
  */
-extern "C" void otTaskletsSignalPending(otInstance *p_instance)
+extern "C" void otTaskletsSignalPending(otInstance * p_instance)
 {
     ThreadStackMgrImpl().SignalThreadActivityPending();
 }

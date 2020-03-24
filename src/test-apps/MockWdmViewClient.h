@@ -30,15 +30,14 @@
 class MockWdmViewClient
 {
 public:
-    static MockWdmViewClient * GetInstance ();
+    static MockWdmViewClient * GetInstance();
 
-    virtual WEAVE_ERROR Init (nl::Weave::WeaveExchangeManager *aExchangeMgr, const char * const aTestCaseId) = 0;
+    virtual WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, const char * const aTestCaseId) = 0;
 
     virtual WEAVE_ERROR StartTesting(const uint64_t aPublisherNodeId, const uint16_t aSubnetId) = 0;
 
-    typedef void(*HandleCompleteTestFunct)();
+    typedef void (*HandleCompleteTestFunct)();
     HandleCompleteTestFunct onCompleteTest;
 };
-
 
 #endif /* MOCKWDMINITIATOR_H_ */

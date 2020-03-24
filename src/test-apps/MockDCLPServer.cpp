@@ -43,11 +43,9 @@ using namespace nl::Weave::TLV;
 using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Profiles::Vendor::Nestlabs::DropcamLegacyPairing;
 
-MockDropcamLegacyPairingServer::MockDropcamLegacyPairingServer()
-{
-}
+MockDropcamLegacyPairingServer::MockDropcamLegacyPairingServer() { }
 
-WEAVE_ERROR MockDropcamLegacyPairingServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR MockDropcamLegacyPairingServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err;
 
@@ -82,8 +80,8 @@ WEAVE_ERROR MockDropcamLegacyPairingServer::GetCameraMACAddress(uint8_t (&macAdd
     return WEAVE_NO_ERROR;
 }
 
-void MockDropcamLegacyPairingServer::EnforceAccessControl(nl::Weave::ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-            const nl::Weave::WeaveMessageInfo *msgInfo, AccessControlResult& result)
+void MockDropcamLegacyPairingServer::EnforceAccessControl(nl::Weave::ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                                          const nl::Weave::WeaveMessageInfo * msgInfo, AccessControlResult & result)
 {
     if (sSuppressAccessControls)
     {

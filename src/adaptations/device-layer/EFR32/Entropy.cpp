@@ -28,10 +28,10 @@
 #include <mbedtls/entropy_poll.h>
 #include <em_device.h>
 
-#if defined(_SILICON_LABS_32B_SERIES_1) 
+#if defined(_SILICON_LABS_32B_SERIES_1)
 #include <openthread/platform/entropy.h>
 #elif defined(_SILICON_LABS_32B_SERIES_2)
-extern "C" int mbedtls_hardware_poll(void *data, unsigned char *output, size_t len, size_t *olen);
+extern "C" int mbedtls_hardware_poll(void * data, unsigned char * output, size_t len, size_t * olen);
 #else // !defined(_SILICON_LABS_32B_SERIES_1) && !defined(_SILICON_LABS_32B_SERIES_2)
 #error "Unsupported EFR32 series"
 #endif
@@ -53,13 +53,13 @@ namespace Internal {
  *
  * This function is called by the Nest DRBG to acquire entropy.
  */
-int GetEntropy_EFR32(uint8_t *buf, size_t count)
+int GetEntropy_EFR32(uint8_t * buf, size_t count)
 {
-    int    res         = 0;
+    int res = 0;
 
     VerifyOrDie(count <= UINT16_MAX);
 
-#if defined(_SILICON_LABS_32B_SERIES_1) 
+#if defined(_SILICON_LABS_32B_SERIES_1)
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
     if (ThreadStackManagerImpl::IsInitialized())
     {
@@ -67,7 +67,6 @@ int GetEntropy_EFR32(uint8_t *buf, size_t count)
     }
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_THREAD
 
-
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
     if (ThreadStackManagerImpl::IsInitialized())
     {
@@ -75,10 +74,10 @@ int GetEntropy_EFR32(uint8_t *buf, size_t count)
     }
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_THREAD
 
-    otError otErr = otPlatEntropyGet(buf, (uint16_t)count);
+    otError otErr = otPlatEntropyGet(buf, (uint16_t) count);
     if (otErr != OT_ERROR_NONE)
     {
-      res = WEAVE_ERROR_DRBG_ENTROPY_SOURCE_FAILED;
+        res = WEAVE_ERROR_DRBG_ENTROPY_SOURCE_FAILED;
     }
 
 #elif defined(_SILICON_LABS_32B_SERIES_2)
@@ -114,7 +113,7 @@ WEAVE_ERROR InitEntropy()
     // Seed the standard rand() pseudo-random generator with data from the secure random source.
     {
         unsigned int seed;
-        err = Platform::Security::GetSecureRandomData((uint8_t *)&seed, sizeof(seed));
+        err = Platform::Security::GetSecureRandomData((uint8_t *) &seed, sizeof(seed));
         SuccessOrExit(err);
         srand(seed);
     }

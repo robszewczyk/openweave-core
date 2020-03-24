@@ -22,7 +22,6 @@
  *      WARNING: This is experimental feature for Weave Data Management Client
  */
 
-
 // This is a .cpp file in openweave-core that includes the "custom built-in schema"
 // source file, if defined...
 

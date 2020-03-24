@@ -47,8 +47,7 @@
  *
  */
 #if !defined(NL_ASSERT_ABORT)
-#define NL_ASSERT_ABORT()                                              \
-    WeaveDie()
+#define NL_ASSERT_ABORT() WeaveDie()
 #endif
 
 /**
@@ -92,19 +91,12 @@
  *
  */
 #if !defined(NL_ASSERT_LOG)
-#define NL_ASSERT_LOG(aPrefix, aName, aCondition, aLabel, aFile, aLine, aMessage)         \
-    do                                                                                    \
-    {                                                                                     \
-        WeaveLogError(NotSpecified,                                                       \
-                      NL_ASSERT_LOG_FORMAT_DEFAULT,                                       \
-                      aPrefix,                                                            \
-                      (((aName) == 0) || (*(aName) == '\0')) ? "" : aName,                \
-                      (((aName) == 0) || (*(aName) == '\0')) ? "" : ": ",                 \
-                      aCondition,                                                         \
-                      (((aMessage) == 0) ? "" : aMessage),                                \
-                      (((aMessage) == 0) ? "" : ", "),                                    \
-                      aFile,                                                              \
-                      aLine);                                                             \
+#define NL_ASSERT_LOG(aPrefix, aName, aCondition, aLabel, aFile, aLine, aMessage)                                                  \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        WeaveLogError(NotSpecified, NL_ASSERT_LOG_FORMAT_DEFAULT, aPrefix, (((aName) == 0) || (*(aName) == '\0')) ? "" : aName,    \
+                      (((aName) == 0) || (*(aName) == '\0')) ? "" : ": ", aCondition, (((aMessage) == 0) ? "" : aMessage),         \
+                      (((aMessage) == 0) ? "" : ", "), aFile, aLine);                                                              \
     } while (0)
 #endif
 
@@ -120,9 +112,7 @@ namespace Weave {
 
 // Generic min() and max() functions
 //
-template <typename _T>
-inline const _T &
-min(const _T &a, const _T &b)
+template <typename _T> inline const _T & min(const _T & a, const _T & b)
 {
     if (b < a)
         return b;
@@ -130,9 +120,7 @@ min(const _T &a, const _T &b)
     return a;
 }
 
-template <typename _T>
-inline const _T &
-max(const _T &a, const _T &b)
+template <typename _T> inline const _T & max(const _T & a, const _T & b)
 {
     if (a < b)
         return b;
@@ -158,8 +146,7 @@ max(const _T &a, const _T &b)
  *  @endcode
  *
  */
-#define IgnoreUnusedVariable(aVariable)                                \
-    ((void)(aVariable))
+#define IgnoreUnusedVariable(aVariable) ((void) (aVariable))
 
 /**
  *  @def SuccessOrExit(aStatus)
@@ -190,8 +177,7 @@ max(const _T &a, const _T &b)
  *  @param[in]  aStatus     A scalar status to be evaluated against zero (0).
  *
  */
-#define SuccessOrExit(aStatus)                                         \
-    nlEXPECT((aStatus) == WEAVE_NO_ERROR, exit)
+#define SuccessOrExit(aStatus) nlEXPECT((aStatus) == WEAVE_NO_ERROR, exit)
 
 /**
  *  @def VerifyOrExit(aCondition, anAction)
@@ -223,8 +209,7 @@ max(const _T &a, const _T &b)
  *                          assertion fails.
  *
  */
-#define VerifyOrExit(aCondition, anAction)                             \
-    nlEXPECT_ACTION(aCondition, exit, anAction)
+#define VerifyOrExit(aCondition, anAction) nlEXPECT_ACTION(aCondition, exit, anAction)
 
 /**
  *  @def ExitNow(...)
@@ -262,10 +247,11 @@ max(const _T &a, const _T &b)
  *                          when the assertion fails.
  *
  */
-#define ExitNow(...)                                                   \
-    do {                                                               \
-        __VA_ARGS__;                                                   \
-        goto exit;                                                     \
+#define ExitNow(...)                                                                                                               \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        __VA_ARGS__;                                                                                                               \
+        goto exit;                                                                                                                 \
     } while (0)
 
 /**
@@ -322,8 +308,7 @@ inline void WeaveDie(void)
  *  @sa #WeaveDie
  *
  */
-#define VerifyOrDie(aCondition)                                        \
-    nlABORT(aCondition)
+#define VerifyOrDie(aCondition) nlABORT(aCondition)
 
 /**
  *  @def VerifyOrDieWithMsg(aCondition, aModule, aMessage, ...)
@@ -359,8 +344,8 @@ inline void WeaveDie(void)
  *  @sa #WeaveDie
  *
  */
-#define VerifyOrDieWithMsg(aCondition, aModule, aMessage, ...)         \
-    nlABORT_ACTION(aCondition, WeaveLogDetail(aModule, aMessage, ## __VA_ARGS__))
+#define VerifyOrDieWithMsg(aCondition, aModule, aMessage, ...)                                                                     \
+    nlABORT_ACTION(aCondition, WeaveLogDetail(aModule, aMessage, ##__VA_ARGS__))
 
 /**
  * @def ArraySize(aArray)
@@ -377,7 +362,7 @@ inline void WeaveDie(void)
  *
  * @return      The size of an array in number of elements.
  */
-#define ArraySize(a) (sizeof(a)/sizeof((a)[0]))
+#define ArraySize(a) (sizeof(a) / sizeof((a)[0]))
 
 #if defined(__cplusplus) && (__cplusplus >= 201103L)
 

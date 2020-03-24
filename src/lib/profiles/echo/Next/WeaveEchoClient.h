@@ -241,18 +241,18 @@ private:
  */
 struct WeaveEchoClient::InEventParam
 {
-    WeaveEchoClient * Source;                               /**< The WeaveEchoClient from which the API event originated. */
+    WeaveEchoClient * Source; /**< The WeaveEchoClient from which the API event originated. */
     union
     {
         struct
         {
-            WEAVE_ERROR Reason;                             /**< The error code associated with the communication failure. */
+            WEAVE_ERROR Reason; /**< The error code associated with the communication failure. */
         } CommunicationError;
 
         struct
         {
-            const WeaveMessageInfo * MsgInfo;               /**< An object containing meta-information about the received EchoResponse message. */
-            PacketBuffer * Payload;                         /**< A PacketBuffer containing the payload of the received EchoResponse message. */
+            const WeaveMessageInfo * MsgInfo; /**< An object containing meta-information about the received EchoResponse message. */
+            PacketBuffer * Payload;           /**< A PacketBuffer containing the payload of the received EchoResponse message. */
         } ResponseReceived;
     };
 
@@ -264,22 +264,21 @@ struct WeaveEchoClient::InEventParam
  */
 struct WeaveEchoClient::OutEventParam
 {
-    bool DefaultHandlerCalled;                              /**< Set to true by the DefaultEventHandler; should NOT be set by
-                                                                 the application. */
+    bool DefaultHandlerCalled; /**< Set to true by the DefaultEventHandler; should NOT be set by
+                                    the application. */
     union
     {
         struct
         {
-            PacketBuffer * Payload;                         /**< A PacketBuffer, allocated by the application and given to the
-                                                                 WeaveEchoClient, containing the EchoRequest payload. */
-            WEAVE_ERROR PrepareError;                       /**< An error set by the application indicating that a payload
-                                                                 couldn't be prepared (e.g. WEAVE_ERROR_NO_MEMORY). */
+            PacketBuffer * Payload;   /**< A PacketBuffer, allocated by the application and given to the
+                                           WeaveEchoClient, containing the EchoRequest payload. */
+            WEAVE_ERROR PrepareError; /**< An error set by the application indicating that a payload
+                                           couldn't be prepared (e.g. WEAVE_ERROR_NO_MEMORY). */
         } PreparePayload;
     };
 
     void Clear() { memset(this, 0, sizeof(*this)); }
 };
-
 
 /*
  * Inline Functions
@@ -287,9 +286,7 @@ struct WeaveEchoClient::OutEventParam
  * Documentation for these functions can be found at the end of the .cpp file.
  */
 
-inline WeaveEchoClient::WeaveEchoClient(void)
-{
-}
+inline WeaveEchoClient::WeaveEchoClient(void) { }
 
 inline WeaveEchoClient::State WeaveEchoClient::GetState(void) const
 {
@@ -306,7 +303,7 @@ inline bool WeaveEchoClient::IsSendRrepeating() const
     return GetFlag(kFlag_SendRepeating);
 }
 
-inline Binding *WeaveEchoClient::GetBinding(void) const
+inline Binding * WeaveEchoClient::GetBinding(void) const
 {
     return mBinding;
 }
@@ -345,6 +342,5 @@ inline void WeaveEchoClient::ClearFlag(uint8_t flag)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_ECHO_CLIENT_NEXT_H_

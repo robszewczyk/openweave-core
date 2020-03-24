@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace SoftwareComponentTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1eU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1eU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -76,12 +76,12 @@ struct SoftwareComponentTypeStruct
     const char * componentVersion;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct SoftwareComponentTypeStruct_array {
+struct SoftwareComponentTypeStruct_array
+{
     uint32_t num;
-    SoftwareComponentTypeStruct *buf;
+    SoftwareComponentTypeStruct * buf;
 };
 
 } // namespace SoftwareComponentTrait

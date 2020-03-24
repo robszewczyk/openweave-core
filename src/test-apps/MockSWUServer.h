@@ -42,36 +42,35 @@ class MockSoftwareUpdateServer : public WeaveServerBase
 public:
     MockSoftwareUpdateServer();
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown();
 
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
-    void SetReferenceImageQuery(ImageQuery *aRefImageQuery);
-    WEAVE_ERROR SetFileDesignator(const char *aFileDesignator);
-    WEAVE_ERROR SendImageAnnounce(WeaveConnection *con);
+    void SetReferenceImageQuery(ImageQuery * aRefImageQuery);
+    WEAVE_ERROR SetFileDesignator(const char * aFileDesignator);
+    WEAVE_ERROR SendImageAnnounce(WeaveConnection * con);
     WEAVE_ERROR SendImageAnnounce(uint64_t nodeId, IPAddress nodeAddr);
     WEAVE_ERROR SendImageAnnounce(uint64_t nodeId, IPAddress nodeAddr, uint16_t port);
     WEAVE_ERROR SendImageAnnounce();
 
-
 protected:
-    ExchangeContext *mCurServerOp;
-    ImageQuery *mRefImageQuery;
-    const char *mFileDesignator;
-    PacketBuffer *mCurServerOpBuf;
+    ExchangeContext * mCurServerOp;
+    ImageQuery * mRefImageQuery;
+    const char * mFileDesignator;
+    PacketBuffer * mCurServerOpBuf;
 
 private:
-    static void HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-            uint8_t msgType, PacketBuffer *payload);
-    static WEAVE_ERROR HandleImageQuery(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId,
-            uint8_t msgType, PacketBuffer *payload);
-    static WEAVE_ERROR HandleServerConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
+    static void HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static WEAVE_ERROR HandleImageQuery(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                        uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static WEAVE_ERROR HandleServerConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
 
     WEAVE_ERROR SendImageQueryResponse();
     WEAVE_ERROR SendImageQueryStatus();
-    WEAVE_ERROR ConvertIntegrityType(char *aIntegrityType, uint8_t aIntegrity);
-    WEAVE_ERROR GenerateImageDigest(const char *imagePath, uint8_t integrityType, uint8_t *digest);
+    WEAVE_ERROR ConvertIntegrityType(char * aIntegrityType, uint8_t aIntegrity);
+    WEAVE_ERROR GenerateImageDigest(const char * imagePath, uint8_t integrityType, uint8_t * digest);
 };
 
 #endif /* MOCKSWUSERVER_H_ */

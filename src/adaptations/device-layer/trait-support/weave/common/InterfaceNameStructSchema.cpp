@@ -30,23 +30,16 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
-
-const nl::FieldDescriptor InterfaceNameFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(InterfaceName, interfaceName), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1
-    },
+const nl::FieldDescriptor InterfaceNameFieldDescriptors[] = {
+    { NULL, offsetof(InterfaceName, interfaceName), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1 },
 
 };
 
-const nl::SchemaFieldDescriptor InterfaceName::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(InterfaceNameFieldDescriptors)/sizeof(InterfaceNameFieldDescriptors[0]),
-    .mFields = InterfaceNameFieldDescriptors,
-    .mSize = sizeof(InterfaceName)
+const nl::SchemaFieldDescriptor InterfaceName::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(InterfaceNameFieldDescriptors) / sizeof(InterfaceNameFieldDescriptors[0]),
+    .mFields                     = InterfaceNameFieldDescriptors,
+    .mSize                       = sizeof(InterfaceName)
 };
-
-
 
 } // namespace Common
 } // namespace Weave

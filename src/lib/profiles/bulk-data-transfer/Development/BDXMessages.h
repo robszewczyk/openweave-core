@@ -56,25 +56,11 @@ class NL_DLL_EXPORT SendInit
 public:
     SendInit(void);
 
-    WEAVE_ERROR init(uint8_t aVersion,
-                     bool aSenderDrive,
-                     bool aReceiverDrive,
-                     bool aAsynchMode,
-                     uint16_t aMaxBlockSize,
-                     uint64_t aStartOffset,
-                     uint64_t aLength,
-                     ReferencedString &aFileDesignator,
-                     ReferencedTLVData *aMetaData);
+    WEAVE_ERROR init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                     uint64_t aStartOffset, uint64_t aLength, ReferencedString & aFileDesignator, ReferencedTLVData * aMetaData);
 
-    WEAVE_ERROR init(uint8_t aVersion,
-                     bool aSenderDrive,
-                     bool aReceiverDrive,
-                     bool aAsynchMode,
-                     uint16_t aMaxBlockSize,
-                     uint32_t aStartOffset,
-                     uint32_t aLength,
-                     ReferencedString &aFileDesignator,
-                     ReferencedTLVData *aMetaData);
+    WEAVE_ERROR init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                     uint32_t aStartOffset, uint32_t aLength, ReferencedString & aFileDesignator, ReferencedTLVData * aMetaData);
 
     /**
      * @brief
@@ -98,62 +84,46 @@ public:
      *
      * @retval       #WEAVE_ERROR      Any error encountered.
      */
-    typedef WEAVE_ERROR (*MetaDataTLVWriteCallback)(uint8_t *aBuffer,
-                                                    uint16_t aBufferLength,
-                                                    uint16_t &aNumBytesWritten,
-                                                    void *aAppState);
+    typedef WEAVE_ERROR (*MetaDataTLVWriteCallback)(uint8_t * aBuffer, uint16_t aBufferLength, uint16_t & aNumBytesWritten,
+                                                    void * aAppState);
 
-    WEAVE_ERROR init(uint8_t aVersion,
-                     bool aSenderDrive,
-                     bool aReceiverDrive,
-                     bool aAsynchMode,
-                     uint16_t aMaxBlockSize,
-                     uint64_t aStartOffset,
-                     uint64_t aLength,
-                     ReferencedString &aFileDesignator,
-                     MetaDataTLVWriteCallback aMetaDataWriteCallback,
-                     void *aMetaDataAppState);
+    WEAVE_ERROR init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                     uint64_t aStartOffset, uint64_t aLength, ReferencedString & aFileDesignator,
+                     MetaDataTLVWriteCallback aMetaDataWriteCallback, void * aMetaDataAppState);
 
-    WEAVE_ERROR init(uint8_t aVersion,
-                     bool aSenderDrive,
-                     bool aReceiverDrive,
-                     bool aAsynchMode,
-                     uint16_t aMaxBlockSize,
-                     uint32_t aStartOffset,
-                     uint32_t aLength,
-                     ReferencedString &aFileDesignator,
-                     MetaDataTLVWriteCallback aMetaDataWriteCallback,
-                     void *aMetaDataAppState);
+    WEAVE_ERROR init(uint8_t aVersion, bool aSenderDrive, bool aReceiverDrive, bool aAsynchMode, uint16_t aMaxBlockSize,
+                     uint32_t aStartOffset, uint32_t aLength, ReferencedString & aFileDesignator,
+                     MetaDataTLVWriteCallback aMetaDataWriteCallback, void * aMetaDataAppState);
 
-    WEAVE_ERROR pack(PacketBuffer *aBuffer);
+    WEAVE_ERROR pack(PacketBuffer * aBuffer);
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, SendInit &aRequest);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, SendInit & aRequest);
 
 private:
     uint16_t GetWrittenMetaDataCallbackLength(void);
 
 public:
-    bool operator == (const SendInit&) const;
+    bool operator ==(const SendInit &) const;
 
-    uint8_t mVersion;                   /**< Version of the BDX protocol we decided on. */
+    uint8_t mVersion; /**< Version of the BDX protocol we decided on. */
     // Transfer mode options
-    bool mSenderDriveSupported;         /**< True if we can support sender drive. */
-    bool mReceiverDriveSupported;       /**< True if we can support receiver drive. */
-    bool mAsynchronousModeSupported;    /**< True if we can support async mode. */
+    bool mSenderDriveSupported;      /**< True if we can support sender drive. */
+    bool mReceiverDriveSupported;    /**< True if we can support receiver drive. */
+    bool mAsynchronousModeSupported; /**< True if we can support async mode. */
     // Range control options
-    bool mDefiniteLength;               /**< True if the length field is present. */
-    bool mStartOffsetPresent;           /**< True if the start offset field is present. */
-    bool mWideRange;                    /**< True if offset and length are 64 bits. */
+    bool mDefiniteLength;     /**< True if the length field is present. */
+    bool mStartOffsetPresent; /**< True if the start offset field is present. */
+    bool mWideRange;          /**< True if offset and length are 64 bits. */
     // Block size and offset
-    uint16_t mMaxBlockSize;             /**< Proposed max block size to use in transfer. */
-    uint64_t mStartOffset;              /**< Proposed start offset of data. */
-    uint64_t mLength;                   /**< Proposed length of data in transfer, 0 for indefinite. */
+    uint16_t mMaxBlockSize; /**< Proposed max block size to use in transfer. */
+    uint64_t mStartOffset;  /**< Proposed start offset of data. */
+    uint64_t mLength;       /**< Proposed length of data in transfer, 0 for indefinite. */
     // File designator
-    ReferencedString mFileDesignator;   /**< String containing pre-negotiated information. */
+    ReferencedString mFileDesignator; /**< String containing pre-negotiated information. */
     // Additional metadata
-    ReferencedTLVData mMetaData;        /**< Optional TLV Metadata. */
+    ReferencedTLVData mMetaData;                     /**< Optional TLV Metadata. */
     MetaDataTLVWriteCallback mMetaDataWriteCallback; /**< Optional function to write out TLV Metadata. */
-    void *mMetaDataAppState;            /**< Optional app state for TLV Metadata. */
+    void * mMetaDataAppState;                        /**< Optional app state for TLV Metadata. */
 };
 
 /**
@@ -168,19 +138,19 @@ class SendAccept
 public:
     SendAccept(void);
 
-    WEAVE_ERROR init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, ReferencedTLVData *aMetaData);
+    WEAVE_ERROR init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, ReferencedTLVData * aMetaData);
 
-    WEAVE_ERROR pack(PacketBuffer *aBuffer);
+    WEAVE_ERROR pack(PacketBuffer * aBuffer);
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, SendAccept &aResponse);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, SendAccept & aResponse);
 
 public:
-    bool operator == (const SendAccept&) const;
+    bool operator ==(const SendAccept &) const;
 
-    uint8_t mVersion;               /**< Version of the BDX protocol we decided on. */
-    uint8_t mTransferMode;          /**< Transfer mode that we decided on. */
-    uint16_t mMaxBlockSize;         /**< Maximum block size we decided on. */
-    ReferencedTLVData mMetaData;    /**< Optional TLV Metadata. */
+    uint8_t mVersion;            /**< Version of the BDX protocol we decided on. */
+    uint8_t mTransferMode;       /**< Transfer mode that we decided on. */
+    uint16_t mMaxBlockSize;      /**< Maximum block size we decided on. */
+    ReferencedTLVData mMetaData; /**< Optional TLV Metadata. */
 };
 
 /**
@@ -190,7 +160,9 @@ public:
  *   The SendReject message is used to reject a proposed exchange when the
  *   sender is the initiator.
  */
-class SendReject : public StatusReport { };
+class SendReject : public StatusReport
+{
+};
 
 /**
  * @class ReceiveInit
@@ -217,29 +189,23 @@ class ReceiveAccept : public SendAccept
 public:
     ReceiveAccept(void);
 
-    WEAVE_ERROR init(uint8_t aVersion,
-                     uint8_t aTransferMode,
-                     uint16_t aMaxBlockSize,
-                     uint64_t aLength,
-                     ReferencedTLVData *aMetaData);
-    WEAVE_ERROR init(uint8_t aVersion,
-                     uint8_t aTransferMode,
-                     uint16_t aMaxBlockSize,
-                     uint32_t aLength,
-                     ReferencedTLVData *aMetaData);
+    WEAVE_ERROR init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, uint64_t aLength,
+                     ReferencedTLVData * aMetaData);
+    WEAVE_ERROR init(uint8_t aVersion, uint8_t aTransferMode, uint16_t aMaxBlockSize, uint32_t aLength,
+                     ReferencedTLVData * aMetaData);
 
-    WEAVE_ERROR pack(PacketBuffer *aBuffer);
+    WEAVE_ERROR pack(PacketBuffer * aBuffer);
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, ReceiveAccept &aResponse);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, ReceiveAccept & aResponse);
 
 public:
-    bool operator == (const ReceiveAccept&) const;
+    bool operator ==(const ReceiveAccept &) const;
 
     // Accepted range control options
-    bool mDefiniteLength;           /**< True if a definite length was chosen. */
-    bool mWideRange;                /**< True if our range and offset fields are 64 bits. */
-    uint64_t mLength;               /**< Length of transfer we decided on. */
-    ReferencedTLVData mMetaData;    /**< Optional TLV Metadata. */
+    bool mDefiniteLength;        /**< True if a definite length was chosen. */
+    bool mWideRange;             /**< True if our range and offset fields are 64 bits. */
+    uint64_t mLength;            /**< Length of transfer we decided on. */
+    ReferencedTLVData mMetaData; /**< Optional TLV Metadata. */
 };
 
 /**
@@ -249,7 +215,9 @@ public:
  *   The ReceiveReject message is used to reject a proposed exchange when the
  *   sender is the initiator.
  */
-class ReceiveReject : public StatusReport { };
+class ReceiveReject : public StatusReport
+{
+};
 
 /**
  * @class BlockQuery
@@ -265,9 +233,9 @@ public:
 
     WEAVE_ERROR init(uint8_t aCounter);
 
-    WEAVE_ERROR pack(PacketBuffer *aBuffer);
+    WEAVE_ERROR pack(PacketBuffer * aBuffer);
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, BlockQuery &aQuery);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, BlockQuery & aQuery);
 
     // BlockQuery payload length
     enum
@@ -276,9 +244,9 @@ public:
     };
 
 public:
-    bool operator == (const BlockQuery&) const;
+    bool operator ==(const BlockQuery &) const;
 
-    uint8_t mBlockCounter;      /**< Counter of the block that we are asking for. */
+    uint8_t mBlockCounter; /**< Counter of the block that we are asking for. */
 };
 
 /**
@@ -293,17 +261,17 @@ class BlockSend : public RetainedPacketBuffer
 public:
     BlockSend(void);
 
-    WEAVE_ERROR init(uint8_t aCounter, uint64_t aLength, uint8_t *aData);
+    WEAVE_ERROR init(uint8_t aCounter, uint64_t aLength, uint8_t * aData);
 
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, BlockSend &aResponse);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, BlockSend & aResponse);
 
 public:
-    bool operator == (const BlockSend&) const;
+    bool operator ==(const BlockSend &) const;
 
-    uint8_t mBlockCounter;      /**< Counter of this block that is being sent. */
-    uint64_t mLength;           /**< Length of data contained in this block. */
-    uint8_t *mData;             /**< Pointer to the data to be received or transferred. */
+    uint8_t mBlockCounter; /**< Counter of this block that is being sent. */
+    uint64_t mLength;      /**< Length of data contained in this block. */
+    uint8_t * mData;       /**< Pointer to the data to be received or transferred. */
 };
 
 /**
@@ -313,7 +281,9 @@ public:
  *   The BlockEOF message is used to transfer the last block of data from
  *   sender to receiver.
  */
-class BlockEOF : public BlockSend { };
+class BlockEOF : public BlockSend
+{
+};
 
 /**
  * @class BlockAck
@@ -321,7 +291,9 @@ class BlockEOF : public BlockSend { };
  * @brief
  *   The BlockAck message is used to acknowledge a block of data
  */
-class BlockAck : public BlockQuery { };
+class BlockAck : public BlockQuery
+{
+};
 
 /**
  * @class BlockEOFAck
@@ -329,7 +301,9 @@ class BlockAck : public BlockQuery { };
  * @brief
  *   The BlockEOFAck message is used to acknowledge the last block of data
  */
-class BlockEOFAck : public BlockQuery { };
+class BlockEOFAck : public BlockQuery
+{
+};
 
 /**
  * @class TransferError
@@ -337,7 +311,9 @@ class BlockEOFAck : public BlockQuery { };
  * @brief
  *   The Error message is used to report an error and abort an exchange
  */
-class TransferError : public StatusReport { };
+class TransferError : public StatusReport
+{
+};
 
 /**
  * @class BlockQueryV1
@@ -353,9 +329,9 @@ public:
 
     WEAVE_ERROR init(uint32_t aCounter);
 
-    WEAVE_ERROR pack(PacketBuffer *aBuffer);
+    WEAVE_ERROR pack(PacketBuffer * aBuffer);
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, BlockQueryV1 &aQuery);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, BlockQueryV1 & aQuery);
 
     // BlockQueryV1 payload length
     enum
@@ -364,9 +340,9 @@ public:
     };
 
 public:
-    bool operator == (const BlockQueryV1&) const;
+    bool operator ==(const BlockQueryV1 &) const;
 
-    uint32_t mBlockCounter;     /**< Counter of the block that we are asking for. */
+    uint32_t mBlockCounter; /**< Counter of the block that we are asking for. */
 };
 
 /**
@@ -381,17 +357,17 @@ class BlockSendV1 : public RetainedPacketBuffer
 public:
     BlockSendV1(void);
 
-    WEAVE_ERROR init(uint32_t aCounter, uint64_t aLength, uint8_t *aData);
+    WEAVE_ERROR init(uint32_t aCounter, uint64_t aLength, uint8_t * aData);
 
     uint16_t packedLength(void);
-    static WEAVE_ERROR parse(PacketBuffer *aBuffer, BlockSendV1 &aResponse);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, BlockSendV1 & aResponse);
 
 public:
-    bool operator == (const BlockSendV1&) const;
+    bool operator ==(const BlockSendV1 &) const;
 
-    uint32_t mBlockCounter;     /**< Counter of this block that is being sent. */
-    uint64_t mLength;           /**< Length of data contained in this block. */
-    uint8_t *mData;             /**< Pointer to the data to be received or transferred. */
+    uint32_t mBlockCounter; /**< Counter of this block that is being sent. */
+    uint64_t mLength;       /**< Length of data contained in this block. */
+    uint8_t * mData;        /**< Pointer to the data to be received or transferred. */
 };
 
 /**
@@ -401,7 +377,9 @@ public:
  *   The BlockEOFV1 message is used to transfer the last block of data from
  *   sender to receiver. It has a 4 byte block counter.
  */
-class BlockEOFV1 : public BlockSendV1 { };
+class BlockEOFV1 : public BlockSendV1
+{
+};
 
 /**
  * @class BlockAckV1
@@ -410,7 +388,9 @@ class BlockEOFV1 : public BlockSendV1 { };
  *   The BlockAckV1 message is used to acknowledge a block of data.
  *   It has a 4 byte block counter.
  */
-class BlockAckV1 : public BlockQueryV1 { };
+class BlockAckV1 : public BlockQueryV1
+{
+};
 
 /**
  * @class BlockEOFAckV1
@@ -419,7 +399,9 @@ class BlockAckV1 : public BlockQueryV1 { };
  *   The BlockEOFAckV1 message is used to acknowledge the last block of data.
  *   It has a 4 byte block counter.
  */
-class BlockEOFAckV1 : public BlockQueryV1 { };
+class BlockEOFAckV1 : public BlockQueryV1
+{
+};
 
 } // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles

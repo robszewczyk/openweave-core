@@ -103,11 +103,7 @@ namespace System {
  */
 void RegisterSystemLayerErrorFormatter(void)
 {
-    static ErrorFormatter sSystemLayerErrorFormatter =
-    {
-        FormatSystemLayerError,
-        NULL
-    };
+    static ErrorFormatter sSystemLayerErrorFormatter = { FormatSystemLayerError, NULL };
 
     RegisterErrorFormatter(&sSystemLayerErrorFormatter);
 }
@@ -177,7 +173,7 @@ NL_DLL_EXPORT Error MapErrorPOSIX(int aError)
  *
  *  @return A NULL-terminated, OS-specific descriptive C string describing the error.
  */
-NL_DLL_EXPORT const char *DescribeErrorPOSIX(Error aError)
+NL_DLL_EXPORT const char * DescribeErrorPOSIX(Error aError)
 {
     const int lError = (aError - WEAVE_SYSTEM_POSIX_ERROR_MIN);
     return strerror(lError);
@@ -203,11 +199,7 @@ NL_DLL_EXPORT bool IsErrorPOSIX(Error aError)
  */
 void RegisterPOSIXErrorFormatter(void)
 {
-    static ErrorFormatter sPOSIXErrorFormatter =
-    {
-        FormatPOSIXError,
-        NULL
-    };
+    static ErrorFormatter sPOSIXErrorFormatter = { FormatPOSIXError, NULL };
 
     RegisterErrorFormatter(&sPOSIXErrorFormatter);
 }
@@ -232,9 +224,9 @@ bool FormatPOSIXError(char * buf, uint16_t bufSize, int32_t err)
     {
         const char * desc =
 #if WEAVE_CONFIG_SHORT_ERROR_STR
-                NULL;
+            NULL;
 #else
-                DescribeErrorPOSIX(sysErr);
+            DescribeErrorPOSIX(sysErr);
 #endif
         FormatError(buf, bufSize, "OS", err, desc);
         return true;
@@ -271,14 +263,14 @@ NL_DLL_EXPORT Error MapErrorLwIP(err_t aError)
  *  @return A NULL-terminated, LwIP-specific descriptive C string describing the error.
  *
  */
-NL_DLL_EXPORT const char* DescribeErrorLwIP(Error aError)
+NL_DLL_EXPORT const char * DescribeErrorLwIP(Error aError)
 {
-    const err_t lError = -((aError) - WEAVE_SYSTEM_LWIP_ERROR_MIN);
+    const err_t lError = -((aError) -WEAVE_SYSTEM_LWIP_ERROR_MIN);
 
     // If we are not compiling with LWIP_DEBUG asserted, the unmapped
     // local value may go unused.
 
-    (void)lError;
+    (void) lError;
 
     return lwip_strerr(lError);
 }
@@ -305,11 +297,7 @@ NL_DLL_EXPORT bool IsErrorLwIP(Error aError)
  */
 void RegisterLwIPErrorFormatter(void)
 {
-    static ErrorFormatter sLwIPErrorFormatter =
-    {
-        FormatLwIPError,
-        NULL
-    };
+    static ErrorFormatter sLwIPErrorFormatter = { FormatLwIPError, NULL };
 
     RegisterErrorFormatter(&sLwIPErrorFormatter);
 }
@@ -334,9 +322,9 @@ bool FormatLwIPError(char * buf, uint16_t bufSize, int32_t err)
     {
         const char * desc =
 #if WEAVE_CONFIG_SHORT_ERROR_STR
-                NULL;
+            NULL;
 #else
-                DescribeErrorLwIP(sysErr);
+            DescribeErrorLwIP(sysErr);
 #endif
         nl::FormatError(buf, bufSize, "LwIP", err, desc);
         return true;
@@ -348,7 +336,6 @@ bool FormatLwIPError(char * buf, uint16_t bufSize, int32_t err)
 }
 
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
-
 
 } // namespace System
 } // namespace Weave

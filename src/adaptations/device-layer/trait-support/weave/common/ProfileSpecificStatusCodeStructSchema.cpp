@@ -30,27 +30,18 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
+const nl::FieldDescriptor ProfileSpecificStatusCodeFieldDescriptors[] = {
+    { NULL, offsetof(ProfileSpecificStatusCode, profileId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 
-const nl::FieldDescriptor ProfileSpecificStatusCodeFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(ProfileSpecificStatusCode, profileId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
-
-    {
-        NULL, offsetof(ProfileSpecificStatusCode, statusCode), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 2
-    },
+    { NULL, offsetof(ProfileSpecificStatusCode, statusCode), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt16, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor ProfileSpecificStatusCode::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(ProfileSpecificStatusCodeFieldDescriptors)/sizeof(ProfileSpecificStatusCodeFieldDescriptors[0]),
-    .mFields = ProfileSpecificStatusCodeFieldDescriptors,
-    .mSize = sizeof(ProfileSpecificStatusCode)
-};
-
-
+const nl::SchemaFieldDescriptor ProfileSpecificStatusCode::FieldSchema = { .mNumFieldDescriptorElements =
+                                                                               sizeof(ProfileSpecificStatusCodeFieldDescriptors) /
+                                                                               sizeof(ProfileSpecificStatusCodeFieldDescriptors[0]),
+                                                                           .mFields = ProfileSpecificStatusCodeFieldDescriptors,
+                                                                           .mSize   = sizeof(ProfileSpecificStatusCode) };
 
 } // namespace Common
 } // namespace Weave

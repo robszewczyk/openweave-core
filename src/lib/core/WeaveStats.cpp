@@ -33,7 +33,7 @@ namespace nl {
 namespace Weave {
 namespace Stats {
 
-static WeaveMessageLayer *sMessageLayer;
+static WeaveMessageLayer * sMessageLayer;
 
 /**
  * Registers Weave objects with the stats infra.
@@ -44,7 +44,7 @@ static WeaveMessageLayer *sMessageLayer;
  * @param[in]   aMessageLayer   Pointer to the MessageLayer object from
  *                              which stats are to be collected.
  */
-void SetObjects(WeaveMessageLayer *aMessageLayer)
+void SetObjects(WeaveMessageLayer * aMessageLayer)
 {
     sMessageLayer = aMessageLayer;
 }
@@ -54,7 +54,7 @@ void SetObjects(WeaveMessageLayer *aMessageLayer)
  *
  * @param[in] aSnapshot     The Snapshot to be updated.
  */
-void UpdateSnapshot(nl::Weave::System::Stats::Snapshot &aSnapshot)
+void UpdateSnapshot(nl::Weave::System::Stats::Snapshot & aSnapshot)
 {
     // Always start from System
     nl::Weave::System::Stats::UpdateSnapshot(aSnapshot);

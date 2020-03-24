@@ -42,28 +42,28 @@ public:
      * a publisher (strictly, a data manager).
      */
 
-    WEAVE_ERROR ViewIndication(ExchangeContext *aResponseCtx, ReferencedTLVData &aPathList);
+    WEAVE_ERROR ViewIndication(ExchangeContext * aResponseCtx, ReferencedTLVData & aPathList);
 
-    WEAVE_ERROR UpdateIndication(ExchangeContext *aResponseCtx, ReferencedTLVData &aDataList);
+    WEAVE_ERROR UpdateIndication(ExchangeContext * aResponseCtx, ReferencedTLVData & aDataList);
 
-    void IncompleteIndication(const uint64_t &aPeerNodeId, StatusReport &aReport);
+    void IncompleteIndication(const uint64_t & aPeerNodeId, StatusReport & aReport);
 
 #if WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
 
-    WEAVE_ERROR SubscribeIndication(ExchangeContext *aResponseCtx, const nl::Weave::Profiles::DataManagement::TopicIdentifier &aTopicId);
+    WEAVE_ERROR SubscribeIndication(ExchangeContext * aResponseCtx,
+                                    const nl::Weave::Profiles::DataManagement::TopicIdentifier & aTopicId);
 
-    WEAVE_ERROR SubscribeIndication(ExchangeContext *aResponseCtx, ReferencedTLVData &aPathList);
+    WEAVE_ERROR SubscribeIndication(ExchangeContext * aResponseCtx, ReferencedTLVData & aPathList);
 
-    WEAVE_ERROR UnsubscribeIndication(const uint64_t &aClientId,
-                                      const nl::Weave::Profiles::DataManagement::TopicIdentifier &aTopicId,
-                                      StatusReport &aReport);
+    WEAVE_ERROR UnsubscribeIndication(const uint64_t & aClientId,
+                                      const nl::Weave::Profiles::DataManagement::TopicIdentifier & aTopicId,
+                                      StatusReport & aReport);
 
-    WEAVE_ERROR CancelSubscriptionIndication(ExchangeContext *aResponseCtx, const nl::Weave::Profiles::DataManagement::TopicIdentifier &aTopicId);
+    WEAVE_ERROR CancelSubscriptionIndication(ExchangeContext * aResponseCtx,
+                                             const nl::Weave::Profiles::DataManagement::TopicIdentifier & aTopicId);
 
-    WEAVE_ERROR NotifyConfirm(const uint64_t &aResponderId,
-                              const nl::Weave::Profiles::DataManagement::TopicIdentifier &aTopicId,
-                              StatusReport &aStatus,
-                              uint16_t aTxnId);
+    WEAVE_ERROR NotifyConfirm(const uint64_t & aResponderId, const nl::Weave::Profiles::DataManagement::TopicIdentifier & aTopicId,
+                              StatusReport & aStatus, uint16_t aTxnId);
 
     /*
      * this method is "special" to the mock publisher and essentially
@@ -73,7 +73,7 @@ public:
 
     WEAVE_ERROR Republish(void);
 
-    uint16_t       mRepublicationCounter;
+    uint16_t mRepublicationCounter;
 
 #endif // WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
 
@@ -82,5 +82,5 @@ public:
      * plus a counter that tells it how often to republish.
      */
 
-    TestProfileDB  mDatabase;
+    TestProfileDB mDatabase;
 };

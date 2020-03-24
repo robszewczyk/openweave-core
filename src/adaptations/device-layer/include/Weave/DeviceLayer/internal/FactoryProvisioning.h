@@ -61,14 +61,13 @@ namespace Internal {
  * This template class provides a default base implementation of the device provisioning feature
  * that can be specialized as needed by compile-time derivation.
  */
-template<class DerivedClass>
-class FactoryProvisioningBase
+template <class DerivedClass> class FactoryProvisioningBase
 {
 public:
     WEAVE_ERROR ProvisionDeviceFromRAM(uint8_t * memRangeStart, uint8_t * memRangeEnd);
 
 protected:
-    bool LocateProvisioningData(uint8_t * memRangeStart, uint8_t * memRangeEnd, uint8_t * & dataStart, size_t & dataLen);
+    bool LocateProvisioningData(uint8_t * memRangeStart, uint8_t * memRangeEnd, uint8_t *& dataStart, size_t & dataLen);
     WEAVE_ERROR StoreProvisioningData(TLV::TLVReader & reader);
     WEAVE_ERROR StoreProvisioningValue(uint8_t tagNum, TLV::TLVReader & reader);
 
@@ -79,8 +78,7 @@ private:
 /**
  * Default implementation of the device factory provisioning feature.
  */
-class FactoryProvisioning
-    : public FactoryProvisioningBase<FactoryProvisioning>
+class FactoryProvisioning : public FactoryProvisioningBase<FactoryProvisioning>
 {
 };
 
@@ -91,25 +89,23 @@ namespace FactoryProvisioningData {
  */
 enum
 {
-    kTag_SerialNumber           = 0,    // [ utf-8 string ] Serial number
-    kTag_MfrDeviceId            = 1,    // [ uint, 64-bit max ] Manufacturer-assigned device id
-    kTag_MfrDeviceCert          = 2,    // [ byte string ] Manufacturer-assigned device certificate
-    kTag_MfrDevicePrivateKey    = 3,    // [ byte string ] Manufacturer-assigned device key
-    kTag_PairingCode            = 4,    // [ utf-8 string ] Pairing code
-    kTag_ProductRev             = 5,    // [ uint, 16-bit max ] Product revision
-    kTag_MfgDate                = 6,    // [ utf-8 string ] Manufacturing date
-    kTag_MfrDeviceICACerts      = 7,    // [ byte string ] Manufacturer-assigned device intermediate CA certificates
+    kTag_SerialNumber        = 0, // [ utf-8 string ] Serial number
+    kTag_MfrDeviceId         = 1, // [ uint, 64-bit max ] Manufacturer-assigned device id
+    kTag_MfrDeviceCert       = 2, // [ byte string ] Manufacturer-assigned device certificate
+    kTag_MfrDevicePrivateKey = 3, // [ byte string ] Manufacturer-assigned device key
+    kTag_PairingCode         = 4, // [ utf-8 string ] Pairing code
+    kTag_ProductRev          = 5, // [ uint, 16-bit max ] Product revision
+    kTag_MfgDate             = 6, // [ utf-8 string ] Manufacturing date
+    kTag_MfrDeviceICACerts   = 7, // [ byte string ] Manufacturer-assigned device intermediate CA certificates
 };
 
 /**
  * Marker used to mark the location of device provisioning data in memory.
  */
-const char kMarker[] = "^OW-PROV-DATA^";
+const char kMarker[]        = "^OW-PROV-DATA^";
 constexpr size_t kMarkerLen = sizeof(kMarker) - 1;
 
 } // namespace FactoryProvisioningData
-
-
 
 } // namespace Internal
 } // namespace DeviceLayer

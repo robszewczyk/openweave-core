@@ -44,115 +44,115 @@
 #define TOOL_NAME "TestWRMP"
 
 #ifndef WEAVE_CONFIG_SECURITY_TEST_MODE
-#define WEAVE_CONFIG_SECURITY_TEST_MODE    1
+#define WEAVE_CONFIG_SECURITY_TEST_MODE 1
 #endif
 
-#define TEST_INITIAL_RETRANS_TIMEOUT       (5000)
-#define TEST_ACTIVE_RETRANS_TIMEOUT        (2000)
-#define VerifyOrFail(TST, MSG) \
-do { \
-    if (!(TST)) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        exit(EXIT_FAILURE); \
-    } \
-} while (0)
+#define TEST_INITIAL_RETRANS_TIMEOUT (5000)
+#define TEST_ACTIVE_RETRANS_TIMEOUT  (2000)
+#define VerifyOrFail(TST, MSG)                                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if (!(TST))                                                                                                                \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            exit(EXIT_FAILURE);                                                                                                    \
+        }                                                                                                                          \
+    } while (0)
 
-#define SuccessOrFail(ERR, MSG) \
-do { \
-    if ((ERR) != WEAVE_NO_ERROR) \
-    { \
-        fprintf(stderr, "%s FAILED: ", __FUNCTION__); \
-        fputs(MSG, stderr); \
-        fputs(ErrorStr(ERR), stderr); \
-        fputs("\n", stderr); \
-        exit(EXIT_FAILURE); \
-    } \
-} while (0)
+#define SuccessOrFail(ERR, MSG)                                                                                                    \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        if ((ERR) != WEAVE_NO_ERROR)                                                                                               \
+        {                                                                                                                          \
+            fprintf(stderr, "%s FAILED: ", __FUNCTION__);                                                                          \
+            fputs(MSG, stderr);                                                                                                    \
+            fputs(ErrorStr(ERR), stderr);                                                                                          \
+            fputs("\n", stderr);                                                                                                   \
+            exit(EXIT_FAILURE);                                                                                                    \
+        }                                                                                                                          \
+    } while (0)
 
 extern uint32_t appContext;
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
-static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-static void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-static void HandleAckRcvd(ExchangeContext *ec, void *ctxt);
-static void HandleDDRcvd(ExchangeContext *ec, uint32_t pauseTime);
-static void HandleThrottleRcvd(ExchangeContext *ec, uint32_t pauseTime);
-static void ThrottleTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-static WEAVE_ERROR SendCustomMessage(ExchangeContext *ec, uint32_t ProfileId, uint8_t msgType, uint16_t sendFlags, PacketBuffer *payload, uint32_t *lAppContext = &appContext);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
+static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+static void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+static void HandleAckRcvd(ExchangeContext * ec, void * ctxt);
+static void HandleDDRcvd(ExchangeContext * ec, uint32_t pauseTime);
+static void HandleThrottleRcvd(ExchangeContext * ec, uint32_t pauseTime);
+static void ThrottleTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+static WEAVE_ERROR SendCustomMessage(ExchangeContext * ec, uint32_t ProfileId, uint8_t msgType, uint16_t sendFlags,
+                                     PacketBuffer * payload, uint32_t * lAppContext = &appContext);
 static void ParseDestAddress();
 
 using nl::StatusReportStr;
 using namespace nl::Weave::Profiles::Security;
-nl::Weave::WeaveExchangeManager *globalExchMgr = 0;
-uint32_t appContext = 0xcafebabe;
-uint32_t appContext2 = 0xbaddcafe;
-uint32_t ThrottlePeriodicMsgCount = 0;
-uint32_t PeriodicMsgCount = 0;
-uint32_t DDTestCount = 0;
-uint32_t ThrottlePauseTime = 2000;
-uint64_t NodeId = 0xdeadbeefcafebabe;
-uint64_t FirstDDTestTime = 0;
-uint64_t SecondDDTestTime = 0;
-bool isAckRcvd = false;
-uint8_t ackCount = 0;
-bool throttleRcvd = false;
-bool DDRcvd = false;
-bool FlowThrottled = false;
-bool ThrottleTimeoutFired = false;
-bool Listening = false;
-int32_t MaxEchoCount = 1;
-int32_t RetransInterval = 0;
-int32_t MaxAckReceiptInterval = 3000000;
-int32_t EchoInterval = 1000000;
-int32_t EchoLength = -1;
-bool UseTCP = true;
-bool UsePASE = false;
-bool UseCASE = false;
-bool UseGroupKeyEnc = false;
-bool Debug = false;
+nl::Weave::WeaveExchangeManager * globalExchMgr = 0;
+uint32_t appContext                             = 0xcafebabe;
+uint32_t appContext2                            = 0xbaddcafe;
+uint32_t ThrottlePeriodicMsgCount               = 0;
+uint32_t PeriodicMsgCount                       = 0;
+uint32_t DDTestCount                            = 0;
+uint32_t ThrottlePauseTime                      = 2000;
+uint64_t NodeId                                 = 0xdeadbeefcafebabe;
+uint64_t FirstDDTestTime                        = 0;
+uint64_t SecondDDTestTime                       = 0;
+bool isAckRcvd                                  = false;
+uint8_t ackCount                                = 0;
+bool throttleRcvd                               = false;
+bool DDRcvd                                     = false;
+bool FlowThrottled                              = false;
+bool ThrottleTimeoutFired                       = false;
+bool Listening                                  = false;
+int32_t MaxEchoCount                            = 1;
+int32_t RetransInterval                         = 0;
+int32_t MaxAckReceiptInterval                   = 3000000;
+int32_t EchoInterval                            = 1000000;
+int32_t EchoLength                              = -1;
+bool UseTCP                                     = true;
+bool UsePASE                                    = false;
+bool UseCASE                                    = false;
+bool UseGroupKeyEnc                             = false;
+bool Debug                                      = false;
 uint64_t DestNodeId;
-const char *DestAddr = NULL;
-uint32_t  TestNum  = 0;
-IPAddress DestIPAddr; // only used for UDP
-uint16_t DestPort; // only used for UDP
-InterfaceId DestIntf = INET_NULL_INTERFACEID; // only used for UDP
-uint64_t LastEchoTime = 0;
-bool WaitingForEchoResp = false;
-uint64_t EchoCount = 0;
-uint64_t EchoRespCount = 0;
+const char * DestAddr = NULL;
+uint32_t TestNum      = 0;
+IPAddress DestIPAddr;                             // only used for UDP
+uint16_t DestPort;                                // only used for UDP
+InterfaceId DestIntf     = INET_NULL_INTERFACEID; // only used for UDP
+uint64_t LastEchoTime    = 0;
+bool WaitingForEchoResp  = false;
+uint64_t EchoCount       = 0;
+uint64_t EchoRespCount   = 0;
 uint64_t CloseECMsgCount = 0;
-uint8_t  EncryptionType = kWeaveEncryptionType_None;
-uint16_t KeyId = WeaveKeyId::kNone;
+uint8_t EncryptionType   = kWeaveEncryptionType_None;
+uint16_t KeyId           = WeaveKeyId::kNone;
 WRMPTestClient WRMPClient;
 WRMPTestServer WRMPServer;
 bool AllowDuplicateMsgs = false;
 
 enum
 {
-    kToolOpt_Listen                         = 1000,
+    kToolOpt_Listen = 1000,
     kToolOpt_Count,
     kToolOpt_AllowDups,
 };
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "listen",     kNoArgument,        kToolOpt_Listen      },
-    { "dest-addr",  kArgumentRequired,  'D'                  },
-    { "count",      kArgumentRequired,  kToolOpt_Count       },
-    { "allow-dups", kNoArgument,        kToolOpt_AllowDups   },
-    { "test",       kArgumentRequired,  'T'                  },
-    { "wait",       kArgumentRequired,  'W'                  },
-    { "retrans",    kArgumentRequired,  'R'                  },
+static OptionDef gToolOptionDefs[] = { { "listen", kNoArgument, kToolOpt_Listen },
+                                       { "dest-addr", kArgumentRequired, 'D' },
+                                       { "count", kArgumentRequired, kToolOpt_Count },
+                                       { "allow-dups", kNoArgument, kToolOpt_AllowDups },
+                                       { "test", kArgumentRequired, 'T' },
+                                       { "wait", kArgumentRequired, 'W' },
+                                       { "retrans", kArgumentRequired, 'R' },
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    { "group-enc",  kNoArgument,        'G'                  },
+                                       { "group-enc", kNoArgument, 'G' },
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    { }
-};
+                                       { } };
 
-static const char *gToolOptionHelp =
+static const char * gToolOptionHelp =
     "  -D, --dest-addr <host>[:<port>][%<interface>]\n"
     "       Send Echo Requests to a specific address rather than one\n"
     "       derived from the destination node id. <host> can be a hostname,\n"
@@ -209,33 +209,19 @@ static const char *gToolOptionHelp =
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
     ;
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
+
+static HelpOptions gHelpOptions(TOOL_NAME,
+                                "Usage: " TOOL_NAME
+                                " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%%<interface>]]\n"
+                                "       " TOOL_NAME " [<options...>] --listen\n",
+                                WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT);
+
+static OptionSet * gToolOptionSets[] = {
+    &gToolOptions, &gNetworkOptions, &gWeaveNodeOptions, &gGroupKeyEncOptions, &gFaultInjectionOptions, &gHelpOptions, NULL
 };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>] <dest-node-id>[@<dest-host>[:<dest-port>][%%<interface>]]\n"
-    "       " TOOL_NAME " [<options...>] --listen\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT
-);
-
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gGroupKeyEncOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    NULL
-};
-
-void PrepareNewBuf(PacketBuffer **buf)
+void PrepareNewBuf(PacketBuffer ** buf)
 {
     *buf = PacketBuffer::New();
     if (*buf == NULL)
@@ -245,7 +231,7 @@ void PrepareNewBuf(PacketBuffer **buf)
         return;
     }
 
-    char *p = (char *) (*buf)->Start();
+    char * p    = (char *) (*buf)->Start();
     int32_t len = sprintf(p, "WRMP Echo Message %" PRIu64 "\n", EchoCount);
 
     if (EchoLength > (*buf)->MaxDataLength())
@@ -267,7 +253,6 @@ void PrepareNewBuf(PacketBuffer **buf)
     }
 
     (*buf)->SetDataLength((uint16_t) len);
-
 }
 
 static bool IsRetransOutsideWindow(uint64_t transmitTime, uint32_t retransTimeout)
@@ -278,23 +263,23 @@ static bool IsRetransOutsideWindow(uint64_t transmitTime, uint32_t retransTimeou
             Now() > (transmitTime + retransTimeout * System::kTimerFactor_micro_per_milli + AckReceiptBufferTime));
 }
 
-//Send Echo Request
-//Wait for Ack piggybacked on Echo Response
+// Send Echo Request
+// Wait for Ack piggybacked on Echo Response
 testStatus_t TestWRMPPiggybackedAckReceipt(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     err = WRMPClient.SendEchoRequest(payloadBuf);
@@ -311,12 +296,13 @@ testStatus_t TestWRMPPiggybackedAckReceipt(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
 
-        if (!Listening) {
+        if (!Listening)
+        {
             if (Now() < LastEchoTime + MaxAckReceiptInterval + RetransInterval)
             {
                 if (isAckRcvd && !WaitingForEchoResp)
@@ -337,7 +323,7 @@ testStatus_t TestWRMPPiggybackedAckReceipt(void)
             {
                 printf("No response received\n");
                 WaitingForEchoResp = false;
-                Done = true;
+                Done               = true;
                 return TEST_FAIL;
             }
         }
@@ -345,24 +331,24 @@ testStatus_t TestWRMPPiggybackedAckReceipt(void)
     return TEST_FAIL;
 }
 
-//Send message that does not solicit reply
-//Allow recipient to Ack timeout and send ack back
+// Send message that does not solicit reply
+// Allow recipient to Ack timeout and send ack back
 testStatus_t TestWRMPTimeoutSolitaryAckReceipt(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint16_t sendFlags = ExchangeContext::kSendFlag_RequestAck;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint16_t sendFlags        = ExchangeContext::kSendFlag_RequestAck;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, sendFlags, payloadBuf);
@@ -376,12 +362,13 @@ testStatus_t TestWRMPTimeoutSolitaryAckReceipt(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
 
-        if (!Listening) {
+        if (!Listening)
+        {
             if (Now() < LastEchoTime + MaxAckReceiptInterval + RetransInterval)
             {
                 if (isAckRcvd)
@@ -403,40 +390,39 @@ testStatus_t TestWRMPTimeoutSolitaryAckReceipt(void)
                 Done = true;
                 return TEST_FAIL;
             }
-
         }
     }
     return TEST_FAIL;
 }
 
-//Send message without the initiator flag.
-//The responder will drop it because it won't find a matching EC, but
-//it should still send back an ACK.
-//For example, this scenario happens when a responder sends a response after
-//the EC has timedout on the initiator.
+// Send message without the initiator flag.
+// The responder will drop it because it won't find a matching EC, but
+// it should still send back an ACK.
+// For example, this scenario happens when a responder sends a response after
+// the EC has timedout on the initiator.
 testStatus_t TestWRMPTimeoutSolitaryAckReceiptNoInitiator(void)
 {
-    testStatus_t testStatus = TEST_PASS;
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint16_t sendFlags = ExchangeContext::kSendFlag_RequestAck;
+    testStatus_t testStatus   = TEST_PASS;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint16_t sendFlags        = ExchangeContext::kSendFlag_RequestAck;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout to a well known value
-    RetransInterval = 10000;
+    // Set the retrans timeout to a well known value
+    RetransInterval                                            = 10000;
     WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-    WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+    WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
 
     WRMPClient.ExchangeCtx->SetInitiator(false);
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, sendFlags, payloadBuf);
     if (err != WEAVE_NO_ERROR)
     {
         printf("WRMPTestClient.SendCustomMessage failed: %s\n", ErrorStr(err));
-        Done = true;
+        Done       = true;
         testStatus = TEST_FAIL;
         goto exit;
     }
@@ -444,12 +430,13 @@ testStatus_t TestWRMPTimeoutSolitaryAckReceiptNoInitiator(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
 
-        if (!Listening) {
+        if (!Listening)
+        {
             if (Now() < LastEchoTime + (RetransInterval - 1000) * 1000)
             {
                 // We want an ACK on the first transmission
@@ -464,7 +451,7 @@ testStatus_t TestWRMPTimeoutSolitaryAckReceiptNoInitiator(void)
                 }
             }
 
-            Done = true;
+            Done       = true;
             testStatus = TEST_FAIL;
         }
     }
@@ -474,32 +461,33 @@ exit:
     return testStatus;
 }
 
-//Send 2 back-to-back messages that require no response from recipient application.
-//Receiving Exchange layer would replace first pending Ack with the second
-//one and flush the first by sending a solitary Ack back.
+// Send 2 back-to-back messages that require no response from recipient application.
+// Receiving Exchange layer would replace first pending Ack with the second
+// one and flush the first by sending a solitary Ack back.
 testStatus_t TestWRMPFlushedSolitaryAckReceipt(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint16_t sendFlags = ExchangeContext::kSendFlag_RequestAck;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint16_t sendFlags        = ExchangeContext::kSendFlag_RequestAck;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, sendFlags, payloadBuf);
     if (err == WEAVE_NO_ERROR)
     {
         PrepareNewBuf(&payloadBuf);
-        err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, sendFlags, payloadBuf);
+        err =
+            SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, sendFlags, payloadBuf);
         if (err != WEAVE_NO_ERROR)
         {
             printf("WRMPTestClient.SendCustomMessage failed: %s\n", ErrorStr(err));
@@ -515,12 +503,13 @@ testStatus_t TestWRMPFlushedSolitaryAckReceipt(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
 
-        if (!Listening) {
+        if (!Listening)
+        {
             if (Now() < LastEchoTime + MaxAckReceiptInterval + RetransInterval)
             {
                 if (isAckRcvd)
@@ -547,29 +536,29 @@ testStatus_t TestWRMPFlushedSolitaryAckReceipt(void)
     return TEST_FAIL;
 }
 
-//Formulate message and then drop it at Message layer
-//Then timeout and retransmit and wait for ack
+// Formulate message and then drop it at Message layer
+// Then timeout and retransmit and wait for ack
 testStatus_t TestWRMPRetransmitMessage(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     WRMPClient.ExchangeMgr->MessageLayer->mDropMessage = true;
 
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Generate_Response,
-                                       ExchangeContext::kSendFlag_RequestAck, payloadBuf);
+                            ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     if (err != WEAVE_NO_ERROR)
     {
         printf("WRMPTestClient.SendCustomMessage failed: %s\n", ErrorStr(err));
@@ -581,12 +570,13 @@ testStatus_t TestWRMPRetransmitMessage(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
 
-        if (!Listening) {
+        if (!Listening)
+        {
             if (Now() < LastEchoTime + MaxAckReceiptInterval + RetransInterval)
             {
                 if (isAckRcvd)
@@ -608,37 +598,35 @@ testStatus_t TestWRMPRetransmitMessage(void)
                 Done = true;
                 return TEST_FAIL;
             }
-
         }
     }
     return TEST_FAIL;
 }
 
-//Force retransmissions while sending a message twice on the same exchange and
-//verify that the times of receipt of Acks conform to the 2 stage retransmit
-//timeouts.
+// Force retransmissions while sending a message twice on the same exchange and
+// verify that the times of receipt of Acks conform to the 2 stage retransmit
+// timeouts.
 testStatus_t TestWRMPTwoStageRetransmitTimeout(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    int32_t MaxTestInterval = (TEST_INITIAL_RETRANS_TIMEOUT + TEST_ACTIVE_RETRANS_TIMEOUT) *
-                               System::kTimerFactor_micro_per_milli +
-                               System::kTimerFactor_micro_per_unit; // extra 1 second
-    uint64_t FirstTransmitTime = 0;
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
+    int32_t MaxTestInterval = (TEST_INITIAL_RETRANS_TIMEOUT + TEST_ACTIVE_RETRANS_TIMEOUT) * System::kTimerFactor_micro_per_milli +
+        System::kTimerFactor_micro_per_unit; // extra 1 second
+    uint64_t FirstTransmitTime  = 0;
     uint64_t SecondTransmitTime = 0;
-    PacketBuffer *payloadBuf = NULL;
+    PacketBuffer * payloadBuf   = NULL;
     PrepareNewBuf(&payloadBuf);
-    isAckRcvd = false;
+    isAckRcvd            = false;
     int twoStageAckCount = 0;
-    Done = false;
+    Done                 = false;
 
-    //Set the initial and active retrans timeout
+    // Set the initial and active retrans timeout
     WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = TEST_INITIAL_RETRANS_TIMEOUT;
-    WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = TEST_ACTIVE_RETRANS_TIMEOUT;
+    WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = TEST_ACTIVE_RETRANS_TIMEOUT;
 
     WRMPClient.ExchangeMgr->MessageLayer->mDropMessage = true;
 
-    err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Generate_Response,
-                                       ExchangeContext::kSendFlag_RequestAck, payloadBuf);
+    err               = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Generate_Response,
+                            ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     FirstTransmitTime = Now();
 
     if (err != WEAVE_NO_ERROR)
@@ -653,12 +641,13 @@ testStatus_t TestWRMPTwoStageRetransmitTimeout(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
 
-        if (!Listening) {
+        if (!Listening)
+        {
             if (Now() < FirstTransmitTime + MaxTestInterval)
             {
                 if (isAckRcvd)
@@ -685,8 +674,7 @@ testStatus_t TestWRMPTwoStageRetransmitTimeout(void)
 
                         // Send the second message which should have the updated
                         // active retransmit timeout.
-                        err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test,
-                                                kWeaveTestMessageType_Generate_Response,
+                        err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Generate_Response,
                                                 ExchangeContext::kSendFlag_RequestAck, payloadBuf);
 
                         // Update last transmit time
@@ -726,22 +714,22 @@ testStatus_t TestWRMPTwoStageRetransmitTimeout(void)
 
 testStatus_t TestWRMPSendThrottleFlowMessage(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
-    //Request a Throttle message
+    // Request a Throttle message
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Request_Throttle,
                             ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     if (err != WEAVE_NO_ERROR)
@@ -754,7 +742,7 @@ testStatus_t TestWRMPSendThrottleFlowMessage(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -787,20 +775,20 @@ testStatus_t TestWRMPSendThrottleFlowMessage(void)
     return TEST_FAIL;
 }
 
-//Send periodic messages to peer prompting a throttle message from Peer
-//Start a timer for the throttle time and check on expiry that no messages
-//were transmitted during that time.
+// Send periodic messages to peer prompting a throttle message from Peer
+// Start a timer for the throttle time and check on expiry that no messages
+// were transmitted during that time.
 testStatus_t TestWRMPThrottleFlowBehavior(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    isAckRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    isAckRcvd    = false;
+    Done         = false;
     LastEchoTime = Now();
-    err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Request_Periodic,
-                                       ExchangeContext::kSendFlag_RequestAck, payloadBuf);
+    err          = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Request_Periodic,
+                            ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     if (err != WEAVE_NO_ERROR)
     {
         printf("WRMPTestClient.SendCustomMessage failed: %s\n", ErrorStr(err));
@@ -811,7 +799,7 @@ testStatus_t TestWRMPThrottleFlowBehavior(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -820,7 +808,7 @@ testStatus_t TestWRMPThrottleFlowBehavior(void)
         {
             if (ThrottleTimeoutFired)
             {
-                //Allow the chance of a second periodic message being sent
+                // Allow the chance of a second periodic message being sent
                 if (PeriodicMsgCount <= 2)
                 {
                     return TEST_PASS;
@@ -835,25 +823,25 @@ testStatus_t TestWRMPThrottleFlowBehavior(void)
     return TEST_FAIL;
 }
 
-//Send a Request for a Delayed Delivery and check on receipt
+// Send a Request for a Delayed Delivery and check on receipt
 testStatus_t TestWRMPSendDelayedDeliveryMessage(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    DDRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    DDRcvd       = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
-    //Kick off the Throttle test by sending a periodic response probe
+    // Kick off the Throttle test by sending a periodic response probe
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_Request_DD,
                             ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     if (err != WEAVE_NO_ERROR)
@@ -866,7 +854,7 @@ testStatus_t TestWRMPSendDelayedDeliveryMessage(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -901,15 +889,15 @@ testStatus_t TestWRMPSendDelayedDeliveryMessage(void)
 
 testStatus_t TestWRMPDelayedDeliveryBehavior(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
-    //Prepare Echo Request
-    DDRcvd = false;
-    Done = false;
+    // Prepare Echo Request
+    DDRcvd       = false;
+    Done         = false;
     LastEchoTime = Now();
 
-    //Kick off the Throttle test by sending a periodic response probe
+    // Kick off the Throttle test by sending a periodic response probe
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_DD_Test,
                             ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     if (err != WEAVE_NO_ERROR)
@@ -918,13 +906,13 @@ testStatus_t TestWRMPDelayedDeliveryBehavior(void)
         Done = true;
         return TEST_FAIL;
     }
-    //Set Drop Ack
+    // Set Drop Ack
     WRMPClient.ExchangeCtx->SetDropAck(true);
 
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -933,8 +921,8 @@ testStatus_t TestWRMPDelayedDeliveryBehavior(void)
         {
             if (SecondDDTestTime)
             {
-                //Allow the chance of a second periodic message being sent
-                printf("Delay is %" PRIx64 "\n", (SecondDDTestTime - FirstDDTestTime)/1000);
+                // Allow the chance of a second periodic message being sent
+                printf("Delay is %" PRIx64 "\n", (SecondDDTestTime - FirstDDTestTime) / 1000);
                 if ((SecondDDTestTime - FirstDDTestTime) >= (ThrottlePauseTime * 1000))
                 {
                     return TEST_PASS;
@@ -955,14 +943,13 @@ testStatus_t TestWRMPDelayedDeliveryBehavior(void)
 
 testStatus_t TestWRMPSendVer2AfterVer1(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
     PrepareNewBuf(&payloadBuf);
 
-    //Kick off the Throttle test by sending a periodic response probe
-    err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, 0,
-                            payloadBuf);
-    //err = WRMPClient.SendEchoRequest(payloadBuf);
+    // Kick off the Throttle test by sending a periodic response probe
+    err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response, 0, payloadBuf);
+    // err = WRMPClient.SendEchoRequest(payloadBuf);
     if (err == WEAVE_NO_ERROR)
     {
         PrepareNewBuf(&payloadBuf);
@@ -988,43 +975,40 @@ testStatus_t TestWRMPSendVer2AfterVer1(void)
 
 testStatus_t TestWRMPDuplicateMsgAcking(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint8_t *p = NULL;
-    uint16_t len = 0;
-    Done = false;
-    isAckRcvd = false;
-    ackCount = 0;
-    LastEchoTime = Now();
-
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint8_t * p               = NULL;
+    uint16_t len              = 0;
+    Done                      = false;
+    isAckRcvd                 = false;
+    ackCount                  = 0;
+    LastEchoTime              = Now();
 
     PrepareNewBuf(&payloadBuf);
 
-    //Form the message
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Msg Detection");
+    // Form the message
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Msg Detection");
     memcpy(p + len, p, len);
     payloadBuf->SetDataLength(len);
 
-    //Set the retrans timeout
+    // Set the retrans timeout
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
-    //Send the first message and then immediately send a duplicate message.
+    // Send the first message and then immediately send a duplicate message.
     err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response,
-                            ExchangeContext::kSendFlag_RequestAck | ExchangeContext::kSendFlag_RetainBuffer,
-                            payloadBuf);
+                            ExchangeContext::kSendFlag_RequestAck | ExchangeContext::kSendFlag_RetainBuffer, payloadBuf);
     if (err == WEAVE_NO_ERROR)
     {
         PrepareNewBuf(&payloadBuf);
         payloadBuf->SetStart(p);
         payloadBuf->SetDataLength(len);
         err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, kWeaveTestMessageType_No_Response,
-                                ExchangeContext::kSendFlag_RequestAck | ExchangeContext::kSendFlag_ReuseMessageId,
-                                payloadBuf);
+                                ExchangeContext::kSendFlag_RequestAck | ExchangeContext::kSendFlag_ReuseMessageId, payloadBuf);
 
         if (err != WEAVE_NO_ERROR)
         {
@@ -1041,7 +1025,7 @@ testStatus_t TestWRMPDuplicateMsgAcking(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -1087,26 +1071,26 @@ testStatus_t TestWRMPDuplicateMsgAcking(void)
 //  - I receives ack for the CloseEC msg.
 testStatus_t TestWRMPDuplicateMsgLostAck(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint8_t *p = NULL;
-    uint16_t len = 0;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint8_t * p               = NULL;
+    uint16_t len              = 0;
 
-    Done = false;
-    ackCount = 0;
+    Done         = false;
+    ackCount     = 0;
     LastEchoTime = Now();
 
     // Set the retrans timeout.
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     // Form SetDropAck messages.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection SetDropAck Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection SetDropAck Msg");
     payloadBuf->SetDataLength(len);
 
     // Send this message with command to drop ack for the next received message.
@@ -1116,8 +1100,8 @@ testStatus_t TestWRMPDuplicateMsgLostAck(void)
 
     // Form LostAck messages.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection LostAck Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection LostAck Msg");
     payloadBuf->SetDataLength(len);
 
     // Send second message.
@@ -1129,7 +1113,7 @@ testStatus_t TestWRMPDuplicateMsgLostAck(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -1165,26 +1149,26 @@ testStatus_t TestWRMPDuplicateMsgLostAck(void)
 //  - I receives ack for the CloseEC msg.
 testStatus_t TestWRMPDuplicateMsgAckOnClosedExResponder(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint8_t *p = NULL;
-    uint16_t len = 0;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint8_t * p               = NULL;
+    uint16_t len              = 0;
 
-    Done = false;
-    ackCount = 0;
+    Done         = false;
+    ackCount     = 0;
     LastEchoTime = Now();
 
     // Set the retrans timeout.
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     // Form SetDropAck messages.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection SetDropAck Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection SetDropAck Msg");
     payloadBuf->SetDataLength(len);
 
     // Send this message with command to drop ack for the next received message.
@@ -1194,8 +1178,8 @@ testStatus_t TestWRMPDuplicateMsgAckOnClosedExResponder(void)
 
     // Form CloseEC messages.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection CloseEC Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection CloseEC Msg");
     payloadBuf->SetDataLength(len);
 
     // Send second message.
@@ -1209,7 +1193,7 @@ testStatus_t TestWRMPDuplicateMsgAckOnClosedExResponder(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -1243,20 +1227,20 @@ testStatus_t TestWRMPDuplicateMsgAckOnClosedExResponder(void)
 //  - R receives ack for the CloseEC msg.
 testStatus_t TestWRMPDuplicateMsgAckOnClosedExInitiator(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint8_t *p = NULL;
-    uint16_t len = 0;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint8_t * p               = NULL;
+    uint16_t len              = 0;
 
-    Done = false;
-    ackCount = 0;
+    Done         = false;
+    ackCount     = 0;
     LastEchoTime = Now();
 
     // Set the retrans timeout.
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     // Set DropAck flag.
@@ -1264,8 +1248,8 @@ testStatus_t TestWRMPDuplicateMsgAckOnClosedExInitiator(void)
 
     // Form RequestCloseEC message.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection RequestCloseEC Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection RequestCloseEC Msg");
     payloadBuf->SetDataLength(len);
 
     // Send RequestCloseEC message.
@@ -1276,7 +1260,7 @@ testStatus_t TestWRMPDuplicateMsgAckOnClosedExInitiator(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -1304,42 +1288,41 @@ testStatus_t TestWRMPDuplicateMsgAckOnClosedExInitiator(void)
 // Test duplicate message detection mechanism.
 testStatus_t TestWRMPDuplicateMsgDetection(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    PacketBuffer *payloadBuf = NULL;
-    uint8_t *p = NULL;
-    uint16_t len = 0;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    PacketBuffer * payloadBuf = NULL;
+    uint8_t * p               = NULL;
+    uint16_t len              = 0;
     uint16_t msgType;
     uint64_t expectedEchoRespCount;
 
-    Done = false;
+    Done          = false;
     EchoRespCount = 0;
-    LastEchoTime = Now();
+    LastEchoTime  = Now();
 
     // Set the retrans timeout.
     if (RetransInterval)
     {
         WRMPClient.ExchangeCtx->mWRMPConfig.mInitialRetransTimeout = RetransInterval;
-        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout = RetransInterval;
+        WRMPClient.ExchangeCtx->mWRMPConfig.mActiveRetransTimeout  = RetransInterval;
     }
 
     // Form AllowDup/DontAllowDup message.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection Set Allow Dup Flag Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection Set Allow Dup Flag Msg");
     payloadBuf->SetDataLength(len);
 
     // Set test message type.
     msgType = AllowDuplicateMsgs ? kWeaveTestMessageType_AllowDup : kWeaveTestMessageType_DontAllowDup;
 
     // Sent this message to enable/disable duplicate message on the related peer exchange.
-    err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, msgType,
-                            ExchangeContext::kSendFlag_RequestAck, payloadBuf);
+    err = SendCustomMessage(WRMPClient.ExchangeCtx, kWeaveProfile_Test, msgType, ExchangeContext::kSendFlag_RequestAck, payloadBuf);
     SuccessOrFail(err, "WRMPTestClient.SendCustomMessage failed to send AllowDup/DontAllowDup message\n");
 
     // Form SetDropAck messages.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection SetDropAck Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection SetDropAck Msg");
     payloadBuf->SetDataLength(len);
 
     // Send this message with command to drop ack for the next received message.
@@ -1351,8 +1334,8 @@ testStatus_t TestWRMPDuplicateMsgDetection(void)
     {
         // Form EchoRequest message.
         PrepareNewBuf(&payloadBuf);
-        p = payloadBuf->Start();
-        len = sprintf((char *)p, "Dup Detection Send Echo Request Msg");
+        p   = payloadBuf->Start();
+        len = sprintf((char *) p, "Dup Detection Send Echo Request Msg");
         payloadBuf->SetDataLength(len - MaxEchoCount + i);
 
         if (i % 2 == 0)
@@ -1372,8 +1355,8 @@ testStatus_t TestWRMPDuplicateMsgDetection(void)
 
     // Form ClearDropAck messages.
     PrepareNewBuf(&payloadBuf);
-    p = payloadBuf->Start();
-    len = sprintf((char *)p, "Dup Detection ClearDropAck Msg");
+    p   = payloadBuf->Start();
+    len = sprintf((char *) p, "Dup Detection ClearDropAck Msg");
     payloadBuf->SetDataLength(len);
 
     // Send this message with command to drop ack for the next received message.
@@ -1398,7 +1381,7 @@ testStatus_t TestWRMPDuplicateMsgDetection(void)
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -1407,7 +1390,8 @@ testStatus_t TestWRMPDuplicateMsgDetection(void)
         {
             if (Now() > LastEchoTime + MaxAckReceiptInterval + 5 * RetransInterval)
             {
-                printf("\nEchoRespCount = %" PRIu64 "; Expected EchoRespCount = %" PRIu64 "\n\n", EchoRespCount, expectedEchoRespCount);
+                printf("\nEchoRespCount = %" PRIu64 "; Expected EchoRespCount = %" PRIu64 "\n\n", EchoRespCount,
+                       expectedEchoRespCount);
                 if (EchoRespCount == expectedEchoRespCount)
                 {
                     return TEST_PASS;
@@ -1423,13 +1407,13 @@ testStatus_t TestWRMPDuplicateMsgDetection(void)
     return TEST_FAIL;
 }
 
-struct Tests {
+struct Tests
+{
     testStatus_t (*mTest)(void);
     const char * mTestName;
 };
 
-Tests gTests[] =
-{
+Tests gTests[] = {
     { .mTest = TestWRMPTimeoutSolitaryAckReceipt, .mTestName = "TestWRMPTimeoutSolitaryAckReceipt" },
     { .mTest = TestWRMPTimeoutSolitaryAckReceiptNoInitiator, .mTestName = "TestWRMPTimeoutSolitaryAckReceiptNoInitiator," },
     { .mTest = TestWRMPFlushedSolitaryAckReceipt, .mTestName = "TestWRMPFlushedSolitaryAckReceipt" },
@@ -1450,7 +1434,7 @@ Tests gTests[] =
 
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     WEAVE_ERROR err  = WEAVE_NO_ERROR;
@@ -1473,7 +1457,7 @@ int main(int argc, char *argv[])
     if (UseGroupKeyEnc)
     {
         EncryptionType = kWeaveEncryptionType_AES128CTRSHA1;
-        KeyId = gGroupKeyEncOptions.GetEncKeyId();
+        KeyId          = gGroupKeyEncOptions.GetEncKeyId();
         if (KeyId == WeaveKeyId::kNone)
         {
             PrintArgError("%s: Please specify a group encryption key id using the --group-enc-... options.\n", TOOL_NAME);
@@ -1523,8 +1507,8 @@ int main(int argc, char *argv[])
         // Arrange to get a callback whenever an Echo Request is received.
         WRMPServer.OnEchoRequestReceived = HandleEchoRequestReceived;
 
-        //SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
-        //SecurityMgr.OnSessionError = HandleSecureSessionError;
+        // SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
+        // SecurityMgr.OnSessionError = HandleSecureSessionError;
     }
 
     PrintNodeConfig();
@@ -1538,16 +1522,16 @@ int main(int argc, char *argv[])
         else
             printf("Sending WRMP Messages to node %" PRIX64 " at %s\n", DestNodeId, DestAddr);
 
-        TestNum --;
+        TestNum--;
         if (TestNum >= (sizeof(gTests) / sizeof(Tests)))
         {
 
-            printf("Wrong WRMP Test Num %d\n", (TestNum+1));
+            printf("Wrong WRMP Test Num %d\n", (TestNum + 1));
             printf("Should be one of set of Tests below\n");
             size_t numTests = (sizeof(gTests) / sizeof(Tests));
             for (size_t testIndex = 0; testIndex < numTests; testIndex++)
             {
-                printf("%-55s [%2zu]\n", gTests[testIndex].mTestName, testIndex+1);
+                printf("%-55s [%2zu]\n", gTests[testIndex].mTestName, testIndex + 1);
             }
             exit(EXIT_FAILURE);
         }
@@ -1566,11 +1550,10 @@ int main(int argc, char *argv[])
         while (!Done)
         {
             struct timeval sleepTime;
-            sleepTime.tv_sec = 0;
+            sleepTime.tv_sec  = 0;
             sleepTime.tv_usec = 100000;
 
             ServiceNetwork(sleepTime);
-
         }
     }
     WRMPClient.Shutdown();
@@ -1586,29 +1569,24 @@ int main(int argc, char *argv[])
 }
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-void HandleEchoRequestReceived(uint64_t nodeId,
-                               IPAddress nodeAddr,
-                               PacketBuffer *payload)
+void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     if (Listening)
     {
         char ipAddrStr[64];
         nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
-        printf("WRMP Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n",
-                nodeId, ipAddrStr,
-                payload->DataLength());
+        printf("WRMP Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n", nodeId, ipAddrStr,
+               payload->DataLength());
 
         if (Debug)
             DumpMemory(payload->Start(), payload->DataLength(), "    ", 16);
     }
 }
 
-void HandleEchoResponseReceived(uint64_t nodeId,
-                                IPAddress nodeAddr,
-                                PacketBuffer *payload)
+void HandleEchoResponseReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
-    uint32_t respTime = Now();
+    uint32_t respTime    = Now();
     uint32_t transitTime = respTime - LastEchoTime;
 
     WaitingForEchoResp = false;
@@ -1617,31 +1595,23 @@ void HandleEchoResponseReceived(uint64_t nodeId,
     char ipAddrStr[64];
     nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
-    printf("WRMP Echo Response from node %" PRIX64 " (%s): %" PRIu64 "/%" PRIu64 "(%.2f%%) len=%u time=%.3fms\n",
-            nodeId, ipAddrStr,
-            EchoRespCount, EchoCount, ((double) EchoRespCount) * 100 / EchoCount,
-            payload->DataLength(),
-            ((double) transitTime) / 1000);
+    printf("WRMP Echo Response from node %" PRIX64 " (%s): %" PRIu64 "/%" PRIu64 "(%.2f%%) len=%u time=%.3fms\n", nodeId, ipAddrStr,
+           EchoRespCount, EchoCount, ((double) EchoRespCount) * 100 / EchoCount, payload->DataLength(),
+           ((double) transitTime) / 1000);
 
     if (Debug)
         DumpMemory(payload->Start(), payload->DataLength(), "    ", 16);
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    case 'G':
-        UseGroupKeyEnc = true;
-        break;
+    case 'G': UseGroupKeyEnc = true; break;
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
-    case kToolOpt_AllowDups:
-        AllowDuplicateMsgs = true;
-        break;
-    case kToolOpt_Listen:
-        Listening = true;
-        break;
+    case kToolOpt_AllowDups: AllowDuplicateMsgs = true; break;
+    case kToolOpt_Listen: Listening = true; break;
     case kToolOpt_Count:
         if (!ParseInt(arg, MaxEchoCount) || MaxEchoCount < 0 || MaxEchoCount > 30)
         {
@@ -1649,9 +1619,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'D':
-        DestAddr = arg;
-        break;
+    case 'D': DestAddr = arg; break;
     case 'T':
         if (!arg || !ParseInt(arg, TestNum))
         {
@@ -1673,15 +1641,13 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc > 0)
     {
@@ -1697,12 +1663,12 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
             return false;
         }
 
-        const char *nodeId = argv[0];
-        char *p = (char *)strchr(nodeId, '@');
+        const char * nodeId = argv[0];
+        char * p            = (char *) strchr(nodeId, '@');
         if (p != NULL)
         {
-            *p = 0;
-            DestAddr = p+1;
+            *p       = 0;
+            DestAddr = p + 1;
         }
 
         if (!ParseNodeId(nodeId, DestNodeId))
@@ -1727,9 +1693,9 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
 void ParseDestAddress()
 {
     WEAVE_ERROR err;
-    const char *addr;
+    const char * addr;
     uint16_t addrLen;
-    const char *intfName;
+    const char * intfName;
     uint16_t intfNameLen;
 
     err = ParseHostPortAndInterface(DestAddr, strlen(DestAddr), addr, addrLen, DestPort, intfName, intfNameLen);
@@ -1759,20 +1725,21 @@ void ParseDestAddress()
 //++++++++WRMPTestClient Class+++++++++++++++++++++//
 WRMPTestClient::WRMPTestClient()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState            = NULL;
+    ExchangeMgr            = NULL;
     OnEchoResponseReceived = NULL;
-    ExchangeCtx = NULL;
+    ExchangeCtx            = NULL;
 }
 
-WEAVE_ERROR WRMPTestClient::Init(WeaveExchangeManager *exchangeMgr, uint64_t nodeId, IPAddress nodeAddr, uint16_t port, InterfaceId sendIntfId)
+WEAVE_ERROR WRMPTestClient::Init(WeaveExchangeManager * exchangeMgr, uint64_t nodeId, IPAddress nodeAddr, uint16_t port,
+                                 InterfaceId sendIntfId)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
+    ExchangeMgr            = exchangeMgr;
+    FabricState            = exchangeMgr->FabricState;
     OnEchoResponseReceived = NULL;
 
     ExchangeCtx = ExchangeMgr->NewContext(nodeId, nodeAddr, WEAVE_PORT, sendIntfId, this);
@@ -1781,7 +1748,7 @@ WEAVE_ERROR WRMPTestClient::Init(WeaveExchangeManager *exchangeMgr, uint64_t nod
         return WEAVE_ERROR_NO_MEMORY;
     }
 
-    //Set callbacks
+    // Set callbacks
     ExchangeCtx->OnAckRcvd      = HandleAckRcvd;
     ExchangeCtx->OnDDRcvd       = HandleDDRcvd;
     ExchangeCtx->OnThrottleRcvd = HandleThrottleRcvd;
@@ -1789,11 +1756,11 @@ WEAVE_ERROR WRMPTestClient::Init(WeaveExchangeManager *exchangeMgr, uint64_t nod
     return WEAVE_NO_ERROR;
 }
 
-void ThrottleTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void ThrottleTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
-    //Check the global ThrottlePeriodicMsgCount
+    // Check the global ThrottlePeriodicMsgCount
     printf("Throttle Timeout: Periodic message count is %d\n", PeriodicMsgCount);
-    FlowThrottled = false;
+    FlowThrottled        = false;
     ThrottleTimeoutFired = true;
 }
 
@@ -1811,17 +1778,18 @@ WEAVE_ERROR WRMPTestClient::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WRMPTestClient::SendEchoRequest(PacketBuffer *payload)
+WEAVE_ERROR WRMPTestClient::SendEchoRequest(PacketBuffer * payload)
 {
     // Configure the encryption and signature types to be used to send the request.
     ExchangeCtx->EncryptionType = EncryptionType;
-    ExchangeCtx->KeyId = KeyId;
+    ExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     ExchangeCtx->OnMessageReceived = HandleResponse;
 
     // Send an Echo Request message. Discard the exchange context if the send fails.
-    WEAVE_ERROR err = ExchangeCtx->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payload, ExchangeContext::kSendFlag_RequestAck, &appContext);
+    WEAVE_ERROR err = ExchangeCtx->SendMessage(kWeaveProfile_Echo, kEchoMessageType_EchoRequest, payload,
+                                               ExchangeContext::kSendFlag_RequestAck, &appContext);
     if (err != WEAVE_NO_ERROR)
     {
         ExchangeCtx->Close();
@@ -1831,11 +1799,11 @@ WEAVE_ERROR WRMPTestClient::SendEchoRequest(PacketBuffer *payload)
     return err;
 }
 
-WEAVE_ERROR WRMPTestClient::SendEchoRequest(PacketBuffer *payload, uint16_t sendFlags)
+WEAVE_ERROR WRMPTestClient::SendEchoRequest(PacketBuffer * payload, uint16_t sendFlags)
 {
     // Configure the encryption and signature types to be used to send the request.
     ExchangeCtx->EncryptionType = EncryptionType;
-    ExchangeCtx->KeyId = KeyId;
+    ExchangeCtx->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     ExchangeCtx->OnMessageReceived = HandleResponse;
@@ -1851,11 +1819,12 @@ WEAVE_ERROR WRMPTestClient::SendEchoRequest(PacketBuffer *payload, uint16_t send
     return err;
 }
 
-WEAVE_ERROR SendCustomMessage(ExchangeContext *ec, uint32_t ProfileId, uint8_t msgType, uint16_t sendFlags, PacketBuffer *payload, uint32_t *lAppContext)
+WEAVE_ERROR SendCustomMessage(ExchangeContext * ec, uint32_t ProfileId, uint8_t msgType, uint16_t sendFlags, PacketBuffer * payload,
+                              uint32_t * lAppContext)
 {
     // Configure the encryption and signature types to be used to send the request.
     ec->EncryptionType = EncryptionType;
-    ec->KeyId = KeyId;
+    ec->KeyId          = KeyId;
 
     // Arrange for messages in this exchange to go to our response handler.
     if (!Listening)
@@ -1870,9 +1839,10 @@ WEAVE_ERROR SendCustomMessage(ExchangeContext *ec, uint32_t ProfileId, uint8_t m
     return ec->SendMessage(ProfileId, msgType, payload, sendFlags, lAppContext);
 }
 
-void WRMPTestClient::HandleResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WRMPTestClient::HandleResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WRMPTestClient *wrmpClientApp = (WRMPTestClient *)ec->AppState;
+    WRMPTestClient * wrmpClientApp = (WRMPTestClient *) ec->AppState;
     // Verify that the exchange context matches our current context. Bail if not.
     if (ec != wrmpClientApp->ExchangeCtx)
     {
@@ -1892,7 +1862,7 @@ void WRMPTestClient::HandleResponse(ExchangeContext *ec, const IPPacketInfo *pkt
         if (PeriodicMsgCount == 1)
         {
             ec->WRMPSendThrottleFlow(ThrottlePauseTime);
-            //Start the timer
+            // Start the timer
             globalExchMgr->MessageLayer->SystemLayer->StartTimer(ThrottlePauseTime, ThrottleTimeout, NULL);
         }
     }
@@ -1902,19 +1872,18 @@ void WRMPTestClient::HandleResponse(ExchangeContext *ec, const IPPacketInfo *pkt
         {
             FirstDDTestTime = Now();
             DDTestCount++;
-            //Reset DropAck
+            // Reset DropAck
             ec->SetDropAck(false);
             // Allow duplicates for this exchange so we can process second DD_Test message.
             ec->AllowDuplicateMsgs = true;
-            //Send Delayed Delivery
+            // Send Delayed Delivery
             ec->WRMPSendDelayedDelivery(ThrottlePauseTime, globalExchMgr->FabricState->LocalNodeId);
         }
         else
         {
             SecondDDTestTime = Now();
         }
-        //Note the time and wait for second one and compare with ThrottlePauseTime
-
+        // Note the time and wait for second one and compare with ThrottlePauseTime
     }
     if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_CloseEC)
     {
@@ -1940,19 +1909,19 @@ void WRMPTestClient::HandleResponse(ExchangeContext *ec, const IPPacketInfo *pkt
 //++++++++WRMPTestServer Class+++++++++++++++++++++//
 WRMPTestServer::WRMPTestServer()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState           = NULL;
+    ExchangeMgr           = NULL;
     OnEchoRequestReceived = NULL;
 }
 
-WEAVE_ERROR WRMPTestServer::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR WRMPTestServer::Init(WeaveExchangeManager * exchangeMgr)
 {
     // Error if already initialized.
     if (ExchangeMgr != NULL)
         return WEAVE_ERROR_INCORRECT_STATE;
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
+    ExchangeMgr           = exchangeMgr;
+    FabricState           = exchangeMgr->FabricState;
     OnEchoRequestReceived = NULL;
 
     // Register to receive unsolicited messages from the exchange manager.
@@ -1995,14 +1964,14 @@ WEAVE_ERROR WRMPTestServer::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR WRMPTestServer::GeneratePeriodicMessage(int MaxCount, ExchangeContext *ec)
+WEAVE_ERROR WRMPTestServer::GeneratePeriodicMessage(int MaxCount, ExchangeContext * ec)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     struct timeval sleepTime;
-    sleepTime.tv_sec = 0;
-    sleepTime.tv_usec = 100000;
-    PacketBuffer *payloadBuf = NULL;
-    uint32_t msgCount = 0;
+    sleepTime.tv_sec          = 0;
+    sleepTime.tv_usec         = 100000;
+    PacketBuffer * payloadBuf = NULL;
+    uint32_t msgCount         = 0;
 
     printf("Send max of %d Periodic Messages\n", MaxCount);
     for (int i = 0; i < MaxCount; i++)
@@ -2010,10 +1979,7 @@ WEAVE_ERROR WRMPTestServer::GeneratePeriodicMessage(int MaxCount, ExchangeContex
         if (!FlowThrottled)
         {
             PrepareNewBuf(&payloadBuf);
-            err = SendCustomMessage(ec,
-                                    kWeaveProfile_Test,
-                                    kWeaveTestMessageType_Periodic,
-                                    ExchangeContext::kSendFlag_RequestAck,
+            err = SendCustomMessage(ec, kWeaveProfile_Test, kWeaveTestMessageType_Periodic, ExchangeContext::kSendFlag_RequestAck,
                                     payloadBuf);
 
             payloadBuf = NULL;
@@ -2033,12 +1999,12 @@ WEAVE_ERROR WRMPTestServer::GeneratePeriodicMessage(int MaxCount, ExchangeContex
     return err;
 }
 
-void WRMPTestServer::HandleRcvdMessage(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WRMPTestServer::HandleRcvdMessage(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                       uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WRMPTestServer *wrmpServApp = (WRMPTestServer *) ec->AppState;
+    WRMPTestServer * wrmpServApp = (WRMPTestServer *) ec->AppState;
 
-    //Set the application callbacks first
+    // Set the application callbacks first
     ec->OnAckRcvd      = HandleAckRcvd;
     ec->OnDDRcvd       = HandleDDRcvd;
     ec->OnThrottleRcvd = HandleThrottleRcvd;
@@ -2061,29 +2027,23 @@ void WRMPTestServer::HandleRcvdMessage(ExchangeContext *ec, const IPPacketInfo *
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_Generate_Response)
     {
         printf("Received Test Msg Type Generate_Response; Send Solitary Ack\n");
-        ec->SendMessage(nl::Weave::Profiles::kWeaveProfile_Common,
-                        nl::Weave::Profiles::Common::kMsgType_Null,
-                        payload);
-
+        ec->SendMessage(nl::Weave::Profiles::kWeaveProfile_Common, nl::Weave::Profiles::Common::kMsgType_Null, payload);
     }
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_No_Response)
     {
         printf("Received Test Msg Type No_Response\n");
-
     }
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_Request_Throttle)
     {
         printf("Received Request for Throttle; Sending Throttle Msg with PauseTime %d\n", ThrottlePauseTime);
         ec->WRMPSendThrottleFlow(ThrottlePauseTime);
-
     }
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_Request_DD)
     {
-        //Send the DD message.
+        // Send the DD message.
         printf("Received Request for Delayed Delivery; Sending Delayed Delivery Msg with PauseTime %d and NodeId 0x%" PRIx64 "\n",
-                ThrottlePauseTime, globalExchMgr->FabricState->LocalNodeId);
+               ThrottlePauseTime, globalExchMgr->FabricState->LocalNodeId);
         ec->WRMPSendDelayedDelivery(ThrottlePauseTime, globalExchMgr->FabricState->LocalNodeId);
-
     }
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_Request_Periodic)
     {
@@ -2093,7 +2053,8 @@ void WRMPTestServer::HandleRcvdMessage(ExchangeContext *ec, const IPPacketInfo *
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_DD_Test)
     {
         printf("Received Test Msg Type DD_Test; Send back DD_Test\n");
-        WEAVE_ERROR err = SendCustomMessage(ec, kWeaveProfile_Test, kWeaveTestMessageType_DD_Test, ExchangeContext::kSendFlag_RequestAck, payload);
+        WEAVE_ERROR err = SendCustomMessage(ec, kWeaveProfile_Test, kWeaveTestMessageType_DD_Test,
+                                            ExchangeContext::kSendFlag_RequestAck, payload);
         SuccessOrFail(err, "WRMPTestClient.SendCustomMessage failed to send DD_Test message\n");
     }
     else if (profileId == kWeaveProfile_Test && msgType == kWeaveTestMessageType_SetDropAck)
@@ -2112,7 +2073,8 @@ void WRMPTestServer::HandleRcvdMessage(ExchangeContext *ec, const IPPacketInfo *
     {
         if (!(msgInfo->Flags & kWeaveMessageFlag_DuplicateMessage))
         {
-            printf("TestWRMP: Received Test Msg Type Lost_Ack; Clearing DropAck flag not sending ack because it is not a duplicate\n");
+            printf(
+                "TestWRMP: Received Test Msg Type Lost_Ack; Clearing DropAck flag not sending ack because it is not a duplicate\n");
             ec->SetDropAck(false);
         }
         else
@@ -2140,7 +2102,7 @@ void WRMPTestServer::HandleRcvdMessage(ExchangeContext *ec, const IPPacketInfo *
         printf("TestWRMP: Received Test Msg Type RequestCloseEC; Sending CloseEC msg as requested\n");
 
         // Form CloseEC messages.
-        uint16_t len = sprintf((char *)(payload->Start()), "Dup Detection CloseEC Msg");
+        uint16_t len = sprintf((char *) (payload->Start()), "Dup Detection CloseEC Msg");
         payload->SetDataLength(len);
 
         // Send CloseEC message.
@@ -2173,18 +2135,20 @@ void WRMPTestServer::HandleRcvdMessage(ExchangeContext *ec, const IPPacketInfo *
         }
         else
         {
-            printf("TestWRMP: Received Test Msg Type EchoRequestForDup; Not sending response because the message is not a duplicate\n");
+            printf(
+                "TestWRMP: Received Test Msg Type EchoRequestForDup; Not sending response because the message is not a "
+                "duplicate\n");
             PacketBuffer::Free(payload);
         }
     }
 }
 
-void HandleAckRcvd(ExchangeContext *ec, void *msgCtxt)
+void HandleAckRcvd(ExchangeContext * ec, void * msgCtxt)
 {
     uint32_t context;
     if (msgCtxt)
     {
-        context = *((uint32_t *)(msgCtxt));
+        context = *((uint32_t *) (msgCtxt));
         if (context == appContext || context == appContext2)
         {
             printf("Received Ack for Context: %X\n", context);
@@ -2198,13 +2162,13 @@ void HandleAckRcvd(ExchangeContext *ec, void *msgCtxt)
     }
 }
 
-void HandleDDRcvd(ExchangeContext *ec, uint32_t pauseTime)
+void HandleDDRcvd(ExchangeContext * ec, uint32_t pauseTime)
 {
     printf("Received Delayed Delivery Msg for node Id 0x%" PRIx64 " with pauseTime %d\n", ec->PeerNodeId, pauseTime);
     DDRcvd = true;
 }
 
-void HandleThrottleRcvd(ExchangeContext *ec, uint32_t pauseTime)
+void HandleThrottleRcvd(ExchangeContext * ec, uint32_t pauseTime)
 {
     printf("Received Throttle Msg with pauseTime %d from peer %" PRId64 "\n", pauseTime, ec->PeerNodeId);
     throttleRcvd = true;

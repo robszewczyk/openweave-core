@@ -33,7 +33,6 @@
 #include <weave/common/TimeOfDayStructSchema.h>
 #include <google/protobuf/FieldMaskStructSchema.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -42,15 +41,17 @@ namespace BasicUserSchedulesSettingsTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xd02U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xd02U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -99,12 +100,12 @@ struct DailyRepeatingScheduleItem
     uint32_t duration;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct DailyRepeatingScheduleItem_array {
+struct DailyRepeatingScheduleItem_array
+{
     uint32_t num;
-    DailyRepeatingScheduleItem *buf;
+    DailyRepeatingScheduleItem * buf;
 };
 
 struct TimeboxScheduleItem
@@ -116,15 +117,15 @@ struct TimeboxScheduleItem
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsEndTimePresent(void);
 #endif
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct TimeboxScheduleItem_array {
+struct TimeboxScheduleItem_array
+{
     uint32_t num;
-    TimeboxScheduleItem *buf;
+    TimeboxScheduleItem * buf;
 };
 
 inline void TimeboxScheduleItem::SetEndTimeNull(void)
@@ -150,12 +151,12 @@ struct BasicUserSchedule
     Schema::Weave::Trait::Schedule::BasicUserSchedulesSettingsTrait::TimeboxScheduleItem_array timeBoxSchedules;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct BasicUserSchedule_array {
+struct BasicUserSchedule_array
+{
     uint32_t num;
-    BasicUserSchedule *buf;
+    BasicUserSchedule * buf;
 };
 
 //
@@ -171,52 +172,60 @@ struct OfflineDeviceSyncSchedulesEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xd02U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xd02U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct OfflineDeviceSyncSchedulesEvent_array {
+struct OfflineDeviceSyncSchedulesEvent_array
+{
     uint32_t num;
-    OfflineDeviceSyncSchedulesEvent *buf;
+    OfflineDeviceSyncSchedulesEvent * buf;
 };
-
 
 //
 // Commands
 //
 
-enum {
-    kSetUserScheduleRequestId = 0x1,
-    kGetUserScheduleRequestId = 0x2,
+enum
+{
+    kSetUserScheduleRequestId    = 0x1,
+    kGetUserScheduleRequestId    = 0x2,
     kDeleteUserScheduleRequestId = 0x3,
 };
 
-enum SetUserScheduleRequestParameters {
+enum SetUserScheduleRequestParameters
+{
     kSetUserScheduleRequestParameter_UserSchedule = 2,
 };
 
-enum GetUserScheduleRequestParameters {
+enum GetUserScheduleRequestParameters
+{
     kGetUserScheduleRequestParameter_UserId = 1,
 };
 
-enum DeleteUserScheduleRequestParameters {
+enum DeleteUserScheduleRequestParameters
+{
     kDeleteUserScheduleRequestParameter_UserId = 1,
 };
 
-enum SetUserScheduleResponseParameters {
+enum SetUserScheduleResponseParameters
+{
     kSetUserScheduleResponseParameter_Status = 1,
 };
 
-enum GetUserScheduleResponseParameters {
-    kGetUserScheduleResponseParameter_Status = 1,
+enum GetUserScheduleResponseParameters
+{
+    kGetUserScheduleResponseParameter_Status       = 1,
     kGetUserScheduleResponseParameter_UserSchedule = 2,
 };
 
-enum DeleteUserScheduleResponseParameters {
+enum DeleteUserScheduleResponseParameters
+{
     kDeleteUserScheduleResponseParameter_Status = 1,
 };
 
@@ -224,12 +233,13 @@ enum DeleteUserScheduleResponseParameters {
 // Enums
 //
 
-enum ScheduleErrorCodes {
-    SCHEDULE_ERROR_CODES_SUCCESS_STATUS = 1,
-    SCHEDULE_ERROR_CODES_DUPLICATE_ENTRY = 2,
-    SCHEDULE_ERROR_CODES_INDEX_OUT_OF_RANGE = 3,
+enum ScheduleErrorCodes
+{
+    SCHEDULE_ERROR_CODES_SUCCESS_STATUS       = 1,
+    SCHEDULE_ERROR_CODES_DUPLICATE_ENTRY      = 2,
+    SCHEDULE_ERROR_CODES_INDEX_OUT_OF_RANGE   = 3,
     SCHEDULE_ERROR_CODES_EMPTY_SCHEDULE_ENTRY = 4,
-    SCHEDULE_ERROR_CODES_INVALID_SCHEDULE = 5,
+    SCHEDULE_ERROR_CODES_INVALID_SCHEDULE     = 5,
 };
 
 } // namespace BasicUserSchedulesSettingsTrait

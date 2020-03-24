@@ -36,7 +36,8 @@ public:
     static WEAVE_ERROR StartWiFiLayer(void);
     static WEAVE_ERROR EnableStationMode(void);
     static WEAVE_ERROR SetAPMode(bool enabled);
-    static ::nl::Weave::Profiles::NetworkProvisioning::WiFiSecurityType WiFiAuthModeToWeaveWiFiSecurityType(wifi_auth_mode_t authMode);
+    static ::nl::Weave::Profiles::NetworkProvisioning::WiFiSecurityType
+    WiFiAuthModeToWeaveWiFiSecurityType(wifi_auth_mode_t authMode);
     static int OrderScanResultsByRSSI(const void * _res1, const void * _res2);
     static const char * WiFiModeToStr(wifi_mode_t wifiMode);
     static struct netif * GetNetif(tcpip_adapter_if_t intfId);

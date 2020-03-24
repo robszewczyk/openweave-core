@@ -55,7 +55,7 @@ namespace Weave {
 
 using namespace nl::Weave::Profiles;
 
-const char *GetVendorName(uint16_t vendorId)
+const char * GetVendorName(uint16_t vendorId)
 {
     // clang-format off
     switch (vendorId)
@@ -70,10 +70,10 @@ const char *GetVendorName(uint16_t vendorId)
     return NULL;
 }
 
-static const char *FindProfileName(uint32_t inProfileId)
+static const char * FindProfileName(uint32_t inProfileId)
 {
-    const Support::ProfileStringInfo *info;
-    const char *result = NULL;
+    const Support::ProfileStringInfo * info;
+    const char * result = NULL;
 
     info = Support::FindProfileStringInfo(inProfileId);
 
@@ -85,10 +85,10 @@ static const char *FindProfileName(uint32_t inProfileId)
     return (result);
 }
 
-static const char *FindMessageName(uint32_t inProfileId, uint8_t inMsgType)
+static const char * FindMessageName(uint32_t inProfileId, uint8_t inMsgType)
 {
-    const Support::ProfileStringInfo *info;
-    const char *result = NULL;
+    const Support::ProfileStringInfo * info;
+    const char * result = NULL;
 
     info = Support::FindProfileStringInfo(inProfileId);
 
@@ -100,9 +100,9 @@ static const char *FindMessageName(uint32_t inProfileId, uint8_t inMsgType)
     return (result);
 }
 
-const char *GetProfileName(uint32_t profileId)
+const char * GetProfileName(uint32_t profileId)
 {
-    const char *result = NULL;
+    const char * result = NULL;
 
     // clang-format off
     switch (profileId)
@@ -147,9 +147,9 @@ const char *GetProfileName(uint32_t profileId)
     return (result);
 }
 
-const char *GetMessageName(uint32_t profileId, uint8_t msgType)
+const char * GetMessageName(uint32_t profileId, uint8_t msgType)
 {
-    const char *result = NULL;
+    const char * result = NULL;
 
     // clang-format off
     switch (profileId)

@@ -51,30 +51,30 @@ using namespace nl::Inet;
 using namespace nl::Weave;
 using namespace nl::Weave::Profiles;
 
-#define UUID_WEAVE_SHORT "0xFEAF"
-#define UUID_WEAVE "0000feaf-0000-1000-8000-00805f9b34fb"
-#define UUID_WEAVE_C1 "18EE2EF5-263D-4559-959F-4F9C429F9D11"
-#define UUID_WEAVE_C2 "18EE2EF5-263D-4559-959F-4F9C429F9D12"
-#define BLUEZ_PATH "/org/bluez"
-#define BLUEZ_INTERFACE "org.bluez"
-#define WEAVE_PATH "/org/bluez/weave"
-#define ADAPTER_INTERFACE "org.bluez.Adapter1"
-#define PROFILE_INTERFACE "org.bluez.GattManager1"
-#define ADVERTISING_PATH "/org/bluez/advertising"
-#define ADVERTISING_MANAGER_INTERFACE "org.bluez.LEAdvertisingManager1"
-#define SERVICE_INTERFACE "org.bluez.GattService1"
-#define CHARACTERISTIC_INTERFACE "org.bluez.GattCharacteristic1"
-#define ADVERTISING_INTERFACE "org.bluez.LEAdvertisement1"
-#define DEVICE_INTERFACE "org.bluez.Device1"
-#define FLAGS_WEAVE_C1 "write"
-#define FLAGS_WEAVE_C2 "read,indicate"
+#define UUID_WEAVE_SHORT                        "0xFEAF"
+#define UUID_WEAVE                              "0000feaf-0000-1000-8000-00805f9b34fb"
+#define UUID_WEAVE_C1                           "18EE2EF5-263D-4559-959F-4F9C429F9D11"
+#define UUID_WEAVE_C2                           "18EE2EF5-263D-4559-959F-4F9C429F9D12"
+#define BLUEZ_PATH                              "/org/bluez"
+#define BLUEZ_INTERFACE                         "org.bluez"
+#define WEAVE_PATH                              "/org/bluez/weave"
+#define ADAPTER_INTERFACE                       "org.bluez.Adapter1"
+#define PROFILE_INTERFACE                       "org.bluez.GattManager1"
+#define ADVERTISING_PATH                        "/org/bluez/advertising"
+#define ADVERTISING_MANAGER_INTERFACE           "org.bluez.LEAdvertisingManager1"
+#define SERVICE_INTERFACE                       "org.bluez.GattService1"
+#define CHARACTERISTIC_INTERFACE                "org.bluez.GattCharacteristic1"
+#define ADVERTISING_INTERFACE                   "org.bluez.LEAdvertisement1"
+#define DEVICE_INTERFACE                        "org.bluez.Device1"
+#define FLAGS_WEAVE_C1                          "write"
+#define FLAGS_WEAVE_C2                          "read,indicate"
 #define WEAVE_SRV_DATA_BLOCK_TYPE_WEAVE_ID_INFO (1)
-#define WEAVE_ID_INFO_MAJ_VER (0x00)
-#define WEAVE_ID_INFO_MIN_VER (0x02)
+#define WEAVE_ID_INFO_MAJ_VER                   (0x00)
+#define WEAVE_ID_INFO_MIN_VER                   (0x02)
 
 /*MAC OS uses MTU size 104, which is smallest among Android, MAC OS & IOS */
 #define HCI_MAX_MTU (104)
-#define BUFF_SIZE (1024)
+#define BUFF_SIZE   (1024)
 
 namespace nl {
 namespace Ble {
@@ -105,7 +105,7 @@ struct Adapter
     GDBusProxy * adapterProxy;
     GDBusProxy * advertisingProxy;
     GDBusProxy * profileProxy;
-    std::list <GDBusProxy *> deviceProxies;
+    std::list<GDBusProxy *> deviceProxies;
 };
 
 struct Characteristic

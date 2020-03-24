@@ -117,33 +117,32 @@ enum
 };
 // clang-format on
 
-
 class NL_DLL_EXPORT RegisterServicePairAccountMessage
 {
 public:
     uint64_t ServiceId;
-    const char *AccountId;
+    const char * AccountId;
     uint16_t AccountIdLen;
-    const uint8_t *ServiceConfig;
+    const uint8_t * ServiceConfig;
     uint16_t ServiceConfigLen;
-    const uint8_t *PairingToken;
+    const uint8_t * PairingToken;
     uint16_t PairingTokenLen;
-    const uint8_t *PairingInitData;
+    const uint8_t * PairingInitData;
     uint16_t PairingInitDataLen;
 
-    WEAVE_ERROR Encode(PacketBuffer *msgBuf);
-    static WEAVE_ERROR Decode(PacketBuffer *msgBuf, RegisterServicePairAccountMessage& msg);
+    WEAVE_ERROR Encode(PacketBuffer * msgBuf);
+    static WEAVE_ERROR Decode(PacketBuffer * msgBuf, RegisterServicePairAccountMessage & msg);
 };
 
 class NL_DLL_EXPORT UpdateServiceMessage
 {
 public:
     uint64_t ServiceId;
-    const uint8_t *ServiceConfig;
+    const uint8_t * ServiceConfig;
     uint16_t ServiceConfigLen;
 
-    WEAVE_ERROR Encode(PacketBuffer *msgBuf);
-    static WEAVE_ERROR Decode(PacketBuffer *msgBuf, UpdateServiceMessage& msg);
+    WEAVE_ERROR Encode(PacketBuffer * msgBuf);
+    static WEAVE_ERROR Decode(PacketBuffer * msgBuf, UpdateServiceMessage & msg);
 };
 
 class NL_DLL_EXPORT PairDeviceToAccountMessage
@@ -151,17 +150,17 @@ class NL_DLL_EXPORT PairDeviceToAccountMessage
 public:
     uint64_t ServiceId;
     uint64_t FabricId;
-    const char *AccountId;
+    const char * AccountId;
     uint16_t AccountIdLen;
-    const uint8_t *PairingToken;
+    const uint8_t * PairingToken;
     uint16_t PairingTokenLen;
-    const uint8_t *PairingInitData;
+    const uint8_t * PairingInitData;
     uint16_t PairingInitDataLen;
-    const uint8_t *DeviceInitData;
+    const uint8_t * DeviceInitData;
     uint16_t DeviceInitDataLen;
 
-    WEAVE_ERROR Encode(PacketBuffer *msgBuf);
-    static WEAVE_ERROR Decode(PacketBuffer *msgBuf, PairDeviceToAccountMessage& msg);
+    WEAVE_ERROR Encode(PacketBuffer * msgBuf);
+    static WEAVE_ERROR Decode(PacketBuffer * msgBuf, PairDeviceToAccountMessage & msg);
 };
 
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
@@ -170,23 +169,25 @@ class NL_DLL_EXPORT IFJServiceFabricJoinMessage
 public:
     uint64_t ServiceId;
     uint64_t FabricId;
-    const uint8_t *DeviceInitData;
+    const uint8_t * DeviceInitData;
     uint16_t DeviceInitDataLen;
 
-    WEAVE_ERROR Encode(PacketBuffer *msgBuf);
-    static WEAVE_ERROR Decode(PacketBuffer *msgBuf, IFJServiceFabricJoinMessage& msg);
+    WEAVE_ERROR Encode(PacketBuffer * msgBuf);
+    static WEAVE_ERROR Decode(PacketBuffer * msgBuf, IFJServiceFabricJoinMessage & msg);
 };
 #endif // WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
 class ServiceProvisioningDelegate : public WeaveServerDelegateBase
 {
 public:
-    virtual WEAVE_ERROR HandleRegisterServicePairAccount(RegisterServicePairAccountMessage& msg) = 0;
-    virtual WEAVE_ERROR HandleUpdateService(UpdateServiceMessage& msg) = 0;
-    virtual WEAVE_ERROR HandleUnregisterService(uint64_t serviceId) = 0;
-    virtual void HandlePairDeviceToAccountResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId, uint16_t serverStatusCode) = 0;
+    virtual WEAVE_ERROR HandleRegisterServicePairAccount(RegisterServicePairAccountMessage & msg) = 0;
+    virtual WEAVE_ERROR HandleUpdateService(UpdateServiceMessage & msg)                           = 0;
+    virtual WEAVE_ERROR HandleUnregisterService(uint64_t serviceId)                               = 0;
+    virtual void HandlePairDeviceToAccountResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId,
+                                                 uint16_t serverStatusCode)                       = 0;
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
-    virtual void HandleIFJServiceFabricJoinResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId, uint16_t serverStatusCode) = 0;
+    virtual void HandleIFJServiceFabricJoinResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId,
+                                                  uint16_t serverStatusCode) = 0;
 #endif // WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
     /**
@@ -202,8 +203,8 @@ public:
      *                          is expected to represent the final assessment of access control policy for the
      *                          message.
      */
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 
     /**
      * Called to determine if the device is currently paired to an account.
@@ -211,7 +212,6 @@ public:
     // TODO: make this pure virtual when product code provides appropriate implementations.
     virtual bool IsPairedToAccount() const;
 };
-
 
 /**
  * Simple server class for implementing the Service Provisioning profile.
@@ -221,75 +221,73 @@ class NL_DLL_EXPORT ServiceProvisioningServer : public WeaveServerBase
 public:
     ServiceProvisioningServer(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    void SetDelegate(ServiceProvisioningDelegate *delegate);
-    ServiceProvisioningDelegate* GetDelegate(void) const;
+    void SetDelegate(ServiceProvisioningDelegate * delegate);
+    ServiceProvisioningDelegate * GetDelegate(void) const;
 
     virtual WEAVE_ERROR SendSuccessResponse(void);
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
     // TODO: [TT] Remove when Bindings support existing Weave Connections or Service Directory.
-    WEAVE_ERROR SendPairDeviceToAccountRequest(WeaveConnection *serverCon, uint64_t serviceId, uint64_t fabricId,
-                                               const char *accountId, uint16_t accountIdLen,
-                                               const uint8_t *pairingToken, uint16_t pairingTokenLen,
-                                               const uint8_t *pairingInitData, uint16_t pairingInitDataLen,
-                                               const uint8_t *deviceInitData, uint16_t deviceInitDataLen);
+    WEAVE_ERROR SendPairDeviceToAccountRequest(WeaveConnection * serverCon, uint64_t serviceId, uint64_t fabricId,
+                                               const char * accountId, uint16_t accountIdLen, const uint8_t * pairingToken,
+                                               uint16_t pairingTokenLen, const uint8_t * pairingInitData,
+                                               uint16_t pairingInitDataLen, const uint8_t * deviceInitData,
+                                               uint16_t deviceInitDataLen);
 
-    WEAVE_ERROR SendPairDeviceToAccountRequest(Binding *binding, uint64_t serviceId, uint64_t fabricId,
-                                               const char *accountId, uint16_t accountIdLen,
-                                               const uint8_t *pairingToken, uint16_t pairingTokenLen,
-                                               const uint8_t *pairingInitData, uint16_t pairingInitDataLen,
-                                               const uint8_t *deviceInitData, uint16_t deviceInitDataLen);
+    WEAVE_ERROR SendPairDeviceToAccountRequest(Binding * binding, uint64_t serviceId, uint64_t fabricId, const char * accountId,
+                                               uint16_t accountIdLen, const uint8_t * pairingToken, uint16_t pairingTokenLen,
+                                               const uint8_t * pairingInitData, uint16_t pairingInitDataLen,
+                                               const uint8_t * deviceInitData, uint16_t deviceInitDataLen);
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
-    WEAVE_ERROR SendIFJServiceFabricJoinRequest(Binding *binding, uint64_t serviceId, uint64_t fabricId,
-                                                const uint8_t *deviceInitData, uint16_t deviceInitDataLen);
+    WEAVE_ERROR SendIFJServiceFabricJoinRequest(Binding * binding, uint64_t serviceId, uint64_t fabricId,
+                                                const uint8_t * deviceInitData, uint16_t deviceInitDataLen);
 #endif // WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
-    static bool IsValidServiceConfig(const uint8_t *serviceConfig, uint16_t serviceConfigLen);
+    static bool IsValidServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen);
 
 protected:
     enum
     {
-        kServerOpState_Idle                             = 0,
-        kServerOpState_PairDeviceToAccount              = 1,
-        kServerOpState_IFJServiceFabricJoin             = 2
+        kServerOpState_Idle                 = 0,
+        kServerOpState_PairDeviceToAccount  = 1,
+        kServerOpState_IFJServiceFabricJoin = 2
     };
 
-    ServiceProvisioningDelegate *mDelegate;
-    ExchangeContext *mCurClientOp;
-    PacketBuffer *mCurClientOpBuf;
+    ServiceProvisioningDelegate * mDelegate;
+    ExchangeContext * mCurClientOp;
+    PacketBuffer * mCurClientOpBuf;
     union
     {
         RegisterServicePairAccountMessage RegisterServicePairAccount;
         UpdateServiceMessage UpdateService;
     } mCurClientOpMsg;
-    ExchangeContext *mCurServerOp;
+    ExchangeContext * mCurServerOp;
     uint8_t mServerOpState;
 
 private:
-    static void HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                    uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleServerResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgInfo,
-                                     uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    static void HandleServerResponseTimeout(ExchangeContext *ec);
-    static void HandleServerConnectionClosed(ExchangeContext *ec, WeaveConnection *con, WEAVE_ERROR conErr);
-    static void HandleServerKeyError(ExchangeContext *ec, WEAVE_ERROR keyErr);
+    static void HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleServerResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                     uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    static void HandleServerResponseTimeout(ExchangeContext * ec);
+    static void HandleServerConnectionClosed(ExchangeContext * ec, WeaveConnection * con, WEAVE_ERROR conErr);
+    static void HandleServerKeyError(ExchangeContext * ec, WEAVE_ERROR keyErr);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-    static void HandleServerSendError(ExchangeContext *ec, WEAVE_ERROR err, void *msgCtxt);
+    static void HandleServerSendError(ExchangeContext * ec, WEAVE_ERROR err, void * msgCtxt);
 #endif // #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
     void HandleServiceProvisioningOpResult(WEAVE_ERROR localErr, uint32_t serverStatusProfileId, uint16_t serverStatusCode);
 
-    ServiceProvisioningServer(const ServiceProvisioningServer&);   // not defined
+    ServiceProvisioningServer(const ServiceProvisioningServer &); // not defined
 };
 
-
-extern WEAVE_ERROR EncodeServiceConfig(nl::Weave::Profiles::Security::WeaveCertificateSet& certSet, const char *dirHostName, uint16_t dirPort, uint8_t *outBuf, uint16_t& outLen);
-
+extern WEAVE_ERROR EncodeServiceConfig(nl::Weave::Profiles::Security::WeaveCertificateSet & certSet, const char * dirHostName,
+                                       uint16_t dirPort, uint8_t * outBuf, uint16_t & outLen);
 
 } // namespace ServiceProvisioning
 } // namespace Profiles

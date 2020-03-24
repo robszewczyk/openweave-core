@@ -34,7 +34,7 @@ namespace Ble {
 namespace Platform {
 namespace BlueZ {
 
-static int CloseBleconnectionCB(void *aArg);
+static int CloseBleconnectionCB(void * aArg);
 
 void BluezBleApplicationDelegate::NotifyWeaveConnectionClosed(BLE_CONNECTION_OBJECT connObj)
 {
@@ -49,7 +49,7 @@ void BluezBleApplicationDelegate::NotifyWeaveConnectionClosed(BLE_CONNECTION_OBJ
     }
 };
 
-static int CloseBleconnectionCB(void *aArg)
+static int CloseBleconnectionCB(void * aArg)
 {
     CloseBleconnection();
 

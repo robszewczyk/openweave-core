@@ -38,60 +38,52 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 // Property Table
 //
 
-const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-};
+const TraitSchemaEngine::PropertyInfo PropertyMap[] = { };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor NetworkDHCPFailureEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(NetworkDHCPFailureEvent, reason), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
+const nl::FieldDescriptor NetworkDHCPFailureEventFieldDescriptors[] = {
+    { NULL, offsetof(NetworkDHCPFailureEvent, reason), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 
 };
 
-const nl::SchemaFieldDescriptor NetworkDHCPFailureEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(NetworkDHCPFailureEventFieldDescriptors)/sizeof(NetworkDHCPFailureEventFieldDescriptors[0]),
-    .mFields = NetworkDHCPFailureEventFieldDescriptors,
-    .mSize = sizeof(NetworkDHCPFailureEvent)
-};
-const nl::Weave::Profiles::DataManagement::EventSchema NetworkDHCPFailureEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Debug,
-    .mDataSchemaVersion = 1,
+const nl::SchemaFieldDescriptor NetworkDHCPFailureEvent::FieldSchema                   = { .mNumFieldDescriptorElements =
+                                                                             sizeof(NetworkDHCPFailureEventFieldDescriptors) /
+                                                                             sizeof(NetworkDHCPFailureEventFieldDescriptors[0]),
+                                                                         .mFields = NetworkDHCPFailureEventFieldDescriptors,
+                                                                         .mSize   = sizeof(NetworkDHCPFailureEvent) };
+const nl::Weave::Profiles::DataManagement::EventSchema NetworkDHCPFailureEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::Debug,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

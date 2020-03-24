@@ -47,8 +47,8 @@ using namespace nl::Weave::ASN1;
 
 void WeaveTAKEEngine::Init()
 {
-    State = kState_Reset;
-    KeyState = kEncryptionKeyState_Uninitialized;
+    State        = kState_Reset;
+    KeyState     = kEncryptionKeyState_Uninitialized;
     SessionKeyId = WeaveKeyId::kNone;
 }
 
@@ -57,17 +57,19 @@ void WeaveTAKEEngine::Shutdown()
     ClearSecretData(IdentificationKey, sizeof(IdentificationKey));
     ClearSecretData(AuthenticationKey, sizeof(AuthenticationKey));
     ClearSecretData(ECDHPrivateKeyBuffer, sizeof(ECDHPrivateKeyBuffer));
-    State = kState_Reset;
-    KeyState = kEncryptionKeyState_Uninitialized;
+    State        = kState_Reset;
+    KeyState     = kEncryptionKeyState_Uninitialized;
     SessionKeyId = WeaveKeyId::kNone;
 }
 
-static WEAVE_ERROR PackControlHeader(uint8_t numOptionalConfigurations, bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK, bool hasChallengerId, uint8_t& controlHeader)
+static WEAVE_ERROR PackControlHeader(uint8_t numOptionalConfigurations, bool encryptAuthPhase, bool encryptCommPhase,
+                                     bool timeLimitedIK, bool hasChallengerId, uint8_t & controlHeader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     VerifyOrExit(numOptionalConfigurations < kMaxOptionalConfigurations, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    controlHeader = (numOptionalConfigurations << kControlHeader_NumOptionalConfigurationShift) & kControlHeader_NumOptionalConfigurationMask;
+    controlHeader =
+        (numOptionalConfigurations << kControlHeader_NumOptionalConfigurationShift) & kControlHeader_NumOptionalConfigurationMask;
 
     if (encryptAuthPhase)
         controlHeader |= kControlHeader_EncryptAuthenticationPhaseFlag;
@@ -84,7 +86,8 @@ exit:
 
 uint8_t WeaveTAKEEngine::GetNumOptionalConfigurations() const
 {
-    return static_cast<uint8_t>((ControlHeader & kControlHeader_NumOptionalConfigurationMask) >> kControlHeader_NumOptionalConfigurationShift);
+    return static_cast<uint8_t>((ControlHeader & kControlHeader_NumOptionalConfigurationMask) >>
+                                kControlHeader_NumOptionalConfigurationShift);
 }
 
 bool WeaveTAKEEngine::IsEncryptAuthPhase() const
@@ -107,11 +110,12 @@ bool WeaveTAKEEngine::HasSentChallengerId() const
     return (ControlHeader & kControlHeader_HasChallengerIdFlag) != 0;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenMessage(uint16_t sessionKeyId, uint8_t takeConfig, bool encryptAuthPhase, bool encryptCommPhase, bool timeLimitedIK,
-                                                              bool sendChallengerId, uint8_t encryptionType, uint64_t localNodeId, PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenMessage(uint16_t sessionKeyId, uint8_t takeConfig, bool encryptAuthPhase,
+                                                          bool encryptCommPhase, bool timeLimitedIK, bool sendChallengerId,
+                                                          uint8_t encryptionType, uint64_t localNodeId, PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t* p = msgBuf->Start();
+    uint8_t * p     = msgBuf->Start();
     uint16_t msgLen;
 
     VerifyOrExit(State == kState_Reset || State == kState_InitiatorReconfigureProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -121,19 +125,20 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenMessage(uint16_t sessionKeyId,
     if (sendChallengerId)
     {
         ChallengerIdLen = kMaxChallengerIdSize;
-        err = ChallengerAuthDelegate->GetChallengerID(ChallengerId, ChallengerIdLen);
+        err             = ChallengerAuthDelegate->GetChallengerID(ChallengerId, ChallengerIdLen);
         SuccessOrExit(err);
 
         VerifyOrExit(ChallengerIdLen <= kMaxChallengerIdSize, err = WEAVE_ERROR_INVALID_ARGUMENT);
     }
     else
     {
-        uint8_t* ChallengerIdPtr = ChallengerId;
+        uint8_t * ChallengerIdPtr = ChallengerId;
         LittleEndian::Write64(ChallengerIdPtr, localNodeId);
         ChallengerIdLen = 8;
     }
 
-    msgLen = kIdentifyTokenMsgMinSize + (sendChallengerId ? 1 + ChallengerIdLen : 0) + GetNumOptionalConfigurations() + (UseSessionKey() ? 2 : 0);
+    msgLen = kIdentifyTokenMsgMinSize + (sendChallengerId ? 1 + ChallengerIdLen : 0) + GetNumOptionalConfigurations() +
+        (UseSessionKey() ? 2 : 0);
     VerifyOrExit(msgBuf->AvailableDataLength() >= msgLen, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     err = Platform::Security::GetSecureRandomData(ChallengerNonce, kNonceSize);
@@ -147,11 +152,11 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenMessage(uint16_t sessionKeyId,
     }
 
     EncryptionType = encryptionType;
-    *p++ = EncryptionType;
+    *p++           = EncryptionType;
 
     VerifyOrExit(takeConfig == kTAKEConfig_Config1, err = WEAVE_ERROR_UNSUPPORTED_TAKE_CONFIGURATION);
     ProtocolConfig = takeConfig;
-    *p++ = ProtocolConfig;
+    *p++           = ProtocolConfig;
 
     // No optional configuration for now
 
@@ -175,11 +180,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessIdentifyTokenMessage(uint64_t peerNodeId, const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessIdentifyTokenMessage(uint64_t peerNodeId, const PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t msgLen = msgBuf->DataLength();
-    const uint8_t* p = msgBuf->Start();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint16_t msgLen   = msgBuf->DataLength();
+    const uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(msgLen >= kIdentifyTokenMsgMinSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
     VerifyOrExit(State == kState_Reset, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -193,12 +198,15 @@ WEAVE_ERROR WeaveTAKEEngine::ProcessIdentifyTokenMessage(uint64_t peerNodeId, co
     }
     else
     {
-        uint8_t* ChallengerIdPtr = ChallengerId;
+        uint8_t * ChallengerIdPtr = ChallengerId;
         LittleEndian::Write64(ChallengerIdPtr, peerNodeId);
         ChallengerIdLen = 8;
     }
 
-    VerifyOrExit(msgLen == (kIdentifyTokenMsgMinSize + (HasSentChallengerId() ? 1 + ChallengerIdLen : 0) + GetNumOptionalConfigurations() + (UseSessionKey() ? 2 : 0)), err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
+    VerifyOrExit(msgLen ==
+                     (kIdentifyTokenMsgMinSize + (HasSentChallengerId() ? 1 + ChallengerIdLen : 0) +
+                      GetNumOptionalConfigurations() + (UseSessionKey() ? 2 : 0)),
+                 err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
 
     EncryptionType = *p++;
     VerifyOrExit(EncryptionType == kWeaveEncryptionType_AES128CTRSHA1, err = WEAVE_ERROR_UNSUPPORTED_ENCRYPTION_TYPE);
@@ -241,11 +249,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenResponseMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenResponseMessage(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Platform::Security::SHA1 sha1;
-    uint8_t* p = msgBuf->Start();
+    uint8_t * p = msgBuf->Start();
     uint8_t identificationRootKey[kIdentificationRootKeySize];
     HKDFSHA1 hkdf;
     uint8_t keySaltLen = ChallengerIdLen + sizeof(uint32_t);
@@ -265,7 +273,7 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateIdentifyTokenResponseMessage(PacketBuffer *
     WriteArray(TokenNonce, p, kNonceSize);
 
     {
-        uint8_t* keySaltPtr = keySalt;
+        uint8_t * keySaltPtr = keySalt;
         WriteArray(ChallengerId, keySaltPtr, ChallengerIdLen);
         if (!IsTimeLimitedIK())
         {
@@ -307,15 +315,15 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessIdentifyTokenResponseMessage(const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessIdentifyTokenResponseMessage(const PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t msgLen = msgBuf->DataLength();
-    const uint8_t* p = msgBuf->Start();
+    WEAVE_ERROR err     = WEAVE_NO_ERROR;
+    uint16_t msgLen     = msgBuf->DataLength();
+    const uint8_t * p   = msgBuf->Start();
     bool isAuthorisedIK = false;
     int i, end;
     uint8_t takeConfig;
-    uint16_t authKeyLen = kAuthenticationKeySize;
+    uint16_t authKeyLen     = kAuthenticationKeySize;
     uint16_t encAuthBlobLen = kTokenEncryptedStateSize;
 
     VerifyOrExit(msgLen == kIdentifyTokenResponseMsgSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
@@ -372,7 +380,8 @@ WEAVE_ERROR WeaveTAKEEngine::ProcessIdentifyTokenResponseMessage(const PacketBuf
         SuccessOrExit(err);
     }
 
-    err = ChallengerAuthDelegate->GetTokenAuthData(TokenId, takeConfig, AuthenticationKey, authKeyLen, EncryptedAuthenticationKey, encAuthBlobLen);
+    err = ChallengerAuthDelegate->GetTokenAuthData(TokenId, takeConfig, AuthenticationKey, authKeyLen, EncryptedAuthenticationKey,
+                                                   encAuthBlobLen);
     SuccessOrExit(err);
 
     VerifyOrExit(authKeyLen == kAuthenticationKeySize, err = WEAVE_ERROR_INVALID_ARGUMENT);
@@ -389,10 +398,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateTokenReconfigureMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateTokenReconfigureMessage(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t* p = msgBuf->Start();
+    uint8_t * p     = msgBuf->Start();
 
     VerifyOrExit(State == kState_Reset, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(msgBuf->AvailableDataLength() >= kTokenRecongfigureMsgSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
@@ -407,11 +416,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessTokenReconfigureMessage(uint8_t& config, const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessTokenReconfigureMessage(uint8_t & config, const PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t msgLen = msgBuf->DataLength();
-    const uint8_t* p = msgBuf->Start();
+    WEAVE_ERROR err   = WEAVE_NO_ERROR;
+    uint16_t msgLen   = msgBuf->DataLength();
+    const uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(msgLen == kTokenRecongfigureMsgSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
     VerifyOrExit(State == kState_InitiatorIdentifyTokenGenerated, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -426,23 +435,23 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticateTokenMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticateTokenMessage(PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t* hmacSignature = msgBuf->Start();
-    uint8_t* challengerECDHPublicKey = hmacSignature + kConfig1_HMACSignatureSize;
-    uint16_t msgLen = kConfig1_HMACSignatureSize + GetECPointLen();
+    WEAVE_ERROR err                   = WEAVE_NO_ERROR;
+    uint8_t * hmacSignature           = msgBuf->Start();
+    uint8_t * challengerECDHPublicKey = hmacSignature + kConfig1_HMACSignatureSize;
+    uint16_t msgLen                   = kConfig1_HMACSignatureSize + GetECPointLen();
 
     VerifyOrExit(State == kState_InitiatorIdentifyTokenResponseProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(msgBuf->AvailableDataLength() >= msgLen, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
     EncodedECPrivateKey privKey;
     EncodedECPublicKey pubKey;
-    pubKey.ECPoint = ECDHPublicKeyBuffer;
-    pubKey.ECPointLen = sizeof(ECDHPublicKeyBuffer);
-    privKey.PrivKey = ECDHPrivateKeyBuffer;
+    pubKey.ECPoint     = ECDHPublicKeyBuffer;
+    pubKey.ECPointLen  = sizeof(ECDHPublicKeyBuffer);
+    privKey.PrivKey    = ECDHPrivateKeyBuffer;
     privKey.PrivKeyLen = sizeof(ECDHPrivateKeyBuffer);
-    err = GenerateECDHKey(GetCurveOID(), pubKey, privKey);
+    err                = GenerateECDHKey(GetCurveOID(), pubKey, privKey);
     SuccessOrExit(err);
 
     ECDHPrivateKeyLength = privKey.PrivKeyLen;
@@ -459,13 +468,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessAuthenticateTokenMessage(const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessAuthenticateTokenMessage(const PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t msgLen = msgBuf->DataLength();
-    uint8_t* p = msgBuf->Start();
+    uint8_t * p     = msgBuf->Start();
     bool res;
-    uint8_t* challengerECDHPublicKey = p + kConfig1_HMACSignatureSize;
+    uint8_t * challengerECDHPublicKey = p + kConfig1_HMACSignatureSize;
 
     VerifyOrExit(msgLen >= kAuthenticateTokenMsgMinSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
     VerifyOrExit(State == kState_ResponderIdentifyTokenResponseGenerated, err = WEAVE_ERROR_INCORRECT_STATE);
@@ -485,20 +494,20 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticateTokenResponseMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticateTokenResponseMessage(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Platform::Security::AES256BlockCipherEnc aes256BlockCipherEnc;
-    uint8_t *encryptedState = msgBuf->Start();
-    uint8_t *tokenECDHPublicKey =  encryptedState + kTokenEncryptedStateSize;
-    uint8_t *ecdsaSignature = tokenECDHPublicKey + GetECPointLen();
+    uint8_t * encryptedState     = msgBuf->Start();
+    uint8_t * tokenECDHPublicKey = encryptedState + kTokenEncryptedStateSize;
+    uint8_t * ecdsaSignature     = tokenECDHPublicKey + GetECPointLen();
     EncodedECPrivateKey tokenPrivKey;
     union
     {
         uint8_t tokenMasterKey[kTokenMasterKeySize];
         uint8_t tokenPrivateKeyBuffer[kMaxTokenPrivateKeySize];
     };
-    tokenPrivKey.PrivKey = tokenPrivateKeyBuffer;
+    tokenPrivKey.PrivKey    = tokenPrivateKeyBuffer;
     tokenPrivKey.PrivKeyLen = kMaxTokenPrivateKeySize;
     OID tokenPrivKeyOID;
     uint16_t curveSize;
@@ -509,11 +518,11 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticateTokenResponseMessage(PacketBuff
 
     EncodedECPrivateKey privKey;
     EncodedECPublicKey pubKey;
-    pubKey.ECPoint = tokenECDHPublicKey;
-    pubKey.ECPointLen = GetECPointLen();
-    privKey.PrivKey = ECDHPrivateKeyBuffer;
+    pubKey.ECPoint     = tokenECDHPublicKey;
+    pubKey.ECPointLen  = GetECPointLen();
+    privKey.PrivKey    = ECDHPrivateKeyBuffer;
     privKey.PrivKeyLen = sizeof(ECDHPrivateKeyBuffer);
-    err = GenerateECDHKey(GetCurveOID(), pubKey, privKey);
+    err                = GenerateECDHKey(GetCurveOID(), pubKey, privKey);
     SuccessOrExit(err);
 
     err = GenerateAuthenticationKey(ChallengerId, ECDHPrivateKeyBuffer, ECDHPublicKeyBuffer, privKey.PrivKeyLen);
@@ -531,7 +540,8 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticateTokenResponseMessage(PacketBuff
     curveSize = GetCurveSize(tokenPrivKeyOID);
     VerifyOrExit(curveSize != 0, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
 
-    err = GenerateSignatureForAuthenticateTokenResponse(ecdsaSignature, ECDHPublicKeyBuffer, tokenECDHPublicKey, tokenPrivKey, encryptedState, tokenPrivKeyOID);
+    err = GenerateSignatureForAuthenticateTokenResponse(ecdsaSignature, ECDHPublicKeyBuffer, tokenECDHPublicKey, tokenPrivKey,
+                                                        encryptedState, tokenPrivKeyOID);
     SuccessOrExit(err);
 
     msgBuf->SetDataLength(kTokenEncryptedStateSize + 2 * curveSize + GetECPointLen());
@@ -547,13 +557,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessAuthenticateTokenResponseMessage(const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessAuthenticateTokenResponseMessage(const PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t msgLen = msgBuf->DataLength();
-    uint8_t *encryptedState = msgBuf->Start();
-    uint8_t *tokenECDHPublicKey =  encryptedState + kTokenEncryptedStateSize;
-    uint8_t *ecdsaSignature = tokenECDHPublicKey + GetECPointLen();
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    uint16_t msgLen              = msgBuf->DataLength();
+    uint8_t * encryptedState     = msgBuf->Start();
+    uint8_t * tokenECDHPublicKey = encryptedState + kTokenEncryptedStateSize;
+    uint8_t * ecdsaSignature     = tokenECDHPublicKey + GetECPointLen();
     EncodedECPublicKey encodedPubKey;
     uint8_t TPub[GetECPointLen()];
     OID tokenPubKeyOID;
@@ -561,7 +571,7 @@ WEAVE_ERROR WeaveTAKEEngine::ProcessAuthenticateTokenResponseMessage(const Packe
 
     VerifyOrExit(State == kState_InitiatorAuthenticateTokenGenerated, err = WEAVE_ERROR_INCORRECT_STATE);
 
-    encodedPubKey.ECPoint = TPub;
+    encodedPubKey.ECPoint    = TPub;
     encodedPubKey.ECPointLen = GetECPointLen();
 
     err = ChallengerAuthDelegate->GetTokenPublicKey(TokenId, tokenPubKeyOID, encodedPubKey);
@@ -570,15 +580,18 @@ WEAVE_ERROR WeaveTAKEEngine::ProcessAuthenticateTokenResponseMessage(const Packe
     curveSize = GetCurveSize(tokenPubKeyOID);
     VerifyOrExit(curveSize != 0, err = WEAVE_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
 
-    VerifyOrExit(msgLen == kAuthenticateTokenResponseMsgMinSize + 2 * curveSize + GetECPointLen(), err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
+    VerifyOrExit(msgLen == kAuthenticateTokenResponseMsgMinSize + 2 * curveSize + GetECPointLen(),
+                 err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
 
     err = GenerateAuthenticationKey(ChallengerId, ECDHPrivateKeyBuffer, tokenECDHPublicKey, ECDHPrivateKeyLength);
     SuccessOrExit(err);
 
-    err = ChallengerAuthDelegate->StoreTokenAuthData(TokenId, ChosenConfiguration, AuthenticationKey, kAuthenticationKeySize, encryptedState, kTokenEncryptedStateSize);
+    err = ChallengerAuthDelegate->StoreTokenAuthData(TokenId, ChosenConfiguration, AuthenticationKey, kAuthenticationKeySize,
+                                                     encryptedState, kTokenEncryptedStateSize);
     SuccessOrExit(err);
 
-    err = VerifySignatureForAuthenticateTokenResponse(ecdsaSignature, ECDHPublicKeyBuffer, tokenECDHPublicKey, encryptedState, tokenPubKeyOID, encodedPubKey);
+    err = VerifySignatureForAuthenticateTokenResponse(ecdsaSignature, ECDHPublicKeyBuffer, tokenECDHPublicKey, encryptedState,
+                                                      tokenPubKeyOID, encodedPubKey);
     SuccessOrExit(err);
 
     State = kState_InitiatorAuthenticateTokenResponseProcessed;
@@ -587,11 +600,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateReAuthenticateTokenMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateReAuthenticateTokenMessage(PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t* tokenEncryptedState = msgBuf->Start();
-    uint8_t* hmacSignature = tokenEncryptedState + kTokenEncryptedStateSize;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    uint8_t * tokenEncryptedState = msgBuf->Start();
+    uint8_t * hmacSignature       = tokenEncryptedState + kTokenEncryptedStateSize;
 
     VerifyOrExit(State == kState_InitiatorIdentifyTokenResponseProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(msgBuf->AvailableDataLength() >= kReAuthenticateTokenMsgSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
@@ -615,10 +628,10 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateProtocolEncryptionKey()
     HKDFSHA1 hkdf;
 
     uint8_t keySaltLen = sizeof(ControlHeader) + sizeof(EncryptionType) + sizeof(ProtocolConfig) +
-        sizeof(uint8_t) * GetNumOptionalConfigurations() + sizeof(SessionKeyId) + sizeof(ChosenConfiguration) + kNonceSize + kNonceSize +
-        sizeof(kSaltProtocolEncryption);
+        sizeof(uint8_t) * GetNumOptionalConfigurations() + sizeof(SessionKeyId) + sizeof(ChosenConfiguration) + kNonceSize +
+        kNonceSize + sizeof(kSaltProtocolEncryption);
     uint8_t keySalt[kMaxProtocolEncryptionKeySaltSize];
-    uint8_t* p = keySalt;
+    uint8_t * p = keySalt;
 
     WriteArray(&ControlHeader, p, sizeof(ControlHeader));
     WriteArray(&EncryptionType, p, sizeof(EncryptionType));
@@ -640,12 +653,9 @@ WEAVE_ERROR WeaveTAKEEngine::GenerateProtocolEncryptionKey()
     err = hkdf.ExpandKey(NULL, 0, WeaveEncryptionKey_AES128CTRSHA1::KeySize, sessionKey);
     SuccessOrExit(err);
 
-    memcpy(EncryptionKey.AES128CTRSHA1.DataKey,
-        sessionKey,
-        WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
-    memcpy(EncryptionKey.AES128CTRSHA1.IntegrityKey,
-        sessionKey + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
-        WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
+    memcpy(EncryptionKey.AES128CTRSHA1.DataKey, sessionKey, WeaveEncryptionKey_AES128CTRSHA1::DataKeySize);
+    memcpy(EncryptionKey.AES128CTRSHA1.IntegrityKey, sessionKey + WeaveEncryptionKey_AES128CTRSHA1::DataKeySize,
+           WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize);
 
     KeyState = kEncryptionKeyState_Initialized;
 
@@ -655,12 +665,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessReAuthenticateTokenMessage(const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessReAuthenticateTokenMessage(const PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint16_t msgLen = msgBuf->DataLength();
-    uint8_t* tokenEncryptedState = msgBuf->Start();
-    uint8_t* hmacSignature = tokenEncryptedState + kTokenEncryptedStateSize;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    uint16_t msgLen               = msgBuf->DataLength();
+    uint8_t * tokenEncryptedState = msgBuf->Start();
+    uint8_t * hmacSignature       = tokenEncryptedState + kTokenEncryptedStateSize;
     bool res;
     uint8_t tokenMasterKey[kTokenMasterKeySize];
     Platform::Security::AES256BlockCipherDec aes256BlockCipherDec;
@@ -689,11 +699,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateReAuthenticateTokenResponseMessage(PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::GenerateReAuthenticateTokenResponseMessage(PacketBuffer * msgBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     Crypto::HMACSHA1 hmac;
-    uint8_t* p = msgBuf->Start();
+    uint8_t * p = msgBuf->Start();
 
     VerifyOrExit(State == kState_ResponderReAuthenticateTokenProcessed, err = WEAVE_ERROR_INCORRECT_STATE);
     VerifyOrExit(msgBuf->AvailableDataLength() >= kReAuthenticateTokenResponseMsgSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
@@ -708,11 +718,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::ProcessReAuthenticateTokenResponseMessage(const PacketBuffer *msgBuf)
+WEAVE_ERROR WeaveTAKEEngine::ProcessReAuthenticateTokenResponseMessage(const PacketBuffer * msgBuf)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint8_t* hmacSignature = msgBuf->Start();
-    uint16_t msgLen = msgBuf->DataLength();
+    WEAVE_ERROR err         = WEAVE_NO_ERROR;
+    uint8_t * hmacSignature = msgBuf->Start();
+    uint16_t msgLen         = msgBuf->DataLength();
     bool res;
 
     VerifyOrExit(msgLen == kReAuthenticateTokenResponseMsgSize, err = WEAVE_ERROR_MESSAGE_INCOMPLETE);
@@ -747,7 +757,8 @@ uint8_t WeaveTAKEEngine::GetEncryptionType()
     return EncryptionType;
 }
 
-void WeaveTAKEEngine::GenerateHMACSignature(const uint8_t* key, uint8_t* dest, const uint8_t* additionalField, uint8_t additionalFieldLength, uint16_t keyLength)
+void WeaveTAKEEngine::GenerateHMACSignature(const uint8_t * key, uint8_t * dest, const uint8_t * additionalField,
+                                            uint8_t additionalFieldLength, uint16_t keyLength)
 {
     Crypto::HMACSHA1 hmac;
 
@@ -770,26 +781,29 @@ void WeaveTAKEEngine::GenerateHMACSignature(const uint8_t* key, uint8_t* dest, c
     hmac.Finish(dest);
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticationKey(const uint8_t* challengerId, uint8_t* privateKey, uint8_t* publicKey, uint16_t privateKeyLen)
+WEAVE_ERROR WeaveTAKEEngine::GenerateAuthenticationKey(const uint8_t * challengerId, uint8_t * privateKey, uint8_t * publicKey,
+                                                       uint16_t privateKeyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     HKDFSHA1 hkdf;
     uint8_t sharedSecret[kMaxCurveSize];
     uint16_t sharedSecretLen;
     uint8_t keySaltLen = ChallengerIdLen + sizeof(ControlHeader) + sizeof(EncryptionType) + sizeof(ProtocolConfig) +
-        sizeof(uint8_t) * GetNumOptionalConfigurations() + sizeof(SessionKeyId) + sizeof(ChosenConfiguration) + kNonceSize + kNonceSize;
+        sizeof(uint8_t) * GetNumOptionalConfigurations() + sizeof(SessionKeyId) + sizeof(ChosenConfiguration) + kNonceSize +
+        kNonceSize;
     uint8_t keySalt[kMaxAuthenticationKeySaltSize];
-    uint8_t* p = keySalt;
+    uint8_t * p = keySalt;
 
     EncodedECPrivateKey encodedPrivKey;
     EncodedECPublicKey encodedPubKey;
 
-    encodedPubKey.ECPoint = publicKey;
-    encodedPubKey.ECPointLen = GetECPointLen();
-    encodedPrivKey.PrivKey = privateKey;
+    encodedPubKey.ECPoint     = publicKey;
+    encodedPubKey.ECPointLen  = GetECPointLen();
+    encodedPrivKey.PrivKey    = privateKey;
     encodedPrivKey.PrivKeyLen = privateKeyLen;
 
-    err = ECDHComputeSharedSecret(GetCurveOID(), encodedPubKey, encodedPrivKey, sharedSecret, sizeof(sharedSecret), sharedSecretLen);
+    err =
+        ECDHComputeSharedSecret(GetCurveOID(), encodedPubKey, encodedPrivKey, sharedSecret, sizeof(sharedSecret), sharedSecretLen);
     SuccessOrExit(err);
 
     WriteArray(challengerId, p, ChallengerIdLen);
@@ -817,7 +831,8 @@ exit:
     return err;
 }
 
-void WeaveTAKEEngine::GenerateHashForAuthenticateTokenResponse(uint8_t* dest, const uint8_t* challengerECDHPublicKey, const uint8_t* tokenECDHPublicKey, const uint8_t* encryptedState)
+void WeaveTAKEEngine::GenerateHashForAuthenticateTokenResponse(uint8_t * dest, const uint8_t * challengerECDHPublicKey,
+                                                               const uint8_t * tokenECDHPublicKey, const uint8_t * encryptedState)
 {
     Platform::Security::SHA1 sha1;
 
@@ -839,8 +854,10 @@ void WeaveTAKEEngine::GenerateHashForAuthenticateTokenResponse(uint8_t* dest, co
     sha1.Finish(dest);
 }
 
-WEAVE_ERROR WeaveTAKEEngine::GenerateSignatureForAuthenticateTokenResponse(uint8_t* dest, const uint8_t* challengerECDHPublicKey, const uint8_t* tokenECDHPublicKey,
-                                                                           EncodedECPrivateKey TPriv, const uint8_t* encryptedState, OID& curveOID)
+WEAVE_ERROR WeaveTAKEEngine::GenerateSignatureForAuthenticateTokenResponse(uint8_t * dest, const uint8_t * challengerECDHPublicKey,
+                                                                           const uint8_t * tokenECDHPublicKey,
+                                                                           EncodedECPrivateKey TPriv,
+                                                                           const uint8_t * encryptedState, OID & curveOID)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t messageHash[kConfig1_HMACSignatureSize];
@@ -854,8 +871,11 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTAKEEngine::VerifySignatureForAuthenticateTokenResponse(const uint8_t* signature, const uint8_t* challengerECDHPublicKey, const uint8_t* tokenECDHPublicKey,
-                                                                         const uint8_t* encryptedState, OID& curveOID, EncodedECPublicKey& encodedPubKey)
+WEAVE_ERROR WeaveTAKEEngine::VerifySignatureForAuthenticateTokenResponse(const uint8_t * signature,
+                                                                         const uint8_t * challengerECDHPublicKey,
+                                                                         const uint8_t * tokenECDHPublicKey,
+                                                                         const uint8_t * encryptedState, OID & curveOID,
+                                                                         EncodedECPublicKey & encodedPubKey)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint8_t messageHash[kConfig1_HMACSignatureSize];
@@ -869,13 +889,13 @@ exit:
     return err;
 }
 
-void WeaveTAKEEngine::ReadArray(uint8_t* dest, const uint8_t*& src, uint8_t length)
+void WeaveTAKEEngine::ReadArray(uint8_t * dest, const uint8_t *& src, uint8_t length)
 {
     memcpy(dest, src, length);
     src += length;
 }
 
-void WeaveTAKEEngine::WriteArray(const uint8_t* src, uint8_t*& dest, uint8_t length)
+void WeaveTAKEEngine::WriteArray(const uint8_t * src, uint8_t *& dest, uint8_t length)
 {
     memcpy(dest, src, length);
     dest += length;

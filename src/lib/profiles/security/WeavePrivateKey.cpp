@@ -44,8 +44,9 @@ using namespace nl::Weave::Profiles;
 using namespace nl::Weave::Crypto;
 
 // Encode an elliptic curve public/private key pair in Weave TLV format.
-NL_DLL_EXPORT WEAVE_ERROR EncodeWeaveECPrivateKey(uint32_t weaveCurveId, const EncodedECPublicKey *pubKey, const EncodedECPrivateKey& privKey,
-                                    uint8_t *outBuf, uint32_t outBufSize, uint32_t& outLen)
+NL_DLL_EXPORT WEAVE_ERROR EncodeWeaveECPrivateKey(uint32_t weaveCurveId, const EncodedECPublicKey * pubKey,
+                                                  const EncodedECPrivateKey & privKey, uint8_t * outBuf, uint32_t outBufSize,
+                                                  uint32_t & outLen)
 {
     WEAVE_ERROR err;
     TLVWriter writer;
@@ -53,7 +54,8 @@ NL_DLL_EXPORT WEAVE_ERROR EncodeWeaveECPrivateKey(uint32_t weaveCurveId, const E
 
     writer.Init(outBuf, outBufSize);
 
-    err = writer.StartContainer(ProfileTag(kWeaveProfile_Security, kTag_EllipticCurvePrivateKey), kTLVType_Structure, containerType);
+    err =
+        writer.StartContainer(ProfileTag(kWeaveProfile_Security, kTag_EllipticCurvePrivateKey), kTLVType_Structure, containerType);
     SuccessOrExit(err);
 
     err = writer.Put(ContextTag(kTag_EllipticCurvePrivateKey_CurveIdentifier), weaveCurveId);
@@ -81,15 +83,15 @@ exit:
 }
 
 // Decode an elliptic curve public/private key pair in Weave TLV format.
-NL_DLL_EXPORT WEAVE_ERROR DecodeWeaveECPrivateKey(const uint8_t *buf, uint32_t len, uint32_t& weaveCurveId,
-                                    EncodedECPublicKey& pubKey, EncodedECPrivateKey& privKey)
+NL_DLL_EXPORT WEAVE_ERROR DecodeWeaveECPrivateKey(const uint8_t * buf, uint32_t len, uint32_t & weaveCurveId,
+                                                  EncodedECPublicKey & pubKey, EncodedECPrivateKey & privKey)
 {
     WEAVE_ERROR err;
     TLVReader reader;
     TLVType containerType;
 
-    weaveCurveId = kWeaveCurveId_NotSpecified;
-    pubKey.ECPoint = NULL;
+    weaveCurveId    = kWeaveCurveId_NotSpecified;
+    pubKey.ECPoint  = NULL;
     privKey.PrivKey = NULL;
 
     reader.Init(buf, len);
@@ -120,20 +122,19 @@ NL_DLL_EXPORT WEAVE_ERROR DecodeWeaveECPrivateKey(const uint8_t *buf, uint32_t l
 
         case kTag_EllipticCurvePrivateKey_PrivateKey:
             VerifyOrExit(privKey.PrivKey == NULL, err = WEAVE_ERROR_UNEXPECTED_TLV_ELEMENT);
-            err = reader.GetDataPtr((const uint8_t *&)privKey.PrivKey);
+            err = reader.GetDataPtr((const uint8_t *&) privKey.PrivKey);
             SuccessOrExit(err);
             privKey.PrivKeyLen = reader.GetLength();
             break;
 
         case kTag_EllipticCurvePrivateKey_PublicKey:
             VerifyOrExit(pubKey.ECPoint == NULL, err = WEAVE_ERROR_UNEXPECTED_TLV_ELEMENT);
-            err = reader.GetDataPtr((const uint8_t *&)pubKey.ECPoint);
+            err = reader.GetDataPtr((const uint8_t *&) pubKey.ECPoint);
             SuccessOrExit(err);
             pubKey.ECPointLen = reader.GetLength();
             break;
 
-        default:
-            ExitNow(err = WEAVE_ERROR_UNEXPECTED_TLV_ELEMENT);
+        default: ExitNow(err = WEAVE_ERROR_UNEXPECTED_TLV_ELEMENT);
         }
     }
 
@@ -146,7 +147,6 @@ NL_DLL_EXPORT WEAVE_ERROR DecodeWeaveECPrivateKey(const uint8_t *buf, uint32_t l
 exit:
     return err;
 }
-
 
 } // namespace Security
 } // namespace Profiles

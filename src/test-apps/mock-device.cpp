@@ -94,21 +94,23 @@ using namespace ::nl::Weave::Profiles::ServiceDirectory;
 
 using namespace ::nl::Weave::Profiles::StatusReporting;
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload);
-static void HandleHeartbeatReceived(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState, WEAVE_ERROR err);
-static void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con);
-static void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType);
-static void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport);
-static void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr);
-static void InitiateConnection(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
-static void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR conErr);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload);
+static void HandleHeartbeatReceived(const WeaveMessageInfo * aMsgInfo, uint8_t nodeState, WEAVE_ERROR err);
+static void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con);
+static void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                           uint64_t peerNodeId, uint8_t encType);
+static void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                                     uint64_t peerNodeId, StatusReport * statusReport);
+static void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr);
+static void InitiateConnection(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
+static void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR conErr);
 static void HandleWdmCompleteTest();
 static void HandleError();
 
 #if CONFIG_BLE_PLATFORM_BLUEZ
 bool EnableWeaveBluezPeripheral = false;
-static pthread_t sBLEThread = PTHREAD_NULL;
+static pthread_t sBLEThread     = PTHREAD_NULL;
 #endif
 
 #if WEAVE_CONFIG_ENABLE_TUNNELING
@@ -117,9 +119,9 @@ using namespace ::nl::Weave::Profiles::WeaveTunnel;
 #define DEFAULT_TFE_NODE_ID 0xC0FFEE
 
 WeaveTunnelAgent TunAgent;
-const char *TunnelConnectToAddr = NULL;
-IPAddress TunnelDestAddr = IPAddress::Any;
-uint64_t TunnelDestNodeId = DEFAULT_TFE_NODE_ID;
+const char * TunnelConnectToAddr = NULL;
+IPAddress TunnelDestAddr         = IPAddress::Any;
+uint64_t TunnelDestNodeId        = DEFAULT_TFE_NODE_ID;
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
 bool UseServiceDirForTunnel = false;
@@ -127,39 +129,39 @@ ServiceDirectory::WeaveServiceManager ServiceMgr;
 uint8_t ServiceDirCache[100];
 #endif
 
-int32_t  tunnelingDeviceRole = 0;
+int32_t tunnelingDeviceRole = 0;
 #endif
 
 // only for wdm next test
-char * TestCaseId = NULL;
-bool EnableStopTest = false;
+char * TestCaseId                      = NULL;
+bool EnableStopTest                    = false;
 char * NumDataChangeBeforeCancellation = NULL;
-char * FinalStatus = NULL;
-char * TimeBetweenDataChangeMsec = NULL;
-bool EnableDataFlip = true;
-char * TimeBetweenLivenessCheckSec = NULL;
-bool EnableDictionaryTest = false;
+char * FinalStatus                     = NULL;
+char * TimeBetweenDataChangeMsec       = NULL;
+bool EnableDataFlip                    = true;
+char * TimeBetweenLivenessCheckSec     = NULL;
+bool EnableDictionaryTest              = false;
 
 #if CONFIG_BLE_PLATFORM_BLUEZ
 // only for woble bluez peripheral
-static char * BleName = NULL;
+static char * BleName    = NULL;
 static char * BleAddress = NULL;
 #endif
 
 // events
 EventGenerator * gEventGenerator = NULL;
-int TimeBetweenEvents = 1000;
+int TimeBetweenEvents            = 1000;
 
 // only for wdm next test
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 int WdmRoleInTest = 0;
-bool EnableRetry = false;
+bool EnableRetry  = false;
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-bool Debug = false;
-bool Preconfig = false;
-bool UseCASE = false;
-const char *ConnectToAddr = NULL;
+bool Debug                 = false;
+bool Preconfig             = false;
+bool UseCASE               = false;
+const char * ConnectToAddr = NULL;
 uint32_t ConnectIntervalMS = 2000;
 WeaveEchoServer EchoServer;
 WeaveHeartbeatReceiver HeartbeatReceiver;
@@ -175,9 +177,9 @@ MockTokenPairingServer MockTPServer;
 #if WEAVE_CONFIG_TIME
 MockTimeSync MockTimeNode;
 
-uint64_t TimeSyncServerNodeId = kAnyNodeId;
-const char *TimeSyncServerNodeAddr = NULL;
-uint16_t TimeSyncServerSubnetId = kWeaveSubnetId_NotSpecified;
+uint64_t TimeSyncServerNodeId       = kAnyNodeId;
+const char * TimeSyncServerNodeAddr = NULL;
+uint16_t TimeSyncServerSubnetId     = kWeaveSubnetId_NotSpecified;
 MockSingleSourceTimeSyncClient simpleTimeSyncClient;
 bool ShouldEnableSimpleTimeSyncClient = false;
 #endif // WEAVE_CONFIG_TIME
@@ -190,36 +192,37 @@ MockOpActions OpActions;
 
 uint32_t RespDelayTime = 10000;
 
-const char *PairingServer = NULL;
+const char * PairingServer = NULL;
 
 uint64_t PairingEndPointIdArg = kServiceEndpoint_ServiceProvisioning;
-int PairingTransportArg = kPairingTransport_TCP;
+int PairingTransportArg       = kPairingTransport_TCP;
 
 #define TOOL_NAME "mock-device"
 
 enum
 {
-    kToolOpt_ConnectTo                          = 1000,
-    kToolOpt_ConnectToInterval                  = 1001,
-    kToolOpt_TimeSyncServer                     = 1003, // specify that this mock device should run a Time Sync Server
-    kToolOpt_TimeSyncClient                     = 1004, // specify that this mock device should run a Time Sync Client
-    kToolOpt_TimeSyncCoordinator                = 1005, // specify that this mock device should run a Time Sync Coordinator
-    kToolOpt_TimeSyncModeLocal                  = 1006, // specify that the Time Client Sync mode is Local (time sync with local nodes via UDP)
-    kToolOpt_TimeSyncModeService                = 1007, // specify that the Time Client Sync mode is Service (time sync with Service via TCP)
-    kToolOpt_TimeSyncModeAuto                   = 1008, // specify that the Time Client Sync mode is Auto (time sync via multicast)
-    kToolOpt_TunnelBorderGw                     = 1012, // specify that this mock device should run as a Border gateway capable of Tunneling
-    kToolOpt_TunnelMobDevice                    = 1013, // specify that this mock device should run as a Mobile Device capable of Tunneling
-    kToolOpt_TunnelConnectAddr                  = 1014,
-    kToolOpt_TunnelDestNodeId                   = 1015,
+    kToolOpt_ConnectTo           = 1000,
+    kToolOpt_ConnectToInterval   = 1001,
+    kToolOpt_TimeSyncServer      = 1003, // specify that this mock device should run a Time Sync Server
+    kToolOpt_TimeSyncClient      = 1004, // specify that this mock device should run a Time Sync Client
+    kToolOpt_TimeSyncCoordinator = 1005, // specify that this mock device should run a Time Sync Coordinator
+    kToolOpt_TimeSyncModeLocal   = 1006, // specify that the Time Client Sync mode is Local (time sync with local nodes via UDP)
+    kToolOpt_TimeSyncModeService = 1007, // specify that the Time Client Sync mode is Service (time sync with Service via TCP)
+    kToolOpt_TimeSyncModeAuto    = 1008, // specify that the Time Client Sync mode is Auto (time sync via multicast)
+    kToolOpt_TunnelBorderGw      = 1012, // specify that this mock device should run as a Border gateway capable of Tunneling
+    kToolOpt_TunnelMobDevice     = 1013, // specify that this mock device should run as a Mobile Device capable of Tunneling
+    kToolOpt_TunnelConnectAddr   = 1014,
+    kToolOpt_TunnelDestNodeId    = 1015,
 
-    kToolOpt_PairViaWRM                         = 1035,
-    kToolOpt_PairingEndPointId                  = 1037,
+    kToolOpt_PairViaWRM        = 1035,
+    kToolOpt_PairingEndPointId = 1037,
 
-    kToolOpt_TimeSyncSimpleClient               = 1038, // specify that this mock device should run a Simple Time Sync Client
-    kToolOpt_TimeSyncServerNodeId               = 1039, // Specify the node ID of the Time Sync Server we should contact with
-    kToolOpt_TimeSyncServerSubnetId             = 1040, // Specify the subnet ID of the Time Sync Server we should contact with
-    kToolOpt_TimeSyncServerNodeAddr             = 1041, // Specify the node address of the Time Sync Server we should contact
-    kToolOpt_TimeSyncModeServiceOverTunnel      = 1042, // specify that the Time Client Sync mode is Service (time sync with Service over a tunnel)
+    kToolOpt_TimeSyncSimpleClient   = 1038, // specify that this mock device should run a Simple Time Sync Client
+    kToolOpt_TimeSyncServerNodeId   = 1039, // Specify the node ID of the Time Sync Server we should contact with
+    kToolOpt_TimeSyncServerSubnetId = 1040, // Specify the subnet ID of the Time Sync Server we should contact with
+    kToolOpt_TimeSyncServerNodeAddr = 1041, // Specify the node address of the Time Sync Server we should contact
+    kToolOpt_TimeSyncModeServiceOverTunnel =
+        1042, // specify that the Time Client Sync mode is Service (time sync with Service over a tunnel)
     kToolOpt_UseServiceDir,
     kToolOpt_SuppressAccessControl,
 
@@ -232,49 +235,48 @@ enum
 
 };
 
-static OptionDef gToolOptionDefs[] =
-{
+static OptionDef gToolOptionDefs[] = {
 #if WEAVE_CONFIG_ENABLE_TUNNELING
-    { "tun-border-gw",              kNoArgument,        kToolOpt_TunnelBorderGw },
-    { "tun-mob-device",             kNoArgument,        kToolOpt_TunnelMobDevice },
-    { "tun-connect-to",             kArgumentRequired,  kToolOpt_TunnelConnectAddr },
-    { "tun-dest-node-id",           kArgumentRequired,  kToolOpt_TunnelDestNodeId },
+    { "tun-border-gw", kNoArgument, kToolOpt_TunnelBorderGw },
+    { "tun-mob-device", kNoArgument, kToolOpt_TunnelMobDevice },
+    { "tun-connect-to", kArgumentRequired, kToolOpt_TunnelConnectAddr },
+    { "tun-dest-node-id", kArgumentRequired, kToolOpt_TunnelDestNodeId },
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    { "service-dir",                kNoArgument,        kToolOpt_UseServiceDir },
+    { "service-dir", kNoArgument, kToolOpt_UseServiceDir },
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
 #if CONFIG_BLE_PLATFORM_BLUEZ
-    { "enable-bluez-peripheral",    kNoArgument,        kToolOpt_EnableWeaveBluezPeripheral },
-    { "peripheral-name",            kArgumentRequired,  kToolOpt_WeaveBluezPeripheralName },
-    { "peripheral-address",         kArgumentRequired,  kToolOpt_WeaveBluezPeripheralAddress },
+    { "enable-bluez-peripheral", kNoArgument, kToolOpt_EnableWeaveBluezPeripheral },
+    { "peripheral-name", kArgumentRequired, kToolOpt_WeaveBluezPeripheralName },
+    { "peripheral-address", kArgumentRequired, kToolOpt_WeaveBluezPeripheralAddress },
 #endif
-#endif //WEAVE_CONFIG_ENABLE_TUNNELING
-    { "pairing-server",             kArgumentRequired,  'p' },
-    { "wrm-pairing",                kNoArgument,        kToolOpt_PairViaWRM },
-    { "pairing-endpoint-id",        kArgumentRequired,  kToolOpt_PairingEndPointId },
-    { "delay",                      kArgumentRequired,  'r' },
-    { "delay-time",                 kArgumentRequired,  't' },
-    { "preconfig",                  kNoArgument,        'c' },
-    { "suppress-ac",                kNoArgument,        kToolOpt_SuppressAccessControl },
-    { "connect-to",                 kArgumentRequired,  kToolOpt_ConnectTo },
-    { "connect-to-interval",        kArgumentRequired,  kToolOpt_ConnectToInterval },
+#endif // WEAVE_CONFIG_ENABLE_TUNNELING
+    { "pairing-server", kArgumentRequired, 'p' },
+    { "wrm-pairing", kNoArgument, kToolOpt_PairViaWRM },
+    { "pairing-endpoint-id", kArgumentRequired, kToolOpt_PairingEndPointId },
+    { "delay", kArgumentRequired, 'r' },
+    { "delay-time", kArgumentRequired, 't' },
+    { "preconfig", kNoArgument, 'c' },
+    { "suppress-ac", kNoArgument, kToolOpt_SuppressAccessControl },
+    { "connect-to", kArgumentRequired, kToolOpt_ConnectTo },
+    { "connect-to-interval", kArgumentRequired, kToolOpt_ConnectToInterval },
 #if WEAVE_CONFIG_TIME
-    { "time-sync-server",           kNoArgument,        kToolOpt_TimeSyncServer },
-    { "time-sync-client",           kNoArgument,        kToolOpt_TimeSyncClient },
-    { "time-sync-coordinator",      kNoArgument,        kToolOpt_TimeSyncCoordinator },
-    { "time-sync-mode-local",       kNoArgument,        kToolOpt_TimeSyncModeLocal },
-    { "time-sync-mode-service",     kNoArgument,        kToolOpt_TimeSyncModeService },
-    { "time-sync-mode-service-over-tunnel",     kNoArgument,        kToolOpt_TimeSyncModeServiceOverTunnel },
-    { "time-sync-mode-auto",        kNoArgument,        kToolOpt_TimeSyncModeAuto },
+    { "time-sync-server", kNoArgument, kToolOpt_TimeSyncServer },
+    { "time-sync-client", kNoArgument, kToolOpt_TimeSyncClient },
+    { "time-sync-coordinator", kNoArgument, kToolOpt_TimeSyncCoordinator },
+    { "time-sync-mode-local", kNoArgument, kToolOpt_TimeSyncModeLocal },
+    { "time-sync-mode-service", kNoArgument, kToolOpt_TimeSyncModeService },
+    { "time-sync-mode-service-over-tunnel", kNoArgument, kToolOpt_TimeSyncModeServiceOverTunnel },
+    { "time-sync-mode-auto", kNoArgument, kToolOpt_TimeSyncModeAuto },
 
-    { "ts-simple-client",           kNoArgument,        kToolOpt_TimeSyncSimpleClient },
-    { "ts-server-node-id",          kArgumentRequired,  kToolOpt_TimeSyncServerNodeId },
-    { "ts-server-node-addr",        kArgumentRequired,  kToolOpt_TimeSyncServerNodeAddr },
-    { "ts-server-subnet-id",        kArgumentRequired,  kToolOpt_TimeSyncServerSubnetId },
+    { "ts-simple-client", kNoArgument, kToolOpt_TimeSyncSimpleClient },
+    { "ts-server-node-id", kArgumentRequired, kToolOpt_TimeSyncServerNodeId },
+    { "ts-server-node-addr", kArgumentRequired, kToolOpt_TimeSyncServerNodeAddr },
+    { "ts-server-subnet-id", kArgumentRequired, kToolOpt_TimeSyncServerSubnetId },
 #endif // WEAVE_CONFIG_TIME
     { }
 };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -c, --preconfig\n"
     "       Initialize the mock device as if it had already been configured.\n"
     "\n"
@@ -412,7 +414,7 @@ static const char *const gToolOptionHelp =
     "       Enable automatic retries by WDM\n"
     "\n"
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-// only for wdm next test
+       // only for wdm next test
     "  --event-generator [None | Debug | Liveness | Security | Telemetry | TestTrait]\n"
     "       Generate structured Weave events using a particular generator:"
     "         None: no events\n"
@@ -453,45 +455,23 @@ static const char *const gToolOptionHelp =
     "\n"
     "  --enable-flip <true|false|yes|no|1|0>\n"
     "      Enable/disable flip trait data in HandleDataFlipTimeout\n"
-// only for wdm next test
-    "\n"
-    ;
+    // only for wdm next test
+    "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Generic Weave device simulator.\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Generic Weave device simulator.\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gNetworkOptions,
-    &gWeaveNodeOptions,
-    &gMockWdmNodeOptions,
-    &gWRMPOptions,
-    &gWeaveSecurityMode,
-    &gCASEOptions,
-    &gKeyExportOptions,
-    &gDeviceDescOptions,
-    &gServiceDirClientOptions,
-    &gFaultInjectionOptions,
-    &gHelpOptions,
-    &gGroupKeyEncOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions,           &gNetworkOptions,
+                                         &gWeaveNodeOptions,      &gMockWdmNodeOptions,
+                                         &gWRMPOptions,           &gWeaveSecurityMode,
+                                         &gCASEOptions,           &gKeyExportOptions,
+                                         &gDeviceDescOptions,     &gServiceDirClientOptions,
+                                         &gFaultInjectionOptions, &gHelpOptions,
+                                         &gGroupKeyEncOptions,    NULL };
 
-
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     WEAVE_ERROR err;
     WeaveAuthMode authMode = kWeaveAuthMode_Unauthenticated;
@@ -544,9 +524,8 @@ int main(int argc, char *argv[])
     }
 
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache),
-            GetRootServiceDirectoryEntry, kWeaveAuthMode_CASE_ServiceEndPoint,
-            NULL, NULL, OverrideServiceConnectArguments);
+    err = ServiceMgr.init(&ExchangeMgr, ServiceDirCache, sizeof(ServiceDirCache), GetRootServiceDirectoryEntry,
+                          kWeaveAuthMode_CASE_ServiceEndPoint, NULL, NULL, OverrideServiceConnectArguments);
     FAIL_ERROR(err, "ServiceMgr.Init failed");
 #endif
 
@@ -558,16 +537,12 @@ int main(int argc, char *argv[])
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
         if (UseServiceDirForTunnel)
         {
-            err = TunAgent.Init(&Inet, &ExchangeMgr, TunnelDestNodeId,
-                                authMode, &ServiceMgr,
-                                "weave-tun0", tunnelingDeviceRole);
+            err = TunAgent.Init(&Inet, &ExchangeMgr, TunnelDestNodeId, authMode, &ServiceMgr, "weave-tun0", tunnelingDeviceRole);
         }
         else
 #endif
         {
-            err = TunAgent.Init(&Inet, &ExchangeMgr, TunnelDestNodeId, TunnelDestAddr,
-                                authMode,
-                                "weave-tun0", tunnelingDeviceRole);
+            err = TunAgent.Init(&Inet, &ExchangeMgr, TunnelDestNodeId, TunnelDestAddr, authMode, "weave-tun0", tunnelingDeviceRole);
         }
         FAIL_ERROR(err, "TunnelAgent.Init failed");
         err = TunAgent.StartServiceTunnel();
@@ -577,11 +552,11 @@ int main(int argc, char *argv[])
 
     // Arrange to get called for various activity in the message layer.
     MessageLayer.OnConnectionReceived = HandleConnectionReceived;
-    MessageLayer.OnReceiveError = HandleMessageReceiveError;
-    MessageLayer.OnAcceptError = HandleAcceptConnectionError;
+    MessageLayer.OnReceiveError       = HandleMessageReceiveError;
+    MessageLayer.OnAcceptError        = HandleAcceptConnectionError;
 
     SecurityMgr.OnSessionEstablished = HandleSecureSessionEstablished;
-    SecurityMgr.OnSessionError = HandleSecureSessionError;
+    SecurityMgr.OnSessionError       = HandleSecureSessionError;
 
     // Initialize the EchoServer application.
     err = EchoServer.Init(&ExchangeMgr);
@@ -608,7 +583,7 @@ int main(int argc, char *argv[])
     // Initialize the mock service provisioning server
     err = MockSPServer.Init(&ExchangeMgr);
     FAIL_ERROR(err, "MockServiceProvisioningServer.Init failed");
-    MockSPServer.PairingTransport = PairingTransportArg;
+    MockSPServer.PairingTransport  = PairingTransportArg;
     MockSPServer.PairingEndPointId = PairingEndPointIdArg;
     if (PairingServer != NULL)
     {
@@ -635,23 +610,19 @@ int main(int argc, char *argv[])
     err = MockTPServer.Init(&ExchangeMgr);
     FAIL_ERROR(err, "MockTPServer.Init failed");
 
-
     InitializeEventLogging(&ExchangeMgr);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
     switch (WdmRoleInTest)
     {
-    case 0:
-        break;
+    case 0: break;
     case kToolOpt_WdmInitMutualSubscription:
     case kToolOpt_WdmSubscriptionClient:
 
         if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
         {
-            err = MockWdmSubscriptionInitiator::GetInstance()->Init(&ExchangeMgr,
-                                                                    gGroupKeyEncOptions.GetEncKeyId(),
-                                                                    gWeaveSecurityMode.SecurityMode,
-                                                                    gMockWdmNodeOptions);
+            err = MockWdmSubscriptionInitiator::GetInstance()->Init(&ExchangeMgr, gGroupKeyEncOptions.GetEncKeyId(),
+                                                                    gWeaveSecurityMode.SecurityMode, gMockWdmNodeOptions);
             FAIL_ERROR(err, "MockWdmSubscriptionInitiator.Init failed");
             err = MockWdmSubscriptionInitiator::GetInstance()->StartTesting(gMockWdmNodeOptions.mWdmPublisherNodeId,
                                                                             gMockWdmNodeOptions.mWdmUseSubnetId);
@@ -672,14 +643,11 @@ int main(int argc, char *argv[])
             FAIL_ERROR(err, "MockWdmSubcriptionResponder is incompatible with --wdm-enable-retry");
         }
 
-        err = MockWdmSubscriptionResponder::GetInstance()->Init(&ExchangeMgr,
-                                                                gMockWdmNodeOptions);
+        err = MockWdmSubscriptionResponder::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions);
         FAIL_ERROR(err, "MockWdmSubscriptionResponder.Init failed");
         MockWdmSubscriptionResponder::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
         break;
-    default:
-        err = WEAVE_ERROR_INVALID_ARGUMENT;
-        FAIL_ERROR(err, "WdmRoleInTest is invalid");
+    default: err = WEAVE_ERROR_INVALID_ARGUMENT; FAIL_ERROR(err, "WdmRoleInTest is invalid");
     };
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
@@ -744,12 +712,12 @@ int main(int argc, char *argv[])
         {
             printf("BLE Peripheral name is %s.\n", BleName);
             printf("BLE Peripheral mac address is %s.\n", BleAddress);
-            Bluez_PeripheralArgs.bleName = BleName;
-            Bluez_PeripheralArgs.bleAddress = BleAddress;
+            Bluez_PeripheralArgs.bleName                     = BleName;
+            Bluez_PeripheralArgs.bleAddress                  = BleAddress;
             Bluez_PeripheralArgs.bluezBleApplicationDelegate = getBluezApplicationDelegate();
-            Bluez_PeripheralArgs.bluezBlePlatformDelegate = getBluezPlatformDelegate();
-            int pthreadErr = 0;
-            pthreadErr = pthread_create(&sBLEThread, NULL, WeaveBleIOLoop, (void *)&Bluez_PeripheralArgs);
+            Bluez_PeripheralArgs.bluezBlePlatformDelegate    = getBluezPlatformDelegate();
+            int pthreadErr                                   = 0;
+            pthreadErr = pthread_create(&sBLEThread, NULL, WeaveBleIOLoop, (void *) &Bluez_PeripheralArgs);
             if (pthreadErr)
             {
                 printf("pthread_create() failed for BLE IO thread, err: %d\n", pthreadErr);
@@ -771,111 +739,91 @@ int main(int argc, char *argv[])
 
     switch (gMockWdmNodeOptions.mWdmRoleInTest)
     {
-        case 0:
-            break;
-        case kToolOpt_WdmInitMutualSubscription:
-        case kToolOpt_WdmSubscriptionClient:
+    case 0: break;
+    case kToolOpt_WdmInitMutualSubscription:
+    case kToolOpt_WdmSubscriptionClient:
 
-            if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
-            {
-                err = MockWdmSubscriptionInitiator::GetInstance()->Init(&ExchangeMgr,
-                                                                        gGroupKeyEncOptions.GetEncKeyId(),
-                                                                        gWeaveSecurityMode.SecurityMode,
-                                                                        gMockWdmNodeOptions);
-                FAIL_ERROR(err, "MockWdmSubscriptionInitiator.Init failed");
-                MockWdmSubscriptionInitiator::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
-                MockWdmSubscriptionInitiator::GetInstance()->onError = HandleError;
-
-            }
-            else
-            {
-                err = WEAVE_ERROR_INVALID_ARGUMENT;
-                FAIL_ERROR(err, "MockWdmSubscriptionInitiator requires node ID to some publisher");
-            }
-
-            break;
-        case kToolOpt_WdmRespMutualSubscription:
-        case kToolOpt_WdmSubscriptionPublisher:
-            if (gMockWdmNodeOptions.mEnableRetry)
-            {
-                err = WEAVE_ERROR_INVALID_ARGUMENT;
-                FAIL_ERROR(err, "MockWdmSubcriptionResponder is incompatible with --enable-retry");
-            }
-
-            err = MockWdmSubscriptionResponder::GetInstance()->Init(&ExchangeMgr,
-                                                                    gMockWdmNodeOptions
-                                                                    );
-            FAIL_ERROR(err, "MockWdmSubscriptionResponder.Init failed");
-            MockWdmSubscriptionResponder::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
-            MockWdmSubscriptionResponder::GetInstance()->onError = HandleError;
-            if (gTestWdmNextOptions.mClearDataSinkState)
-            {
-                MockWdmSubscriptionResponder::GetInstance()->ClearDataSinkState();
-            }
-            break;
-        default:
+        if (gMockWdmNodeOptions.mWdmPublisherNodeId != kAnyNodeId)
+        {
+            err = MockWdmSubscriptionInitiator::GetInstance()->Init(&ExchangeMgr, gGroupKeyEncOptions.GetEncKeyId(),
+                                                                    gWeaveSecurityMode.SecurityMode, gMockWdmNodeOptions);
+            FAIL_ERROR(err, "MockWdmSubscriptionInitiator.Init failed");
+            MockWdmSubscriptionInitiator::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
+            MockWdmSubscriptionInitiator::GetInstance()->onError        = HandleError;
+        }
+        else
+        {
             err = WEAVE_ERROR_INVALID_ARGUMENT;
-            FAIL_ERROR(err, "WdmRoleInTest is invalid");
+            FAIL_ERROR(err, "MockWdmSubscriptionInitiator requires node ID to some publisher");
+        }
+
+        break;
+    case kToolOpt_WdmRespMutualSubscription:
+    case kToolOpt_WdmSubscriptionPublisher:
+        if (gMockWdmNodeOptions.mEnableRetry)
+        {
+            err = WEAVE_ERROR_INVALID_ARGUMENT;
+            FAIL_ERROR(err, "MockWdmSubcriptionResponder is incompatible with --enable-retry");
+        }
+
+        err = MockWdmSubscriptionResponder::GetInstance()->Init(&ExchangeMgr, gMockWdmNodeOptions);
+        FAIL_ERROR(err, "MockWdmSubscriptionResponder.Init failed");
+        MockWdmSubscriptionResponder::GetInstance()->onCompleteTest = HandleWdmCompleteTest;
+        MockWdmSubscriptionResponder::GetInstance()->onError        = HandleError;
+        if (gTestWdmNextOptions.mClearDataSinkState)
+        {
+            MockWdmSubscriptionResponder::GetInstance()->ClearDataSinkState();
+        }
+        break;
+    default: err = WEAVE_ERROR_INVALID_ARGUMENT; FAIL_ERROR(err, "WdmRoleInTest is invalid");
     };
 
-    for (uint32_t iteration = 1; iteration <= gTestWdmNextOptions.mTestIterations; iteration++) {
+    for (uint32_t iteration = 1; iteration <= gTestWdmNextOptions.mTestIterations; iteration++)
+    {
 
-        switch (gMockWdmNodeOptions.mWdmRoleInTest) {
-            case 0:
-                break;
-            case kToolOpt_WdmInitMutualSubscription:
-            case kToolOpt_WdmSubscriptionClient:
-                if (gTestWdmNextOptions.mClearDataSinkState) {
-                    MockWdmSubscriptionInitiator::GetInstance()->ClearDataSinkState();
-                }
-                err = MockWdmSubscriptionInitiator::GetInstance()->StartTesting(gMockWdmNodeOptions.mWdmPublisherNodeId,
-                                                                                gMockWdmNodeOptions.mWdmUseSubnetId);
-                if (err != WEAVE_NO_ERROR) {
-                    printf("\nMockWdmSubscriptionInitiator.StartTesting failed: %s\n", ErrorStr(err));
-                    Done = true;
-                }
-                //FAIL_ERROR(err, "MockWdmSubscriptionInitiator.StartTesting failed");
-                break;
-            default:
-                printf("TestWdmNext server is ready\n");
+        switch (gMockWdmNodeOptions.mWdmRoleInTest)
+        {
+        case 0: break;
+        case kToolOpt_WdmInitMutualSubscription:
+        case kToolOpt_WdmSubscriptionClient:
+            if (gTestWdmNextOptions.mClearDataSinkState)
+            {
+                MockWdmSubscriptionInitiator::GetInstance()->ClearDataSinkState();
+            }
+            err = MockWdmSubscriptionInitiator::GetInstance()->StartTesting(gMockWdmNodeOptions.mWdmPublisherNodeId,
+                                                                            gMockWdmNodeOptions.mWdmUseSubnetId);
+            if (err != WEAVE_NO_ERROR)
+            {
+                printf("\nMockWdmSubscriptionInitiator.StartTesting failed: %s\n", ErrorStr(err));
+                Done = true;
+            }
+            // FAIL_ERROR(err, "MockWdmSubscriptionInitiator.StartTesting failed");
+            break;
+        default: printf("TestWdmNext server is ready\n");
         };
 
-        switch (gMockWdmNodeOptions.mEventGeneratorType) {
-            case MockWdmNodeOptions::kGenerator_None:
-                gEventGenerator = NULL;
-                break;
-            case MockWdmNodeOptions::kGenerator_TestDebug:
-                gEventGenerator = GetTestDebugGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestLiveness:
-                gEventGenerator = GetTestLivenessGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestSecurity:
-                gEventGenerator = GetTestSecurityGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestTelemetry:
-                gEventGenerator = GetTestTelemetryGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_TestTrait:
-                gEventGenerator = GetTestTraitGenerator();
-                break;
-            case MockWdmNodeOptions::kGenerator_NumItems:
-            default:
-                gEventGenerator = NULL;
-                break;
+        switch (gMockWdmNodeOptions.mEventGeneratorType)
+        {
+        case MockWdmNodeOptions::kGenerator_None: gEventGenerator = NULL; break;
+        case MockWdmNodeOptions::kGenerator_TestDebug: gEventGenerator = GetTestDebugGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestLiveness: gEventGenerator = GetTestLivenessGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestSecurity: gEventGenerator = GetTestSecurityGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestTelemetry: gEventGenerator = GetTestTelemetryGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_TestTrait: gEventGenerator = GetTestTraitGenerator(); break;
+        case MockWdmNodeOptions::kGenerator_NumItems:
+        default: gEventGenerator = NULL; break;
         }
 
-        if (gEventGenerator != NULL) {
+        if (gEventGenerator != NULL)
+        {
             printf("Starting Event Generator\n");
-            MockEventGenerator::GetInstance()->Init(&ExchangeMgr, gEventGenerator,
-                                                    gMockWdmNodeOptions.mTimeBetweenEvents, true);
+            MockEventGenerator::GetInstance()->Init(&ExchangeMgr, gEventGenerator, gMockWdmNodeOptions.mTimeBetweenEvents, true);
         }
-
     }
     while (!Done)
     {
         struct timeval sleepTime;
-        sleepTime.tv_sec = 0;
+        sleepTime.tv_sec  = 0;
         sleepTime.tv_usec = 100000;
 
         ServiceNetwork(sleepTime);
@@ -885,9 +833,8 @@ int main(int argc, char *argv[])
 
         MockDMPublisher.Republish();
 
-#endif //WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
+#endif // WEAVE_CONFIG_WDM_ALLOW_PUBLISHER_SUBSCRIPTION
 #endif // WEAVE_CONFIG_LEGACY_WDM
-
     }
 
 #if WEAVE_CONFIG_TIME
@@ -926,16 +873,12 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'p':
-        PairingServer = arg;
-        break;
-    case 'c':
-        Preconfig = true;
-        break;
+    case 'p': PairingServer = arg; break;
+    case 'c': Preconfig = true; break;
     case 'r':
         if (!OpActions.SetDelay(arg, RespDelayTime))
         {
@@ -950,9 +893,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case kToolOpt_PairViaWRM:
-        PairingTransportArg = kPairingTransport_WRM;
-        break;
+    case kToolOpt_PairViaWRM: PairingTransportArg = kPairingTransport_WRM; break;
     case kToolOpt_PairingEndPointId:
         if (!ParseNodeId(arg, PairingEndPointIdArg))
         {
@@ -960,9 +901,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case kToolOpt_ConnectTo:
-        ConnectToAddr = arg;
-        break;
+    case kToolOpt_ConnectTo: ConnectToAddr = arg; break;
     case kToolOpt_ConnectToInterval:
         if (!ParseInt(arg, ConnectIntervalMS))
         {
@@ -971,30 +910,14 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         }
         break;
 #if WEAVE_CONFIG_TIME
-    case kToolOpt_TimeSyncServer:
-        MockTimeNode.SetRole(kMockTimeSyncRole_Server);
-        break;
-    case kToolOpt_TimeSyncClient:
-        MockTimeNode.SetRole(kMockTimeSyncRole_Client);
-        break;
-    case kToolOpt_TimeSyncCoordinator:
-        MockTimeNode.SetRole(kMockTimeSyncRole_Coordinator);
-        break;
-    case kToolOpt_TimeSyncModeLocal:
-        MockTimeNode.SetMode(kOperatingMode_AssignedLocalNodes);
-        break;
-    case kToolOpt_TimeSyncModeService:
-        MockTimeNode.SetMode(kOperatingMode_Service);
-        break;
-    case kToolOpt_TimeSyncModeServiceOverTunnel:
-        MockTimeNode.SetMode(kOperatingMode_ServiceOverTunnel);
-        break;
-    case kToolOpt_TimeSyncModeAuto:
-        MockTimeNode.SetMode(kOperatingMode_Auto);
-        break;
-    case kToolOpt_TimeSyncSimpleClient:
-        ShouldEnableSimpleTimeSyncClient = true;
-        break;
+    case kToolOpt_TimeSyncServer: MockTimeNode.SetRole(kMockTimeSyncRole_Server); break;
+    case kToolOpt_TimeSyncClient: MockTimeNode.SetRole(kMockTimeSyncRole_Client); break;
+    case kToolOpt_TimeSyncCoordinator: MockTimeNode.SetRole(kMockTimeSyncRole_Coordinator); break;
+    case kToolOpt_TimeSyncModeLocal: MockTimeNode.SetMode(kOperatingMode_AssignedLocalNodes); break;
+    case kToolOpt_TimeSyncModeService: MockTimeNode.SetMode(kOperatingMode_Service); break;
+    case kToolOpt_TimeSyncModeServiceOverTunnel: MockTimeNode.SetMode(kOperatingMode_ServiceOverTunnel); break;
+    case kToolOpt_TimeSyncModeAuto: MockTimeNode.SetMode(kOperatingMode_Auto); break;
+    case kToolOpt_TimeSyncSimpleClient: ShouldEnableSimpleTimeSyncClient = true; break;
     case kToolOpt_TimeSyncServerNodeId:
         if (!ParseNodeId(arg, TimeSyncServerNodeId))
         {
@@ -1002,9 +925,7 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case kToolOpt_TimeSyncServerNodeAddr:
-        TimeSyncServerNodeAddr = arg;
-        break;
+    case kToolOpt_TimeSyncServerNodeAddr: TimeSyncServerNodeAddr = arg; break;
     case kToolOpt_TimeSyncServerSubnetId:
         if (!ParseSubnetId(arg, TimeSyncServerSubnetId))
         {
@@ -1014,15 +935,9 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         break;
 #endif // WEAVE_CONFIG_TIME
 #if WEAVE_CONFIG_ENABLE_TUNNELING
-    case kToolOpt_TunnelBorderGw:
-        tunnelingDeviceRole = kClientRole_BorderGateway;
-        break;
-    case kToolOpt_TunnelMobDevice:
-        tunnelingDeviceRole = kClientRole_MobileDevice;
-        break;
-    case kToolOpt_TunnelConnectAddr:
-        TunnelConnectToAddr = arg;
-        break;
+    case kToolOpt_TunnelBorderGw: tunnelingDeviceRole = kClientRole_BorderGateway; break;
+    case kToolOpt_TunnelMobDevice: tunnelingDeviceRole = kClientRole_MobileDevice; break;
+    case kToolOpt_TunnelConnectAddr: TunnelConnectToAddr = arg; break;
     case kToolOpt_TunnelDestNodeId:
         if (!ParseNodeId(arg, TunnelDestNodeId))
         {
@@ -1031,49 +946,34 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
         }
         break;
 #if WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
-    case kToolOpt_UseServiceDir:
-        UseServiceDirForTunnel = true;
-        break;
+    case kToolOpt_UseServiceDir: UseServiceDirForTunnel = true; break;
 #endif // WEAVE_CONFIG_ENABLE_SERVICE_DIRECTORY
 #endif // WEAVE_CONFIG_ENABLE_TUNNELING
 #if CONFIG_BLE_PLATFORM_BLUEZ
-    case kToolOpt_EnableWeaveBluezPeripheral:
-        EnableWeaveBluezPeripheral = true;
-        break;
-    case kToolOpt_WeaveBluezPeripheralName:
-        BleName = strdup(arg);
-        break;
-    case kToolOpt_WeaveBluezPeripheralAddress:
-        BleAddress = strdup(arg);
-        break;
+    case kToolOpt_EnableWeaveBluezPeripheral: EnableWeaveBluezPeripheral = true; break;
+    case kToolOpt_WeaveBluezPeripheralName: BleName = strdup(arg); break;
+    case kToolOpt_WeaveBluezPeripheralAddress: BleAddress = strdup(arg); break;
 #endif
-    case 'C':
-        UseCASE = true;
-        break;
-    case kToolOpt_SuppressAccessControl:
-        sSuppressAccessControls = true;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'C': UseCASE = true; break;
+    case kToolOpt_SuppressAccessControl: sSuppressAccessControls = true; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer *payload)
+void HandleEchoRequestReceived(uint64_t nodeId, IPAddress nodeAddr, PacketBuffer * payload)
 {
     char ipAddrStr[64];
     nodeAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
 
-    printf("Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n", nodeId, ipAddrStr,
-            payload->DataLength());
+    printf("Echo Request from node %" PRIX64 " (%s): len=%u ... sending response.\n", nodeId, ipAddrStr, payload->DataLength());
 
     if (Debug)
         DumpMemory(payload->Start(), payload->DataLength(), "    ", 16);
 }
 
-void HandleHeartbeatReceived(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState, WEAVE_ERROR err)
+void HandleHeartbeatReceived(const WeaveMessageInfo * aMsgInfo, uint8_t nodeState, WEAVE_ERROR err)
 {
     char ipAddrStr[64];
     aMsgInfo->InPacketInfo->SrcAddress.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -1081,7 +981,7 @@ void HandleHeartbeatReceived(const WeaveMessageInfo *aMsgInfo, uint8_t nodeState
     printf("Heartbeat from node %" PRIX64 " (%s): state=%u, err=%s\n", aMsgInfo->SourceNodeId, ipAddrStr, nodeState, ErrorStr(err));
 }
 
-void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
+void HandleConnectionReceived(WeaveMessageLayer * msgLayer, WeaveConnection * con)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -1091,7 +991,8 @@ void HandleConnectionReceived(WeaveMessageLayer *msgLayer, WeaveConnection *con)
     con->OnConnectionClosed = HandleConnectionClosed;
 }
 
-void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, uint16_t sessionKeyId, uint64_t peerNodeId, uint8_t encType)
+void HandleSecureSessionEstablished(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, uint16_t sessionKeyId,
+                                    uint64_t peerNodeId, uint8_t encType)
 {
     char ipAddrStr[64] = "";
 
@@ -1101,7 +1002,8 @@ void HandleSecureSessionEstablished(WeaveSecurityManager *sm, WeaveConnection *c
     printf("Secure session established with node %" PRIX64 " (%s)\n", peerNodeId, ipAddrStr);
 }
 
-void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, void *reqState, WEAVE_ERROR localErr, uint64_t peerNodeId, StatusReport *statusReport)
+void HandleSecureSessionError(WeaveSecurityManager * sm, WeaveConnection * con, void * reqState, WEAVE_ERROR localErr,
+                              uint64_t peerNodeId, StatusReport * statusReport)
 {
     char ipAddrStr[64] = "";
 
@@ -1112,12 +1014,13 @@ void HandleSecureSessionError(WeaveSecurityManager *sm, WeaveConnection *con, vo
     }
 
     if (localErr == WEAVE_ERROR_STATUS_REPORT_RECEIVED && statusReport != NULL)
-        printf("FAILED to establish secure session with node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr, nl::StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
+        printf("FAILED to establish secure session with node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr,
+               nl::StatusReportStr(statusReport->mProfileId, statusReport->mStatusCode));
     else
         printf("FAILED to establish secure session with node %" PRIX64 " (%s): %s\n", peerNodeId, ipAddrStr, ErrorStr(localErr));
 }
 
-void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
+void HandleConnectionClosed(WeaveConnection * con, WEAVE_ERROR conErr)
 {
     char ipAddrStr[64];
     con->PeerAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
@@ -1130,24 +1033,25 @@ void HandleConnectionClosed(WeaveConnection *con, WEAVE_ERROR conErr)
     con->Close();
 }
 
-void InitiateConnection(System::Layer* aSystemLayer, void* aAppState, System::Error aError)
+void InitiateConnection(System::Layer * aSystemLayer, void * aAppState, System::Error aError)
 {
     WEAVE_ERROR err;
-    WeaveConnection *con;
+    WeaveConnection * con;
 
     con = MessageLayer.NewConnection();
     if (con == NULL)
         FAIL_ERROR(WEAVE_ERROR_NO_MEMORY, "MessageLayer.NewConnection failed");
 
     con->OnConnectionComplete = HandleConnectionComplete;
-    con->OnConnectionClosed = HandleConnectionClosed;
+    con->OnConnectionClosed   = HandleConnectionClosed;
 
-    err = con->Connect(kNodeIdNotSpecified, kWeaveAuthMode_Unauthenticated, ConnectToAddr, strlen(ConnectToAddr), WEAVE_UNSECURED_PORT);
+    err = con->Connect(kNodeIdNotSpecified, kWeaveAuthMode_Unauthenticated, ConnectToAddr, strlen(ConnectToAddr),
+                       WEAVE_UNSECURED_PORT);
     if (err != WEAVE_NO_ERROR)
         HandleConnectionComplete(con, err);
 }
 
-void HandleConnectionComplete(WeaveConnection *con, WEAVE_ERROR err)
+void HandleConnectionComplete(WeaveConnection * con, WEAVE_ERROR err)
 {
     if (err == WEAVE_NO_ERROR)
     {

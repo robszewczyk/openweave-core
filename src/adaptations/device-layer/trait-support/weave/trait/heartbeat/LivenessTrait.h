@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace LivenessTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x22U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x22U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -86,7 +86,7 @@ enum {
     kPropertyHandle_NotifyRequestUnresponsiveness = 7,
 
     //
-    //  notify_request_unresponsiveness_time_status_changedgoogle.protobuf.Timestamp            uint              NO              YES
+    //  notify_request_unresponsiveness_time_status_changedgoogle.protobuf.Timestamp            uint              NO YES
     //
     kPropertyHandle_NotifyRequestUnresponsivenessTimeStatusChanged = 8,
 
@@ -96,7 +96,7 @@ enum {
     kPropertyHandle_CommandRequestUnresponsiveness = 9,
 
     //
-    //  command_request_unresponsiveness_time_status_changedgoogle.protobuf.Timestamp            uint              NO              YES
+    //  command_request_unresponsiveness_time_status_changedgoogle.protobuf.Timestamp            uint              NO YES
     //
     kPropertyHandle_CommandRequestUnresponsivenessTimeStatusChanged = 10,
 
@@ -126,22 +126,24 @@ struct LivenessChangeEvent
     bool IsCommandRequestUnresponsivenessPresent(void);
 #endif
     int32_t prevStatus;
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0x22U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0x22U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct LivenessChangeEvent_array {
+struct LivenessChangeEvent_array
+{
     uint32_t num;
-    LivenessChangeEvent *buf;
+    LivenessChangeEvent * buf;
 };
 
 inline void LivenessChangeEvent::SetNotifyRequestUnresponsivenessNull(void)
@@ -181,12 +183,13 @@ inline bool LivenessChangeEvent::IsCommandRequestUnresponsivenessPresent(void)
 // Enums
 //
 
-enum LivenessDeviceStatus {
-    LIVENESS_DEVICE_STATUS_ONLINE = 1,
-    LIVENESS_DEVICE_STATUS_UNREACHABLE = 2,
-    LIVENESS_DEVICE_STATUS_UNINITIALIZED = 3,
-    LIVENESS_DEVICE_STATUS_REBOOTING = 4,
-    LIVENESS_DEVICE_STATUS_UPGRADING = 5,
+enum LivenessDeviceStatus
+{
+    LIVENESS_DEVICE_STATUS_ONLINE         = 1,
+    LIVENESS_DEVICE_STATUS_UNREACHABLE    = 2,
+    LIVENESS_DEVICE_STATUS_UNINITIALIZED  = 3,
+    LIVENESS_DEVICE_STATUS_REBOOTING      = 4,
+    LIVENESS_DEVICE_STATUS_UPGRADING      = 5,
     LIVENESS_DEVICE_STATUS_SCHEDULED_DOWN = 6,
 };
 

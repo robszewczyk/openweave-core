@@ -61,12 +61,12 @@ uint8_t Verhoeff16::sPermTable[] =
 };
 // clang-format on
 
-char Verhoeff16::ComputeCheckChar(const char *str)
+char Verhoeff16::ComputeCheckChar(const char * str)
 {
     return ComputeCheckChar(str, strlen(str));
 }
 
-char Verhoeff16::ComputeCheckChar(const char *str, size_t strLen)
+char Verhoeff16::ComputeCheckChar(const char * str, size_t strLen)
 {
     int c = 0;
 
@@ -92,22 +92,22 @@ char Verhoeff16::ComputeCheckChar(const char *str, size_t strLen)
     return ValToChar(c);
 }
 
-bool Verhoeff16::ValidateCheckChar(char checkChar, const char *str)
+bool Verhoeff16::ValidateCheckChar(char checkChar, const char * str)
 {
     return ValidateCheckChar(checkChar, str, strlen(str));
 }
 
-bool Verhoeff16::ValidateCheckChar(char checkChar, const char *str, size_t strLen)
+bool Verhoeff16::ValidateCheckChar(char checkChar, const char * str, size_t strLen)
 {
     return (ComputeCheckChar(str, strLen) == checkChar);
 }
 
-bool Verhoeff16::ValidateCheckChar(const char *str)
+bool Verhoeff16::ValidateCheckChar(const char * str)
 {
     return ValidateCheckChar(str, strlen(str));
 }
 
-bool Verhoeff16::ValidateCheckChar(const char *str, size_t strLen)
+bool Verhoeff16::ValidateCheckChar(const char * str, size_t strLen)
 {
     if (strLen == 0)
         return false;

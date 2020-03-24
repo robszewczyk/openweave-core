@@ -27,22 +27,16 @@
 #ifndef _WEAVE_TRAIT_SECURITY__BOLT_LOCK_CAPABILITIES_TRAIT_C_H_
 #define _WEAVE_TRAIT_SECURITY__BOLT_LOCK_CAPABILITIES_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // BoltLockCapabilitiesHandedness
-    typedef enum
-    {
-    BOLT_LOCK_CAPABILITIES_HANDEDNESS_RIGHT = 1,
-    BOLT_LOCK_CAPABILITIES_HANDEDNESS_LEFT = 2,
+// BoltLockCapabilitiesHandedness
+typedef enum
+{
+    BOLT_LOCK_CAPABILITIES_HANDEDNESS_RIGHT         = 1,
+    BOLT_LOCK_CAPABILITIES_HANDEDNESS_LEFT          = 2,
     BOLT_LOCK_CAPABILITIES_HANDEDNESS_FIXED_UNKNOWN = 3,
-    } schema_weave_security_bolt_lock_capabilities_trait_bolt_lock_capabilities_handedness_t;
-
-
-
+} schema_weave_security_bolt_lock_capabilities_trait_bolt_lock_capabilities_handedness_t;
 
 #endif // _WEAVE_TRAIT_SECURITY__BOLT_LOCK_CAPABILITIES_TRAIT_C_H_

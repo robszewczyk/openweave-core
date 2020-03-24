@@ -111,10 +111,10 @@ exit:
 
 int WoBLEz_SendIndication(void * aClosure)
 {
-    BluezServerEndpoint * endpoint            = gBluezServerEndpoint;
-    nl::Weave::System::PacketBuffer * msgBuf  = static_cast<nl::Weave::System::PacketBuffer *>(aClosure);
-    uint8_t * buffer                          = msgBuf->Start();
-    size_t len                                = msgBuf->DataLength();
+    BluezServerEndpoint * endpoint           = gBluezServerEndpoint;
+    nl::Weave::System::PacketBuffer * msgBuf = static_cast<nl::Weave::System::PacketBuffer *>(aClosure);
+    uint8_t * buffer                         = msgBuf->Start();
+    size_t len                               = msgBuf->DataLength();
 #if BLE_CONFIG_BLUEZ_MTU_FEATURE
     struct iovec ioData;
 #endif // BLE_CONFIG_BLUEZ_MTU_FEATURE

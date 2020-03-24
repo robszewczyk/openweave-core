@@ -29,8 +29,6 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Common {
@@ -40,15 +38,13 @@ struct InterfaceName
     const char * interfaceName;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct InterfaceName_array {
+struct InterfaceName_array
+{
     uint32_t num;
-    InterfaceName *buf;
+    InterfaceName * buf;
 };
-
-
 
 } // namespace Common
 } // namespace Weave

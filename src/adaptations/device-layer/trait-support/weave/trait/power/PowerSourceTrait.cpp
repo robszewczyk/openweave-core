@@ -53,73 +53,60 @@ const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
 // IsOptional Table
 //
 
-uint8_t IsOptionalHandleBitfield[] = {
-        0xe
-};
+uint8_t IsOptionalHandleBitfield[] = { 0xe };
 
 //
 // IsNullable Table
 //
 
-uint8_t IsNullableHandleBitfield[] = {
-        0xe
-};
+uint8_t IsNullableHandleBitfield[] = { 0xe };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        &IsOptionalHandleBitfield[0],
-        NULL,
-        &IsNullableHandleBitfield[0],
-        NULL,
+    NULL,
+    &IsOptionalHandleBitfield[0],
+    NULL,
+    &IsNullableHandleBitfield[0],
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor PowerSourceChangedEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(PowerSourceChangedEvent, condition), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1
-    },
+const nl::FieldDescriptor PowerSourceChangedEventFieldDescriptors[] = {
+    { NULL, offsetof(PowerSourceChangedEvent, condition), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1 },
 
-    {
-        NULL, offsetof(PowerSourceChangedEvent, status), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2
-    },
+    { NULL, offsetof(PowerSourceChangedEvent, status), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor PowerSourceChangedEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(PowerSourceChangedEventFieldDescriptors)/sizeof(PowerSourceChangedEventFieldDescriptors[0]),
-    .mFields = PowerSourceChangedEventFieldDescriptors,
-    .mSize = sizeof(PowerSourceChangedEvent)
-};
-const nl::Weave::Profiles::DataManagement::EventSchema PowerSourceChangedEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
-    .mDataSchemaVersion = 1,
+const nl::SchemaFieldDescriptor PowerSourceChangedEvent::FieldSchema                   = { .mNumFieldDescriptorElements =
+                                                                             sizeof(PowerSourceChangedEventFieldDescriptors) /
+                                                                             sizeof(PowerSourceChangedEventFieldDescriptors[0]),
+                                                                         .mFields = PowerSourceChangedEventFieldDescriptors,
+                                                                         .mSize   = sizeof(PowerSourceChangedEvent) };
+const nl::Weave::Profiles::DataManagement::EventSchema PowerSourceChangedEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::Production,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

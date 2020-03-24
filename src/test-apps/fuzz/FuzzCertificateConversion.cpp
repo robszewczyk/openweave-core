@@ -22,7 +22,6 @@
  *      parser for weave.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,18 +36,12 @@ using namespace nl::Weave::Profiles::Security;
 
 bool gOpenSSLSet = false;
 
-//Assume the user compiled with clang > 6.0
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+// Assume the user compiled with clang > 6.0
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t * data, size_t size)
 {
     static uint8_t inCert[MAX_CERT_SIZE];
     static uint8_t outCert[MAX_CERT_SIZE];
-    CertFormat outputFormats[4] =
-    {
-        kCertFormat_X509_PEM,
-        kCertFormat_X509_DER,
-        kCertFormat_Weave_Base64,
-        kCertFormat_Weave_Raw
-    };
+    CertFormat outputFormats[4] = { kCertFormat_X509_PEM, kCertFormat_X509_DER, kCertFormat_Weave_Base64, kCertFormat_Weave_Raw };
 
     bool res = true;
     WEAVE_ERROR err;
@@ -96,21 +89,23 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
                 inCertFormat = kCertFormat_Weave_Raw;
             }
 
-            if (inCertFormat == kCertFormat_X509_DER && (outCertFormat == kCertFormat_Weave_Raw || outCertFormat == kCertFormat_Weave_Base64))
+            if (inCertFormat == kCertFormat_X509_DER &&
+                (outCertFormat == kCertFormat_Weave_Raw || outCertFormat == kCertFormat_Weave_Base64))
             {
                 err = ConvertX509CertToWeaveCert(inCert, inCertLen, outCert, sizeof(outCert), outCertLen);
                 if (err != WEAVE_NO_ERROR)
                 {
-                    //fprintf(stderr, "weave: x509->Weave Error converting certificate: %s\n", nl::ErrorStr(err));
+                    // fprintf(stderr, "weave: x509->Weave Error converting certificate: %s\n", nl::ErrorStr(err));
                     ExitNow(res = false);
                 }
             }
-            else if (inCertFormat == kCertFormat_Weave_Raw && (outCertFormat == kCertFormat_X509_DER || outCertFormat == kCertFormat_X509_PEM))
+            else if (inCertFormat == kCertFormat_Weave_Raw &&
+                     (outCertFormat == kCertFormat_X509_DER || outCertFormat == kCertFormat_X509_PEM))
             {
                 err = ConvertWeaveCertToX509Cert(inCert, inCertLen, outCert, sizeof(outCert), outCertLen);
                 if (err != WEAVE_NO_ERROR)
                 {
-                    //fprintf(stderr, "weave: Weave -> X509 Error converting certificate: %s\n", nl::ErrorStr(err));
+                    // fprintf(stderr, "weave: Weave -> X509 Error converting certificate: %s\n", nl::ErrorStr(err));
                     ExitNow(res = false);
                 }
             }
@@ -141,7 +136,7 @@ exit:
 // the linker.  Even though the resultant application does nothing, being able to link
 // it confirms that the fuzzing tests can be built successfully.
 #ifndef WEAVE_FUZZING_ENABLED
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     return 0;
 }

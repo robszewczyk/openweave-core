@@ -48,58 +48,53 @@ namespace BdxProtocol {
 
 // The following two handlers are protocol entry points
 
-WEAVE_ERROR InitBdxReceive(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                           bool aAsyncOk, ReferencedTLVData *aMetaData);
+WEAVE_ERROR InitBdxReceive(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk, ReferencedTLVData * aMetaData);
 
-WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                        bool aAsyncOk, ReferencedTLVData *aMetaData);
-WEAVE_ERROR InitBdxSend(BDXTransfer &aXfer, bool aICanDrive, bool aUCanDrive,
-                        bool aAsyncOk, SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback, void *aMetaDataAppState);
+WEAVE_ERROR InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk, ReferencedTLVData * aMetaData);
+WEAVE_ERROR InitBdxSend(BDXTransfer & aXfer, bool aICanDrive, bool aUCanDrive, bool aAsyncOk,
+                        SendInit::MetaDataTLVWriteCallback aMetaDataWriteCallback, void * aMetaDataAppState);
 
 // Helper functions for handling Weave BDX sends
 
-WEAVE_ERROR SendBlockQuery(BDXTransfer &aXfer);
+WEAVE_ERROR SendBlockQuery(BDXTransfer & aXfer);
 
-WEAVE_ERROR SendBlockQueryV1(BDXTransfer &aXfer);
+WEAVE_ERROR SendBlockQueryV1(BDXTransfer & aXfer);
 
-WEAVE_ERROR SendNextBlock(BDXTransfer &aXfer);
+WEAVE_ERROR SendNextBlock(BDXTransfer & aXfer);
 
-WEAVE_ERROR SendNextBlockV1(BDXTransfer &aXfer);
+WEAVE_ERROR SendNextBlockV1(BDXTransfer & aXfer);
 
 // The following handlers are stateless callbacks meant to be passed to the
 // ExchangeContext in order to handle incoming BDX messages.
 // They handle the actual BDX protocol interaction and defer to the previously
 // defined callbacks for application-specific logic.
 
-void HandleResponse(ExchangeContext *anEc, const IPPacketInfo *aPktInfo, const WeaveMessageInfo *aWeaveMsgInfo,
-                    uint32_t aProfileId, uint8_t aMessageType, PacketBuffer *aPacketBuffer);
+void HandleResponse(ExchangeContext * anEc, const IPPacketInfo * aPktInfo, const WeaveMessageInfo * aWeaveMsgInfo,
+                    uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer);
 
-void HandleConnectionClosed(ExchangeContext *anEc, WeaveConnection *aCon, WEAVE_ERROR aConErr);
+void HandleConnectionClosed(ExchangeContext * anEc, WeaveConnection * aCon, WEAVE_ERROR aConErr);
 
-void HandleResponseTimeout(ExchangeContext *anEc);
+void HandleResponseTimeout(ExchangeContext * anEc);
 
-void HandleKeyError(ExchangeContext *anEc, WEAVE_ERROR aKeyErr);
+void HandleKeyError(ExchangeContext * anEc, WEAVE_ERROR aKeyErr);
 
 #if WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
-void HandleSendError(ExchangeContext *anEc, WEAVE_ERROR aSendErr, void *aMsgCtxt);
+void HandleSendError(ExchangeContext * anEc, WEAVE_ERROR aSendErr, void * aMsgCtxt);
 #endif // WEAVE_CONFIG_ENABLE_RELIABLE_MESSAGING
 
-void SendTransferError(ExchangeContext *anEc, uint32_t aProfileId,  uint16_t aStatusCode);
+void SendTransferError(ExchangeContext * anEc, uint32_t aProfileId, uint16_t aStatusCode);
 
-void SendStatusReport(ExchangeContext *anEc, uint32_t aProfileId,  uint16_t aStatusCode);
+void SendStatusReport(ExchangeContext * anEc, uint32_t aProfileId, uint16_t aStatusCode);
 
 /* Private functions only to be called from this group of functions*/
-WEAVE_ERROR HandleResponseTransmit(BDXTransfer &aXfer, uint32_t aProfileId,
-                                   uint8_t aMessageType, PacketBuffer *aPacketBuffer);
+WEAVE_ERROR HandleResponseTransmit(BDXTransfer & aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer);
 
-WEAVE_ERROR HandleResponseReceive(BDXTransfer &aXfer, uint32_t aProfileId,
-                                  uint8_t aMessageType, PacketBuffer *aPacketBuffer);
+WEAVE_ERROR HandleResponseReceive(BDXTransfer & aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer);
 
-WEAVE_ERROR HandleResponseNotAccepted(BDXTransfer &aXfer, uint32_t aProfileId,
-                                      uint8_t aMessageType, PacketBuffer *aPacketBuffer);
+WEAVE_ERROR HandleResponseNotAccepted(BDXTransfer & aXfer, uint32_t aProfileId, uint8_t aMessageType, PacketBuffer * aPacketBuffer);
 
 } // namespace BdxProtocol
-} // namespace BulkDataTransfer
+} // namespace WeaveMakeManagedNamespaceIdentifier(BDX, kWeaveManagedNamespaceDesignation_Development)
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl

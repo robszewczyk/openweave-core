@@ -56,11 +56,11 @@ WEAVE_ERROR GroupKeyStoreImpl::RetrieveGroupKey(uint32_t keyId, WeaveGroupKey & 
 
     if (keyId != WeaveKeyId::kFabricSecret)
     {
-    	memcpy(&key.StartTime, key.Key + kWeaveAppGroupKeySize, sizeof(uint32_t));
-    	keyLen -= sizeof(uint32_t);
+        memcpy(&key.StartTime, key.Key + kWeaveAppGroupKeySize, sizeof(uint32_t));
+        keyLen -= sizeof(uint32_t);
     }
 
-    key.KeyId = keyId;
+    key.KeyId  = keyId;
     key.KeyLen = keyLen;
 
 exit:
@@ -73,7 +73,7 @@ WEAVE_ERROR GroupKeyStoreImpl::StoreGroupKey(const WeaveGroupKey & key)
     nvs_handle handle;
     char keyName[kMaxConfigKeyNameLength + 1];
     uint8_t keyData[WeaveGroupKey::MaxKeySize];
-    bool needClose = false;
+    bool needClose    = false;
     bool indexUpdated = false;
 
     err = FormKeyName(key.KeyId, keyName, sizeof(keyName));
@@ -89,25 +89,25 @@ WEAVE_ERROR GroupKeyStoreImpl::StoreGroupKey(const WeaveGroupKey & key)
     memcpy(keyData, key.Key, WeaveGroupKey::MaxKeySize);
     if (key.KeyId != WeaveKeyId::kFabricSecret)
     {
-        memcpy(keyData + kWeaveAppGroupKeySize, (const void *)&key.StartTime, sizeof(uint32_t));
+        memcpy(keyData + kWeaveAppGroupKeySize, (const void *) &key.StartTime, sizeof(uint32_t));
     }
 
 #if WEAVE_PROGRESS_LOGGING
     if (WeaveKeyId::IsAppEpochKey(key.KeyId))
     {
         WeaveLogProgress(DeviceLayer, "GroupKeyStore: storing epoch key %s/%s (key len %" PRId8 ", start time %" PRIu32 ")",
-                kConfigNamespace_WeaveConfig, keyName, key.KeyLen, key.StartTime);
+                         kConfigNamespace_WeaveConfig, keyName, key.KeyLen, key.StartTime);
     }
     else if (WeaveKeyId::IsAppGroupMasterKey(key.KeyId))
     {
         WeaveLogProgress(DeviceLayer, "GroupKeyStore: storing app master key %s/%s (key len %" PRId8 ", global id 0x%" PRIX32 ")",
-                kConfigNamespace_WeaveConfig, keyName, key.KeyLen, key.GlobalId);
+                         kConfigNamespace_WeaveConfig, keyName, key.KeyLen, key.GlobalId);
     }
     else
     {
-        const char * keyType = (WeaveKeyId::IsAppRootKey(key.KeyId)) ? "root": "general";
+        const char * keyType = (WeaveKeyId::IsAppRootKey(key.KeyId)) ? "root" : "general";
         WeaveLogProgress(DeviceLayer, "GroupKeyStore: storing %s key %s/%s (key len %" PRId8 ")", keyType,
-                kConfigNamespace_WeaveConfig, keyName, key.KeyLen);
+                         kConfigNamespace_WeaveConfig, keyName, key.KeyLen);
     }
 #endif // WEAVE_PROGRESS_LOGGING
 
@@ -125,15 +125,15 @@ WEAVE_ERROR GroupKeyStoreImpl::StoreGroupKey(const WeaveGroupKey & key)
     SuccessOrExit(err);
 
 exit:
-	if (needClose)
-	{
-		nvs_close(handle);
-	}
-	if (err != WEAVE_NO_ERROR && indexUpdated)
-	{
-	    mNumKeys--;
-	}
-	ClearSecretData(keyData, sizeof(keyData));
+    if (needClose)
+    {
+        nvs_close(handle);
+    }
+    if (err != WEAVE_NO_ERROR && indexUpdated)
+    {
+        mNumKeys--;
+    }
+    ClearSecretData(keyData, sizeof(keyData));
     return err;
 }
 
@@ -147,8 +147,7 @@ WEAVE_ERROR GroupKeyStoreImpl::DeleteGroupKeysOfAType(uint32_t keyType)
     return DeleteKeyOrKeys(WeaveKeyId::kNone, keyType);
 }
 
-WEAVE_ERROR GroupKeyStoreImpl::EnumerateGroupKeys(uint32_t keyType, uint32_t * keyIds,
-        uint8_t keyIdsArraySize, uint8_t & keyCount)
+WEAVE_ERROR GroupKeyStoreImpl::EnumerateGroupKeys(uint32_t keyType, uint32_t * keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount)
 {
     keyCount = 0;
 
@@ -176,7 +175,7 @@ WEAVE_ERROR GroupKeyStoreImpl::RetrieveLastUsedEpochKeyId(void)
     if (err == WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND)
     {
         LastUsedEpochKeyId = WeaveKeyId::kNone;
-        err = WEAVE_NO_ERROR;
+        err                = WEAVE_NO_ERROR;
     }
     return err;
 }
@@ -191,11 +190,10 @@ WEAVE_ERROR GroupKeyStoreImpl::Init()
     WEAVE_ERROR err;
     size_t indexSizeBytes;
 
-    err = ReadConfigValueBin(kConfigKey_GroupKeyIndex,
-            (uint8_t *)mKeyIndex, sizeof(mKeyIndex), indexSizeBytes);
+    err = ReadConfigValueBin(kConfigKey_GroupKeyIndex, (uint8_t *) mKeyIndex, sizeof(mKeyIndex), indexSizeBytes);
     if (err == WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND)
     {
-        err = WEAVE_NO_ERROR;
+        err            = WEAVE_NO_ERROR;
         indexSizeBytes = 0;
     }
     SuccessOrExit(err);
@@ -223,7 +221,7 @@ WEAVE_ERROR GroupKeyStoreImpl::AddKeyToIndex(uint32_t keyId, bool & indexUpdated
     VerifyOrExit(mNumKeys < kMaxGroupKeys, err = WEAVE_ERROR_TOO_MANY_KEYS);
 
     mKeyIndex[mNumKeys++] = keyId;
-    indexUpdated = true;
+    indexUpdated          = true;
 
 exit:
     return err;
@@ -232,7 +230,7 @@ exit:
 WEAVE_ERROR GroupKeyStoreImpl::WriteKeyIndex(nvs_handle handle)
 {
     WeaveLogProgress(DeviceLayer, "GroupKeyStore: writing key index %s/%s (num keys %" PRIu8 ")",
-            kConfigKey_GroupKeyIndex.Namespace, kConfigKey_GroupKeyIndex.Name, mNumKeys);
+                     kConfigKey_GroupKeyIndex.Namespace, kConfigKey_GroupKeyIndex.Name, mNumKeys);
     return nvs_set_blob(handle, kConfigKey_GroupKeyIndex.Name, mKeyIndex, mNumKeys * sizeof(uint32_t));
 }
 
@@ -247,8 +245,7 @@ WEAVE_ERROR GroupKeyStoreImpl::DeleteKeyOrKeys(uint32_t targetKeyId, uint32_t ta
     {
         uint32_t curKeyId = mKeyIndex[i];
 
-        if ((targetKeyId == WeaveKeyId::kNone && targetKeyType == WeaveKeyId::kType_None) ||
-            curKeyId == targetKeyId ||
+        if ((targetKeyId == WeaveKeyId::kNone && targetKeyType == WeaveKeyId::kType_None) || curKeyId == targetKeyId ||
             WeaveKeyId::GetType(curKeyId) == targetKeyType)
         {
             if (!needClose)
@@ -282,12 +279,12 @@ WEAVE_ERROR GroupKeyStoreImpl::DeleteKeyOrKeys(uint32_t targetKeyId, uint32_t ta
                 {
                     keyType = "general";
                 }
-                WeaveLogProgress(DeviceLayer, "GroupKeyStore: erasing %s key %s/%s", keyType,
-                        kConfigNamespace_WeaveConfig, keyName);
+                WeaveLogProgress(DeviceLayer, "GroupKeyStore: erasing %s key %s/%s", keyType, kConfigNamespace_WeaveConfig,
+                                 keyName);
             }
             else
 #endif // WEAVE_PROGRESS_LOGGING
-            if (err == ESP_ERR_NVS_NOT_FOUND)
+                if (err == ESP_ERR_NVS_NOT_FOUND)
             {
                 err = WEAVE_NO_ERROR;
             }
@@ -295,7 +292,7 @@ WEAVE_ERROR GroupKeyStoreImpl::DeleteKeyOrKeys(uint32_t targetKeyId, uint32_t ta
 
             mNumKeys--;
 
-            memmove(&mKeyIndex[i], &mKeyIndex[i+1], (mNumKeys - i) * sizeof(uint32_t));
+            memmove(&mKeyIndex[i], &mKeyIndex[i + 1], (mNumKeys - i) * sizeof(uint32_t));
         }
         else
         {
@@ -344,4 +341,3 @@ exit:
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-

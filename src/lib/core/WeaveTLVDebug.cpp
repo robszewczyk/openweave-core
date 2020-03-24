@@ -57,15 +57,15 @@ namespace Debug {
  *  @param[in]     aDepth    The current depth into the TLV data.
  *
  */
-static void DumpHandler(DumpWriter aWriter, const char *aIndent, const TLVReader &aReader, size_t aDepth)
+static void DumpHandler(DumpWriter aWriter, const char * aIndent, const TLVReader & aReader, size_t aDepth)
 {
-    const TLVType       type        = aReader.GetType();
-    const uint64_t      tag         = aReader.GetTag();
-    const uint32_t      len         = aReader.GetLength();
-    const uint8_t       *strbuf     = NULL;
-    WEAVE_ERROR         err         = WEAVE_NO_ERROR;
-    TLVReader           temp;
-    TLVTagControl       tagControl;
+    const TLVType type     = aReader.GetType();
+    const uint64_t tag     = aReader.GetTag();
+    const uint32_t len     = aReader.GetLength();
+    const uint8_t * strbuf = NULL;
+    WEAVE_ERROR err        = WEAVE_NO_ERROR;
+    TLVReader temp;
+    TLVTagControl tagControl;
 
     temp.Init(aReader);
     tagControl = static_cast<TLVTagControl>(temp.GetControlByte() & kTLVTagControlMask);
@@ -79,11 +79,12 @@ static void DumpHandler(DumpWriter aWriter, const char *aIndent, const TLVReader
 
     if (IsProfileTag(tag))
     {
-        aWriter("tag[%s]: 0x%x::0x%x::0x%x, ", DecodeTagControl(tagControl), VendorIdFromTag(tag), ProfileNumFromTag(tag), TagNumFromTag(tag));
+        aWriter("tag[%s]: 0x%x::0x%x::0x%x, ", DecodeTagControl(tagControl), VendorIdFromTag(tag), ProfileNumFromTag(tag),
+                TagNumFromTag(tag));
     }
     else if (IsContextTag(tag))
     {
-        aWriter("tag[%s]: 0x%x, ", DecodeTagControl(tagControl), (uint32_t)ContextTag(tag));
+        aWriter("tag[%s]: 0x%x, ", DecodeTagControl(tagControl), (uint32_t) ContextTag(tag));
     }
     else if (IsSpecialTag(tag))
     {
@@ -97,7 +98,6 @@ static void DumpHandler(DumpWriter aWriter, const char *aIndent, const TLVReader
 
     aWriter("type: %s (0x%02x), ", DecodeType(type), type);
 
-
     if (TLVTypeIsContainer(type))
     {
         aWriter("container: ");
@@ -109,7 +109,8 @@ static void DumpHandler(DumpWriter aWriter, const char *aIndent, const TLVReader
 
         aWriter("value: ");
 
-        switch (type) {
+        switch (type)
+        {
 
         case kTLVType_SignedInteger:
             int64_t sVal;
@@ -151,18 +152,11 @@ static void DumpHandler(DumpWriter aWriter, const char *aIndent, const TLVReader
             aWriter("%p\n", strbuf);
             break;
 
-        case kTLVType_Null:
-            aWriter("NULL");
-            break;
+        case kTLVType_Null: aWriter("NULL"); break;
 
-        case kTLVType_NotSpecified:
-            aWriter("Not Specified");
-            break;
+        case kTLVType_NotSpecified: aWriter("Not Specified"); break;
 
-        default:
-            aWriter("Error: Type is not primitive.");
-            break;
-
+        default: aWriter("Error: Type is not primitive."); break;
         }
     }
 
@@ -180,49 +174,30 @@ exit:
  *           tag control on success; otherwise, NULL.
  *
  */
-const char *DecodeTagControl(const TLVTagControl aTagControl)
+const char * DecodeTagControl(const TLVTagControl aTagControl)
 {
-    const char *retval;
+    const char * retval;
 
     switch (aTagControl)
     {
 
-    case kTLVTagControl_Anonymous:
-        retval = "Anonymous";
-        break;
+    case kTLVTagControl_Anonymous: retval = "Anonymous"; break;
 
-    case kTLVTagControl_ContextSpecific:
-        retval = "Context Specific";
-        break;
+    case kTLVTagControl_ContextSpecific: retval = "Context Specific"; break;
 
-    case kTLVTagControl_CommonProfile_2Bytes:
-        retval = "Common Profile (2 Bytes)";
-        break;
+    case kTLVTagControl_CommonProfile_2Bytes: retval = "Common Profile (2 Bytes)"; break;
 
-    case kTLVTagControl_CommonProfile_4Bytes:
-        retval = "Common Profile (4 Bytes)";
-        break;
+    case kTLVTagControl_CommonProfile_4Bytes: retval = "Common Profile (4 Bytes)"; break;
 
-    case kTLVTagControl_ImplicitProfile_2Bytes:
-        retval = "Implicit Profile (2 Bytes)";
-        break;
+    case kTLVTagControl_ImplicitProfile_2Bytes: retval = "Implicit Profile (2 Bytes)"; break;
 
-    case kTLVTagControl_ImplicitProfile_4Bytes:
-        retval = "Implicit Profile (4 Bytes)";
-        break;
+    case kTLVTagControl_ImplicitProfile_4Bytes: retval = "Implicit Profile (4 Bytes)"; break;
 
-    case kTLVTagControl_FullyQualified_6Bytes:
-        retval = "Fully Qualified (6 Bytes)";
-        break;
+    case kTLVTagControl_FullyQualified_6Bytes: retval = "Fully Qualified (6 Bytes)"; break;
 
-    case kTLVTagControl_FullyQualified_8Bytes:
-        retval = "Fully Qualified (8 Bytes)";
-        break;
+    case kTLVTagControl_FullyQualified_8Bytes: retval = "Fully Qualified (8 Bytes)"; break;
 
-    default:
-        retval = NULL;
-        break;
-
+    default: retval = NULL; break;
     }
 
     return retval;
@@ -238,61 +213,36 @@ const char *DecodeTagControl(const TLVTagControl aTagControl)
  *           type on success; otherwise, NULL.
  *
  */
-const char *DecodeType(const TLVType aType)
+const char * DecodeType(const TLVType aType)
 {
-    const char *retval;
+    const char * retval;
 
     switch (aType)
     {
 
-    case kTLVType_NotSpecified:
-        retval = "Not Specified";
-        break;
+    case kTLVType_NotSpecified: retval = "Not Specified"; break;
 
-    case kTLVType_SignedInteger:
-        retval = "Signed Fixed Point";
-        break;
+    case kTLVType_SignedInteger: retval = "Signed Fixed Point"; break;
 
-    case kTLVType_UnsignedInteger:
-        retval = "Unsigned Fixed Point";
-        break;
+    case kTLVType_UnsignedInteger: retval = "Unsigned Fixed Point"; break;
 
-    case kTLVType_Boolean:
-        retval = "Boolean";
-        break;
+    case kTLVType_Boolean: retval = "Boolean"; break;
 
-    case kTLVType_FloatingPointNumber:
-        retval = "Floating Point";
-        break;
+    case kTLVType_FloatingPointNumber: retval = "Floating Point"; break;
 
-    case kTLVType_UTF8String:
-        retval = "UTF-8 String";
-        break;
+    case kTLVType_UTF8String: retval = "UTF-8 String"; break;
 
-    case kTLVType_ByteString:
-        retval = "Data";
-        break;
+    case kTLVType_ByteString: retval = "Data"; break;
 
-    case kTLVType_Null:
-        retval = "Null";
-        break;
+    case kTLVType_Null: retval = "Null"; break;
 
-    case kTLVType_Structure:
-        retval = "Structure";
-        break;
+    case kTLVType_Structure: retval = "Structure"; break;
 
-    case kTLVType_Array:
-        retval = "Array";
-        break;
+    case kTLVType_Array: retval = "Array"; break;
 
-    case kTLVType_Path:
-        retval = "Path";
-        break;
+    case kTLVType_Path: retval = "Path"; break;
 
-    default:
-        retval = NULL;
-        break;
-
+    default: retval = NULL; break;
     }
 
     return retval;
@@ -309,11 +259,11 @@ const char *DecodeType(const TLVType aType)
  *  @retval  #WEAVE_NO_ERROR  Unconditionally.
  *
  */
-WEAVE_ERROR DumpIterator(DumpWriter aWriter, const TLVReader &aReader)
+WEAVE_ERROR DumpIterator(DumpWriter aWriter, const TLVReader & aReader)
 {
-    const char *   tabs    = "";
-    const size_t   depth   = 0;
-    WEAVE_ERROR    retval  = WEAVE_NO_ERROR;
+    const char * tabs  = "";
+    const size_t depth = 0;
+    WEAVE_ERROR retval = WEAVE_NO_ERROR;
 
     DumpHandler(aWriter, tabs, aReader, depth);
 
@@ -334,11 +284,11 @@ WEAVE_ERROR DumpIterator(DumpWriter aWriter, const TLVReader &aReader)
  *                                          aContext->mWriter is NULL.
  *
  */
-WEAVE_ERROR DumpHandler(const TLVReader &aReader, size_t aDepth, void *aContext)
+WEAVE_ERROR DumpHandler(const TLVReader & aReader, size_t aDepth, void * aContext)
 {
-    static const char   indent[] = "    ";
-    WEAVE_ERROR         retval = WEAVE_NO_ERROR;
-    DumpContext *       context;
+    static const char indent[] = "    ";
+    WEAVE_ERROR retval         = WEAVE_NO_ERROR;
+    DumpContext * context;
 
     VerifyOrExit(aContext != NULL, retval = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -346,12 +296,9 @@ WEAVE_ERROR DumpHandler(const TLVReader &aReader, size_t aDepth, void *aContext)
 
     VerifyOrExit(context->mWriter != NULL, retval = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    DumpHandler(context->mWriter,
-                indent,
-                aReader,
-                aDepth);
+    DumpHandler(context->mWriter, indent, aReader, aDepth);
 
- exit:
+exit:
     return retval;
 }
 
@@ -367,11 +314,11 @@ WEAVE_ERROR DumpHandler(const TLVReader &aReader, size_t aDepth, void *aContext)
  *  @retval  #WEAVE_NO_ERROR        On success.
  *
  */
-WEAVE_ERROR Dump(const TLVReader &aReader, DumpWriter aWriter)
+WEAVE_ERROR Dump(const TLVReader & aReader, DumpWriter aWriter)
 {
-    void *         context     = NULL;
-    DumpContext    dumpContext = { aWriter, context };
-    WEAVE_ERROR    retval;
+    void * context          = NULL;
+    DumpContext dumpContext = { aWriter, context };
+    WEAVE_ERROR retval;
 
     retval = Utilities::Iterate(aReader, DumpHandler, &dumpContext);
 

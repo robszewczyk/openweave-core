@@ -67,7 +67,7 @@ enum SerializedFieldType
  */
 enum SerializedFieldTypeMasks
 {
-    kMask_Type = 0x7f,
+    kMask_Type         = 0x7f,
     kMask_NullableFlag = 0x80,
 };
 
@@ -84,16 +84,16 @@ enum SerializedFieldTypeBits
  * @brief
  *   Utility function to create FieldDescriptor.mTypeAndFlags
  */
-#define SET_TYPE_AND_FLAGS(type, nullable)     ( static_cast<uint8_t>((type & nl::kMask_Type) | ((nullable << nl::kBit_Nullable) & nl::kMask_NullableFlag)) )
+#define SET_TYPE_AND_FLAGS(type, nullable)                                                                                         \
+    (static_cast<uint8_t>((type & nl::kMask_Type) | ((nullable << nl::kBit_Nullable) & nl::kMask_NullableFlag)))
 
 /**
  * @brief
  *   Utility functions to access nullified field array. Used by codegen.
  */
-#define GET_FIELD_NULLIFIED_BIT(nullifiedFieldsPtr, aBit)      (nullifiedFieldsPtr[aBit/8] & (1 << (aBit % 8)))
-#define SET_FIELD_NULLIFIED_BIT(nullifiedFieldsPtr, aBit)      (nullifiedFieldsPtr[aBit/8] |= (1 << (aBit % 8)))
-#define CLEAR_FIELD_NULLIFIED_BIT(nullifiedFieldsPtr, aBit)    (nullifiedFieldsPtr[aBit/8] &= ~(1 << (aBit % 8)))
-
+#define GET_FIELD_NULLIFIED_BIT(nullifiedFieldsPtr, aBit)   (nullifiedFieldsPtr[aBit / 8] & (1 << (aBit % 8)))
+#define SET_FIELD_NULLIFIED_BIT(nullifiedFieldsPtr, aBit)   (nullifiedFieldsPtr[aBit / 8] |= (1 << (aBit % 8)))
+#define CLEAR_FIELD_NULLIFIED_BIT(nullifiedFieldsPtr, aBit) (nullifiedFieldsPtr[aBit / 8] &= ~(1 << (aBit % 8)))
 
 /**
  * @brief
@@ -102,10 +102,11 @@ enum SerializedFieldTypeBits
  */
 struct FieldDescriptor
 {
-    const SchemaFieldDescriptor *mNestedFieldDescriptors; ///< Pointer to another group of field descriptors, if we have structs, etc.
-    uint16_t mOffset;                                     ///< Where to look in the c-struct for the data to write into the TLV field.
-    uint8_t mTypeAndFlags;                                ///< Data type of the TLV field.
-    uint8_t mTVDContextTag;                               ///< Context tag of the TLV field.
+    const SchemaFieldDescriptor *
+        mNestedFieldDescriptors; ///< Pointer to another group of field descriptors, if we have structs, etc.
+    uint16_t mOffset;            ///< Where to look in the c-struct for the data to write into the TLV field.
+    uint8_t mTypeAndFlags;       ///< Data type of the TLV field.
+    uint8_t mTVDContextTag;      ///< Context tag of the TLV field.
 
     bool IsNullable(void) const { return (mTypeAndFlags & kMask_NullableFlag) != 0; }
     SerializedFieldType GetType(void) const { return static_cast<SerializedFieldType>(mTypeAndFlags & kMask_Type); }
@@ -117,93 +118,93 @@ struct FieldDescriptor
  */
 struct SchemaFieldDescriptor
 {
-    uint16_t mNumFieldDescriptorElements;                 ///< Number of elements in our FieldDescriptor array
-    const FieldDescriptor *mFields;                       ///< Pointer to array of FieldDescriptors
-    const uint32_t mSize;                                 ///< Size (in bytes) of the structure
+    uint16_t mNumFieldDescriptorElements; ///< Number of elements in our FieldDescriptor array
+    const FieldDescriptor * mFields;      ///< Pointer to array of FieldDescriptors
+    const uint32_t mSize;                 ///< Size (in bytes) of the structure
 };
 
 struct SerializedByteString
 {
-    uint32_t mLen;                                        ///< Number of bytes in byte string
-    uint8_t *mBuf;                                        ///< Pointer to byte string
+    uint32_t mLen;  ///< Number of bytes in byte string
+    uint8_t * mBuf; ///< Pointer to byte string
 };
 
 struct SerializedFieldTypeBoolean_array
 {
     uint32_t num;
-    bool *buf;
+    bool * buf;
 };
 
 struct SerializedFieldTypeUInt8_array
 {
     uint32_t num;
-    uint8_t *buf;
+    uint8_t * buf;
 };
 
 struct SerializedFieldTypeUInt16_array
 {
     uint32_t num;
-    uint16_t *buf;
+    uint16_t * buf;
 };
 
 struct SerializedFieldTypeUInt32_array
 {
     uint32_t num;
-    uint32_t *buf;
+    uint32_t * buf;
 };
 
 struct SerializedFieldTypeUInt64_array
 {
     uint32_t num;
-    uint64_t *buf;
+    uint64_t * buf;
 };
 
 struct SerializedFieldTypeInt8_array
 {
     uint32_t num;
-    int8_t *buf;
+    int8_t * buf;
 };
 
 struct SerializedFieldTypeInt16_array
 {
     uint32_t num;
-    int16_t *buf;
+    int16_t * buf;
 };
 
 struct SerializedFieldTypeInt32_array
 {
     uint32_t num;
-    int32_t *buf;
+    int32_t * buf;
 };
 
 struct SerializedFieldTypeInt64_array
 {
     uint32_t num;
-    int64_t *buf;
+    int64_t * buf;
 };
 
 struct SerializedFieldTypeFloatingPoint32_array
 {
     uint32_t num;
-    float *buf;
+    float * buf;
 };
 
 struct SerializedFieldTypeFloatingPoint64_array
 {
     uint32_t num;
-    double *buf;
+    double * buf;
 };
 
 struct SerializedFieldTypeUTF8String_array
 {
     uint32_t num;
-    char * *buf;
+    char ** buf;
 };
 
 struct SerializedFieldTypeByteString_array
 {
     uint32_t num;
-    SerializedByteString *buf;
+    SerializedByteString * buf;
 };
 
 /**
@@ -212,8 +213,8 @@ struct SerializedFieldTypeByteString_array
  */
 struct ArrayLengthAndBuffer
 {
-    uint32_t mNumElements;                                ///< Number of elements in the array
-    void *mElementBuffer;                                 ///< Actual array definition
+    uint32_t mNumElements; ///< Number of elements in the array
+    void * mElementBuffer; ///< Actual array definition
 };
 
 /**
@@ -222,17 +223,17 @@ struct ArrayLengthAndBuffer
  */
 struct StructureSchemaPointerPair
 {
-    void *mStructureData;                                     ///< Pointer to a c-struct of data for the structure
-    const SchemaFieldDescriptor *mFieldSchema;                ///< SchemaFieldDescriptor to describe how to process the data into TLV
+    void * mStructureData;                      ///< Pointer to a c-struct of data for the structure
+    const SchemaFieldDescriptor * mFieldSchema; ///< SchemaFieldDescriptor to describe how to process the data into TLV
 };
 
 /**
  * @brief
  *   Memory allocate/free function pointers.
  */
-typedef void *(*MemoryAllocate)(size_t size);
-typedef void (*MemoryFree)(void *ptr);
-typedef void *(*MemoryReallocate)(void *ptr, size_t size);
+typedef void * (*MemoryAllocate)(size_t size);
+typedef void (*MemoryFree)(void * ptr);
+typedef void * (*MemoryReallocate)(void * ptr, size_t size);
 
 /**
  * @brief
@@ -256,27 +257,19 @@ struct SerializationContext
     MemoryManagement memMgmt;
 };
 
-WEAVE_ERROR SerializedDataToTLVWriter(nl::Weave::TLV::TLVWriter &aWriter,
-                                      void *aStructureData,
-                                      const SchemaFieldDescriptor *aFieldDescriptors);
+WEAVE_ERROR SerializedDataToTLVWriter(nl::Weave::TLV::TLVWriter & aWriter, void * aStructureData,
+                                      const SchemaFieldDescriptor * aFieldDescriptors);
 
-WEAVE_ERROR SerializedDataToTLVWriterHelper(nl::Weave::TLV::TLVWriter &aWriter,
-                                            uint8_t aDataTag,
-                                            void *aAppData);
+WEAVE_ERROR SerializedDataToTLVWriterHelper(nl::Weave::TLV::TLVWriter & aWriter, uint8_t aDataTag, void * aAppData);
 
-WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader &aReader,
-                                        void *aStructureData,
-                                        const SchemaFieldDescriptor *aFieldDescriptors,
-                                        SerializationContext *aContext = NULL);
+WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader & aReader, void * aStructureData,
+                                        const SchemaFieldDescriptor * aFieldDescriptors, SerializationContext * aContext = NULL);
 
-WEAVE_ERROR TLVReaderToDeserializedDataHelper(nl::Weave::TLV::TLVReader &aReader,
-                                              uint8_t aDataTag,
-                                              void *aAppData,
-                                              SerializationContext *aContext = NULL);
+WEAVE_ERROR TLVReaderToDeserializedDataHelper(nl::Weave::TLV::TLVReader & aReader, uint8_t aDataTag, void * aAppData,
+                                              SerializationContext * aContext = NULL);
 
-WEAVE_ERROR DeallocateDeserializedStructure(void *aStructureData,
-                                            const SchemaFieldDescriptor *aFieldDescriptors,
-                                            SerializationContext *aContext = NULL);
+WEAVE_ERROR DeallocateDeserializedStructure(void * aStructureData, const SchemaFieldDescriptor * aFieldDescriptors,
+                                            SerializationContext * aContext = NULL);
 
-} // nl
+} // namespace nl
 #endif // SERIALIZATION_UTILS_H

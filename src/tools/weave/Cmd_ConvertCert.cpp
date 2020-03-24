@@ -37,20 +37,14 @@ using namespace nl::Weave::Profiles::Security;
 
 #define CMD_NAME "weave convert-cert"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
-static bool HandleNonOptionArgs(const char *progName, int argc, char *argv[]);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
+static bool HandleNonOptionArgs(const char * progName, int argc, char * argv[]);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "x509",       kNoArgument, 'p' },
-    { "x509-pem",   kNoArgument, 'p' }, // alias for --x509
-    { "x509-der",   kNoArgument, 'x' },
-    { "weave",      kNoArgument, 'w' },
-    { "weave-b64",  kNoArgument, 'b' },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "x509", kNoArgument, 'p' },      { "x509-pem", kNoArgument, 'p' }, // alias for --x509
+                                      { "x509-der", kNoArgument, 'x' },  { "weave", kNoArgument, 'w' },
+                                      { "weave-b64", kNoArgument, 'b' }, { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "  -p, --x509, --x509-pem\n"
     "\n"
     "       Output an X.509 certificate in PEM format.\n"
@@ -66,57 +60,42 @@ static const char *const gCmdOptionHelp =
     "  -b --weave-b64\n"
     "\n"
     "       Output a Weave certificate in base-64 format.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
-{
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ] <in-file> <out-file>\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Convert a certificate between Weave and X509 forms.\n"
-    "\n"
-    "ARGUMENTS\n"
-    "\n"
-    "  <in-file>\n"
-    "\n"
-    "       The input certificate file name, or - to read from stdin. The\n"
-    "       format of the input certificate is auto-detected and can be any\n"
-    "       of: X.509 PEM, X.509 DER, Weave base-64 or Weave raw TLV.\n"
-    "\n"
-    "  <out-file>\n"
-    "\n"
-    "       The output certificate file name, or - to write to stdout.\n"
-    "\n"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ] <in-file> <out-file>\n",
+                                WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Convert a certificate between Weave and X509 forms.\n"
+                                "\n"
+                                "ARGUMENTS\n"
+                                "\n"
+                                "  <in-file>\n"
+                                "\n"
+                                "       The input certificate file name, or - to read from stdin. The\n"
+                                "       format of the input certificate is auto-detected and can be any\n"
+                                "       of: X.509 PEM, X.509 DER, Weave base-64 or Weave raw TLV.\n"
+                                "\n"
+                                "  <out-file>\n"
+                                "\n"
+                                "       The output certificate file name, or - to write to stdout.\n"
+                                "\n");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
 
-static const char *gInFileName = NULL;
-static const char *gOutFileName = NULL;
+static const char * gInFileName  = NULL;
+static const char * gOutFileName = NULL;
 static CertFormat gOutCertFormat = kCertFormat_Weave_Base64;
 
-bool Cmd_ConvertCert(int argc, char *argv[])
+bool Cmd_ConvertCert(int argc, char * argv[])
 {
     static uint8_t inCert[MAX_CERT_SIZE];
     static uint8_t outCert[MAX_CERT_SIZE];
 
     bool res = true;
     WEAVE_ERROR err;
-    FILE *inFile = NULL;
-    FILE *outFile = NULL;
+    FILE * inFile      = NULL;
+    FILE * outFile     = NULL;
     uint32_t inCertLen = 0;
     CertFormat inCertFormat;
     uint32_t outCertLen = 0;
@@ -184,7 +163,8 @@ bool Cmd_ConvertCert(int argc, char *argv[])
             inCertFormat = kCertFormat_Weave_Raw;
         }
 
-        if (inCertFormat == kCertFormat_X509_DER && (gOutCertFormat == kCertFormat_Weave_Raw || gOutCertFormat == kCertFormat_Weave_Base64))
+        if (inCertFormat == kCertFormat_X509_DER &&
+            (gOutCertFormat == kCertFormat_Weave_Raw || gOutCertFormat == kCertFormat_Weave_Base64))
         {
             err = ConvertX509CertToWeaveCert(inCert, inCertLen, outCert, sizeof(outCert), outCertLen);
             if (err != WEAVE_NO_ERROR)
@@ -193,7 +173,8 @@ bool Cmd_ConvertCert(int argc, char *argv[])
                 ExitNow(res = false);
             }
         }
-        else if (inCertFormat == kCertFormat_Weave_Raw && (gOutCertFormat == kCertFormat_X509_DER || gOutCertFormat == kCertFormat_X509_PEM))
+        else if (inCertFormat == kCertFormat_Weave_Raw &&
+                 (gOutCertFormat == kCertFormat_X509_DER || gOutCertFormat == kCertFormat_X509_PEM))
         {
             err = ConvertWeaveCertToX509Cert(inCert, inCertLen, outCert, sizeof(outCert), outCertLen);
             if (err != WEAVE_NO_ERROR)
@@ -249,31 +230,21 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
-    case 'p':
-        gOutCertFormat = kCertFormat_X509_PEM;
-        break;
-    case 'x':
-        gOutCertFormat = kCertFormat_X509_DER;
-        break;
-    case 'b':
-        gOutCertFormat = kCertFormat_Weave_Base64;
-        break;
-    case 'w':
-        gOutCertFormat = kCertFormat_Weave_Raw;
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case 'p': gOutCertFormat = kCertFormat_X509_PEM; break;
+    case 'x': gOutCertFormat = kCertFormat_X509_DER; break;
+    case 'b': gOutCertFormat = kCertFormat_Weave_Base64; break;
+    case 'w': gOutCertFormat = kCertFormat_Weave_Raw; break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
 }
 
-bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
+bool HandleNonOptionArgs(const char * progName, int argc, char * argv[])
 {
     if (argc == 0)
     {
@@ -293,7 +264,7 @@ bool HandleNonOptionArgs(const char *progName, int argc, char *argv[])
         return false;
     }
 
-    gInFileName = argv[0];
+    gInFileName  = argv[0];
     gOutFileName = argv[1];
 
     return true;

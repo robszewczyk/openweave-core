@@ -35,14 +35,13 @@ namespace nl {
 namespace Weave {
 namespace Crypto {
 
-template <class BlockCipher>
-class NL_DLL_EXPORT CTRMode
+template <class BlockCipher> class NL_DLL_EXPORT CTRMode
 {
 public:
     enum
     {
-        kKeyLength      = BlockCipher::kKeyLength,
-        kCounterLength  = BlockCipher::kBlockLength
+        kKeyLength     = BlockCipher::kKeyLength,
+        kCounterLength = BlockCipher::kBlockLength
     };
 
     CTRMode(void);
@@ -52,10 +51,10 @@ public:
     // form and increments it once for each encrypted block.
     uint8_t Counter[kCounterLength];
 
-    void SetKey(const uint8_t *key);
-    void SetCounter(const uint8_t *counter);
+    void SetKey(const uint8_t * key);
+    void SetCounter(const uint8_t * counter);
     void SetWeaveMessageCounter(uint64_t sendingNodeId, uint32_t msgId);
-    void EncryptData(const uint8_t *inData, uint16_t dataLen, uint8_t *outData);
+    void EncryptData(const uint8_t * inData, uint16_t dataLen, uint8_t * outData);
 
     void Reset(void);
 

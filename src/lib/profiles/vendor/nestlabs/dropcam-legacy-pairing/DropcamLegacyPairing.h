@@ -89,15 +89,15 @@ const uint8_t HMAC_BUF_LEN = 32;
  */
 enum
 {
-    kMsgType_CameraAuthDataRequest               = 1,    /**< Retrieve parameters for legacy Dropcam pairing web API call. */
-    kMsgType_CameraAuthDataResponse              = 2     /**< Contains parameters for legacy Dropcam pairing web API call. */
+    kMsgType_CameraAuthDataRequest  = 1, /**< Retrieve parameters for legacy Dropcam pairing web API call. */
+    kMsgType_CameraAuthDataResponse = 2  /**< Contains parameters for legacy Dropcam pairing web API call. */
 };
 
 /**
  * Utility functions to encode and decode Dropcam Legacy Pairing profile message payloads
  */
-WEAVE_ERROR EncodeCameraAuthDataRequest(PacketBuffer *buf, const char *nonce);
-WEAVE_ERROR DecodeCameraAuthDataResponse(PacketBuffer *buf, uint8_t (&macAddress)[EUI48_LEN], uint8_t (&hmac)[HMAC_BUF_LEN]);
+WEAVE_ERROR EncodeCameraAuthDataRequest(PacketBuffer * buf, const char * nonce);
+WEAVE_ERROR DecodeCameraAuthDataResponse(PacketBuffer * buf, uint8_t (&macAddress)[EUI48_LEN], uint8_t (&hmac)[HMAC_BUF_LEN]);
 
 /**
  * Delegate class for implementing incoming Dropcam Legacy Pairing operations on the server device.
@@ -116,7 +116,7 @@ public:
      */
     virtual WEAVE_ERROR GetCameraSecret(uint8_t (&secret)[CAMERA_SECRET_LEN]) = 0;
 
-     /**
+    /**
      * Retrieve camera's EUI-48 WiFi MAC address.
      *
      * @param[in]   macAddress  Reference to buffer for the returned MAC address, represented as NULL-terminated string of
@@ -141,8 +141,8 @@ public:
      *                          is expected to represent the final assessment of access control policy for the
      *                          message.
      */
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 };
 
 /**
@@ -153,24 +153,23 @@ class NL_DLL_EXPORT DropcamLegacyPairingServer : public WeaveServerBase
 public:
     DropcamLegacyPairingServer(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    void SetDelegate(DropcamLegacyPairingDelegate *delegate);
+    void SetDelegate(DropcamLegacyPairingDelegate * delegate);
 
 protected:
-    DropcamLegacyPairingDelegate *mDelegate;
+    DropcamLegacyPairingDelegate * mDelegate;
 
-// ----- Weave callbacks -----
+    // ----- Weave callbacks -----
 
     // Message received
-    static void HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
-    WEAVE_ERROR HandleCameraAuthDataRequest(ExchangeContext *ec, PacketBuffer *(&msgBuf));
+    static void HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
+    WEAVE_ERROR HandleCameraAuthDataRequest(ExchangeContext * ec, PacketBuffer *(&msgBuf));
 
-    DropcamLegacyPairingServer(const DropcamLegacyPairingServer&);   // not defined
+    DropcamLegacyPairingServer(const DropcamLegacyPairingServer &); // not defined
 };
-
 
 } // namespace DropcamLegacyPairing
 } // namespace Nestlabs
@@ -178,6 +177,5 @@ protected:
 } // namespace Profiles
 } // namespace Weave
 } // namespace nl
-
 
 #endif /* DROPCAMLEGACYPAIRING_H_ */

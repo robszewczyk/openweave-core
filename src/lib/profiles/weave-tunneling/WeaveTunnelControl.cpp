@@ -48,13 +48,13 @@ using namespace nl::Weave::TLV;
 
 WeaveTunnelControl::WeaveTunnelControl(void)
 {
-    mTunnelAgent               = NULL;
+    mTunnelAgent = NULL;
 #if WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
-    mShortcutTunExchangeCtxt   = NULL;
+    mShortcutTunExchangeCtxt = NULL;
 #endif // WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
-    mServiceExchangeCtxt       = NULL;
-    mCtrlResponseTimeout       = 0;
-    OnTunStatusRcvd            = NULL;
+    mServiceExchangeCtxt = NULL;
+    mCtrlResponseTimeout = 0;
+    OnTunStatusRcvd      = NULL;
 }
 
 /**
@@ -66,26 +66,24 @@ WeaveTunnelControl::WeaveTunnelControl(void)
  *
  * @return WEAVE_NO_ERROR
  */
-WEAVE_ERROR WeaveTunnelControl::Init(WeaveTunnelAgent *tunAgent,
-                                     TunnelStatusRcvdFunct statusRcvd)
+WEAVE_ERROR WeaveTunnelControl::Init(WeaveTunnelAgent * tunAgent, TunnelStatusRcvdFunct statusRcvd)
 {
-    WEAVE_ERROR err            = WEAVE_NO_ERROR;
-    mTunnelAgent               = tunAgent;
+    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    mTunnelAgent    = tunAgent;
 #if WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
     mShortcutTunExchangeCtxt   = NULL;
     mShortcutTunnelAdvInterval = WEAVE_CONFIG_TUNNELING_SHORTCUT_TUNNEL_ADV_INTERVAL_SECS;
     memset(ShortcutTunnelPeerCache, 0, sizeof(ShortcutTunnelPeerCache));
 #endif // WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
-    mServiceExchangeCtxt       = NULL;
-    mCtrlResponseTimeout       = WEAVE_CONFIG_TUNNELING_CTRL_RESPONSE_TIMEOUT_SECS;
-    OnTunStatusRcvd            = statusRcvd;
+    mServiceExchangeCtxt = NULL;
+    mCtrlResponseTimeout = WEAVE_CONFIG_TUNNELING_CTRL_RESPONSE_TIMEOUT_SECS;
+    OnTunStatusRcvd      = statusRcvd;
 
     // Check if the WeaveTunnelAgent object is valid.
 
     VerifyOrExit(mTunnelAgent != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    err = mTunnelAgent->mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                                        kMsgType_TunnelReconnect,
+    err = mTunnelAgent->mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelReconnect,
                                                                         HandleTunnelReconnect, this);
     SuccessOrExit(err);
 
@@ -116,8 +114,7 @@ WEAVE_ERROR WeaveTunnelControl::Close(void)
 
     // Unregister the Tunnel reconnect handler
 
-    mTunnelAgent->mExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling,
-                                                                    kMsgType_TunnelReconnect);
+    mTunnelAgent->mExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelReconnect);
 
     Free();
 
@@ -133,12 +130,10 @@ WEAVE_ERROR WeaveTunnelControl::Close(void)
  *
  * @return WEAVE_ERROR          WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::SendTunnelOpen(WeaveTunnelConnectionMgr *conMgr,
-                                               WeaveTunnelRoute *tunRoutes)
+WEAVE_ERROR WeaveTunnelControl::SendTunnelOpen(WeaveTunnelConnectionMgr * conMgr, WeaveTunnelRoute * tunRoutes)
 {
-    return SendTunnelMessage(kMsgType_TunnelOpenV2, conMgr,
-                             mTunnelAgent->mExchangeMgr->FabricState->FabricId,
-                             tunRoutes, HandleTunnelOpenResponse);
+    return SendTunnelMessage(kMsgType_TunnelOpenV2, conMgr, mTunnelAgent->mExchangeMgr->FabricState->FabricId, tunRoutes,
+                             HandleTunnelOpenResponse);
 }
 
 /**
@@ -148,11 +143,10 @@ WEAVE_ERROR WeaveTunnelControl::SendTunnelOpen(WeaveTunnelConnectionMgr *conMgr,
  *
  * @return WEAVE_ERROR          WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::SendTunnelClose (WeaveTunnelConnectionMgr *conMgr)
+WEAVE_ERROR WeaveTunnelControl::SendTunnelClose(WeaveTunnelConnectionMgr * conMgr)
 {
-    return SendTunnelMessage(kMsgType_TunnelClose, conMgr,
-                             mTunnelAgent->mExchangeMgr->FabricState->FabricId,
-                             NULL, HandleTunnelCloseResponse);
+    return SendTunnelMessage(kMsgType_TunnelClose, conMgr, mTunnelAgent->mExchangeMgr->FabricState->FabricId, NULL,
+                             HandleTunnelCloseResponse);
 }
 
 /**
@@ -164,12 +158,10 @@ WEAVE_ERROR WeaveTunnelControl::SendTunnelClose (WeaveTunnelConnectionMgr *conMg
  *
  * @return WEAVE_ERROR          WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::SendTunnelRouteUpdate(WeaveTunnelConnectionMgr *conMgr,
-                                                      WeaveTunnelRoute *tunRoutes)
+WEAVE_ERROR WeaveTunnelControl::SendTunnelRouteUpdate(WeaveTunnelConnectionMgr * conMgr, WeaveTunnelRoute * tunRoutes)
 {
-    return SendTunnelMessage(kMsgType_TunnelRouteUpdate, conMgr,
-                             mTunnelAgent->mExchangeMgr->FabricState->FabricId,
-                             tunRoutes, HandleTunnelRouteUpdateResponse);
+    return SendTunnelMessage(kMsgType_TunnelRouteUpdate, conMgr, mTunnelAgent->mExchangeMgr->FabricState->FabricId, tunRoutes,
+                             HandleTunnelRouteUpdateResponse);
 }
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
@@ -180,11 +172,9 @@ WEAVE_ERROR WeaveTunnelControl::SendTunnelRouteUpdate(WeaveTunnelConnectionMgr *
  *
  * @return WEAVE_ERROR          WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::SendTunnelLiveness(WeaveTunnelConnectionMgr *conMgr)
+WEAVE_ERROR WeaveTunnelControl::SendTunnelLiveness(WeaveTunnelConnectionMgr * conMgr)
 {
-    return SendTunnelMessage(kMsgType_TunnelLiveness, conMgr,
-                             0,
-                             NULL, HandleTunnelLivenessResponse);
+    return SendTunnelMessage(kMsgType_TunnelLiveness, conMgr, 0, NULL, HandleTunnelLivenessResponse);
 }
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
 
@@ -196,21 +186,21 @@ WEAVE_ERROR WeaveTunnelControl::SendTunnelLiveness(WeaveTunnelConnectionMgr *con
  *
  * @return WEAVE_ERROR         WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::GetSendInterfaceIdForBroadcast (InterfaceId &sendIntfId)
+WEAVE_ERROR WeaveTunnelControl::GetSendInterfaceIdForBroadcast(InterfaceId & sendIntfId)
 {
-    WEAVE_ERROR res = WEAVE_NO_ERROR;
+    WEAVE_ERROR res   = WEAVE_NO_ERROR;
     uint64_t globalId = 0;
     IPAddress sendIntfAddr;
     globalId = WeaveFabricIdToIPv6GlobalId(mTunnelAgent->mExchangeMgr->FabricState->FabricId);
     if (mTunnelAgent->mRole == WeaveTunnelAgent::kRole_BorderGateway)
     {
         sendIntfAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_PrimaryWiFi,
-                                WeaveNodeIdToIPv6InterfaceId(mTunnelAgent->mExchangeMgr->FabricState->LocalNodeId));
+                                          WeaveNodeIdToIPv6InterfaceId(mTunnelAgent->mExchangeMgr->FabricState->LocalNodeId));
     }
     else if (mTunnelAgent->mRole == WeaveTunnelAgent::kRole_MobileDevice)
     {
         sendIntfAddr = IPAddress::MakeULA(globalId, kWeaveSubnetId_MobileDevice,
-                                WeaveNodeIdToIPv6InterfaceId(mTunnelAgent->mExchangeMgr->FabricState->LocalNodeId));
+                                          WeaveNodeIdToIPv6InterfaceId(mTunnelAgent->mExchangeMgr->FabricState->LocalNodeId));
     }
     res = mTunnelAgent->mInet->GetInterfaceFromAddr(sendIntfAddr, sendIntfId);
 
@@ -218,22 +208,20 @@ WEAVE_ERROR WeaveTunnelControl::GetSendInterfaceIdForBroadcast (InterfaceId &sen
 }
 
 /* Send the Shortcut Tunnel Advertise message of specified type */
-WEAVE_ERROR WeaveTunnelControl::SendShortcutTunnelAdvertiseMessage (TunnelCtrlMsgType shortcutTunAdvMsgType,
-                                                                    InterfaceId sendIntfId,
-                                                                    uint64_t localAddrIdentifier)
+WEAVE_ERROR WeaveTunnelControl::SendShortcutTunnelAdvertiseMessage(TunnelCtrlMsgType shortcutTunAdvMsgType, InterfaceId sendIntfId,
+                                                                   uint64_t localAddrIdentifier)
 {
-    WEAVE_ERROR         err         = WEAVE_NO_ERROR;
-    PacketBuffer*       msgBuf      = NULL;
-    ExchangeContext*    exchangeCtx = NULL;
-    uint8_t*            p           = NULL;
+    WEAVE_ERROR err               = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf         = NULL;
+    ExchangeContext * exchangeCtx = NULL;
+    uint8_t * p                   = NULL;
 
     // allocate buffer and send tunnel message
     msgBuf = PacketBuffer::New();
 
     VerifyOrExit(msgBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
-    VerifyOrExit(mTunnelAgent->mExchangeMgr != NULL,
-                 err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(mTunnelAgent->mExchangeMgr != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
     exchangeCtx = mTunnelAgent->mExchangeMgr->NewContext(nl::Weave::kAnyNodeId, this);
 
@@ -241,12 +229,12 @@ WEAVE_ERROR WeaveTunnelControl::SendShortcutTunnelAdvertiseMessage (TunnelCtrlMs
 
     mShortcutTunExchangeCtxt = exchangeCtx;
 
-    //Encode the Fabric Id for Border Gateway and the Node Id for Mobile Client.
+    // Encode the Fabric Id for Border Gateway and the Node Id for Mobile Client.
     p = msgBuf->Start();
     LittleEndian::Write64(p, localAddrIdentifier);
     msgBuf->SetDataLength(8);
     mShortcutTunExchangeCtxt->PeerIntf = sendIntfId;
-    err = mShortcutTunExchangeCtxt->SendMessage(kWeaveProfile_Tunneling, shortcutTunAdvMsgType, msgBuf,
+    err    = mShortcutTunExchangeCtxt->SendMessage(kWeaveProfile_Tunneling, shortcutTunAdvMsgType, msgBuf,
                                                 nl::Weave::ExchangeContext::kSendFlag_DefaultMulticastSourceAddress);
     msgBuf = NULL;
     SuccessOrExit(err);
@@ -271,7 +259,7 @@ exit:
  *
  * @return WEAVE_ERROR         WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::SendBorderRouterAdvertise (void)
+WEAVE_ERROR WeaveTunnelControl::SendBorderRouterAdvertise(void)
 {
     WEAVE_ERROR res        = WEAVE_NO_ERROR;
     InterfaceId sendIntfId = INET_NULL_INTERFACEID;
@@ -294,12 +282,12 @@ WEAVE_ERROR WeaveTunnelControl::SendBorderRouterAdvertise (void)
  *
  * @return WEAVE_ERROR         WEAVE_NO_ERROR on success, else error.
  */
-WEAVE_ERROR WeaveTunnelControl::SendMobileClientAdvertise (void)
+WEAVE_ERROR WeaveTunnelControl::SendMobileClientAdvertise(void)
 {
     WEAVE_ERROR res        = WEAVE_NO_ERROR;
     InterfaceId sendIntfId = INET_NULL_INTERFACEID;
 
-    //Get the sendIntfId for the broadcast
+    // Get the sendIntfId for the broadcast
     res = GetSendInterfaceIdForBroadcast(sendIntfId);
 
     if (res == WEAVE_NO_ERROR)
@@ -329,49 +317,46 @@ WEAVE_ERROR WeaveTunnelControl::SendMobileClientAdvertise (void)
  *                             advertisement message.
  *
  */
-void WeaveTunnelControl::HandleShortcutTunnelAdvertiseMessage (ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                               const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                               uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelControl::HandleShortcutTunnelAdvertiseMessage(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                              const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                              PacketBuffer * payload)
 {
-    uint8_t     *p  = NULL;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
-    uint64_t peerId = 0;
+    uint8_t * p                     = NULL;
+    WeaveTunnelControl * tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
+    uint64_t peerId                 = 0;
     // Verify that the message is a Tunnel Control Message for added safety.
     if (profileId != kWeaveProfile_Tunneling)
     {
         ExitNow();
     }
 
-    p = payload->Start();
+    p      = payload->Start();
     peerId = LittleEndian::Read64(p);
 
-    //Go through the message type and update the local nextHop Table
+    // Go through the message type and update the local nextHop Table
     switch (msgType)
     {
-        case kMsgType_TunnelRouterAdvertise:
-          //TunnelRouter advertisements are meant for mobile client devices.
-          if (tunControl->mTunnelAgent->mRole != WeaveTunnelAgent::kRole_MobileDevice)
-          {
-              ExitNow();
-          }
+    case kMsgType_TunnelRouterAdvertise:
+        // TunnelRouter advertisements are meant for mobile client devices.
+        if (tunControl->mTunnelAgent->mRole != WeaveTunnelAgent::kRole_MobileDevice)
+        {
+            ExitNow();
+        }
 
-          tunControl->UpdateOrAddTunnelPeerEntry(peerId, pktInfo->SrcAddress,
-                                                 msgInfo->SourceNodeId);
+        tunControl->UpdateOrAddTunnelPeerEntry(peerId, pktInfo->SrcAddress, msgInfo->SourceNodeId);
 
-          break;
-        case kMsgType_TunnelMobileClientAdvertise:
-          //Mobile Client advertisements are meant for tunnel border gateways.
-          if (tunControl->mTunnelAgent->mRole != WeaveTunnelAgent::kRole_BorderGateway)
-          {
-              ExitNow();
-          }
+        break;
+    case kMsgType_TunnelMobileClientAdvertise:
+        // Mobile Client advertisements are meant for tunnel border gateways.
+        if (tunControl->mTunnelAgent->mRole != WeaveTunnelAgent::kRole_BorderGateway)
+        {
+            ExitNow();
+        }
 
-          tunControl->UpdateOrAddTunnelPeerEntry(peerId, pktInfo->SrcAddress,
-                                                 msgInfo->SourceNodeId);
+        tunControl->UpdateOrAddTunnelPeerEntry(peerId, pktInfo->SrcAddress, msgInfo->SourceNodeId);
 
-          break;
-        default:
-          break;
+        break;
+    default: break;
     }
 
 exit:
@@ -396,13 +381,13 @@ exit:
  */
 bool WeaveTunnelControl::IsPeerInShortcutTunnelCache(uint64_t peerId)
 {
-    int nextHopTableIndex  = -1;
-    bool retVal            = false;
-    nextHopTableIndex = FindTunnelPeerEntry(peerId);
+    int nextHopTableIndex = -1;
+    bool retVal           = false;
+    nextHopTableIndex     = FindTunnelPeerEntry(peerId);
 
     if (nextHopTableIndex >= 0)
     {
-       retVal = true;
+        retVal = true;
     }
 
     return retVal;
@@ -414,7 +399,7 @@ bool WeaveTunnelControl::IsPeerInShortcutTunnelCache(uint64_t peerId)
  * tunnel counterparts.
  *
  */
-void WeaveTunnelControl::EnableShortcutTunneling (void)
+void WeaveTunnelControl::EnableShortcutTunneling(void)
 {
     RegisterShortcutTunnelAdvHandlers();
 
@@ -435,7 +420,7 @@ void WeaveTunnelControl::EnableShortcutTunneling (void)
  * also listening to advertisements from shortcut tunnel counterparts.
  *
  */
-void WeaveTunnelControl::DisableShortcutTunneling (void)
+void WeaveTunnelControl::DisableShortcutTunneling(void)
 {
     UnregisterShortcutTunnelAdvHandlers();
 
@@ -454,12 +439,10 @@ void WeaveTunnelControl::DisableShortcutTunneling (void)
 /**
  * Send message over the tunnel shortcut.
  */
-WEAVE_ERROR WeaveTunnelControl::SendMessageOverTunnelShortcut(uint64_t peerId,
-                                                              WeaveMessageInfo *msgInfo,
-                                                              PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelControl::SendMessageOverTunnelShortcut(uint64_t peerId, WeaveMessageInfo * msgInfo, PacketBuffer * msg)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    int nextHopTableIndex  = -1;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    int nextHopTableIndex = -1;
 
     nextHopTableIndex = FindTunnelPeerEntry(peerId);
 
@@ -469,9 +452,8 @@ WEAVE_ERROR WeaveTunnelControl::SendMessageOverTunnelShortcut(uint64_t peerId,
 
     msgInfo->DestNodeId = ShortcutTunnelPeerCache[nextHopTableIndex].peerNodeId;
 
-    err = mTunnelAgent->mExchangeMgr->MessageLayer->SendUDPTunneledMessage(
-                                 ShortcutTunnelPeerCache[nextHopTableIndex].peerAddr,
-                                 msgInfo, msg);
+    err = mTunnelAgent->mExchangeMgr->MessageLayer->SendUDPTunneledMessage(ShortcutTunnelPeerCache[nextHopTableIndex].peerAddr,
+                                                                           msgInfo, msg);
     msg = NULL;
 
 exit:
@@ -488,10 +470,10 @@ exit:
 }
 
 /* Timer expiry function for sending periodic border router advertisements for shortcut tunneling */
-void WeaveTunnelControl::BorderRouterAdvTimeout (InetLayer *inetLayer, void *appState, INET_ERROR err)
+void WeaveTunnelControl::BorderRouterAdvTimeout(InetLayer * inetLayer, void * appState, INET_ERROR err)
 {
-    WEAVE_ERROR      res     = WEAVE_NO_ERROR;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(appState);
+    WEAVE_ERROR res                 = WEAVE_NO_ERROR;
+    WeaveTunnelControl * tunControl = static_cast<WeaveTunnelControl *>(appState);
 
     // Send the Border Router Advertise message.
 
@@ -499,16 +481,17 @@ void WeaveTunnelControl::BorderRouterAdvTimeout (InetLayer *inetLayer, void *app
 
     // Restart the timer.
 
-    res = tunControl->mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(tunControl->mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
+    res = tunControl->mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(tunControl->mShortcutTunnelAdvInterval *
+                                                                                     nl::Weave::System::kTimerFactor_milli_per_unit,
                                                                                  BorderRouterAdvTimeout, tunControl);
     VerifyOrDieWithMsg(res == WEAVE_NO_ERROR, WeaveTunnel, "Cannot start BorderRouterAdvTimeout\n");
 }
 
 /* Timer expiry function for sending periodic mobile client advertisements for shortcut tunneling */
-void WeaveTunnelControl::MobileClientAdvTimeout (InetLayer *inetLayer, void *appState, INET_ERROR err)
+void WeaveTunnelControl::MobileClientAdvTimeout(InetLayer * inetLayer, void * appState, INET_ERROR err)
 {
-    WEAVE_ERROR      res     = WEAVE_NO_ERROR;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(appState);
+    WEAVE_ERROR res                 = WEAVE_NO_ERROR;
+    WeaveTunnelControl * tunControl = static_cast<WeaveTunnelControl *>(appState);
 
     // Send the Mobile Client Advertise message.
 
@@ -516,16 +499,17 @@ void WeaveTunnelControl::MobileClientAdvTimeout (InetLayer *inetLayer, void *app
 
     // Restart the timer.
 
-    res = tunControl->mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(tunControl->mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
+    res = tunControl->mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(tunControl->mShortcutTunnelAdvInterval *
+                                                                                     nl::Weave::System::kTimerFactor_milli_per_unit,
                                                                                  MobileClientAdvTimeout, tunControl);
     VerifyOrDieWithMsg(res == WEAVE_NO_ERROR, WeaveTunnel, "Cannot start MobileClientAdvTimeout\n");
 }
 
 /* Timer expiry functions to mark and purge stale entries from previous advertisements  */
-void WeaveTunnelControl::PurgeStaleNextHopEntries (InetLayer *inetLayer, void *appState, INET_ERROR err)
+void WeaveTunnelControl::PurgeStaleNextHopEntries(InetLayer * inetLayer, void * appState, INET_ERROR err)
 {
-    WEAVE_ERROR      res     = WEAVE_NO_ERROR;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(appState);
+    WEAVE_ERROR res                 = WEAVE_NO_ERROR;
+    WeaveTunnelControl * tunControl = static_cast<WeaveTunnelControl *>(appState);
 
     // Go through the shortcut tunnel nexthop table and purge stale entries.
 
@@ -550,26 +534,27 @@ void WeaveTunnelControl::PurgeStaleNextHopEntries (InetLayer *inetLayer, void *a
 
     // Restart the timer.
 
-    res = tunControl->mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(tunControl->mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
+    res = tunControl->mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(tunControl->mShortcutTunnelAdvInterval *
+                                                                                     nl::Weave::System::kTimerFactor_milli_per_unit,
                                                                                  PurgeStaleNextHopEntries, tunControl);
     VerifyOrDieWithMsg(res == WEAVE_NO_ERROR, WeaveTunnel, "Cannot start PurgeStaleNextHopEntries\n");
 }
 
 /* Start the nexthop cache monitor */
-void WeaveTunnelControl::StartNextHopTableMonitor (void)
+void WeaveTunnelControl::StartNextHopTableMonitor(void)
 {
-    mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
-                                                               PurgeStaleNextHopEntries, this);
+    mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(
+        mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit, PurgeStaleNextHopEntries, this);
 }
 
 /* Stop the nexthop cache monitor */
-void WeaveTunnelControl::StopNextHopTableMonitor (void)
+void WeaveTunnelControl::StopNextHopTableMonitor(void)
 {
     mTunnelAgent->mExchangeMgr->MessageLayer->Inet->CancelTimer(PurgeStaleNextHopEntries, this);
 }
 
 /* Register the handlers for receving the shortcut tunnel advertisements for refreshing the nexthop cache */
-void WeaveTunnelControl::RegisterShortcutTunnelAdvHandlers (void)
+void WeaveTunnelControl::RegisterShortcutTunnelAdvHandlers(void)
 {
     mTunnelAgent->mExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelRouterAdvertise,
                                                                   HandleShortcutTunnelAdvertiseMessage, this);
@@ -579,7 +564,7 @@ void WeaveTunnelControl::RegisterShortcutTunnelAdvHandlers (void)
 }
 
 /* Unregister the handlers for receving the shortcut tunnel advertisements for refreshing the nexthop cache */
-void WeaveTunnelControl::UnregisterShortcutTunnelAdvHandlers (void)
+void WeaveTunnelControl::UnregisterShortcutTunnelAdvHandlers(void)
 {
     mTunnelAgent->mExchangeMgr->UnregisterUnsolicitedMessageHandler(kWeaveProfile_Tunneling, kMsgType_TunnelRouterAdvertise);
 
@@ -589,8 +574,8 @@ void WeaveTunnelControl::UnregisterShortcutTunnelAdvHandlers (void)
 /* Start sending the periodic border router advertisement messages */
 void WeaveTunnelControl::StartShortcutTunnelAdvertisementsFromBorderRouter(void)
 {
-    mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
-                                                               BorderRouterAdvTimeout, this);
+    mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(
+        mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit, BorderRouterAdvTimeout, this);
 }
 
 /* Stop sending the periodic border router advertisement messages */
@@ -602,8 +587,8 @@ void WeaveTunnelControl::StopShortcutTunnelAdvertisementsFromBorderRouter(void)
 /* Start sending the periodic mobile client advertisement messages */
 void WeaveTunnelControl::StartShortcutTunnelAdvertisementsFromMobileClient(void)
 {
-    mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit,
-                                                               MobileClientAdvTimeout, this);
+    mTunnelAgent->mExchangeMgr->MessageLayer->Inet->StartTimer(
+        mShortcutTunnelAdvInterval * nl::Weave::System::kTimerFactor_milli_per_unit, MobileClientAdvTimeout, this);
 }
 
 /* Stop sending the periodic mobile client advertisement messages */
@@ -613,7 +598,7 @@ void WeaveTunnelControl::StopShortcutTunnelAdvertisementsFromMobileClient(void)
 }
 
 /* Lookup NextHop table entry */
-int WeaveTunnelControl::FindTunnelPeerEntry (uint64_t peerId)
+int WeaveTunnelControl::FindTunnelPeerEntry(uint64_t peerId)
 {
     int index = -1;
     for (int i = 0; i < WEAVE_CONFIG_TUNNELING_MAX_NUM_SHORTCUT_TUNNEL_PEERS; i++)
@@ -629,7 +614,7 @@ int WeaveTunnelControl::FindTunnelPeerEntry (uint64_t peerId)
 }
 
 /* Create a new route entry */
-int WeaveTunnelControl::NewNextHopEntry (void)
+int WeaveTunnelControl::NewNextHopEntry(void)
 {
     int retIndex = -1;
 
@@ -646,7 +631,7 @@ int WeaveTunnelControl::NewNextHopEntry (void)
 }
 
 /* Free a nexthop entry at a particular index */
-WEAVE_ERROR WeaveTunnelControl::FreeNextHopEntry (int index)
+WEAVE_ERROR WeaveTunnelControl::FreeNextHopEntry(int index)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -663,10 +648,10 @@ exit:
 }
 
 /* Lookup and update a nexthop entry or add a new entry */
-WEAVE_ERROR WeaveTunnelControl::UpdateOrAddTunnelPeerEntry (uint64_t peerId, IPAddress peerAddress, uint64_t peerNodeId)
+WEAVE_ERROR WeaveTunnelControl::UpdateOrAddTunnelPeerEntry(uint64_t peerId, IPAddress peerAddress, uint64_t peerNodeId)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    int8_t index = -1;
+    int8_t index    = -1;
     // Check and update the ShortcutTunnelPeerCache
 
     index = FindTunnelPeerEntry(peerId);
@@ -695,26 +680,24 @@ exit:
 #endif // WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
 
 /* Reset the members */
-void WeaveTunnelControl::Free (void)
+void WeaveTunnelControl::Free(void)
 {
-    mTunnelAgent               = NULL;
+    mTunnelAgent = NULL;
 #if WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
-    mShortcutTunExchangeCtxt   = NULL;
+    mShortcutTunExchangeCtxt = NULL;
 #endif // WEAVE_CONFIG_TUNNEL_SHORTCUT_SUPPORTED
-    mServiceExchangeCtxt       = NULL;
-    OnTunStatusRcvd            = NULL;
+    mServiceExchangeCtxt = NULL;
+    OnTunStatusRcvd      = NULL;
 }
 
 /* Create an Exchange Context for exchanging Weave Control messages */
-WEAVE_ERROR WeaveTunnelControl::CreateContext (WeaveConnection *aConnection,
-                                               ExchangeContext::MessageReceiveFunct onMsgRcvd)
+WEAVE_ERROR WeaveTunnelControl::CreateContext(WeaveConnection * aConnection, ExchangeContext::MessageReceiveFunct onMsgRcvd)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    ExchangeContext *exchangeCtx = NULL;
+    ExchangeContext * exchangeCtx = NULL;
 
-    VerifyOrExit(mTunnelAgent->mExchangeMgr != NULL,
-                 err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(mTunnelAgent->mExchangeMgr != NULL, err = WEAVE_ERROR_INCORRECT_STATE);
 
     exchangeCtx = mTunnelAgent->mExchangeMgr->NewContext(aConnection, this);
 
@@ -732,10 +715,8 @@ exit:
     return err;
 }
 
-WEAVE_ERROR WeaveTunnelControl::VerifyAndParseStatusResponse(uint32_t profileId,
-                                                             uint8_t msgType, PacketBuffer *payload,
-                                                             StatusReport & outReport,
-                                                             bool & outIsRoutingRestricted)
+WEAVE_ERROR WeaveTunnelControl::VerifyAndParseStatusResponse(uint32_t profileId, uint8_t msgType, PacketBuffer * payload,
+                                                             StatusReport & outReport, bool & outIsRoutingRestricted)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -770,11 +751,11 @@ WEAVE_ERROR WeaveTunnelControl::ParseTunnelTLVData(StatusReport & report, bool &
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader tunReader;
     nl::Weave::TLV::TLVType OuterContainerType;
-    const uint8_t *tlvData = NULL;
+    const uint8_t * tlvData = NULL;
     uint16_t tlvDataLen;
     uint64_t tag = 0;
 
-    tlvData = report.mAdditionalInfo.theData;
+    tlvData    = report.mAdditionalInfo.theData;
     tlvDataLen = report.mAdditionalInfo.theLength;
 
     // Verify that TLV data supplied by the Service is encapsulated in an anonymous
@@ -783,8 +764,7 @@ WEAVE_ERROR WeaveTunnelControl::ParseTunnelTLVData(StatusReport & report, bool &
 
     VerifyOrExit(tlvDataLen > 2, err = WEAVE_ERROR_INVALID_ARGUMENT);
     VerifyOrExit(tlvData[0] == kTLVElementType_Structure, err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(tlvData[tlvDataLen - 1] == kTLVElementType_EndOfContainer,
-                 err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(tlvData[tlvDataLen - 1] == kTLVElementType_EndOfContainer, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     tunReader.Init(tlvData, tlvDataLen);
 
@@ -798,14 +778,11 @@ WEAVE_ERROR WeaveTunnelControl::ParseTunnelTLVData(StatusReport & report, bool &
     SuccessOrExit(err);
 
     tag = tunReader.GetTag();
-    VerifyOrExit(nl::Weave::TLV::IsProfileTag(tag),
-                 err = WEAVE_ERROR_INVALID_TLV_TAG);
+    VerifyOrExit(nl::Weave::TLV::IsProfileTag(tag), err = WEAVE_ERROR_INVALID_TLV_TAG);
 
-    VerifyOrExit(nl::Weave::TLV::ProfileIdFromTag(tag) == kWeaveProfile_Tunneling,
-                 err = WEAVE_ERROR_INVALID_TLV_TAG);
+    VerifyOrExit(nl::Weave::TLV::ProfileIdFromTag(tag) == kWeaveProfile_Tunneling, err = WEAVE_ERROR_INVALID_TLV_TAG);
 
-    VerifyOrExit(nl::Weave::TLV::TagNumFromTag(tag) == kTag_TunnelRoutingRestricted,
-                 err = WEAVE_ERROR_INVALID_TLV_TAG);
+    VerifyOrExit(nl::Weave::TLV::TagNumFromTag(tag) == kTag_TunnelRoutingRestricted, err = WEAVE_ERROR_INVALID_TLV_TAG);
 
     err = tunReader.Get(outIsRoutingRestricted);
     SuccessOrExit(err);
@@ -815,15 +792,15 @@ exit:
 }
 
 /* Handle received control messages */
-void WeaveTunnelControl::HandleTunnelOpenResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                  const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                  uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelControl::HandleTunnelOpenResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                  const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                  PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
-    bool isRoutingRestricted = false;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
-    WeaveTunnelConnectionMgr *connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
+    bool isRoutingRestricted           = false;
+    WeaveTunnelControl * tunControl    = static_cast<WeaveTunnelControl *>(ec->AppState);
+    WeaveTunnelConnectionMgr * connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
 
     err = VerifyAndParseStatusResponse(profileId, msgType, payload, report, isRoutingRestricted);
 
@@ -860,11 +837,10 @@ void WeaveTunnelControl::HandleTunnelOpenResponse(ExchangeContext *ec, const IPP
 
     connMgr->mIsNetworkOnline = true;
 
-
 exit:
     if (err != WEAVE_NO_ERROR)
     {
-        WeaveLogError(WeaveTunnel, "HandleTunnelOpenResponse FAILED with error: %ld\n", (long)err);
+        WeaveLogError(WeaveTunnel, "HandleTunnelOpenResponse FAILED with error: %ld\n", (long) err);
 
         tunControl->TunnelCloseAndReportErrorStatus(connMgr, err, report);
     }
@@ -872,15 +848,15 @@ exit:
     return;
 }
 
-void WeaveTunnelControl::HandleTunnelCloseResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                   const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                   uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelControl::HandleTunnelCloseResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                   const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                   PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
-    bool isRoutingRestricted = false;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
-    WeaveTunnelConnectionMgr *connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
+    bool isRoutingRestricted           = false;
+    WeaveTunnelControl * tunControl    = static_cast<WeaveTunnelControl *>(ec->AppState);
+    WeaveTunnelConnectionMgr * connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
 
     err = VerifyAndParseStatusResponse(profileId, msgType, payload, report, isRoutingRestricted);
 
@@ -891,7 +867,6 @@ void WeaveTunnelControl::HandleTunnelCloseResponse(ExchangeContext *ec, const IP
     SuccessOrExit(err);
 
     // Received successful response to a Tunnel control message
-
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
     // Tunnel is closed. Stop the Tunnel Liveness timer
@@ -911,7 +886,7 @@ void WeaveTunnelControl::HandleTunnelCloseResponse(ExchangeContext *ec, const IP
 exit:
     if (err != WEAVE_NO_ERROR)
     {
-        WeaveLogError(WeaveTunnel, "HandleTunnelCloseResponse FAILED with error: %ld\n", (long)err);
+        WeaveLogError(WeaveTunnel, "HandleTunnelCloseResponse FAILED with error: %ld\n", (long) err);
 
         tunControl->TunnelCloseAndReportErrorStatus(connMgr, err, report);
     }
@@ -919,15 +894,15 @@ exit:
     return;
 }
 
-void WeaveTunnelControl::HandleTunnelRouteUpdateResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                         const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                         uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelControl::HandleTunnelRouteUpdateResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                         const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                         PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
-    bool isRoutingRestricted = false;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
-    WeaveTunnelConnectionMgr *connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
+    bool isRoutingRestricted           = false;
+    WeaveTunnelControl * tunControl    = static_cast<WeaveTunnelControl *>(ec->AppState);
+    WeaveTunnelConnectionMgr * connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
 
     err = VerifyAndParseStatusResponse(profileId, msgType, payload, report, isRoutingRestricted);
 
@@ -957,7 +932,7 @@ void WeaveTunnelControl::HandleTunnelRouteUpdateResponse(ExchangeContext *ec, co
 exit:
     if (err != WEAVE_NO_ERROR)
     {
-        WeaveLogError(WeaveTunnel, "HandleTunnelRouteUpdateResponse FAILED with error: %ld\n", (long)err);
+        WeaveLogError(WeaveTunnel, "HandleTunnelRouteUpdateResponse FAILED with error: %ld\n", (long) err);
 
         tunControl->TunnelCloseAndReportErrorStatus(connMgr, err, report);
     }
@@ -966,15 +941,15 @@ exit:
 }
 
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-void WeaveTunnelControl::HandleTunnelLivenessResponse(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                                      const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                                      uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelControl::HandleTunnelLivenessResponse(ExchangeContext * ec, const IPPacketInfo * pktInfo,
+                                                      const WeaveMessageInfo * msgInfo, uint32_t profileId, uint8_t msgType,
+                                                      PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     StatusReport report;
-    bool isRoutingRestricted = false;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
-    WeaveTunnelConnectionMgr *connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
+    bool isRoutingRestricted           = false;
+    WeaveTunnelControl * tunControl    = static_cast<WeaveTunnelControl *>(ec->AppState);
+    WeaveTunnelConnectionMgr * connMgr = static_cast<WeaveTunnelConnectionMgr *>(ec->Con->AppState);
 
     err = VerifyAndParseStatusResponse(profileId, msgType, payload, report, isRoutingRestricted);
 
@@ -997,7 +972,7 @@ void WeaveTunnelControl::HandleTunnelLivenessResponse(ExchangeContext *ec, const
 exit:
     if (err != WEAVE_NO_ERROR)
     {
-        WeaveLogError(WeaveTunnel, "HandleTunnelLivenessResponse FAILED with error: %ld\n", (long)err);
+        WeaveLogError(WeaveTunnel, "HandleTunnelLivenessResponse FAILED with error: %ld\n", (long) err);
 
         tunControl->TunnelCloseAndReportErrorStatus(connMgr, err, report);
     }
@@ -1010,16 +985,15 @@ exit:
  * Handler to reconnect with the peer node.
  *
  */
-void WeaveTunnelControl::HandleTunnelReconnect(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-                                               const WeaveMessageInfo *msgInfo, uint32_t profileId,
-                                               uint8_t msgType, PacketBuffer *payload)
+void WeaveTunnelControl::HandleTunnelReconnect(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                               uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveTunnelConnectionMgr *connMgr = NULL;
-    WeaveTunnelControl *tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
-    uint16_t hostPort = 0;
+    WEAVE_ERROR err                    = WEAVE_NO_ERROR;
+    WeaveTunnelConnectionMgr * connMgr = NULL;
+    WeaveTunnelControl * tunControl    = static_cast<WeaveTunnelControl *>(ec->AppState);
+    uint16_t hostPort                  = 0;
     char hostName[255]; // Per spec, max DNS name length is 253.
-    uint8_t hostLen = sizeof(hostName);
+    uint8_t hostLen     = sizeof(hostName);
     uint16_t payloadLen = 0;
     ReconnectParam reconnParam;
 
@@ -1059,7 +1033,6 @@ void WeaveTunnelControl::HandleTunnelReconnect(ExchangeContext *ec, const IPPack
             // during reconnect.
 
             tunControl->mTunnelAgent->mServiceMgr->clearCache();
-
         }
         else
         {
@@ -1113,16 +1086,14 @@ exit:
     return;
 }
 
-void WeaveTunnelControl::TunnelCloseAndReportErrorStatus(WeaveTunnelConnectionMgr *connMgr,
-                                                         WEAVE_ERROR err,
-                                                         StatusReport report)
+void WeaveTunnelControl::TunnelCloseAndReportErrorStatus(WeaveTunnelConnectionMgr * connMgr, WEAVE_ERROR err, StatusReport report)
 {
 
     ReconnectParam reconnParam;
 #if WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
-     // Tunnel is being closed. Stop the Tunnel Liveness timer.
+    // Tunnel is being closed. Stop the Tunnel Liveness timer.
 
-     connMgr->StopLivenessTimer();
+    connMgr->StopLivenessTimer();
 #endif // WEAVE_CONFIG_TUNNEL_LIVENESS_SUPPORTED
 
     // Report the status
@@ -1146,9 +1117,7 @@ void WeaveTunnelControl::TunnelCloseAndReportErrorStatus(WeaveTunnelConnectionMg
     {
         // Close the connection and reconnect
 
-        reconnParam.PopulateReconnectParam(err,
-                                           report.mProfileId,
-                                           report.mStatusCode);
+        reconnParam.PopulateReconnectParam(err, report.mProfileId, report.mStatusCode);
 
         connMgr->StopAndReconnectTunnelConn(reconnParam);
     }
@@ -1156,7 +1125,7 @@ void WeaveTunnelControl::TunnelCloseAndReportErrorStatus(WeaveTunnelConnectionMg
     return;
 }
 
-void WeaveTunnelControl::FreeBufferAndCloseExchange(PacketBuffer *buf, ExchangeContext *&ec)
+void WeaveTunnelControl::FreeBufferAndCloseExchange(PacketBuffer * buf, ExchangeContext *& ec)
 {
     // Free the payload buffer.
 
@@ -1176,27 +1145,22 @@ void WeaveTunnelControl::FreeBufferAndCloseExchange(PacketBuffer *buf, ExchangeC
 }
 
 /* Send a tunnel control status report message */
-WEAVE_ERROR WeaveTunnelControl::SendStatusReport(ExchangeContext *ec, uint32_t profileId,
-                                                 uint16_t tunStatusCode)
+WEAVE_ERROR WeaveTunnelControl::SendStatusReport(ExchangeContext * ec, uint32_t profileId, uint16_t tunStatusCode)
 {
-    WEAVE_ERROR     err;
+    WEAVE_ERROR err;
 
     err = nl::Weave::WeaveServerBase::SendStatusReport(ec, profileId, tunStatusCode, WEAVE_NO_ERROR, 0);
 
     return err;
 }
 
-
 /* Send the Tunnel Route Control message of specified type */
-WEAVE_ERROR WeaveTunnelControl::SendTunnelMessage(TunnelCtrlMsgType msgType,
-                                                  WeaveTunnelConnectionMgr *conMgr,
-                                                  uint64_t fabricId,
-                                                  WeaveTunnelRoute *tunRoutes,
-                                                  ExchangeContext::MessageReceiveFunct onMsgRcvd)
+WEAVE_ERROR WeaveTunnelControl::SendTunnelMessage(TunnelCtrlMsgType msgType, WeaveTunnelConnectionMgr * conMgr, uint64_t fabricId,
+                                                  WeaveTunnelRoute * tunRoutes, ExchangeContext::MessageReceiveFunct onMsgRcvd)
 {
-    WEAVE_ERROR     err        = WEAVE_NO_ERROR;
-    PacketBuffer*   msgBuf     = NULL;
-    uint8_t         *p         = NULL;
+    WEAVE_ERROR err       = WEAVE_NO_ERROR;
+    PacketBuffer * msgBuf = NULL;
+    uint8_t * p           = NULL;
 
     // allocate buffer and send tunnel message
 
@@ -1218,9 +1182,9 @@ WEAVE_ERROR WeaveTunnelControl::SendTunnelMessage(TunnelCtrlMsgType msgType,
         {
             p = msgBuf->Start();
 
-            VerifyOrExit(msgBuf->AvailableDataLength() >= NL_TUNNEL_AGENT_ROLE_SIZE_IN_BYTES +
-                         NL_TUNNEL_TYPE_SIZE_IN_BYTES + NL_TUNNEL_SRC_INTF_TYPE_SIZE_IN_BYTES +
-                         NL_TUNNEL_LIVENESS_TYPE_SIZE_IN_BYTES + NL_TUNNEL_LIVENESS_MAX_TIMEOUT_SIZE_IN_BYTES,
+            VerifyOrExit(msgBuf->AvailableDataLength() >= NL_TUNNEL_AGENT_ROLE_SIZE_IN_BYTES + NL_TUNNEL_TYPE_SIZE_IN_BYTES +
+                                 NL_TUNNEL_SRC_INTF_TYPE_SIZE_IN_BYTES + NL_TUNNEL_LIVENESS_TYPE_SIZE_IN_BYTES +
+                                 NL_TUNNEL_LIVENESS_MAX_TIMEOUT_SIZE_IN_BYTES,
                          err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
             // Encode the tunnel device role, tunnel type, and source interface type in the TunnelOpen message.
@@ -1247,13 +1211,11 @@ WEAVE_ERROR WeaveTunnelControl::SendTunnelMessage(TunnelCtrlMsgType msgType,
             msgBuf->SetDataLength(1 + 1 + 1 + 1 + 2);
         }
 
-        err = WeaveTunnelRoute::EncodeFabricTunnelRoutes(fabricId,
-                                                         tunRoutes, msgBuf);
+        err = WeaveTunnelRoute::EncodeFabricTunnelRoutes(fabricId, tunRoutes, msgBuf);
         SuccessOrExit(err);
     }
 
-    err = mServiceExchangeCtxt->SendMessage(kWeaveProfile_Tunneling, msgType, msgBuf,
-                                            ExchangeContext::kSendFlag_ExpectResponse);
+    err    = mServiceExchangeCtxt->SendMessage(kWeaveProfile_Tunneling, msgType, msgBuf, ExchangeContext::kSendFlag_ExpectResponse);
     msgBuf = NULL;
     SuccessOrExit(err);
 
@@ -1270,16 +1232,15 @@ exit:
     }
 
     return err;
-
 }
 
 /**
  * Tunnel control message response timeout handler.
  */
-void WeaveTunnelControl::TunCtrlRespTimeoutHandler(ExchangeContext *ec)
+void WeaveTunnelControl::TunCtrlRespTimeoutHandler(ExchangeContext * ec)
 {
-    WeaveTunnelConnectionMgr *connMgr = NULL;
-    WeaveTunnelControl *tunControl    = NULL;
+    WeaveTunnelConnectionMgr * connMgr = NULL;
+    WeaveTunnelControl * tunControl    = NULL;
     ReconnectParam reconnParam;
 
     tunControl = static_cast<WeaveTunnelControl *>(ec->AppState);
@@ -1294,7 +1255,7 @@ void WeaveTunnelControl::TunCtrlRespTimeoutHandler(ExchangeContext *ec)
     ec->Close();
 
     // Set the ExchangeContext for this connMgr to NULL;
-    ec = NULL;
+    ec                               = NULL;
     tunControl->mServiceExchangeCtxt = NULL;
 
     if (connMgr)
@@ -1330,14 +1291,12 @@ void WeaveTunnelControl::TunCtrlRespTimeoutHandler(ExchangeContext *ec)
  *   by this function as output.
  *
  */
-WEAVE_ERROR WeaveTunnelControl::DecodeTunnelReconnect(uint16_t &hostPort,
-                                                      char *hostName,
-                                                      uint8_t &hostNameLen,
-                                                      PacketBuffer *msg)
+WEAVE_ERROR WeaveTunnelControl::DecodeTunnelReconnect(uint16_t & hostPort, char * hostName, uint8_t & hostNameLen,
+                                                      PacketBuffer * msg)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint16_t msgLen = msg->DataLength();
-    uint8_t *p = NULL;
+    uint8_t * p     = NULL;
 
     p = msg->Start();
 

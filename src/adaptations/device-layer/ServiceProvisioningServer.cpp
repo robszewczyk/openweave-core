@@ -43,7 +43,7 @@ WEAVE_ERROR ServiceProvisioningServer::Init(void)
     // Set the pointer to the delegate object.
     SetDelegate(this);
 
-    mProvServiceBinding = NULL;
+    mProvServiceBinding            = NULL;
     mWaitingForServiceConnectivity = false;
 
 exit:
@@ -60,7 +60,8 @@ WEAVE_ERROR ServiceProvisioningServer::HandleRegisterServicePairAccount(Register
     if (err == WEAVE_NO_ERROR)
     {
         err = sInstance.SendStatusReport(kWeaveProfile_ServiceProvisioning,
-                (curServiceId == msg.ServiceId) ? kStatusCode_ServiceAlreadyRegistered : kStatusCode_TooManyServices);
+                                         (curServiceId == msg.ServiceId) ? kStatusCode_ServiceAlreadyRegistered
+                                                                         : kStatusCode_TooManyServices);
         ExitNow();
     }
     if (err == WEAVE_DEVICE_ERROR_CONFIG_NOT_FOUND)
@@ -76,7 +77,8 @@ WEAVE_ERROR ServiceProvisioningServer::HandleRegisterServicePairAccount(Register
         ExitNow();
     }
 
-    WeaveLogProgress(DeviceLayer, "Registering new service: %" PRIx64 " (account id %*s)", msg.ServiceId, (int)msg.AccountIdLen, msg.AccountId);
+    WeaveLogProgress(DeviceLayer, "Registering new service: %" PRIx64 " (account id %*s)", msg.ServiceId, (int) msg.AccountIdLen,
+                     msg.AccountId);
 
     // Store the service id and the service config in persistent storage.
     err = ConfigurationMgr().StoreServiceProvisioningData(msg.ServiceId, msg.ServiceConfig, msg.ServiceConfigLen, NULL, 0);
@@ -85,7 +87,7 @@ WEAVE_ERROR ServiceProvisioningServer::HandleRegisterServicePairAccount(Register
     // Post an event alerting other subsystems to the change in the service provisioning state.
     {
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kServiceProvisioningChange;
+        event.Type                                           = DeviceEventType::kServiceProvisioningChange;
         event.ServiceProvisioningChange.IsServiceProvisioned = true;
         event.ServiceProvisioningChange.ServiceConfigUpdated = false;
         PlatformMgr().PostEvent(&event);
@@ -105,7 +107,7 @@ WEAVE_ERROR ServiceProvisioningServer::HandleRegisterServicePairAccount(Register
     // Post an event alerting other subsystems that the device is now paired to an account.
     {
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kAccountPairingChange;
+        event.Type                                   = DeviceEventType::kAccountPairingChange;
         event.AccountPairingChange.IsPairedToAccount = true;
         PlatformMgr().PostEvent(&event);
     }
@@ -119,7 +121,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ServiceProvisioningServer::HandleUpdateService(UpdateServiceMessage& msg)
+WEAVE_ERROR ServiceProvisioningServer::HandleUpdateService(UpdateServiceMessage & msg)
 {
     WEAVE_ERROR err;
     uint64_t curServiceId;
@@ -147,7 +149,7 @@ WEAVE_ERROR ServiceProvisioningServer::HandleUpdateService(UpdateServiceMessage&
     // Post an event alerting other subsystems that the service config has changed.
     {
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kServiceProvisioningChange;
+        event.Type                                           = DeviceEventType::kServiceProvisioningChange;
         event.ServiceProvisioningChange.IsServiceProvisioned = true;
         event.ServiceProvisioningChange.ServiceConfigUpdated = true;
         PlatformMgr().PostEvent(&event);
@@ -228,8 +230,7 @@ void ServiceProvisioningServer::StartPairDeviceToAccount(void)
         mWaitingForServiceConnectivity = true;
 
         err = SystemLayer.StartTimer(WEAVE_DEVICE_CONFIG_SERVICE_PROVISIONING_CONNECTIVITY_TIMEOUT,
-                HandleServiceConnectivityTimeout,
-                NULL);
+                                     HandleServiceConnectivityTimeout, NULL);
         SuccessOrExit(err);
         ExitNow();
 
@@ -246,11 +247,11 @@ void ServiceProvisioningServer::StartPairDeviceToAccount(void)
     mProvServiceBinding = ExchangeMgr->NewBinding(HandleProvServiceBindingEvent, NULL);
     VerifyOrExit(mProvServiceBinding != NULL, err = WEAVE_ERROR_NO_MEMORY);
     err = mProvServiceBinding->BeginConfiguration()
-            .Target_ServiceEndpoint(WEAVE_DEVICE_CONFIG_SERVICE_PROVISIONING_ENDPOINT_ID)
-            .Transport_UDP_WRM()
-            .Exchange_ResponseTimeoutMsec(WEAVE_DEVICE_CONFIG_SERVICE_PROVISIONING_REQUEST_TIMEOUT)
-            .Security_SharedCASESession()
-            .PrepareBinding();
+              .Target_ServiceEndpoint(WEAVE_DEVICE_CONFIG_SERVICE_PROVISIONING_ENDPOINT_ID)
+              .Transport_UDP_WRM()
+              .Exchange_ResponseTimeoutMsec(WEAVE_DEVICE_CONFIG_SERVICE_PROVISIONING_REQUEST_TIMEOUT)
+              .Security_SharedCASESession()
+              .PrepareBinding();
     SuccessOrExit(err);
 
 exit:
@@ -262,7 +263,7 @@ exit:
 
 void ServiceProvisioningServer::SendPairDeviceToAccountRequest(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err                                         = WEAVE_NO_ERROR;
     const RegisterServicePairAccountMessage & regServiceMsg = mCurClientOpMsg.RegisterServicePairAccount;
     uint8_t devDesc[100]; // TODO: make configurable
     size_t devDescLen;
@@ -280,12 +281,10 @@ void ServiceProvisioningServer::SendPairDeviceToAccountRequest(void)
     // descriptor.  Finally, pass the id of the Weave fabric for which the device is a member.
     //
     WeaveLogProgress(DeviceLayer, "Sending PairDeviceToAccount request to Service Provisioning service");
-    err = ServerBaseClass::SendPairDeviceToAccountRequest(mProvServiceBinding,
-            regServiceMsg.ServiceId, FabricState->FabricId,
-            regServiceMsg.AccountId, regServiceMsg.AccountIdLen,
-            regServiceMsg.PairingToken, regServiceMsg.PairingTokenLen,
-            regServiceMsg.PairingInitData, regServiceMsg.PairingInitDataLen,
-            devDesc, devDescLen);
+    err = ServerBaseClass::SendPairDeviceToAccountRequest(
+        mProvServiceBinding, regServiceMsg.ServiceId, FabricState->FabricId, regServiceMsg.AccountId, regServiceMsg.AccountIdLen,
+        regServiceMsg.PairingToken, regServiceMsg.PairingTokenLen, regServiceMsg.PairingInitData, regServiceMsg.PairingInitDataLen,
+        devDesc, devDescLen);
     SuccessOrExit(err);
 
 exit:
@@ -295,7 +294,8 @@ exit:
     }
 }
 
-void ServiceProvisioningServer::HandlePairDeviceToAccountResult(WEAVE_ERROR err, uint32_t statusReportProfileId, uint16_t statusReportStatusCode)
+void ServiceProvisioningServer::HandlePairDeviceToAccountResult(WEAVE_ERROR err, uint32_t statusReportProfileId,
+                                                                uint16_t statusReportStatusCode)
 {
     // Close the binding if necessary.
     if (mProvServiceBinding != NULL)
@@ -327,7 +327,7 @@ void ServiceProvisioningServer::HandlePairDeviceToAccountResult(WEAVE_ERROR err,
         // Post an event alerting other subsystems that the device is now paired to an account.
         {
             WeaveDeviceEvent event;
-            event.Type = DeviceEventType::kAccountPairingChange;
+            event.Type                                   = DeviceEventType::kAccountPairingChange;
             event.AccountPairingChange.IsPairedToAccount = true;
             PlatformMgr().PostEvent(&event);
         }
@@ -344,10 +344,10 @@ exit:
     if (err != WEAVE_NO_ERROR)
     {
         WeaveLogError(DeviceLayer, "PairDeviceToAccount request failed with %s: %s",
-                 (err == WEAVE_ERROR_STATUS_REPORT_RECEIVED) ? "status report from service" : "local error",
-                 (err == WEAVE_ERROR_STATUS_REPORT_RECEIVED)
-                  ? ::nl::StatusReportStr(statusReportProfileId, statusReportStatusCode)
-                  : ::nl::ErrorStr(err));
+                      (err == WEAVE_ERROR_STATUS_REPORT_RECEIVED) ? "status report from service" : "local error",
+                      (err == WEAVE_ERROR_STATUS_REPORT_RECEIVED)
+                          ? ::nl::StatusReportStr(statusReportProfileId, statusReportStatusCode)
+                          : ::nl::ErrorStr(err));
 
         // Since we're failing the RegisterServicePairDevice request, clear the persisted service configuration.
         ConfigurationMgr().ClearServiceProvisioningData();
@@ -357,12 +357,12 @@ exit:
         {
             if (err == WEAVE_ERROR_TIMEOUT)
             {
-                statusReportProfileId = kWeaveProfile_ServiceProvisioning;
+                statusReportProfileId  = kWeaveProfile_ServiceProvisioning;
                 statusReportStatusCode = Profiles::ServiceProvisioning::kStatusCode_ServiceCommunicationError;
             }
             else
             {
-                statusReportProfileId = kWeaveProfile_Common;
+                statusReportProfileId  = kWeaveProfile_Common;
                 statusReportStatusCode = Profiles::Common::kStatus_InternalServerProblem;
             }
         }
@@ -370,7 +370,7 @@ exit:
         // Send an error StatusReport back to the client.  Only include the local error code if it isn't
         // WEAVE_ERROR_STATUS_REPORT_RECEIVED.
         SendStatusReport(statusReportProfileId, statusReportStatusCode,
-                (err != WEAVE_ERROR_STATUS_REPORT_RECEIVED) ? err : WEAVE_NO_ERROR);
+                         (err != WEAVE_ERROR_STATUS_REPORT_RECEIVED) ? err : WEAVE_NO_ERROR);
     }
 }
 
@@ -379,54 +379,51 @@ void ServiceProvisioningServer::AsyncStartPairDeviceToAccount(intptr_t arg)
     sInstance.StartPairDeviceToAccount();
 }
 
-void ServiceProvisioningServer::HandleServiceConnectivityTimeout(System::Layer * /* unused */, void * /* unused */, System::Error /* unused */)
+void ServiceProvisioningServer::HandleServiceConnectivityTimeout(System::Layer * /* unused */, void * /* unused */,
+                                                                 System::Error /* unused */)
 {
     sInstance.HandlePairDeviceToAccountResult(WEAVE_ERROR_TIMEOUT, 0, 0);
 }
 
 void ServiceProvisioningServer::HandleProvServiceBindingEvent(void * appState, Binding::EventType eventType,
-            const Binding::InEventParam & inParam, Binding::OutEventParam & outParam)
+                                                              const Binding::InEventParam & inParam,
+                                                              Binding::OutEventParam & outParam)
 {
     uint32_t statusReportProfileId;
     uint16_t statusReportStatusCode;
 
     switch (eventType)
     {
-    case Binding::kEvent_BindingReady:
-        sInstance.SendPairDeviceToAccountRequest();
-        break;
+    case Binding::kEvent_BindingReady: sInstance.SendPairDeviceToAccountRequest(); break;
     case Binding::kEvent_PrepareFailed:
         if (inParam.PrepareFailed.StatusReport != NULL)
         {
-            statusReportProfileId = inParam.PrepareFailed.StatusReport->mProfileId;
+            statusReportProfileId  = inParam.PrepareFailed.StatusReport->mProfileId;
             statusReportStatusCode = inParam.PrepareFailed.StatusReport->mStatusCode;
         }
         else
         {
-            statusReportProfileId = kWeaveProfile_ServiceProvisioning;
+            statusReportProfileId  = kWeaveProfile_ServiceProvisioning;
             statusReportStatusCode = Profiles::ServiceProvisioning::kStatusCode_ServiceCommunicationError;
         }
-        sInstance.HandlePairDeviceToAccountResult(inParam.PrepareFailed.Reason,
-                statusReportProfileId, statusReportStatusCode);
+        sInstance.HandlePairDeviceToAccountResult(inParam.PrepareFailed.Reason, statusReportProfileId, statusReportStatusCode);
         break;
-    default:
-        Binding::DefaultEventHandler(appState, eventType, inParam, outParam);
-        break;
+    default: Binding::DefaultEventHandler(appState, eventType, inParam, outParam); break;
     }
 }
 
 #else // !WEAVE_DEVICE_CONFIG_DISABLE_ACCOUNT_PAIRING
 
-void ServiceProvisioningServer::HandlePairDeviceToAccountResult(WEAVE_ERROR err, uint32_t statusReportProfileId, uint16_t statusReportStatusCode)
-{
-}
+void ServiceProvisioningServer::HandlePairDeviceToAccountResult(WEAVE_ERROR err, uint32_t statusReportProfileId,
+                                                                uint16_t statusReportStatusCode)
+{ }
 
 #endif // !WEAVE_DEVICE_CONFIG_DISABLE_ACCOUNT_PAIRING
 
 #if WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
-void ServiceProvisioningServer::HandleIFJServiceFabricJoinResult(WEAVE_ERROR err, uint32_t statusReportProfileId, uint16_t statusReportStatusCode)
-{
-}
+void ServiceProvisioningServer::HandleIFJServiceFabricJoinResult(WEAVE_ERROR err, uint32_t statusReportProfileId,
+                                                                 uint16_t statusReportStatusCode)
+{ }
 #endif // WEAVE_CONFIG_ENABLE_IFJ_SERVICE_FABRIC_JOIN
 
 } // namespace Internal

@@ -34,29 +34,31 @@ namespace Weave {
 namespace Trait {
 namespace Locale {
 namespace LocaleSettingsTrait {
-    extern nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
+extern nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-    enum {
-        kWeaveProfileId = 0x00000014
-    };
+enum
+{
+    kWeaveProfileId = 0x00000014
+};
 
-    enum {
-                 kPropertyHandle_Root = 1,
-        /*
-         * Root =
-         * {
-         *       active_locale = 1 (string),
-         */
-                 kPropertyHandle_active_locale = 2,
+enum
+{
+    kPropertyHandle_Root = 1,
+    /*
+     * Root =
+     * {
+     *       active_locale = 1 (string),
+     */
+    kPropertyHandle_active_locale = 2,
 
-        /*
-         * }
-         *
-         */
-    };
-}; // LocaleSettingsTrait
-} // Locale
-} // Trait
-} // Weave
+    /*
+     * }
+     *
+     */
+};
+}; // namespace LocaleSettingsTrait
+} // namespace Locale
+} // namespace Trait
+} // namespace Weave
 
 #endif // _LOCALE_SETTINGS_TRAIT_H

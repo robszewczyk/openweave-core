@@ -60,24 +60,24 @@ struct WeaveMessageInfo;
 // Special node id values.
 enum
 {
-    kNodeIdNotSpecified                                 = 0ULL,
-    kAnyNodeId                                          = 0xFFFFFFFFFFFFFFFFULL
+    kNodeIdNotSpecified = 0ULL,
+    kAnyNodeId          = 0xFFFFFFFFFFFFFFFFULL
 };
 
 // Special fabric id values.
 enum
 {
-    kFabricIdNotSpecified                               = 0ULL,
+    kFabricIdNotSpecified = 0ULL,
 
     /** Default fabric ID, which should only be used for testing purposes. */
-    kFabricIdDefaultForTest                             = 1ULL,
+    kFabricIdDefaultForTest = 1ULL,
 
     // Ids >= kReservedFabricIdStart and <= kMaxFabricId are reserved for special uses.  The
     // meanings of values in this range are context-specific; e.g. in the IdentifyRequest
     // message, these value are used to match devices that are/are not members of a fabric.
-    kReservedFabricIdStart                              = 0xFFFFFFFFFFFFFF00ULL,
+    kReservedFabricIdStart = 0xFFFFFFFFFFFFFF00ULL,
 
-    kMaxFabricId                                        = 0xFFFFFFFFFFFFFFFFULL
+    kMaxFabricId = 0xFFFFFFFFFFFFFFFFULL
 };
 
 /** Identifies the purpose or application of certificate
@@ -100,17 +100,17 @@ enum
 {
     // NOTE: When adding additional types, please update the PrintCertType() function.
 
-    kCertType_NotSpecified                              = 0x00, /**< The certificate's type has not been specified. */
-    kCertType_General                                   = 0x01, /**< The certificate is of a general or non-specific type. */
-    kCertType_Device                                    = 0x02, /**< A Weave device certificate. */
-    kCertType_ServiceEndpoint                           = 0x03, /**< A Weave service endpoint certificate. */
-    kCertType_FirmwareSigning                           = 0x04, /**< A Weave firmware signing certificate. */
-    kCertType_AccessToken                               = 0x05, /**< A Weave access token certificate. */
-    kCertType_CA                                        = 0x06, /**< A CA certificate. */
+    kCertType_NotSpecified    = 0x00, /**< The certificate's type has not been specified. */
+    kCertType_General         = 0x01, /**< The certificate is of a general or non-specific type. */
+    kCertType_Device          = 0x02, /**< A Weave device certificate. */
+    kCertType_ServiceEndpoint = 0x03, /**< A Weave service endpoint certificate. */
+    kCertType_FirmwareSigning = 0x04, /**< A Weave firmware signing certificate. */
+    kCertType_AccessToken     = 0x05, /**< A Weave access token certificate. */
+    kCertType_CA              = 0x06, /**< A CA certificate. */
 
-    kCertType_AppDefinedBase                            = 0x7F, /**< Application-specific certificate types should have values >= this value. */
+    kCertType_AppDefinedBase = 0x7F, /**< Application-specific certificate types should have values >= this value. */
 
-    kCertType_Max                                       = 0xFF, /**< Certificate types should not be greater than this value. */
+    kCertType_Max = 0xFF, /**< Certificate types should not be greater than this value. */
 };
 
 /** Identifies the source for the password used in a password-based authentication protocol (e.g. Weave PASE)
@@ -119,12 +119,11 @@ enum
  */
 enum
 {
-    kPasswordSource_NotSpecified                        = 0x0,
-    kPasswordSource_PairingCode                         = 0x1,
+    kPasswordSource_NotSpecified = 0x0,
+    kPasswordSource_PairingCode  = 0x1,
 
-    kPasswordSource_Max                                 = 0xF,
+    kPasswordSource_Max = 0xF,
 };
-
 
 /** Identifies how a peer node is authenticated.
  *
@@ -202,53 +201,88 @@ enum
 // clang-format on
 
 /** True if the authentication mode is based on the Weave PASE protocol. */
-inline bool IsPASEAuthMode(WeaveAuthMode authMode) { return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_PASE; }
+inline bool IsPASEAuthMode(WeaveAuthMode authMode)
+{
+    return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_PASE;
+}
 
 /** True if the authentication mode is based on the Weave CASE protocol. */
-inline bool IsCASEAuthMode(WeaveAuthMode authMode) { return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_CASE; }
+inline bool IsCASEAuthMode(WeaveAuthMode authMode)
+{
+    return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_CASE;
+}
 
 /** True if the authentication mode is based on the Weave TAKE protocol. */
-inline bool IsTAKEAuthMode(WeaveAuthMode authMode) { return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_TAKE; }
+inline bool IsTAKEAuthMode(WeaveAuthMode authMode)
+{
+    return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_TAKE;
+}
 
 /** True if the authentication mode is based possession of a shared password. */
-inline bool IsPasswordAuthMode(WeaveAuthMode authMode) { return IsPASEAuthMode(authMode); }
+inline bool IsPasswordAuthMode(WeaveAuthMode authMode)
+{
+    return IsPASEAuthMode(authMode);
+}
 
 /** True if the authentication mode is based on possession of a private key associated with a certificate. */
-inline bool IsCertAuthMode(WeaveAuthMode authMode) { return IsCASEAuthMode(authMode); }
+inline bool IsCertAuthMode(WeaveAuthMode authMode)
+{
+    return IsCASEAuthMode(authMode);
+}
 
 /** True if the authentication mode is based on possession of a shared group key. */
-inline bool IsGroupKeyAuthMode(WeaveAuthMode authMode) { return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_GroupKey; }
+inline bool IsGroupKeyAuthMode(WeaveAuthMode authMode)
+{
+    return (authMode & kWeaveAuthModeCategory_Mask) == kWeaveAuthModeCategory_GroupKey;
+}
 
 /** Returns the password source for the given authentication mode.
  *
  *  @note The result is only valid when the supplied mode is one of the password authentication modes.
  */
-inline uint8_t PasswordSourceFromAuthMode(WeaveAuthMode authMode) { return (uint8_t)(authMode & kWeaveAuthMode_PASE_PasswordSourceMask); }
+inline uint8_t PasswordSourceFromAuthMode(WeaveAuthMode authMode)
+{
+    return (uint8_t)(authMode & kWeaveAuthMode_PASE_PasswordSourceMask);
+}
 
 /** Returns the password source for the given authentication mode.
  *
  *  @note The result is only valid when the supplied mode is one of the certificate authentication modes.
  */
-inline uint8_t CertTypeFromAuthMode(WeaveAuthMode authMode) { return (uint8_t)(authMode & kWeaveAuthMode_CASE_CertTypeMask); }
+inline uint8_t CertTypeFromAuthMode(WeaveAuthMode authMode)
+{
+    return (uint8_t)(authMode & kWeaveAuthMode_CASE_CertTypeMask);
+}
 
 /** Returns the application group master key ID associated with the authentication mode.
  *
  *  @note The result is only valid when the supplied mode is one of the group key modes.
  */
-inline uint8_t AppGroupMasterKeyIdFromAuthMode(WeaveAuthMode authMode) { return WeaveKeyId::MakeAppGroupMasterKeyId(authMode & kWeaveAuthMode_GroupKey_AppGroupLocalNumber); }
+inline uint8_t AppGroupMasterKeyIdFromAuthMode(WeaveAuthMode authMode)
+{
+    return WeaveKeyId::MakeAppGroupMasterKeyId(authMode & kWeaveAuthMode_GroupKey_AppGroupLocalNumber);
+}
 
 /** Returns a corresponding PASE authentication mode for a given password source. */
-inline WeaveAuthMode PASEAuthMode(uint8_t pwSource) { return kWeaveAuthModeCategory_PASE | pwSource; }
+inline WeaveAuthMode PASEAuthMode(uint8_t pwSource)
+{
+    return kWeaveAuthModeCategory_PASE | pwSource;
+}
 
 /** Returns a corresponding CASE authentication mode for a given certificate type. */
-inline WeaveAuthMode CASEAuthMode(uint8_t certType) { return kWeaveAuthModeCategory_CASE | certType; }
+inline WeaveAuthMode CASEAuthMode(uint8_t certType)
+{
+    return kWeaveAuthModeCategory_CASE | certType;
+}
 
 /** Returns a corresponding group key authentication mode for a given key ID.
  *
  *  @note The result is only valid when the supplied key ID is an application group key.
  */
-inline WeaveAuthMode GroupKeyAuthMode(uint32_t keyId) { return kWeaveAuthModeCategory_GroupKey | WeaveKeyId::GetAppGroupLocalNumber(keyId); }
-
+inline WeaveAuthMode GroupKeyAuthMode(uint32_t keyId)
+{
+    return kWeaveAuthModeCategory_GroupKey | WeaveKeyId::GetAppGroupLocalNumber(keyId);
+}
 
 /**
  * @typedef FabricSecretScope
@@ -261,7 +295,7 @@ inline WeaveAuthMode GroupKeyAuthMode(uint32_t keyId) { return kWeaveAuthModeCat
 typedef uint8_t FabricSecretScope;
 enum
 {
-    kFabricSecretScope_All                              = 0x00  /**< All devices can possess corresponding fabric secret. */
+    kFabricSecretScope_All = 0x00 /**< All devices can possess corresponding fabric secret. */
 };
 
 // Encryption key for the AES-128-CTR-SHA-1 message encryption type
@@ -270,13 +304,14 @@ class WeaveEncryptionKey_AES128CTRSHA1
 public:
     enum
     {
-        DataKeySize                                     = 16,
-        DataKeySizeInWords                              = DataKeySize/sizeof(uint32_t),
-        IntegrityKeySize                                = 20,
-        KeySize                                         = DataKeySize + IntegrityKeySize
+        DataKeySize        = 16,
+        DataKeySizeInWords = DataKeySize / sizeof(uint32_t),
+        IntegrityKeySize   = 20,
+        KeySize            = DataKeySize + IntegrityKeySize
     };
 
-    union {
+    union
+    {
         uint8_t DataKey[DataKeySize];
         uint32_t DataKeyWords[DataKeySizeInWords];
     };
@@ -292,8 +327,8 @@ typedef union WeaveEncryptionKey
 // AES128CTRSHA1 encryption and integrity test keys, which should only be used for testing purposes.
 enum
 {
-    kTestKey_AES128CTRSHA1_DataKeyByte                  = 0xAB,  /**< Byte value that constructs encryption key, which is used only for testing. */
-    kTestKey_AES128CTRSHA1_IntegrityKeyByte             = 0xBA   /**< Byte value that constructs integrity key, which is used only for testing. */
+    kTestKey_AES128CTRSHA1_DataKeyByte = 0xAB, /**< Byte value that constructs encryption key, which is used only for testing. */
+    kTestKey_AES128CTRSHA1_IntegrityKeyByte = 0xBA /**< Byte value that constructs integrity key, which is used only for testing. */
 };
 
 /**
@@ -306,9 +341,9 @@ enum
 class WeaveMsgEncryptionKey
 {
 public:
-    uint16_t KeyId;                                     /**< The key ID. */
-    uint8_t EncType;                                    /**< The encryption type supported by the key. */
-    WeaveEncryptionKey EncKey;                          /**< The secret key material. */
+    uint16_t KeyId;            /**< The key ID. */
+    uint8_t EncType;           /**< The encryption type supported by the key. */
+    WeaveEncryptionKey EncKey; /**< The secret key material. */
 };
 
 /**
@@ -320,21 +355,20 @@ public:
 class WeaveSessionState
 {
 public:
-
     typedef uint16_t ReceiveFlagsType;
 
     enum
     {
-        kReceiveFlags_NumMessageIdFlags                 = (sizeof(ReceiveFlagsType) * 8) - 1,
-        kReceiveFlags_MessageIdSynchronized             = (1 << kReceiveFlags_NumMessageIdFlags),
-        kReceiveFlags_MessageIdFlagsMask                = ~kReceiveFlags_MessageIdSynchronized
+        kReceiveFlags_NumMessageIdFlags     = (sizeof(ReceiveFlagsType) * 8) - 1,
+        kReceiveFlags_MessageIdSynchronized = (1 << kReceiveFlags_NumMessageIdFlags),
+        kReceiveFlags_MessageIdFlagsMask    = ~kReceiveFlags_MessageIdSynchronized
     };
 
     WeaveSessionState(void);
-    WeaveSessionState(WeaveMsgEncryptionKey *msgEncKey, WeaveAuthMode authMode,
-                      MonotonicallyIncreasingCounter *nextMsgId, uint32_t *maxRcvdMsgId, ReceiveFlagsType *rcvFlags);
+    WeaveSessionState(WeaveMsgEncryptionKey * msgEncKey, WeaveAuthMode authMode, MonotonicallyIncreasingCounter * nextMsgId,
+                      uint32_t * maxRcvdMsgId, ReceiveFlagsType * rcvFlags);
 
-    WeaveMsgEncryptionKey *MsgEncKey;
+    WeaveMsgEncryptionKey * MsgEncKey;
     WeaveAuthMode AuthMode;
 
     uint32_t NewMessageId(void);
@@ -342,9 +376,9 @@ public:
     bool IsDuplicateMessage(uint32_t msgId);
 
 private:
-    MonotonicallyIncreasingCounter *NextMsgId;
-    uint32_t *MaxMsgIdRcvd;
-    ReceiveFlagsType *RcvFlags;
+    MonotonicallyIncreasingCounter * NextMsgId;
+    uint32_t * MaxMsgIdRcvd;
+    ReceiveFlagsType * RcvFlags;
 };
 
 /**
@@ -358,41 +392,41 @@ class WeaveSessionKey
 public:
     enum FlagsEnum
     {
-        kFlag_IsLocallyInitiated     = 0x01,            /**< The session was initiated by the local node. */
-        kFlag_IsSharedSession        = 0x02,            /**< The session is a shared session. */
-        kFlag_IsRemoveOnIdle         = 0x04,            /**< The session should be removed when idle (only applies to sessions
-                                                             that are not bound to a connection). */
-        kFlag_RecentlyActive         = 0x08,            /**< The session was recently active. */
-        kFlag_Suspended              = 0x10,            /**< The session has been suspended. */
+        kFlag_IsLocallyInitiated = 0x01, /**< The session was initiated by the local node. */
+        kFlag_IsSharedSession    = 0x02, /**< The session is a shared session. */
+        kFlag_IsRemoveOnIdle     = 0x04, /**< The session should be removed when idle (only applies to sessions
+                                              that are not bound to a connection). */
+        kFlag_RecentlyActive = 0x08,     /**< The session was recently active. */
+        kFlag_Suspended      = 0x10,     /**< The session has been suspended. */
     };
 
-    uint64_t NodeId;                                    /**< The id of the node with which the session key is shared. */
-    MonotonicallyIncreasingCounter NextMsgId;           /**< The next message id to be used under the session key. */
-    uint32_t MaxRcvdMsgId;                              /**< The maximum message id received under the session key. */
-    WeaveConnection *BoundCon;                          /**< The connection to which the key is bound. */
-    WeaveSessionState::ReceiveFlagsType RcvFlags;       /**< Flags tracking messages received under the key. */
-    WeaveAuthMode AuthMode;                             /**< The means by which the peer node was authenticated during session establishment. */
-    WeaveMsgEncryptionKey MsgEncKey;                    /**< The Weave message encryption key. */
-    uint8_t ReserveCount;                               /**< Number of times the session key has been reserved. */
-    uint8_t Flags;                                      /**< Various flags associated with the session. */
+    uint64_t NodeId;                              /**< The id of the node with which the session key is shared. */
+    MonotonicallyIncreasingCounter NextMsgId;     /**< The next message id to be used under the session key. */
+    uint32_t MaxRcvdMsgId;                        /**< The maximum message id received under the session key. */
+    WeaveConnection * BoundCon;                   /**< The connection to which the key is bound. */
+    WeaveSessionState::ReceiveFlagsType RcvFlags; /**< Flags tracking messages received under the key. */
+    WeaveAuthMode AuthMode;          /**< The means by which the peer node was authenticated during session establishment. */
+    WeaveMsgEncryptionKey MsgEncKey; /**< The Weave message encryption key. */
+    uint8_t ReserveCount;            /**< Number of times the session key has been reserved. */
+    uint8_t Flags;                   /**< Various flags associated with the session. */
 
     void Init(void);
     void Clear(void);
 
-    bool IsAllocated() const            { return MsgEncKey.KeyId != WeaveKeyId::kNone; }
-    bool IsKeySet() const               { return MsgEncKey.EncType != 0; }
-    bool IsLocallyInitiated() const     { return GetFlag(Flags, kFlag_IsLocallyInitiated); }
-    void SetLocallyInitiated(bool val)  { SetFlag(Flags, kFlag_IsLocallyInitiated, val); }
-    bool IsSharedSession() const        { return GetFlag(Flags, kFlag_IsSharedSession); }
-    void SetSharedSession(bool val)     { SetFlag(Flags, kFlag_IsSharedSession, val); }
-    bool IsRemoveOnIdle() const         { return GetFlag(Flags, kFlag_IsRemoveOnIdle); }
-    void SetRemoveOnIdle(bool val)      { SetFlag(Flags, kFlag_IsRemoveOnIdle, val); }
-    bool IsRecentlyActive() const       { return GetFlag(Flags, kFlag_RecentlyActive); }
-    void MarkRecentlyActive()           { SetFlag(Flags, kFlag_RecentlyActive); }
-    void ClearRecentlyActive()          { ClearFlag(Flags, kFlag_RecentlyActive); }
-    bool IsSuspended() const            { return GetFlag(Flags, kFlag_Suspended); }
-    void MarkSuspended()                { SetFlag(Flags, kFlag_Suspended); }
-    void ClearSuspended()               { ClearFlag(Flags, kFlag_Suspended); }
+    bool IsAllocated() const { return MsgEncKey.KeyId != WeaveKeyId::kNone; }
+    bool IsKeySet() const { return MsgEncKey.EncType != 0; }
+    bool IsLocallyInitiated() const { return GetFlag(Flags, kFlag_IsLocallyInitiated); }
+    void SetLocallyInitiated(bool val) { SetFlag(Flags, kFlag_IsLocallyInitiated, val); }
+    bool IsSharedSession() const { return GetFlag(Flags, kFlag_IsSharedSession); }
+    void SetSharedSession(bool val) { SetFlag(Flags, kFlag_IsSharedSession, val); }
+    bool IsRemoveOnIdle() const { return GetFlag(Flags, kFlag_IsRemoveOnIdle); }
+    void SetRemoveOnIdle(bool val) { SetFlag(Flags, kFlag_IsRemoveOnIdle, val); }
+    bool IsRecentlyActive() const { return GetFlag(Flags, kFlag_RecentlyActive); }
+    void MarkRecentlyActive() { SetFlag(Flags, kFlag_RecentlyActive); }
+    void ClearRecentlyActive() { ClearFlag(Flags, kFlag_RecentlyActive); }
+    bool IsSuspended() const { return GetFlag(Flags, kFlag_Suspended); }
+    void MarkSuspended() { SetFlag(Flags, kFlag_Suspended); }
+    void ClearSuspended() { ClearFlag(Flags, kFlag_Suspended); }
 };
 
 /**
@@ -408,7 +442,7 @@ public:
     void Reset(void);
     void Shutdown(void);
 
-    WeaveMsgEncryptionKey *FindOrAllocateKeyEntry(uint16_t keyId, uint8_t encType);
+    WeaveMsgEncryptionKey * FindOrAllocateKeyEntry(uint16_t keyId, uint8_t encType);
 
 private:
     // Array of Weave message encryption keys.
@@ -431,7 +465,7 @@ extern const uint8_t kWeaveMsgEncAppKeyDiversifier[4];
  */
 enum
 {
-    kWeaveMsgEncAppKeyDiversifierSize         = sizeof(kWeaveMsgEncAppKeyDiversifier) + sizeof(uint8_t)
+    kWeaveMsgEncAppKeyDiversifierSize = sizeof(kWeaveMsgEncAppKeyDiversifier) + sizeof(uint8_t)
 };
 
 /**
@@ -458,7 +492,7 @@ public:
      * @param[in] newFabricId: The new fabric ID of the WeaveFabricState.
      *
      */
-    virtual void DidJoinFabric(WeaveFabricState *fabricState, uint64_t newFabricId) = 0;
+    virtual void DidJoinFabric(WeaveFabricState * fabricState, uint64_t newFabricId) = 0;
 
     /**
      * This method is called when WeaveFabricState leaves a fabric (i.e., fabric state
@@ -468,13 +502,12 @@ public:
      * @param[in] oldFabricId: The old fabric ID that was cleared.
      *
      */
-    virtual void DidLeaveFabric(WeaveFabricState *fabricState, uint64_t oldFabricId) = 0;
+    virtual void DidLeaveFabric(WeaveFabricState * fabricState, uint64_t oldFabricId) = 0;
 };
 
 class NL_DLL_EXPORT WeaveFabricState
 {
 public:
-
 #if WEAVE_CONFIG_MAX_PEER_NODES <= UINT8_MAX
     typedef uint8_t PeerIndexType;
 #else
@@ -483,23 +516,24 @@ public:
 
     enum State
     {
-        kState_NotInitialized = 0, kState_Initialized = 1
+        kState_NotInitialized = 0,
+        kState_Initialized    = 1
     };
 
     WeaveFabricState(void);
 
-    WeaveMessageLayer *MessageLayer;                    // [READ ONLY] The associated WeaveMessageLayer object.
-    uint64_t FabricId;                                  // [READ ONLY] Node's Fabric Id (0 means node is not a member of a fabric).
+    WeaveMessageLayer * MessageLayer; // [READ ONLY] The associated WeaveMessageLayer object.
+    uint64_t FabricId;                // [READ ONLY] Node's Fabric Id (0 means node is not a member of a fabric).
     uint64_t LocalNodeId;
-    const char *PairingCode;
+    const char * PairingCode;
     uint16_t DefaultSubnet;
-    uint8_t State;                                      // [READ ONLY] State of the Weave Fabric State object
-    nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase *GroupKeyStore;
+    uint8_t State; // [READ ONLY] State of the Weave Fabric State object
+    nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase * GroupKeyStore;
 
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
     uint64_t DebugFabricId;
     bool LogKeys;
-    bool UseTestKey; // DEPRECATED -- Temporarily retained for API compaibility
+    bool UseTestKey;     // DEPRECATED -- Temporarily retained for API compaibility
     bool AutoCreateKeys; // DEPRECATED -- Temporarily retained for API compaibility
 #endif
 
@@ -508,46 +542,49 @@ public:
     IPAddress ListenIPv6Addr;
 #endif
 
-
     WEAVE_ERROR Init(void);
-    WEAVE_ERROR Init(nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase *groupKeyStore);
+    WEAVE_ERROR Init(nl::Weave::Profiles::Security::AppKeys::GroupKeyStoreBase * groupKeyStore);
     WEAVE_ERROR Shutdown(void);
 
-    WEAVE_ERROR AllocSessionKey(uint64_t peerNodeId, uint16_t keyId, WeaveConnection *boundCon, WeaveSessionKey *& sessionKey);
-    WEAVE_ERROR SetSessionKey(uint16_t keyId, uint64_t peerNodeId, uint8_t encType, WeaveAuthMode authMode, const WeaveEncryptionKey *encKey);
-    WEAVE_ERROR SetSessionKey(WeaveSessionKey *sessionKey, uint8_t encType, WeaveAuthMode authMode, const WeaveEncryptionKey *encKey);
+    WEAVE_ERROR AllocSessionKey(uint64_t peerNodeId, uint16_t keyId, WeaveConnection * boundCon, WeaveSessionKey *& sessionKey);
+    WEAVE_ERROR SetSessionKey(uint16_t keyId, uint64_t peerNodeId, uint8_t encType, WeaveAuthMode authMode,
+                              const WeaveEncryptionKey * encKey);
+    WEAVE_ERROR SetSessionKey(WeaveSessionKey * sessionKey, uint8_t encType, WeaveAuthMode authMode,
+                              const WeaveEncryptionKey * encKey);
     WEAVE_ERROR GetSessionKey(uint16_t keyId, uint64_t peerNodeId, WeaveSessionKey *& outSessionKey);
     WEAVE_ERROR FindSessionKey(uint16_t keyId, uint64_t peerNodeId, bool create, WeaveSessionKey *& retRec);
     WEAVE_ERROR RemoveSessionKey(uint16_t keyId, uint64_t peerNodeId);
-    void RemoveSessionKey(WeaveSessionKey *sessionKey, bool wasIdle = false);
+    void RemoveSessionKey(WeaveSessionKey * sessionKey, bool wasIdle = false);
     bool RemoveIdleSessionKeys();
 
-    WeaveSessionKey *FindSharedSession(uint64_t terminatingNodeId, WeaveAuthMode authMode, uint8_t encType);
+    WeaveSessionKey * FindSharedSession(uint64_t terminatingNodeId, WeaveAuthMode authMode, uint8_t encType);
     bool IsSharedSession(uint16_t keyId, uint64_t peerNodeId);
     WEAVE_ERROR AddSharedSessionEndNode(uint64_t endNodeId, uint64_t terminatingNodeId, uint16_t keyId);
-    WEAVE_ERROR AddSharedSessionEndNode(WeaveSessionKey *sessionKey, uint64_t endNodeId);
-    WEAVE_ERROR GetSharedSessionEndNodeIds(const WeaveSessionKey *sessionKey, uint64_t *endNodeIds,
-                                           uint8_t endNodeIdsBufSize, uint8_t& endNodeIdsCount);
-    void RemoveSharedSessionEndNodes(const WeaveSessionKey *sessionKey);
+    WEAVE_ERROR AddSharedSessionEndNode(WeaveSessionKey * sessionKey, uint64_t endNodeId);
+    WEAVE_ERROR GetSharedSessionEndNodeIds(const WeaveSessionKey * sessionKey, uint64_t * endNodeIds, uint8_t endNodeIdsBufSize,
+                                           uint8_t & endNodeIdsCount);
+    void RemoveSharedSessionEndNodes(const WeaveSessionKey * sessionKey);
 
-    WEAVE_ERROR SuspendSession(uint16_t keyId, uint64_t peerNodeId, uint8_t * buf, uint16_t bufSize, uint16_t & serializedSessionLen);
+    WEAVE_ERROR SuspendSession(uint16_t keyId, uint64_t peerNodeId, uint8_t * buf, uint16_t bufSize,
+                               uint16_t & serializedSessionLen);
     WEAVE_ERROR RestoreSession(uint8_t * serializedSession, uint16_t serializedSessionLen);
 
-    WEAVE_ERROR GetSessionState(uint64_t remoteNodeId, uint16_t keyId, uint8_t encType, WeaveConnection *con, WeaveSessionState& outSessionState);
+    WEAVE_ERROR GetSessionState(uint64_t remoteNodeId, uint16_t keyId, uint8_t encType, WeaveConnection * con,
+                                WeaveSessionState & outSessionState);
 
     IPAddress SelectNodeAddress(uint64_t nodeId, uint16_t subnet) const;
     IPAddress SelectNodeAddress(uint64_t nodeId) const;
-    bool IsFabricAddress(const IPAddress &addr) const;
-    bool IsLocalFabricAddress(const IPAddress &addr) const;
+    bool IsFabricAddress(const IPAddress & addr) const;
+    bool IsLocalFabricAddress(const IPAddress & addr) const;
 
-    WEAVE_ERROR GetPassword(uint8_t pwSrc, const char *& ps, uint16_t& pwLen);
+    WEAVE_ERROR GetPassword(uint8_t pwSrc, const char *& ps, uint16_t & pwLen);
 
     WEAVE_ERROR CreateFabric(void);
     void ClearFabricState(void);
-    WEAVE_ERROR GetFabricState(uint8_t *buf, uint32_t bufSize, uint32_t &fabricStateLen);
-    WEAVE_ERROR JoinExistingFabric(const uint8_t *fabricState, uint32_t fabricStateLen);
+    WEAVE_ERROR GetFabricState(uint8_t * buf, uint32_t bufSize, uint32_t & fabricStateLen);
+    WEAVE_ERROR JoinExistingFabric(const uint8_t * fabricState, uint32_t fabricStateLen);
 
-    void HandleConnectionClosed(WeaveConnection *con);
+    void HandleConnectionClosed(WeaveConnection * con);
 
     /**
      * This method sets the delegate object.
@@ -560,14 +597,15 @@ public:
      * @param[in] aDelegate                     The delegate object. It can be NULL if no
      *                                          delegate is required.
      */
-    void SetDelegate(FabricStateDelegate *aDelegate);
+    void SetDelegate(FabricStateDelegate * aDelegate);
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
     void OnMsgCounterSyncRespRcvd(uint64_t peerNodeId, uint32_t peerMsgId, uint32_t requestorMsgCounter);
     void OnMsgCounterSyncReqSent(uint32_t messageId);
     bool IsMsgCounterSyncReqInProgress(void);
-    WEAVE_ERROR GetMsgEncKeyIdForAppGroup(uint32_t appGroupGlobalId, uint32_t rootKeyId, bool useRotatingKey, uint32_t& keyId);
-    WEAVE_ERROR CheckMsgEncForAppGroup(const WeaveMessageInfo *msgInfo, uint32_t appGroupGlobalId, uint32_t rootKeyId, bool requireRotatingKey);
+    WEAVE_ERROR GetMsgEncKeyIdForAppGroup(uint32_t appGroupGlobalId, uint32_t rootKeyId, bool useRotatingKey, uint32_t & keyId);
+    WEAVE_ERROR CheckMsgEncForAppGroup(const WeaveMessageInfo * msgInfo, uint32_t appGroupGlobalId, uint32_t rootKeyId,
+                                       bool requireRotatingKey);
 #endif // WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
 
 private:
@@ -587,13 +625,13 @@ private:
     enum
     {
         // Flag indicates if there may be outstanding request for which we may receive a response.
-        kFlag_ReqInProgress                             = 0x8000,
+        kFlag_ReqInProgress = 0x8000,
 
         // Flag indicates if request has been sent in the current timeout period.
-        kFlag_ReqSentThisPeriod                         = 0x4000,
+        kFlag_ReqSentThisPeriod = 0x4000,
 
         // Mask for fresh group message counter window width.
-        kMask_GroupKeyMsgIdFreshWindowWidth             = 0x3FFF,
+        kMask_GroupKeyMsgIdFreshWindowWidth = 0x3FFF,
     };
 
     WeaveMsgEncryptionKeyCache AppKeyCache;
@@ -610,27 +648,27 @@ private:
         // Array of peer indexes in sorted order from most- to least- recently used.
         PeerIndexType MostRecentlyUsedIndexes[WEAVE_CONFIG_MAX_PEER_NODES];
     } PeerStates;
-    FabricStateDelegate *Delegate;
+    FabricStateDelegate * Delegate;
 
     // This structure contains information about shared session end node.
     struct SharedSessionEndNode
     {
         uint64_t EndNodeId;
-        WeaveSessionKey *SessionKey;
+        WeaveSessionKey * SessionKey;
     };
     // Record of all active shared session end nodes.
     SharedSessionEndNode SharedSessionsNodes[WEAVE_CONFIG_MAX_SHARED_SESSIONS_END_NODES];
 
-    bool FindSharedSessionEndNode(uint64_t endNodeId, const WeaveSessionKey *sessionKey);
+    bool FindSharedSessionEndNode(uint64_t endNodeId, const WeaveSessionKey * sessionKey);
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
     void StartMsgCounterSyncTimer(void);
-    static void OnMsgCounterSyncRespTimeout(System::Layer* aSystemLayer, void* aAppState, System::Error aError);
+    static void OnMsgCounterSyncRespTimeout(System::Layer * aSystemLayer, void * aAppState, System::Error aError);
 #endif
 
-    bool FindOrAllocPeerEntry(uint64_t peerNodeId, bool allocEntry, PeerIndexType& retPeerIndex);
+    bool FindOrAllocPeerEntry(uint64_t peerNodeId, bool allocEntry, PeerIndexType & retPeerIndex);
     WEAVE_ERROR FindMsgEncAppKey(uint16_t keyId, uint8_t encType, WeaveMsgEncryptionKey *& retRec);
-    WEAVE_ERROR DeriveMsgEncAppKey(uint32_t keyId, uint8_t encType, WeaveMsgEncryptionKey & appKey, uint32_t& appGroupGlobalId);
+    WEAVE_ERROR DeriveMsgEncAppKey(uint32_t keyId, uint8_t encType, WeaveMsgEncryptionKey & appKey, uint32_t & appGroupGlobalId);
 };
 
 #if WEAVE_CONFIG_USE_APP_GROUP_KEYS_FOR_MSG_ENC
@@ -647,27 +685,21 @@ inline bool WeaveFabricState::IsMsgCounterSyncReqInProgress(void)
 }
 #endif
 
-
-
 #if WEAVE_CONFIG_SECURITY_TEST_MODE
 
 enum
 {
-    kMaxEncKeyStringSize   =   WeaveEncryptionKey_AES128CTRSHA1::DataKeySize * 2      // Hex digits for data key
-                             + 1                                                      // Field separator (,)
-                             + WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize * 2 // Hex digits for integrity key
-                             + 1,                                                     // Null terminator
+    kMaxEncKeyStringSize = WeaveEncryptionKey_AES128CTRSHA1::DataKeySize * 2 // Hex digits for data key
+        + 1                                                                  // Field separator (,)
+        + WeaveEncryptionKey_AES128CTRSHA1::IntegrityKeySize * 2             // Hex digits for integrity key
+        + 1,                                                                 // Null terminator
 };
 
-extern void WeaveEncryptionKeyToString(uint8_t encType, const WeaveEncryptionKey& key, char *buf, size_t bufSize);
+extern void WeaveEncryptionKeyToString(uint8_t encType, const WeaveEncryptionKey & key, char * buf, size_t bufSize);
 
 #endif // WEAVE_CONFIG_SECURITY_TEST_MODE
 
-
-
-
-
-} // namespace nl
 } // namespace Weave
+} // namespace nl
 
 #endif // WEAVE_FABRIC_STATE_H

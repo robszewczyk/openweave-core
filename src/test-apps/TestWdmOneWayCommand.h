@@ -28,23 +28,22 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include "MockSourceTraits.h"
 
-#define TEST_TRAIT_INSTANCE_ID       (1)
-#define TEST_COMMAND_TYPE            (1)
-#define TEST_SCHEMA_MAX_VER          (4)
-#define TEST_SCHEMA_MIN_VER          (1)
+#define TEST_TRAIT_INSTANCE_ID (1)
+#define TEST_COMMAND_TYPE      (1)
+#define TEST_SCHEMA_MAX_VER    (4)
+#define TEST_SCHEMA_MIN_VER    (1)
 
 class TestWdmOneWayCommandReceiver
 {
 public:
-
     TestWdmOneWayCommandReceiver();
 
-    static TestWdmOneWayCommandReceiver * GetInstance ();
+    static TestWdmOneWayCommandReceiver * GetInstance();
 
-    WEAVE_ERROR Init (nl::Weave::WeaveExchangeManager *aExchangeMgr);
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr);
 
 private:
-    nl::Weave::WeaveExchangeManager *mExchangeMgr;
+    nl::Weave::WeaveExchangeManager * mExchangeMgr;
 
     // publisher side
     nl::Weave::Profiles::DataManagement::SingleResourceSourceTraitCatalog mSourceCatalog;
@@ -63,23 +62,19 @@ private:
 
     nl::Weave::Profiles::DataManagement::TraitDataHandle mTraitHandleSet[kNumTraitHandles];
 
-    static void EngineEventCallback (void * const aAppState,
-                                     nl::Weave::Profiles::DataManagement::SubscriptionEngine::EventID aEvent,
-                                     const nl::Weave::Profiles::DataManagement::SubscriptionEngine::InEventParam & aInParam,
-                                     nl::Weave::Profiles::DataManagement::SubscriptionEngine::OutEventParam & aOutParam);
-
+    static void EngineEventCallback(void * const aAppState, nl::Weave::Profiles::DataManagement::SubscriptionEngine::EventID aEvent,
+                                    const nl::Weave::Profiles::DataManagement::SubscriptionEngine::InEventParam & aInParam,
+                                    nl::Weave::Profiles::DataManagement::SubscriptionEngine::OutEventParam & aOutParam);
 };
 
 class TestWdmOneWayCommandSender
 {
 public:
-
     TestWdmOneWayCommandSender();
 
-    static TestWdmOneWayCommandSender * GetInstance ();
+    static TestWdmOneWayCommandSender * GetInstance();
 
-    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager *aExchangeMgr,
-                     const nl::Inet::IPAddress & destAddr,
+    WEAVE_ERROR Init(nl::Weave::WeaveExchangeManager * aExchangeMgr, const nl::Inet::IPAddress & destAddr,
                      const uint64_t destNodeId);
 
     WEAVE_ERROR SendOneWayCommand(void);
@@ -87,14 +82,13 @@ public:
     WEAVE_ERROR Shutdown(void);
 
 private:
-    nl::Weave::WeaveExchangeManager *mExchangeMgr;
+    nl::Weave::WeaveExchangeManager * mExchangeMgr;
     nl::Weave::ExchangeContext * mEcCommand;
-    Binding *mClientBinding;
+    Binding * mClientBinding;
 
-    static void BindingEventCallback (void * const apAppState,
-            const nl::Weave::Binding::EventType aEvent,
-            const nl::Weave::Binding::InEventParam & aInParam,
-            nl::Weave::Binding::OutEventParam & aOutParam);
+    static void BindingEventCallback(void * const apAppState, const nl::Weave::Binding::EventType aEvent,
+                                     const nl::Weave::Binding::InEventParam & aInParam,
+                                     nl::Weave::Binding::OutEventParam & aOutParam);
 };
 
 #endif // TEST_WDM_ONEWAY_COMMAND_H_

@@ -27,31 +27,25 @@
 #ifndef _WEAVE_TRAIT_TELEMETRY_TUNNEL__TELEMETRY_TUNNEL_TRAIT_C_H_
 #define _WEAVE_TRAIT_TELEMETRY_TUNNEL__TELEMETRY_TUNNEL_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // TunnelType
-    typedef enum
-    {
-    TUNNEL_TYPE_NONE = 1,
-    TUNNEL_TYPE_PRIMARY = 2,
-    TUNNEL_TYPE_BACKUP = 3,
+// TunnelType
+typedef enum
+{
+    TUNNEL_TYPE_NONE     = 1,
+    TUNNEL_TYPE_PRIMARY  = 2,
+    TUNNEL_TYPE_BACKUP   = 3,
     TUNNEL_TYPE_SHORTCUT = 4,
-    } schema_weave_telemetry_tunnel_telemetry_tunnel_trait_tunnel_type_t;
-    // TunnelState
-    typedef enum
-    {
-    TUNNEL_STATE_NO_TUNNEL = 1,
-    TUNNEL_STATE_PRIMARY_ESTABLISHED = 2,
-    TUNNEL_STATE_BACKUP_ONLY_ESTABLISHED = 3,
+} schema_weave_telemetry_tunnel_telemetry_tunnel_trait_tunnel_type_t;
+// TunnelState
+typedef enum
+{
+    TUNNEL_STATE_NO_TUNNEL                      = 1,
+    TUNNEL_STATE_PRIMARY_ESTABLISHED            = 2,
+    TUNNEL_STATE_BACKUP_ONLY_ESTABLISHED        = 3,
     TUNNEL_STATE_PRIMARY_AND_BACKUP_ESTABLISHED = 4,
-    } schema_weave_telemetry_tunnel_telemetry_tunnel_trait_tunnel_state_t;
-
-
-
+} schema_weave_telemetry_tunnel_telemetry_tunnel_trait_tunnel_state_t;
 
 #endif // _WEAVE_TRAIT_TELEMETRY_TUNNEL__TELEMETRY_TUNNEL_TRAIT_C_H_

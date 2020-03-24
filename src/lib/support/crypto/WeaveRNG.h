@@ -30,7 +30,8 @@
 #include "WeaveCrypto.h"
 
 #if WEAVE_CONFIG_USE_OPENSSL_ECC && !WEAVE_WITH_OPENSSL
-#error "INVALID WEAVE CONFIG: OpenSSL RNG implementation enabled but OpenSSL not available (WEAVE_CONFIG_RNG_IMPLEMENTATION_OPENSSL == 1 && WEAVE_WITH_OPENSSL == 0)."
+#error                                                                                                                             \
+    "INVALID WEAVE CONFIG: OpenSSL RNG implementation enabled but OpenSSL not available (WEAVE_CONFIG_RNG_IMPLEMENTATION_OPENSSL == 1 && WEAVE_WITH_OPENSSL == 0)."
 #endif
 
 namespace nl {
@@ -63,7 +64,8 @@ extern "C" {
  * @retval  #WEAVE_NO_ERROR                On success.
  *
  */
-extern WEAVE_ERROR InitSecureRandomDataSource(nl::Weave::Crypto::EntropyFunct entropyFunct, uint16_t entropyLen, const uint8_t *personalizationData, uint16_t perDataLen);
+extern WEAVE_ERROR InitSecureRandomDataSource(nl::Weave::Crypto::EntropyFunct entropyFunct, uint16_t entropyLen,
+                                              const uint8_t * personalizationData, uint16_t perDataLen);
 
 /**
  * This function is called by the Weave layer to generate random data.
@@ -81,13 +83,13 @@ extern WEAVE_ERROR InitSecureRandomDataSource(nl::Weave::Crypto::EntropyFunct en
  * @retval  #WEAVE_NO_ERROR                          On success.
  *
  */
-extern WEAVE_ERROR GetSecureRandomData(uint8_t *buf, uint16_t len);
+extern WEAVE_ERROR GetSecureRandomData(uint8_t * buf, uint16_t len);
 
 } /* end of extern "C" */
 
 #if WEAVE_CONFIG_DEV_RANDOM_DRBG_SEED
 
-extern int GetDRBGSeedDevRandom(uint8_t *buf, size_t bufSize);
+extern int GetDRBGSeedDevRandom(uint8_t * buf, size_t bufSize);
 
 #endif // WEAVE_CONFIG_DEV_RANDOM_ENTROPY_SOURCE
 

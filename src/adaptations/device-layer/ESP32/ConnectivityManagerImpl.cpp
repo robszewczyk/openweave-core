@@ -78,9 +78,8 @@ ConnectivityManager::WiFiStationMode ConnectivityManagerImpl::_GetWiFiStationMod
     if (mWiFiStationMode != kWiFiStationMode_ApplicationControlled)
     {
         bool autoConnect;
-        mWiFiStationMode = (esp_wifi_get_auto_connect(&autoConnect) == ESP_OK && autoConnect)
-                ? kWiFiStationMode_Enabled
-                : kWiFiStationMode_Disabled;
+        mWiFiStationMode = (esp_wifi_get_auto_connect(&autoConnect) == ESP_OK && autoConnect) ? kWiFiStationMode_Enabled
+                                                                                              : kWiFiStationMode_Disabled;
     }
     return mWiFiStationMode;
 }
@@ -99,7 +98,7 @@ WEAVE_ERROR ConnectivityManagerImpl::_SetWiFiStationMode(WiFiStationMode val)
     if (val != kWiFiStationMode_ApplicationControlled)
     {
         bool autoConnect = (val == kWiFiStationMode_Enabled);
-        err = esp_wifi_set_auto_connect(autoConnect);
+        err              = esp_wifi_set_auto_connect(autoConnect);
         SuccessOrExit(err);
 
         SystemLayer.ScheduleWork(DriveStationState, NULL);
@@ -107,7 +106,8 @@ WEAVE_ERROR ConnectivityManagerImpl::_SetWiFiStationMode(WiFiStationMode val)
 
     if (mWiFiStationMode != val)
     {
-        WeaveLogProgress(DeviceLayer, "WiFi station mode change: %s -> %s", WiFiStationModeToStr(mWiFiStationMode), WiFiStationModeToStr(val));
+        WeaveLogProgress(DeviceLayer, "WiFi station mode change: %s -> %s", WiFiStationModeToStr(mWiFiStationMode),
+                         WiFiStationModeToStr(val));
     }
 
     mWiFiStationMode = val;
@@ -156,8 +156,7 @@ exit:
 
 void ConnectivityManagerImpl::_DemandStartWiFiAP(void)
 {
-    if (mWiFiAPMode == kWiFiAPMode_OnDemand ||
-        mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
+    if (mWiFiAPMode == kWiFiAPMode_OnDemand || mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
     {
         mLastAPDemandTime = System::Layer::GetClock_MonotonicMS();
         SystemLayer.ScheduleWork(DriveAPState, NULL);
@@ -166,8 +165,7 @@ void ConnectivityManagerImpl::_DemandStartWiFiAP(void)
 
 void ConnectivityManagerImpl::_StopOnDemandWiFiAP(void)
 {
-    if (mWiFiAPMode == kWiFiAPMode_OnDemand ||
-        mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
+    if (mWiFiAPMode == kWiFiAPMode_OnDemand || mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
     {
         mLastAPDemandTime = 0;
         SystemLayer.ScheduleWork(DriveAPState, NULL);
@@ -176,8 +174,7 @@ void ConnectivityManagerImpl::_StopOnDemandWiFiAP(void)
 
 void ConnectivityManagerImpl::_MaintainOnDemandWiFiAP(void)
 {
-    if (mWiFiAPMode == kWiFiAPMode_OnDemand ||
-        mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
+    if (mWiFiAPMode == kWiFiAPMode_OnDemand || mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
     {
         if (mWiFiAPState == kWiFiAPState_Activating || mWiFiAPState == kWiFiAPState_Active)
         {
@@ -199,12 +196,13 @@ static uint16_t Map2400MHz(const uint8_t inChannel)
 {
     uint16_t frequency = 0;
 
-    if (inChannel >= 1 && inChannel <= 13) {
+    if (inChannel >= 1 && inChannel <= 13)
+    {
         frequency = 2412 + ((inChannel - 1) * 5);
-
-    } else if (inChannel == 14) {
+    }
+    else if (inChannel == 14)
+    {
         frequency = 2484;
-
     }
 
     return frequency;
@@ -214,7 +212,8 @@ static uint16_t Map5000MHz(const uint8_t inChannel)
 {
     uint16_t frequency = 0;
 
-    switch (inChannel) {
+    switch (inChannel)
+    {
 
     case 183: frequency = 4915; break;
     case 184: frequency = 4920; break;
@@ -224,24 +223,24 @@ static uint16_t Map5000MHz(const uint8_t inChannel)
     case 189: frequency = 4945; break;
     case 192: frequency = 4960; break;
     case 196: frequency = 4980; break;
-    case 7:   frequency = 5035; break;
-    case 8:   frequency = 5040; break;
-    case 9:   frequency = 5045; break;
-    case 11:  frequency = 5055; break;
-    case 12:  frequency = 5060; break;
-    case 16:  frequency = 5080; break;
-    case 34:  frequency = 5170; break;
-    case 36:  frequency = 5180; break;
-    case 38:  frequency = 5190; break;
-    case 40:  frequency = 5200; break;
-    case 42:  frequency = 5210; break;
-    case 44:  frequency = 5220; break;
-    case 46:  frequency = 5230; break;
-    case 48:  frequency = 5240; break;
-    case 52:  frequency = 5260; break;
-    case 56:  frequency = 5280; break;
-    case 60:  frequency = 5300; break;
-    case 64:  frequency = 5320; break;
+    case 7: frequency = 5035; break;
+    case 8: frequency = 5040; break;
+    case 9: frequency = 5045; break;
+    case 11: frequency = 5055; break;
+    case 12: frequency = 5060; break;
+    case 16: frequency = 5080; break;
+    case 34: frequency = 5170; break;
+    case 36: frequency = 5180; break;
+    case 38: frequency = 5190; break;
+    case 40: frequency = 5200; break;
+    case 42: frequency = 5210; break;
+    case 44: frequency = 5220; break;
+    case 46: frequency = 5230; break;
+    case 48: frequency = 5240; break;
+    case 52: frequency = 5260; break;
+    case 56: frequency = 5280; break;
+    case 60: frequency = 5300; break;
+    case 64: frequency = 5320; break;
     case 100: frequency = 5500; break;
     case 104: frequency = 5520; break;
     case 108: frequency = 5540; break;
@@ -258,7 +257,6 @@ static uint16_t Map5000MHz(const uint8_t inChannel)
     case 157: frequency = 5785; break;
     case 161: frequency = 5805; break;
     case 165: frequency = 5825; break;
-
     }
 
     return frequency;
@@ -268,12 +266,13 @@ static uint16_t MapFrequency(const uint16_t inBand, const uint8_t inChannel)
 {
     uint16_t frequency = 0;
 
-    if (inBand == WIFI_BAND_2_4GHZ) {
+    if (inBand == WIFI_BAND_2_4GHZ)
+    {
         frequency = Map2400MHz(inChannel);
-
-    } else if (inBand == WIFI_BAND_5_0GHZ) {
+    }
+    else if (inBand == WIFI_BAND_5_0GHZ)
+    {
         frequency = Map5000MHz(inChannel);
-
     }
 
     return frequency;
@@ -372,23 +371,22 @@ bool ConnectivityManagerImpl::_HaveServiceConnectivityViaTunnel(void)
     return IsServiceTunnelConnected() && !IsServiceTunnelRestricted();
 }
 
-
 // ==================== ConnectivityManager Platform Internal Methods ====================
 
 WEAVE_ERROR ConnectivityManagerImpl::_Init()
 {
     WEAVE_ERROR err;
 
-    mLastStationConnectFailTime = 0;
-    mLastAPDemandTime = 0;
-    mWiFiStationMode = kWiFiStationMode_Disabled;
-    mWiFiStationState = kWiFiStationState_NotConnected;
-    mWiFiAPMode = kWiFiAPMode_Disabled;
-    mWiFiAPState = kWiFiAPState_NotActive;
-    mServiceTunnelMode = kServiceTunnelMode_Enabled;
+    mLastStationConnectFailTime     = 0;
+    mLastAPDemandTime               = 0;
+    mWiFiStationMode                = kWiFiStationMode_Disabled;
+    mWiFiStationState               = kWiFiStationState_NotConnected;
+    mWiFiAPMode                     = kWiFiAPMode_Disabled;
+    mWiFiAPState                    = kWiFiAPState_NotActive;
+    mServiceTunnelMode              = kServiceTunnelMode_Enabled;
     mWiFiStationReconnectIntervalMS = WEAVE_DEVICE_CONFIG_WIFI_STATION_RECONNECT_INTERVAL;
-    mWiFiAPIdleTimeoutMS = WEAVE_DEVICE_CONFIG_WIFI_AP_IDLE_TIMEOUT;
-    mFlags = 0;
+    mWiFiAPIdleTimeoutMS            = WEAVE_DEVICE_CONFIG_WIFI_AP_IDLE_TIMEOUT;
+    mFlags                          = 0;
 
     // Initialize the Weave Addressing and Routing Module.
     err = Warm::Init(FabricState);
@@ -418,7 +416,7 @@ WEAVE_ERROR ConnectivityManagerImpl::_Init()
             memcpy(wifiConfig.sta.password, CONFIG_DEFAULT_WIFI_PASSWORD, strlen(CONFIG_DEFAULT_WIFI_PASSWORD) + 1);
             wifiConfig.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
             wifiConfig.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
-            err = esp_wifi_set_config(ESP_IF_WIFI_STA, &wifiConfig);
+            err                        = esp_wifi_set_config(ESP_IF_WIFI_STA, &wifiConfig);
             if (err != ESP_OK)
             {
                 WeaveLogError(DeviceLayer, "esp_wifi_set_config() failed: %s", nl::ErrorStr(err));
@@ -457,7 +455,8 @@ void ConnectivityManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent * event)
     // Handle ESP system events...
     if (event->Type == DeviceEventType::kESPSystemEvent)
     {
-        switch(event->Platform.ESPSystemEvent.event_id) {
+        switch (event->Platform.ESPSystemEvent.event_id)
+        {
         case SYSTEM_EVENT_STA_START:
             WeaveLogProgress(DeviceLayer, "SYSTEM_EVENT_STA_START");
             DriveStationState();
@@ -508,8 +507,7 @@ void ConnectivityManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent * event)
             WeaveLogProgress(DeviceLayer, "SYSTEM_EVENT_AP_STACONNECTED");
             MaintainOnDemandWiFiAP();
             break;
-        default:
-            break;
+        default: break;
         }
     }
 
@@ -535,8 +533,7 @@ void ConnectivityManagerImpl::_OnPlatformEvent(const WeaveDeviceEvent * event)
         // the tunnel was established the device was not paired to an account)
         // then force the tunnel to close.  This will result in the tunnel being
         // re-established, which should lift the service-side restrictions.
-        if (event->AccountPairingChange.IsPairedToAccount &&
-            GetFlag(mFlags, kFlag_ServiceTunnelStarted) &&
+        if (event->AccountPairingChange.IsPairedToAccount && GetFlag(mFlags, kFlag_ServiceTunnelStarted) &&
             ServiceTunnelAgent.IsTunnelRoutingRestricted())
         {
             WeaveLogProgress(DeviceLayer, "Restarting service tunnel to lift routing restrictions");
@@ -595,8 +592,7 @@ void ConnectivityManagerImpl::DriveStationState()
     {
         // Advance the station state to Connected if it was previously NotConnected or
         // a previously initiated connect attempt succeeded.
-        if (mWiFiStationState == kWiFiStationState_NotConnected ||
-            mWiFiStationState == kWiFiStationState_Connecting_Succeeded)
+        if (mWiFiStationState == kWiFiStationState_NotConnected || mWiFiStationState == kWiFiStationState_Connecting_Succeeded)
         {
             ChangeWiFiStationState(kWiFiStationState_Connected);
             WeaveLogProgress(DeviceLayer, "WiFi station interface connected");
@@ -629,8 +625,7 @@ void ConnectivityManagerImpl::DriveStationState()
 
         // Advance the station state to NotConnected if it was previously Connected or Disconnecting,
         // or if a previous initiated connect attempt failed.
-        if (mWiFiStationState == kWiFiStationState_Connected ||
-            mWiFiStationState == kWiFiStationState_Disconnecting ||
+        if (mWiFiStationState == kWiFiStationState_Connected || mWiFiStationState == kWiFiStationState_Disconnecting ||
             mWiFiStationState == kWiFiStationState_Connecting_Failed)
         {
             WiFiStationState prevState = mWiFiStationState;
@@ -650,7 +645,8 @@ void ConnectivityManagerImpl::DriveStationState()
         // If the WiFi station interface is now enabled and provisioned (and by implication,
         // not presently under application control), AND the system is not in the process of
         // scanning, then...
-        if (mWiFiStationMode == kWiFiStationMode_Enabled && IsWiFiStationProvisioned() && !NetworkProvisioningSvr().ScanInProgress())
+        if (mWiFiStationMode == kWiFiStationMode_Enabled && IsWiFiStationProvisioned() &&
+            !NetworkProvisioningSvr().ScanInProgress())
         {
             // Initiate a connection to the AP if we haven't done so before, or if enough
             // time has passed since the last attempt.
@@ -703,7 +699,7 @@ void ConnectivityManagerImpl::OnStationConnected()
 
     // Alert other components of the new state.
     WeaveDeviceEvent event;
-    event.Type = DeviceEventType::kWiFiConnectivityChange;
+    event.Type                          = DeviceEventType::kWiFiConnectivityChange;
     event.WiFiConnectivityChange.Result = kConnectivity_Established;
     PlatformMgr().PostEvent(&event);
 
@@ -717,7 +713,7 @@ void ConnectivityManagerImpl::OnStationDisconnected()
 
     // Alert other components of the new state.
     WeaveDeviceEvent event;
-    event.Type = DeviceEventType::kWiFiConnectivityChange;
+    event.Type                          = DeviceEventType::kWiFiConnectivityChange;
     event.WiFiConnectivityChange.Result = kConnectivity_Lost;
     PlatformMgr().PostEvent(&event);
 
@@ -728,12 +724,14 @@ void ConnectivityManagerImpl::ChangeWiFiStationState(WiFiStationState newState)
 {
     if (mWiFiStationState != newState)
     {
-        WeaveLogProgress(DeviceLayer, "WiFi station state change: %s -> %s", WiFiStationStateToStr(mWiFiStationState), WiFiStationStateToStr(newState));
+        WeaveLogProgress(DeviceLayer, "WiFi station state change: %s -> %s", WiFiStationStateToStr(mWiFiStationState),
+                         WiFiStationStateToStr(newState));
         mWiFiStationState = newState;
     }
 }
 
-void ConnectivityManagerImpl::DriveStationState(nl::Weave::System::Layer * aLayer, void * aAppState, nl::Weave::System::Error aError)
+void ConnectivityManagerImpl::DriveStationState(nl::Weave::System::Layer * aLayer, void * aAppState,
+                                                nl::Weave::System::Error aError)
 {
     sInstance.DriveStationState();
 }
@@ -792,8 +790,7 @@ void ConnectivityManagerImpl::DriveAPState()
 
         // The target state is 'Active' if the AP mode is one of the 'On demand' modes and there
         // has been demand for the AP within the idle timeout period.
-        else if (mWiFiAPMode == kWiFiAPMode_OnDemand ||
-                 mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
+        else if (mWiFiAPMode == kWiFiAPMode_OnDemand || mWiFiAPMode == kWiFiAPMode_OnDemand_NoStationProvision)
         {
             now = System::Layer::GetClock_MonotonicMS();
 
@@ -804,7 +801,7 @@ void ConnectivityManagerImpl::DriveAPState()
                 // Compute the amount of idle time before the AP should be deactivated and
                 // arm a timer to fire at that time.
                 apTimeout = (uint32_t)((mLastAPDemandTime + mWiFiAPIdleTimeoutMS) - now);
-                err = SystemLayer.StartTimer(apTimeout, DriveAPState, NULL);
+                err       = SystemLayer.StartTimer(apTimeout, DriveAPState, NULL);
                 SuccessOrExit(err);
                 WeaveLogProgress(DeviceLayer, "Next WiFi AP timeout in %" PRIu32 " ms", apTimeout);
             }
@@ -859,8 +856,7 @@ void ConnectivityManagerImpl::DriveAPState()
 
     // If AP is active, but the interface doesn't have an IPv6 link-local
     // address, assign one now.
-    if (mWiFiAPState == kWiFiAPState_Active &&
-        ESP32Utils::IsInterfaceUp(TCPIP_ADAPTER_IF_AP) &&
+    if (mWiFiAPState == kWiFiAPState_Active && ESP32Utils::IsInterfaceUp(TCPIP_ADAPTER_IF_AP) &&
         !ESP32Utils::HasIPv6LinkLocalAddress(TCPIP_ADAPTER_IF_AP))
     {
         err = tcpip_adapter_create_ip6_linklocal(TCPIP_ADAPTER_IF_AP);
@@ -885,11 +881,11 @@ WEAVE_ERROR ConnectivityManagerImpl::ConfigureWiFiAP()
     wifi_config_t wifiConfig;
 
     memset(&wifiConfig, 0, sizeof(wifiConfig));
-    err = ConfigurationMgr().GetWiFiAPSSID((char *)wifiConfig.ap.ssid, sizeof(wifiConfig.ap.ssid));
+    err = ConfigurationMgr().GetWiFiAPSSID((char *) wifiConfig.ap.ssid, sizeof(wifiConfig.ap.ssid));
     SuccessOrExit(err);
-    wifiConfig.ap.channel = WEAVE_DEVICE_CONFIG_WIFI_AP_CHANNEL;
-    wifiConfig.ap.authmode = WIFI_AUTH_OPEN;
-    wifiConfig.ap.max_connection = WEAVE_DEVICE_CONFIG_WIFI_AP_MAX_STATIONS;
+    wifiConfig.ap.channel         = WEAVE_DEVICE_CONFIG_WIFI_AP_CHANNEL;
+    wifiConfig.ap.authmode        = WIFI_AUTH_OPEN;
+    wifiConfig.ap.max_connection  = WEAVE_DEVICE_CONFIG_WIFI_AP_MAX_STATIONS;
     wifiConfig.ap.beacon_interval = WEAVE_DEVICE_CONFIG_WIFI_AP_BEACON_INTERVAL;
     WeaveLogProgress(DeviceLayer, "Configuring WiFi AP: SSID %s, channel %u", wifiConfig.ap.ssid, wifiConfig.ap.channel);
     err = esp_wifi_set_config(ESP_IF_WIFI_AP, &wifiConfig);
@@ -921,8 +917,8 @@ void ConnectivityManagerImpl::UpdateInternetConnectivityState(void)
 {
     bool haveIPv4Conn = false;
     bool haveIPv6Conn = false;
-    bool hadIPv4Conn = GetFlag(mFlags, kFlag_HaveIPv4InternetConnectivity);
-    bool hadIPv6Conn = GetFlag(mFlags, kFlag_HaveIPv6InternetConnectivity);
+    bool hadIPv4Conn  = GetFlag(mFlags, kFlag_HaveIPv4InternetConnectivity);
+    bool hadIPv6Conn  = GetFlag(mFlags, kFlag_HaveIPv6InternetConnectivity);
 
     // If the WiFi station is currently in the connected state...
     if (mWiFiStationState == kWiFiStationState_Connected)
@@ -940,8 +936,7 @@ void ConnectivityManagerImpl::UpdateInternetConnectivityState(void)
                 // If the station interface has been assigned an IPv4 address, and has
                 // an IPv4 gateway, then presume that the device has IPv4 Internet
                 // connectivity.
-                if (!ip4_addr_isany_val(*netif_ip4_addr(netif)) &&
-                    !ip4_addr_isany_val(*netif_ip4_gw(netif)))
+                if (!ip4_addr_isany_val(*netif_ip4_addr(netif)) && !ip4_addr_isany_val(*netif_ip4_gw(netif)))
                 {
                     haveIPv4Conn = true;
                 }
@@ -950,8 +945,7 @@ void ConnectivityManagerImpl::UpdateInternetConnectivityState(void)
                 // address (2000::/3) that is in the valid state.  If such an address is found...
                 for (uint8_t i = 0; i < LWIP_IPV6_NUM_ADDRESSES; i++)
                 {
-                    if (ip6_addr_isglobal(netif_ip6_addr(netif, i)) &&
-                        ip6_addr_isvalid(netif_ip6_addr_state(netif, i)))
+                    if (ip6_addr_isglobal(netif_ip6_addr(netif, i)) && ip6_addr_isvalid(netif_ip6_addr_state(netif, i)))
                     {
                         // Determine if there is a default IPv6 router that is currently reachable
                         // via the station interface.  If so, presume for now that the device has
@@ -975,7 +969,7 @@ void ConnectivityManagerImpl::UpdateInternetConnectivityState(void)
 
         // Alert other components of the state change.
         WeaveDeviceEvent event;
-        event.Type = DeviceEventType::kInternetConnectivityChange;
+        event.Type                            = DeviceEventType::kInternetConnectivityChange;
         event.InternetConnectivityChange.IPv4 = GetConnectivityChange(hadIPv4Conn, haveIPv4Conn);
         event.InternetConnectivityChange.IPv6 = GetConnectivityChange(hadIPv6Conn, haveIPv6Conn);
         PlatformMgr().PostEvent(&event);
@@ -1003,8 +997,7 @@ void ConnectivityManagerImpl::OnStationIPv4AddressAvailable(const system_event_s
         IPAddress::FromIPv4(got_ip.ip_info.netmask).ToString(netMaskStr, sizeof(netMaskStr));
         IPAddress::FromIPv4(got_ip.ip_info.gw).ToString(gatewayStr, sizeof(gatewayStr));
         WeaveLogProgress(DeviceLayer, "IPv4 address %s on WiFi station interface: %s/%s gateway %s",
-                 (got_ip.ip_changed) ? "changed" : "ready",
-                 ipAddrStr, netMaskStr, gatewayStr);
+                         (got_ip.ip_changed) ? "changed" : "ready", ipAddrStr, netMaskStr, gatewayStr);
     }
 #endif // WEAVE_PROGRESS_LOGGING
 
@@ -1029,10 +1022,8 @@ void ConnectivityManagerImpl::OnIPv6AddressAvailable(const system_event_got_ip6_
         IPAddress ipAddr = IPAddress::FromIPv6(got_ip.ip6_info.ip);
         char ipAddrStr[INET6_ADDRSTRLEN];
         ipAddr.ToString(ipAddrStr, sizeof(ipAddrStr));
-        WeaveLogProgress(DeviceLayer, "%s ready on %s interface: %s",
-                 CharacterizeIPv6Address(ipAddr),
-                 ESP32Utils::InterfaceIdToName(got_ip.if_index),
-                 ipAddrStr);
+        WeaveLogProgress(DeviceLayer, "%s ready on %s interface: %s", CharacterizeIPv6Address(ipAddr),
+                         ESP32Utils::InterfaceIdToName(got_ip.if_index), ipAddrStr);
     }
 #endif // WEAVE_PROGRESS_LOGGING
 
@@ -1047,13 +1038,12 @@ void ConnectivityManagerImpl::DriveServiceTunnelState(void)
     bool startServiceTunnel;
 
     // Determine if the tunnel to the service should be started.
-    startServiceTunnel = (mServiceTunnelMode == kServiceTunnelMode_Enabled
-                          && GetFlag(mFlags, kFlag_HaveIPv4InternetConnectivity)
-                          && ConfigurationMgr().IsMemberOfFabric()
+    startServiceTunnel = (mServiceTunnelMode == kServiceTunnelMode_Enabled && GetFlag(mFlags, kFlag_HaveIPv4InternetConnectivity) &&
+                          ConfigurationMgr().IsMemberOfFabric()
 #if !WEAVE_DEVICE_CONFIG_ENABLE_FIXED_TUNNEL_SERVER
                           && ConfigurationMgr().IsServiceProvisioned()
 #endif
-                         );
+    );
 
     // If the tunnel should be started but isn't, or vice versa, ...
     if (startServiceTunnel != GetFlag(mFlags, kFlag_ServiceTunnelStarted))
@@ -1082,7 +1072,8 @@ void ConnectivityManagerImpl::DriveServiceTunnelState(void)
     }
 }
 
-void ConnectivityManagerImpl::DriveServiceTunnelState(nl::Weave::System::Layer * aLayer, void * aAppState, nl::Weave::System::Error aError)
+void ConnectivityManagerImpl::DriveServiceTunnelState(nl::Weave::System::Layer * aLayer, void * aAppState,
+                                                      nl::Weave::System::Error aError)
 {
     sInstance.DriveServiceTunnelState();
 }
@@ -1091,16 +1082,11 @@ const char * ConnectivityManagerImpl::_WiFiStationModeToStr(WiFiStationMode mode
 {
     switch (mode)
     {
-    case kWiFiStationMode_NotSupported:
-        return "NotSupported";
-    case kWiFiStationMode_ApplicationControlled:
-        return "AppControlled";
-    case kWiFiStationMode_Enabled:
-        return "Enabled";
-    case kWiFiStationMode_Disabled:
-        return "Disabled";
-    default:
-        return "(unknown)";
+    case kWiFiStationMode_NotSupported: return "NotSupported";
+    case kWiFiStationMode_ApplicationControlled: return "AppControlled";
+    case kWiFiStationMode_Enabled: return "Enabled";
+    case kWiFiStationMode_Disabled: return "Disabled";
+    default: return "(unknown)";
     }
 }
 
@@ -1108,20 +1094,13 @@ const char * ConnectivityManagerImpl::_WiFiAPModeToStr(WiFiAPMode mode)
 {
     switch (mode)
     {
-    case kWiFiAPMode_NotSupported:
-        return "NotSupported";
-    case kWiFiAPMode_ApplicationControlled:
-        return "AppControlled";
-    case kWiFiAPMode_Disabled:
-        return "Disabled";
-    case kWiFiAPMode_Enabled:
-        return "Enabled";
-    case kWiFiAPMode_OnDemand:
-        return "OnDemand";
-    case kWiFiAPMode_OnDemand_NoStationProvision:
-        return "OnDemand_NoStationProvision";
-    default:
-        return "(unknown)";
+    case kWiFiAPMode_NotSupported: return "NotSupported";
+    case kWiFiAPMode_ApplicationControlled: return "AppControlled";
+    case kWiFiAPMode_Disabled: return "Disabled";
+    case kWiFiAPMode_Enabled: return "Enabled";
+    case kWiFiAPMode_OnDemand: return "OnDemand";
+    case kWiFiAPMode_OnDemand_NoStationProvision: return "OnDemand_NoStationProvision";
+    default: return "(unknown)";
     }
 }
 
@@ -1129,14 +1108,10 @@ const char * ConnectivityManagerImpl::_ServiceTunnelModeToStr(ServiceTunnelMode 
 {
     switch (mode)
     {
-    case kServiceTunnelMode_NotSupported:
-        return "NotSupported";
-    case kServiceTunnelMode_Disabled:
-        return "Disabled";
-    case kServiceTunnelMode_Enabled:
-        return "Enabled";
-    default:
-        return "(unknown)";
+    case kServiceTunnelMode_NotSupported: return "NotSupported";
+    case kServiceTunnelMode_Disabled: return "Disabled";
+    case kServiceTunnelMode_Enabled: return "Enabled";
+    default: return "(unknown)";
     }
 }
 
@@ -1144,20 +1119,13 @@ const char * ConnectivityManagerImpl::WiFiStationStateToStr(WiFiStationState sta
 {
     switch (state)
     {
-    case kWiFiStationState_NotConnected:
-        return "NotConnected";
-    case kWiFiStationState_Connecting:
-        return "Connecting";
-    case kWiFiStationState_Connecting_Succeeded:
-        return "Connecting_Succeeded";
-    case kWiFiStationState_Connecting_Failed:
-        return "Connecting_Failed";
-    case kWiFiStationState_Connected:
-        return "Connected";
-    case kWiFiStationState_Disconnecting:
-        return "Disconnecting";
-    default:
-        return "(unknown)";
+    case kWiFiStationState_NotConnected: return "NotConnected";
+    case kWiFiStationState_Connecting: return "Connecting";
+    case kWiFiStationState_Connecting_Succeeded: return "Connecting_Succeeded";
+    case kWiFiStationState_Connecting_Failed: return "Connecting_Failed";
+    case kWiFiStationState_Connected: return "Connected";
+    case kWiFiStationState_Disconnecting: return "Disconnecting";
+    default: return "(unknown)";
     }
 }
 
@@ -1165,16 +1133,11 @@ const char * ConnectivityManagerImpl::WiFiAPStateToStr(WiFiAPState state)
 {
     switch (state)
     {
-    case kWiFiAPState_NotActive:
-        return "NotActive";
-    case kWiFiAPState_Activating:
-        return "Activating";
-    case kWiFiAPState_Active:
-        return "Active";
-    case kWiFiAPState_Deactivating:
-        return "Deactivating";
-    default:
-        return "(unknown)";
+    case kWiFiAPState_NotActive: return "NotActive";
+    case kWiFiAPState_Activating: return "Activating";
+    case kWiFiAPState_Active: return "Active";
+    case kWiFiAPState_Deactivating: return "Deactivating";
+    default: return "(unknown)";
     }
 }
 
@@ -1188,11 +1151,11 @@ void ConnectivityManagerImpl::RefreshMessageLayer(void)
 }
 
 void ConnectivityManagerImpl::HandleServiceTunnelNotification(WeaveTunnelConnectionMgr::TunnelConnNotifyReasons reason,
-            WEAVE_ERROR err, void *appCtxt)
+                                                              WEAVE_ERROR err, void * appCtxt)
 {
-    bool newTunnelState = false;
+    bool newTunnelState  = false;
     bool prevTunnelState = GetFlag(sInstance.mFlags, kFlag_ServiceTunnelUp);
-    bool isRestricted = false;
+    bool isRestricted    = false;
 
     switch (reason)
     {
@@ -1204,11 +1167,10 @@ void ConnectivityManagerImpl::HandleServiceTunnelNotification(WeaveTunnelConnect
         break;
     case WeaveTunnelConnectionMgr::kStatus_TunPrimaryUp:
         newTunnelState = true;
-        isRestricted = (err == WEAVE_ERROR_TUNNEL_ROUTING_RESTRICTED);
+        isRestricted   = (err == WEAVE_ERROR_TUNNEL_ROUTING_RESTRICTED);
         WeaveLogProgress(DeviceLayer, "ConnectivityManager: %service tunnel established", (isRestricted) ? "RESTRICTED s" : "S");
         break;
-    default:
-        break;
+    default: break;
     }
 
     // If the tunnel state has changed...
@@ -1220,8 +1182,8 @@ void ConnectivityManagerImpl::HandleServiceTunnelNotification(WeaveTunnelConnect
         // Alert other components of the change to the tunnel state.
         WeaveDeviceEvent event;
         event.Clear();
-        event.Type = DeviceEventType::kServiceTunnelStateChange;
-        event.ServiceTunnelStateChange.Result = GetConnectivityChange(prevTunnelState, newTunnelState);
+        event.Type                                  = DeviceEventType::kServiceTunnelStateChange;
+        event.ServiceTunnelStateChange.Result       = GetConnectivityChange(prevTunnelState, newTunnelState);
         event.ServiceTunnelStateChange.IsRestricted = isRestricted;
         PlatformMgr().PostEvent(&event);
 
@@ -1233,12 +1195,12 @@ void ConnectivityManagerImpl::HandleServiceTunnelNotification(WeaveTunnelConnect
         if (!newTunnelState || !isRestricted)
         {
             event.Clear();
-            event.Type = DeviceEventType::kServiceConnectivityChange;
+            event.Type                                       = DeviceEventType::kServiceConnectivityChange;
             event.ServiceConnectivityChange.ViaTunnel.Result = (newTunnelState) ? kConnectivity_Established : kConnectivity_Lost;
             event.ServiceConnectivityChange.ViaThread.Result = kConnectivity_NoChange;
-            event.ServiceConnectivityChange.Overall.Result = sInstance.HaveServiceConnectivityViaThread()
-                    ? kConnectivity_NoChange
-                    : event.ServiceConnectivityChange.ViaTunnel.Result;
+            event.ServiceConnectivityChange.Overall.Result   = sInstance.HaveServiceConnectivityViaThread()
+                ? kConnectivity_NoChange
+                : event.ServiceConnectivityChange.ViaTunnel.Result;
             PlatformMgr().PostEvent(&event);
         }
     }

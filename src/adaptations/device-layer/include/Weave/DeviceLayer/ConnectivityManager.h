@@ -30,9 +30,9 @@ namespace DeviceLayer {
 
 namespace Internal {
 class NetworkProvisioningServerImpl;
-template<class> class GenericNetworkProvisioningServerImpl;
-template<class> class GenericPlatformManagerImpl;
-template<class> class GenericPlatformManagerImpl_FreeRTOS;
+template <class> class GenericNetworkProvisioningServerImpl;
+template <class> class GenericPlatformManagerImpl;
+template <class> class GenericPlatformManagerImpl_FreeRTOS;
 } // namespace Internal
 
 class ConnectivityManagerImpl;
@@ -45,56 +45,55 @@ class ConnectivityManager
     using ImplClass = ::nl::Weave::DeviceLayer::ConnectivityManagerImpl;
 
 public:
-
     // ===== Members that define the public interface of the ConnectivityManager
 
     enum WiFiStationMode
     {
-        kWiFiStationMode_NotSupported               = 0,
-        kWiFiStationMode_ApplicationControlled      = 1,
-        kWiFiStationMode_Disabled                   = 2,
-        kWiFiStationMode_Enabled                    = 3,
+        kWiFiStationMode_NotSupported          = 0,
+        kWiFiStationMode_ApplicationControlled = 1,
+        kWiFiStationMode_Disabled              = 2,
+        kWiFiStationMode_Enabled               = 3,
     };
 
     enum WiFiAPMode
     {
-        kWiFiAPMode_NotSupported                    = 0,
-        kWiFiAPMode_ApplicationControlled           = 1,
-        kWiFiAPMode_Disabled                        = 2,
-        kWiFiAPMode_Enabled                         = 3,
-        kWiFiAPMode_OnDemand                        = 4,
-        kWiFiAPMode_OnDemand_NoStationProvision     = 5,
+        kWiFiAPMode_NotSupported                = 0,
+        kWiFiAPMode_ApplicationControlled       = 1,
+        kWiFiAPMode_Disabled                    = 2,
+        kWiFiAPMode_Enabled                     = 3,
+        kWiFiAPMode_OnDemand                    = 4,
+        kWiFiAPMode_OnDemand_NoStationProvision = 5,
     };
 
     enum ThreadMode
     {
-        kThreadMode_NotSupported                    = 0,
-        kThreadMode_ApplicationControlled           = 1,
-        kThreadMode_Disabled                        = 2,
-        kThreadMode_Enabled                         = 3,
+        kThreadMode_NotSupported          = 0,
+        kThreadMode_ApplicationControlled = 1,
+        kThreadMode_Disabled              = 2,
+        kThreadMode_Enabled               = 3,
     };
 
     enum ServiceTunnelMode
     {
-        kServiceTunnelMode_NotSupported             = 0,
-        kServiceTunnelMode_Disabled                 = 1,
-        kServiceTunnelMode_Enabled                  = 2,
+        kServiceTunnelMode_NotSupported = 0,
+        kServiceTunnelMode_Disabled     = 1,
+        kServiceTunnelMode_Enabled      = 2,
     };
 
     enum WoBLEServiceMode
     {
-        kWoBLEServiceMode_NotSupported              = 0,
-        kWoBLEServiceMode_Enabled                   = 1,
-        kWoBLEServiceMode_Disabled                  = 2,
+        kWoBLEServiceMode_NotSupported = 0,
+        kWoBLEServiceMode_Enabled      = 1,
+        kWoBLEServiceMode_Disabled     = 2,
     };
 
     enum ThreadDeviceType
     {
-        kThreadDeviceType_NotSupported              = 0,
-        kThreadDeviceType_Router                    = 1,
-        kThreadDeviceType_FullEndDevice             = 2,
-        kThreadDeviceType_MinimalEndDevice          = 3,
-        kThreadDeviceType_SleepyEndDevice           = 4,
+        kThreadDeviceType_NotSupported     = 0,
+        kThreadDeviceType_Router           = 1,
+        kThreadDeviceType_FullEndDevice    = 2,
+        kThreadDeviceType_MinimalEndDevice = 3,
+        kThreadDeviceType_SleepyEndDevice  = 4,
     };
 
     struct ThreadPollingConfig;
@@ -175,14 +174,13 @@ public:
     static const char * WoBLEServiceModeToStr(WoBLEServiceMode mode);
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend class PlatformManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl;
-    template<class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
+    template <class> friend class Internal::GenericPlatformManagerImpl;
+    template <class> friend class Internal::GenericPlatformManagerImpl_FreeRTOS;
     friend class Internal::NetworkProvisioningServerImpl;
-    template<class> friend class Internal::GenericNetworkProvisioningServerImpl;
+    template <class> friend class Internal::GenericNetworkProvisioningServerImpl;
 
     WEAVE_ERROR Init(void);
     void OnPlatformEvent(const WeaveDeviceEvent * event);
@@ -191,15 +189,14 @@ private:
     void OnWiFiStationProvisionChange(void);
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    ConnectivityManager() = default;
+    ConnectivityManager()  = default;
     ~ConnectivityManager() = default;
 
     // No copy, move or assignment.
-    ConnectivityManager(const ConnectivityManager &) = delete;
+    ConnectivityManager(const ConnectivityManager &)  = delete;
     ConnectivityManager(const ConnectivityManager &&) = delete;
-    ConnectivityManager & operator=(const ConnectivityManager &) = delete;
+    ConnectivityManager & operator =(const ConnectivityManager &) = delete;
 };
 
 /**
@@ -228,7 +225,6 @@ struct ConnectivityManager::ThreadPollingConfig
     void Clear() { memset(this, 0, sizeof(*this)); }
 };
 
-
 /**
  * Returns a reference to the public interface of the ConnectivityManager singleton object.
  *
@@ -249,7 +245,6 @@ extern ConnectivityManagerImpl & ConnectivityMgrImpl(void);
 } // namespace Weave
 } // namespace nl
 
-
 /* Include a header file containing the implementation of the ConfigurationManager
  * object for the selected platform.
  */
@@ -260,274 +255,273 @@ extern ConnectivityManagerImpl & ConnectivityMgrImpl(void);
 #include CONNECTIVITYMANAGERIMPL_HEADER
 #endif
 
-
 namespace nl {
 namespace Weave {
 namespace DeviceLayer {
 
 inline ConnectivityManager::WiFiStationMode ConnectivityManager::GetWiFiStationMode(void)
 {
-    return static_cast<ImplClass*>(this)->_GetWiFiStationMode();
+    return static_cast<ImplClass *>(this)->_GetWiFiStationMode();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetWiFiStationMode(WiFiStationMode val)
 {
-    return static_cast<ImplClass*>(this)->_SetWiFiStationMode(val);
+    return static_cast<ImplClass *>(this)->_SetWiFiStationMode(val);
 }
 
 inline bool ConnectivityManager::IsWiFiStationEnabled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsWiFiStationEnabled();
+    return static_cast<ImplClass *>(this)->_IsWiFiStationEnabled();
 }
 
 inline bool ConnectivityManager::IsWiFiStationApplicationControlled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsWiFiStationApplicationControlled();
+    return static_cast<ImplClass *>(this)->_IsWiFiStationApplicationControlled();
 }
 
 inline bool ConnectivityManager::IsWiFiStationConnected(void)
 {
-    return static_cast<ImplClass*>(this)->_IsWiFiStationConnected();
+    return static_cast<ImplClass *>(this)->_IsWiFiStationConnected();
 }
 
 inline uint32_t ConnectivityManager::GetWiFiStationReconnectIntervalMS(void)
 {
-    return static_cast<ImplClass*>(this)->_GetWiFiStationReconnectIntervalMS();
+    return static_cast<ImplClass *>(this)->_GetWiFiStationReconnectIntervalMS();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetWiFiStationReconnectIntervalMS(uint32_t val)
 {
-    return static_cast<ImplClass*>(this)->_SetWiFiStationReconnectIntervalMS(val);
+    return static_cast<ImplClass *>(this)->_SetWiFiStationReconnectIntervalMS(val);
 }
 
 inline bool ConnectivityManager::IsWiFiStationProvisioned(void)
 {
-    return static_cast<ImplClass*>(this)->_IsWiFiStationProvisioned();
+    return static_cast<ImplClass *>(this)->_IsWiFiStationProvisioned();
 }
 
 inline void ConnectivityManager::ClearWiFiStationProvision(void)
 {
-    static_cast<ImplClass*>(this)->_ClearWiFiStationProvision();
+    static_cast<ImplClass *>(this)->_ClearWiFiStationProvision();
 }
 
 inline ConnectivityManager::WiFiAPMode ConnectivityManager::GetWiFiAPMode(void)
 {
-    return static_cast<ImplClass*>(this)->_GetWiFiAPMode();
+    return static_cast<ImplClass *>(this)->_GetWiFiAPMode();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetWiFiAPMode(WiFiAPMode val)
 {
-    return static_cast<ImplClass*>(this)->_SetWiFiAPMode(val);
+    return static_cast<ImplClass *>(this)->_SetWiFiAPMode(val);
 }
 
 inline bool ConnectivityManager::IsWiFiAPActive(void)
 {
-    return static_cast<ImplClass*>(this)->_IsWiFiAPActive();
+    return static_cast<ImplClass *>(this)->_IsWiFiAPActive();
 }
 
 inline bool ConnectivityManager::IsWiFiAPApplicationControlled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsWiFiAPApplicationControlled();
+    return static_cast<ImplClass *>(this)->_IsWiFiAPApplicationControlled();
 }
 
 inline void ConnectivityManager::DemandStartWiFiAP(void)
 {
-    static_cast<ImplClass*>(this)->_DemandStartWiFiAP();
+    static_cast<ImplClass *>(this)->_DemandStartWiFiAP();
 }
 
 inline void ConnectivityManager::StopOnDemandWiFiAP(void)
 {
-    static_cast<ImplClass*>(this)->_StopOnDemandWiFiAP();
+    static_cast<ImplClass *>(this)->_StopOnDemandWiFiAP();
 }
 
 inline void ConnectivityManager::MaintainOnDemandWiFiAP(void)
 {
-    static_cast<ImplClass*>(this)->_MaintainOnDemandWiFiAP();
+    static_cast<ImplClass *>(this)->_MaintainOnDemandWiFiAP();
 }
 
 inline uint32_t ConnectivityManager::GetWiFiAPIdleTimeoutMS(void)
 {
-    return static_cast<ImplClass*>(this)->_GetWiFiAPIdleTimeoutMS();
+    return static_cast<ImplClass *>(this)->_GetWiFiAPIdleTimeoutMS();
 }
 
 inline void ConnectivityManager::SetWiFiAPIdleTimeoutMS(uint32_t val)
 {
-    static_cast<ImplClass*>(this)->_SetWiFiAPIdleTimeoutMS(val);
+    static_cast<ImplClass *>(this)->_SetWiFiAPIdleTimeoutMS(val);
 }
 
 inline WEAVE_ERROR ConnectivityManager::GetAndLogWifiStatsCounters(void)
 {
-    return static_cast<ImplClass*>(this)->_GetAndLogWifiStatsCounters();
+    return static_cast<ImplClass *>(this)->_GetAndLogWifiStatsCounters();
 }
 
 inline bool ConnectivityManager::HaveServiceConnectivityViaTunnel(void)
 {
-    return static_cast<ImplClass*>(this)->_HaveServiceConnectivityViaTunnel();
+    return static_cast<ImplClass *>(this)->_HaveServiceConnectivityViaTunnel();
 }
 
 inline bool ConnectivityManager::HaveIPv4InternetConnectivity(void)
 {
-    return static_cast<ImplClass*>(this)->_HaveIPv4InternetConnectivity();
+    return static_cast<ImplClass *>(this)->_HaveIPv4InternetConnectivity();
 }
 
 inline bool ConnectivityManager::HaveIPv6InternetConnectivity(void)
 {
-    return static_cast<ImplClass*>(this)->_HaveIPv6InternetConnectivity();
+    return static_cast<ImplClass *>(this)->_HaveIPv6InternetConnectivity();
 }
 
 inline ConnectivityManager::ServiceTunnelMode ConnectivityManager::GetServiceTunnelMode(void)
 {
-    return static_cast<ImplClass*>(this)->_GetServiceTunnelMode();
+    return static_cast<ImplClass *>(this)->_GetServiceTunnelMode();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetServiceTunnelMode(ServiceTunnelMode val)
 {
-    return static_cast<ImplClass*>(this)->_SetServiceTunnelMode(val);
+    return static_cast<ImplClass *>(this)->_SetServiceTunnelMode(val);
 }
 
 inline bool ConnectivityManager::IsServiceTunnelConnected(void)
 {
-    return static_cast<ImplClass*>(this)->_IsServiceTunnelConnected();
+    return static_cast<ImplClass *>(this)->_IsServiceTunnelConnected();
 }
 
 inline bool ConnectivityManager::IsServiceTunnelRestricted(void)
 {
-    return static_cast<ImplClass*>(this)->_IsServiceTunnelRestricted();
+    return static_cast<ImplClass *>(this)->_IsServiceTunnelRestricted();
 }
 
 inline bool ConnectivityManager::HaveServiceConnectivity(void)
 {
-    return static_cast<ImplClass*>(this)->_HaveServiceConnectivity();
+    return static_cast<ImplClass *>(this)->_HaveServiceConnectivity();
 }
 
 inline ConnectivityManager::ThreadMode ConnectivityManager::GetThreadMode(void)
 {
-    return static_cast<ImplClass*>(this)->_GetThreadMode();
+    return static_cast<ImplClass *>(this)->_GetThreadMode();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetThreadMode(ThreadMode val)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadMode(val);
+    return static_cast<ImplClass *>(this)->_SetThreadMode(val);
 }
 
 inline bool ConnectivityManager::IsThreadEnabled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadEnabled();
+    return static_cast<ImplClass *>(this)->_IsThreadEnabled();
 }
 
 inline bool ConnectivityManager::IsThreadApplicationControlled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadApplicationControlled();
+    return static_cast<ImplClass *>(this)->_IsThreadApplicationControlled();
 }
 
 inline ConnectivityManager::ThreadDeviceType ConnectivityManager::GetThreadDeviceType(void)
 {
-    return static_cast<ImplClass*>(this)->_GetThreadDeviceType();
+    return static_cast<ImplClass *>(this)->_GetThreadDeviceType();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetThreadDeviceType(ThreadDeviceType deviceType)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadDeviceType(deviceType);
+    return static_cast<ImplClass *>(this)->_SetThreadDeviceType(deviceType);
 }
 
 inline void ConnectivityManager::GetThreadPollingConfig(ThreadPollingConfig & pollingConfig)
 {
-    return static_cast<ImplClass*>(this)->_GetThreadPollingConfig(pollingConfig);
+    return static_cast<ImplClass *>(this)->_GetThreadPollingConfig(pollingConfig);
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetThreadPollingConfig(const ThreadPollingConfig & pollingConfig)
 {
-    return static_cast<ImplClass*>(this)->_SetThreadPollingConfig(pollingConfig);
+    return static_cast<ImplClass *>(this)->_SetThreadPollingConfig(pollingConfig);
 }
 
 inline bool ConnectivityManager::IsThreadAttached(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadAttached();
+    return static_cast<ImplClass *>(this)->_IsThreadAttached();
 }
 
 inline bool ConnectivityManager::IsThreadProvisioned(void)
 {
-    return static_cast<ImplClass*>(this)->_IsThreadProvisioned();
+    return static_cast<ImplClass *>(this)->_IsThreadProvisioned();
 }
 
 inline void ConnectivityManager::ClearThreadProvision(void)
 {
-    static_cast<ImplClass*>(this)->_ClearThreadProvision();
+    static_cast<ImplClass *>(this)->_ClearThreadProvision();
 }
 
 inline bool ConnectivityManager::HaveServiceConnectivityViaThread(void)
 {
-    return static_cast<ImplClass*>(this)->_HaveServiceConnectivityViaThread();
+    return static_cast<ImplClass *>(this)->_HaveServiceConnectivityViaThread();
 }
 
 inline ConnectivityManager::WoBLEServiceMode ConnectivityManager::GetWoBLEServiceMode(void)
 {
-    return static_cast<ImplClass*>(this)->_GetWoBLEServiceMode();
+    return static_cast<ImplClass *>(this)->_GetWoBLEServiceMode();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetWoBLEServiceMode(WoBLEServiceMode val)
 {
-    return static_cast<ImplClass*>(this)->_SetWoBLEServiceMode(val);
+    return static_cast<ImplClass *>(this)->_SetWoBLEServiceMode(val);
 }
 
 inline bool ConnectivityManager::IsBLEAdvertisingEnabled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsBLEAdvertisingEnabled();
+    return static_cast<ImplClass *>(this)->_IsBLEAdvertisingEnabled();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetBLEAdvertisingEnabled(bool val)
 {
-    return static_cast<ImplClass*>(this)->_SetBLEAdvertisingEnabled(val);
+    return static_cast<ImplClass *>(this)->_SetBLEAdvertisingEnabled(val);
 }
 
 inline bool ConnectivityManager::IsBLEFastAdvertisingEnabled(void)
 {
-    return static_cast<ImplClass*>(this)->_IsBLEFastAdvertisingEnabled();
+    return static_cast<ImplClass *>(this)->_IsBLEFastAdvertisingEnabled();
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetBLEFastAdvertisingEnabled(bool val)
 {
-    return static_cast<ImplClass*>(this)->_SetBLEFastAdvertisingEnabled(val);
+    return static_cast<ImplClass *>(this)->_SetBLEFastAdvertisingEnabled(val);
 }
 
 inline bool ConnectivityManager::IsBLEAdvertising(void)
 {
-    return static_cast<ImplClass*>(this)->_IsBLEAdvertising();
+    return static_cast<ImplClass *>(this)->_IsBLEAdvertising();
 }
 
 inline WEAVE_ERROR ConnectivityManager::GetBLEDeviceName(char * buf, size_t bufSize)
 {
-    return static_cast<ImplClass*>(this)->_GetBLEDeviceName(buf, bufSize);
+    return static_cast<ImplClass *>(this)->_GetBLEDeviceName(buf, bufSize);
 }
 
 inline WEAVE_ERROR ConnectivityManager::SetBLEDeviceName(const char * deviceName)
 {
-    return static_cast<ImplClass*>(this)->_SetBLEDeviceName(deviceName);
+    return static_cast<ImplClass *>(this)->_SetBLEDeviceName(deviceName);
 }
 
 inline uint16_t ConnectivityManager::NumBLEConnections(void)
 {
-    return static_cast<ImplClass*>(this)->_NumBLEConnections();
+    return static_cast<ImplClass *>(this)->_NumBLEConnections();
 }
 
 inline bool ConnectivityManager::IsUserSelectedModeActive(void)
 {
-    return static_cast<ImplClass*>(this)->_IsUserSelectedModeActive();
+    return static_cast<ImplClass *>(this)->_IsUserSelectedModeActive();
 }
 
 inline void ConnectivityManager::SetUserSelectedMode(bool val)
 {
-    static_cast<ImplClass*>(this)->_SetUserSelectedMode(val);
+    static_cast<ImplClass *>(this)->_SetUserSelectedMode(val);
 }
 
 inline uint16_t ConnectivityManager::GetUserSelectedModeTimeout(void)
 {
-    return static_cast<ImplClass*>(this)->_GetUserSelectedModeTimeout();
+    return static_cast<ImplClass *>(this)->_GetUserSelectedModeTimeout();
 }
 
 inline void ConnectivityManager::SetUserSelectedModeTimeout(uint16_t val)
 {
-    static_cast<ImplClass*>(this)->_SetUserSelectedModeTimeout(val);
+    static_cast<ImplClass *>(this)->_SetUserSelectedModeTimeout(val);
 }
 
 inline const char * ConnectivityManager::WiFiStationModeToStr(WiFiStationMode mode)
@@ -552,27 +546,27 @@ inline const char * ConnectivityManager::WoBLEServiceModeToStr(WoBLEServiceMode 
 
 inline WEAVE_ERROR ConnectivityManager::Init(void)
 {
-    return static_cast<ImplClass*>(this)->_Init();
+    return static_cast<ImplClass *>(this)->_Init();
 }
 
 inline void ConnectivityManager::OnPlatformEvent(const WeaveDeviceEvent * event)
 {
-    static_cast<ImplClass*>(this)->_OnPlatformEvent(event);
+    static_cast<ImplClass *>(this)->_OnPlatformEvent(event);
 }
 
 inline bool ConnectivityManager::CanStartWiFiScan(void)
 {
-    return static_cast<ImplClass*>(this)->_CanStartWiFiScan();
+    return static_cast<ImplClass *>(this)->_CanStartWiFiScan();
 }
 
 inline void ConnectivityManager::OnWiFiScanDone(void)
 {
-    static_cast<ImplClass*>(this)->_OnWiFiScanDone();
+    static_cast<ImplClass *>(this)->_OnWiFiScanDone();
 }
 
 inline void ConnectivityManager::OnWiFiStationProvisionChange(void)
 {
-    static_cast<ImplClass*>(this)->_OnWiFiStationProvisionChange();
+    static_cast<ImplClass *>(this)->_OnWiFiStationProvisionChange();
 }
 
 } // namespace DeviceLayer

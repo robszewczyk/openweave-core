@@ -32,13 +32,12 @@ namespace nl {
 namespace Weave {
 namespace Crypto {
 
-template <class H>
-class NL_DLL_EXPORT HKDF
+template <class H> class NL_DLL_EXPORT HKDF
 {
 public:
     enum
     {
-        kPseudoRandomKeyLength             = H::kHashLength
+        kPseudoRandomKeyLength = H::kHashLength
     };
 
     uint8_t PseudoRandomKey[kPseudoRandomKeyLength];
@@ -46,20 +45,18 @@ public:
     HKDF(void);
     ~HKDF(void);
 
-    void BeginExtractKey(const uint8_t *salt, uint16_t saltLen);
-    void AddKeyMaterial(const uint8_t *keyData, uint16_t keyDataLen);
+    void BeginExtractKey(const uint8_t * salt, uint16_t saltLen);
+    void AddKeyMaterial(const uint8_t * keyData, uint16_t keyDataLen);
 #if WEAVE_WITH_OPENSSL
-    void AddKeyMaterial(const BIGNUM& num);
+    void AddKeyMaterial(const BIGNUM & num);
 #endif
     WEAVE_ERROR FinishExtractKey(void);
 
-    WEAVE_ERROR ExpandKey(const uint8_t *info, uint16_t infoLen, uint16_t keyLen, uint8_t *outKey);
+    WEAVE_ERROR ExpandKey(const uint8_t * info, uint16_t infoLen, uint16_t keyLen, uint8_t * outKey);
 
-    static WEAVE_ERROR DeriveKey(const uint8_t *salt, uint16_t saltLen,
-                                 const uint8_t *keyMaterial1, uint16_t keyMaterial1Len,
-                                 const uint8_t *keyMaterial2, uint16_t keyMaterial2Len,
-                                 const uint8_t *info, uint16_t infoLen,
-                                 uint8_t *outKey, uint16_t outKeyBufSize, uint16_t outKeyLen);
+    static WEAVE_ERROR DeriveKey(const uint8_t * salt, uint16_t saltLen, const uint8_t * keyMaterial1, uint16_t keyMaterial1Len,
+                                 const uint8_t * keyMaterial2, uint16_t keyMaterial2Len, const uint8_t * info, uint16_t infoLen,
+                                 uint8_t * outKey, uint16_t outKeyBufSize, uint16_t outKeyLen);
 
     void Reset(void);
 
@@ -76,7 +73,7 @@ class HKDFSHA1Or256
 public:
     enum
     {
-        kMaxPseudoRandomKeyLength             = Platform::Security::SHA256::kHashLength
+        kMaxPseudoRandomKeyLength = Platform::Security::SHA256::kHashLength
     };
 
     uint8_t PseudoRandomKey[kMaxPseudoRandomKeyLength];
@@ -84,10 +81,10 @@ public:
     HKDFSHA1Or256(bool useSHA1);
     ~HKDFSHA1Or256(void) { Reset(); }
 
-    void BeginExtractKey(const uint8_t *salt, uint16_t saltLen);
-    void AddKeyMaterial(const uint8_t *keyData, uint16_t keyDataLen);
+    void BeginExtractKey(const uint8_t * salt, uint16_t saltLen);
+    void AddKeyMaterial(const uint8_t * keyData, uint16_t keyDataLen);
     WEAVE_ERROR FinishExtractKey(void);
-    WEAVE_ERROR ExpandKey(const uint8_t *info, uint16_t infoLen, uint16_t keyLen, uint8_t *outKey);
+    WEAVE_ERROR ExpandKey(const uint8_t * info, uint16_t infoLen, uint16_t keyLen, uint8_t * outKey);
     void Reset(void);
 
 private:
@@ -100,12 +97,11 @@ private:
     };
     bool mUseSHA1;
 
-    void *ObjBuf() { return mObjBuf; }
+    void * ObjBuf() { return mObjBuf; }
 
-    HKDFSHA1 *HKDFSHA1Obj()     { return (HKDFSHA1 *)ObjBuf(); }
-    HKDFSHA256 *HKDFSHA256Obj() { return (HKDFSHA256 *)ObjBuf(); }
+    HKDFSHA1 * HKDFSHA1Obj() { return (HKDFSHA1 *) ObjBuf(); }
+    HKDFSHA256 * HKDFSHA256Obj() { return (HKDFSHA256 *) ObjBuf(); }
 };
-
 
 } // namespace Crypto
 } // namespace Weave

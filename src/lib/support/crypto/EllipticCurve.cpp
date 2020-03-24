@@ -34,31 +34,21 @@ namespace Crypto {
 using namespace nl::Weave::ASN1;
 using namespace nl::Weave::Encoding;
 
-bool EncodedECPublicKey::IsEqual(const EncodedECPublicKey& other) const
+bool EncodedECPublicKey::IsEqual(const EncodedECPublicKey & other) const
 {
-    return (ECPoint != NULL &&
-            other.ECPoint != NULL &&
-            ECPointLen == other.ECPointLen &&
+    return (ECPoint != NULL && other.ECPoint != NULL && ECPointLen == other.ECPointLen &&
             memcmp(ECPoint, other.ECPoint, ECPointLen) == 0);
 }
 
-bool EncodedECDSASignature::IsEqual(const EncodedECDSASignature& other) const
+bool EncodedECDSASignature::IsEqual(const EncodedECDSASignature & other) const
 {
-    return (R != NULL &&
-            other.R != NULL &&
-            S != NULL &&
-            other.S != NULL &&
-            RLen == other.RLen &&
-            SLen == other.SLen &&
-            memcmp(R, other.R, RLen) == 0 &&
-            memcmp(S, other.S, SLen) == 0);
+    return (R != NULL && other.R != NULL && S != NULL && other.S != NULL && RLen == other.RLen && SLen == other.SLen &&
+            memcmp(R, other.R, RLen) == 0 && memcmp(S, other.S, SLen) == 0);
 }
 
-bool EncodedECPrivateKey::IsEqual(const EncodedECPrivateKey& other) const
+bool EncodedECPrivateKey::IsEqual(const EncodedECPrivateKey & other) const
 {
-    return (PrivKey != NULL &&
-            other.PrivKey != NULL &&
-            PrivKeyLen == other.PrivKeyLen &&
+    return (PrivKey != NULL && other.PrivKey != NULL && PrivKeyLen == other.PrivKeyLen &&
             memcmp(PrivKey, other.PrivKey, PrivKeyLen) == 0);
 }
 

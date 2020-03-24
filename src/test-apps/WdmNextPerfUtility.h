@@ -29,28 +29,27 @@
 #include <fstream>
 #include <Weave/Support/CodeUtils.h>
 
-#if defined (__APPLE__) && defined (__MACH__)
-#include<mach/mach.h>
-#elif defined (__unix__) || defined(__linux__)
+#if defined(__APPLE__) && defined(__MACH__)
+#include <mach/mach.h>
+#elif defined(__unix__) || defined(__linux__)
 #include "stdlib.h"
 #include "string.h"
 #endif
 
 #define ENABLE_WDMPERFDATA 1
 
-
-struct perfData {
+struct perfData
+{
     int index;
     timeval latency;
     size_t vmsize;
     size_t vmrss;
 };
 
-
 class WdmNextPerfUtility
 {
 public:
-    static WdmNextPerfUtility* Instance();
+    static WdmNextPerfUtility * Instance();
     static void Remove();
     void operator ()();
     void ReportPerf();
@@ -58,22 +57,21 @@ public:
     void SetPerf();
     perfData GetPerf();
     void SaveToFile();
-    int GetCurrentTimestamp(char *buf, size_t num);
+    int GetCurrentTimestamp(char * buf, size_t num);
 
 private:
     WdmNextPerfUtility();
     ~WdmNextPerfUtility();
 
-    static WdmNextPerfUtility *mInstance;
+    static WdmNextPerfUtility * mInstance;
     std::vector<perfData> mAllData;
     perfData mPerfData;
     timeval mCurrentTime, mLastTime, mDeltaTime;
 
-#if defined (__APPLE__) && defined (__MACH__)
+#if defined(__APPLE__) && defined(__MACH__)
 
     task_basic_info mMac_mem_info;
     mach_msg_type_number_t mMac_mem_info_count;
 
 #endif
-
 };

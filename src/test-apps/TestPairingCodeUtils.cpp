@@ -35,18 +35,18 @@
 
 #include <nlunit-test.h>
 
-#define NL_TEST_ASSERT_EXIT(inSuite, inCondition)     \
-    do {                                              \
-        (inSuite)->performedAssertions += 1;          \
-                                                      \
-        if (!(inCondition))                           \
-        {                                             \
-            printf("Failed assert: %s in %s:%u\n",    \
-                   #inCondition, __FILE__, __LINE__); \
-            (inSuite)->failedAssertions += 1;         \
-            (inSuite)->flagError = true;              \
-            goto exit;                                \
-        }                                             \
+#define NL_TEST_ASSERT_EXIT(inSuite, inCondition)                                                                                  \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        (inSuite)->performedAssertions += 1;                                                                                       \
+                                                                                                                                   \
+        if (!(inCondition))                                                                                                        \
+        {                                                                                                                          \
+            printf("Failed assert: %s in %s:%u\n", #inCondition, __FILE__, __LINE__);                                              \
+            (inSuite)->failedAssertions += 1;                                                                                      \
+            (inSuite)->flagError = true;                                                                                           \
+            goto exit;                                                                                                             \
+        }                                                                                                                          \
     } while (0)
 
 #include <Weave/Core/WeaveError.h>
@@ -69,7 +69,7 @@ static inline bool IsValidPairingCodeChar(char ch)
     return false;
 }
 
-static void CheckPairingCodeChars(nlTestSuite *inSuite, const char *pairingCode)
+static void CheckPairingCodeChars(nlTestSuite * inSuite, const char * pairingCode)
 {
     for (; *pairingCode != 0; pairingCode++)
     {
@@ -79,13 +79,13 @@ static void CheckPairingCodeChars(nlTestSuite *inSuite, const char *pairingCode)
 
 // Test Cases
 
-static void Test_IntEncodeDecode(nlTestSuite *inSuite, void *inContext)
+static void Test_IntEncodeDecode(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     enum
     {
         kPairingCodeLength = 5,
-        kNumPairingCodes = 1 << ((kPairingCodeLength - 1) * nl::PairingCode::kBitsPerCharacter),
+        kNumPairingCodes   = 1 << ((kPairingCodeLength - 1) * nl::PairingCode::kBitsPerCharacter),
     };
     char pairingCodeStr[kPairingCodeLength + 1];
 
@@ -124,19 +124,19 @@ static char MutatePairingCodeChar(char ch)
 
     // Using the mutation value, permute the given character to another character in the pairing code character set.
     int chVal = PairingCodeCharToInt(ch);
-    chVal = (chVal + mutation) % 32;
-    ch = IntToPairingCodeChar(chVal);
+    chVal     = (chVal + mutation) % 32;
+    ch        = IntToPairingCodeChar(chVal);
 
     return ch;
 }
 
-static void Test_CheckCharacter(nlTestSuite *inSuite, void *inContext)
+static void Test_CheckCharacter(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     enum
     {
         kPairingCodeLength = 5,
-        kNumPairingCodes = 1 << ((kPairingCodeLength - 1) * nl::PairingCode::kBitsPerCharacter),
+        kNumPairingCodes   = 1 << ((kPairingCodeLength - 1) * nl::PairingCode::kBitsPerCharacter),
     };
     char pairingCodeStr[kPairingCodeLength + 1];
 
@@ -171,7 +171,7 @@ exit:
     return;
 }
 
-static void Test_NevisPairingCode(nlTestSuite *inSuite, void *inContext)
+static void Test_NevisPairingCode(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     uint64_t deviceId;
@@ -189,7 +189,7 @@ exit:
     return;
 }
 
-static void Test_KryptonitePairingCode(nlTestSuite *inSuite, void *inContext)
+static void Test_KryptonitePairingCode(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     uint64_t deviceId;
@@ -207,7 +207,7 @@ exit:
     return;
 }
 
-static void Test_Normalization(nlTestSuite *inSuite, void *inContext)
+static void Test_Normalization(nlTestSuite * inSuite, void * inContext)
 {
     char pairingCodeBuf[kStandardPairingCodeLength + 20];
     size_t pairingCodeLen;
@@ -230,7 +230,7 @@ exit:
     return;
 }
 
-static void Test_Generation(nlTestSuite *inSuite, void *inContext)
+static void Test_Generation(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
     char pairingCodeBuf[kStandardPairingCodeLength + 20];
@@ -259,46 +259,35 @@ exit:
     return;
 }
 
-
-
 // Test Suite
 
 /**
  *  Test Suite that lists all the test functions.
  */
-static const nlTest sTests[] =
-{
-    NL_TEST_DEF("Integer encode / decode tests", Test_IntEncodeDecode),
-    NL_TEST_DEF("Check character tests", Test_CheckCharacter),
-    NL_TEST_DEF("Normalization tests", Test_Normalization),
-    NL_TEST_DEF("Generation tests", Test_Generation),
-    NL_TEST_DEF("Nevis pairing code tests", Test_NevisPairingCode),
-    NL_TEST_DEF("Kryptonite pairing code tests", Test_KryptonitePairingCode),
+static const nlTest sTests[] = { NL_TEST_DEF("Integer encode / decode tests", Test_IntEncodeDecode),
+                                 NL_TEST_DEF("Check character tests", Test_CheckCharacter),
+                                 NL_TEST_DEF("Normalization tests", Test_Normalization),
+                                 NL_TEST_DEF("Generation tests", Test_Generation),
+                                 NL_TEST_DEF("Nevis pairing code tests", Test_NevisPairingCode),
+                                 NL_TEST_DEF("Kryptonite pairing code tests", Test_KryptonitePairingCode),
 
-    NL_TEST_SENTINEL()
-};
+                                 NL_TEST_SENTINEL() };
 
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     // Nothing to do.
     return SUCCESS;
 }
 
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     // Nothing to do.
     return SUCCESS;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-    nlTestSuite theSuite =
-    {
-        "pairing-code-utils",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "pairing-code-utils", &sTests[0], TestSetup, TestTeardown };
 
     // Always use a repeatable sequence of "random" values to drive the test.
     srand(42);

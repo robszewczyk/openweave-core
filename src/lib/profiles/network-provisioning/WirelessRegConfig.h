@@ -51,17 +51,17 @@ enum WirelessOperatingLocation
     kWirelessOperatingLocation_NotSpecified = 0x00, /**< Reserved value.
                                                          May not be sent over-the-wire. */
 
-    kWirelessOperatingLocation_Unknown      = 0x01, /**< Operating location unknown.
-                                                         Signifies that the device's expected operating location
-                                                         is not known, or may change over time. */
+    kWirelessOperatingLocation_Unknown = 0x01, /**< Operating location unknown.
+                                                    Signifies that the device's expected operating location
+                                                    is not known, or may change over time. */
 
-    kWirelessOperatingLocation_Indoors      = 0x02, /**< Operating indoors.
-                                                         Signifies that the device's expected operating location
-                                                         is indoors. */
+    kWirelessOperatingLocation_Indoors = 0x02, /**< Operating indoors.
+                                                    Signifies that the device's expected operating location
+                                                    is indoors. */
 
-    kWirelessOperatingLocation_Outdoors     = 0x03, /**< Operating outdoors.
-                                                         Signifies that the device's expected operating location
-                                                         is outdoors. */
+    kWirelessOperatingLocation_Outdoors = 0x03, /**< Operating outdoors.
+                                                     Signifies that the device's expected operating location
+                                                     is outdoors. */
 };
 
 /**
@@ -70,12 +70,12 @@ enum WirelessOperatingLocation
 class WirelessRegConfig
 {
 public:
-    WirelessRegDomain * SupportedRegDomains;                /**< Array of supported regulatory domain structures */
-    uint16_t NumSupportedRegDomains;                        /**< Length of SupportedRegDomains array */
-    WirelessRegDomain RegDomain;                            /**< Active wireless regulatory domain
-                                                                 Value of '\0' indicates not present. */
-    uint8_t OpLocation;                                     /**< Active operating location
-                                                                 Value of 0 indicates not present. */
+    WirelessRegDomain * SupportedRegDomains; /**< Array of supported regulatory domain structures */
+    uint16_t NumSupportedRegDomains;         /**< Length of SupportedRegDomains array */
+    WirelessRegDomain RegDomain;             /**< Active wireless regulatory domain
+                                                  Value of '\0' indicates not present. */
+    uint8_t OpLocation;                      /**< Active operating location
+                                                  Value of 0 indicates not present. */
 
     void Init(void);
     bool IsRegDomainPresent(void) const;

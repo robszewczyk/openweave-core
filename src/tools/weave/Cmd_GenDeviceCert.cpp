@@ -41,25 +41,16 @@ using namespace nl::Weave::ASN1;
 
 #define CMD_NAME "weave gen-device-cert"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
-static OptionDef gCmdOptionDefs[] =
-{
-    { "dev-id",     kArgumentRequired, 'i' },
-    { "key",        kArgumentRequired, 'k' },
-    { "ca-cert",    kArgumentRequired, 'C' },
-    { "ca-key",     kArgumentRequired, 'K' },
-    { "out",        kArgumentRequired, 'o' },
-    { "out-key",    kArgumentRequired, 'O' },
-    { "curve",      kArgumentRequired, 'u' },
-    { "valid-from", kArgumentRequired, 'V' },
-    { "lifetime",   kArgumentRequired, 'l' },
-    { "sha1",       kNoArgument,       '1' },
-    { "sha256",     kNoArgument,       '2' },
-    { }
-};
+static OptionDef gCmdOptionDefs[] = { { "dev-id", kArgumentRequired, 'i' },   { "key", kArgumentRequired, 'k' },
+                                      { "ca-cert", kArgumentRequired, 'C' },  { "ca-key", kArgumentRequired, 'K' },
+                                      { "out", kArgumentRequired, 'o' },      { "out-key", kArgumentRequired, 'O' },
+                                      { "curve", kArgumentRequired, 'u' },    { "valid-from", kArgumentRequired, 'V' },
+                                      { "lifetime", kArgumentRequired, 'l' }, { "sha1", kNoArgument, '1' },
+                                      { "sha256", kNoArgument, '2' },         { } };
 
-static const char *const gCmdOptionHelp =
+static const char * const gCmdOptionHelp =
     "   -i, --dev-id <hex-digits>\n"
     "\n"
     "       The device id (in hex) for which the certificate should be generated.\n"
@@ -110,67 +101,51 @@ static const char *const gCmdOptionHelp =
     "   -2, --sha256\n"
     "\n"
     "       Sign the certificate using a SHA-256 hash.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gCmdOptions =
-{
-    HandleOption,
-    gCmdOptionDefs,
-    "COMMAND OPTIONS",
-    gCmdOptionHelp
-};
+static OptionSet gCmdOptions = { HandleOption, gCmdOptionDefs, "COMMAND OPTIONS", gCmdOptionHelp };
 
-static HelpOptions gHelpOptions(
-    CMD_NAME,
-    "Usage: " CMD_NAME " [ <options...> ]\n",
-    WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
-    "Generate a Weave device certificate"
-);
+static HelpOptions gHelpOptions(CMD_NAME, "Usage: " CMD_NAME " [ <options...> ]\n", WEAVE_VERSION_STRING "\n" COPYRIGHT_STRING,
+                                "Generate a Weave device certificate");
 
-static OptionSet *gCmdOptionSets[] =
-{
-    &gCmdOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gCmdOptionSets[] = { &gCmdOptions, &gHelpOptions, NULL };
 
-static uint64_t gDevId = 0;
-static const char *gCurveName = NULL;
-static const char *gCACertFileName = NULL;
-static const char *gCAKeyFileName = NULL;
-static const char *gInCertKeyFileName = NULL;
-static const char *gOutCertFileName = NULL;
-static const char *gOutKeyFileName = NULL;
-static int32_t gValidDays = 0;
-static const EVP_MD *gSigHashAlgo = NULL;
+static uint64_t gDevId                 = 0;
+static const char * gCurveName         = NULL;
+static const char * gCACertFileName    = NULL;
+static const char * gCAKeyFileName     = NULL;
+static const char * gInCertKeyFileName = NULL;
+static const char * gOutCertFileName   = NULL;
+static const char * gOutKeyFileName    = NULL;
+static int32_t gValidDays              = 0;
+static const EVP_MD * gSigHashAlgo     = NULL;
 static struct tm gValidFrom;
 
-bool Cmd_GenDeviceCert(int argc, char *argv[])
+bool Cmd_GenDeviceCert(int argc, char * argv[])
 {
-    bool res = true;
-    int curveNID = 0;
-    FILE *outCertFile = NULL;
-    FILE *outKeyFile = NULL;
-    X509 *caCert = NULL;
-    X509 *devCert = NULL;
-    EVP_PKEY *caKey = NULL;
-    EVP_PKEY *devKey = NULL;
-    uint8_t *weaveCert = NULL;
+    bool res            = true;
+    int curveNID        = 0;
+    FILE * outCertFile  = NULL;
+    FILE * outKeyFile   = NULL;
+    X509 * caCert       = NULL;
+    X509 * devCert      = NULL;
+    EVP_PKEY * caKey    = NULL;
+    EVP_PKEY * devKey   = NULL;
+    uint8_t * weaveCert = NULL;
     uint32_t weaveCertLen;
-    char *weaveCertB64 = NULL;
-    uint8_t *weaveKey = NULL;
+    char * weaveCertB64 = NULL;
+    uint8_t * weaveKey  = NULL;
     uint32_t weaveKeyLen;
-    char *weaveKeyB64 = NULL;
+    char * weaveKeyB64   = NULL;
     bool certFileCreated = false;
-    bool keyFileCreated = false;
+    bool keyFileCreated  = false;
 
     {
-        time_t now = time(NULL);
-        gValidFrom = *gmtime(&now);
+        time_t now         = time(NULL);
+        gValidFrom         = *gmtime(&now);
         gValidFrom.tm_hour = 0;
-        gValidFrom.tm_min = 0;
-        gValidFrom.tm_sec = 0;
+        gValidFrom.tm_min  = 0;
+        gValidFrom.tm_sec  = 0;
     }
 
     if (argc == 1)
@@ -244,27 +219,29 @@ bool Cmd_GenDeviceCert(int argc, char *argv[])
 
     if (access(gOutCertFileName, R_OK) == 0)
     {
-        fprintf(stderr, "weave: ERROR: Output certificate file already exists (%s)\n"
-                        "To replace the file, please remove it and re-run the command.\n",
-                        gOutCertFileName);
+        fprintf(stderr,
+                "weave: ERROR: Output certificate file already exists (%s)\n"
+                "To replace the file, please remove it and re-run the command.\n",
+                gOutCertFileName);
         ExitNow(res = false);
     }
 
     if (gOutKeyFileName != NULL && access(gOutKeyFileName, R_OK) == 0)
     {
-        fprintf(stderr, "weave: ERROR: Output key file already exists (%s)\n"
-                        "To replace the file, please remove it and re-run the command.\n",
-                        gOutKeyFileName);
+        fprintf(stderr,
+                "weave: ERROR: Output key file already exists (%s)\n"
+                "To replace the file, please remove it and re-run the command.\n",
+                gOutKeyFileName);
         ExitNow(res = false);
     }
 
     outCertFile = fopen(gOutCertFileName, "w+");
     if (outCertFile == NULL)
     {
-        fprintf(stderr, "weave: ERROR: Unable to create output certificate file (%s)\n"
-                        "%s.\n",
-                        gOutCertFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to create output certificate file (%s)\n"
+                "%s.\n",
+                gOutCertFileName, strerror(errno));
         ExitNow(res = false);
     }
     certFileCreated = true;
@@ -274,10 +251,10 @@ bool Cmd_GenDeviceCert(int argc, char *argv[])
         outKeyFile = fopen(gOutKeyFileName, "w+");
         if (outKeyFile == NULL)
         {
-            fprintf(stderr, "weave: ERROR: Unable to create output key file (%s)\n"
-                            "%s.\n",
-                            gOutKeyFileName,
-                            strerror(errno));
+            fprintf(stderr,
+                    "weave: ERROR: Unable to create output key file (%s)\n"
+                    "%s.\n",
+                    gOutKeyFileName, strerror(errno));
             ExitNow(res = false);
         }
     }
@@ -298,8 +275,7 @@ bool Cmd_GenDeviceCert(int argc, char *argv[])
         // of the private key.
         if (gCurveName != NULL && EC_GROUP_get_curve_name(EC_KEY_get0_group(EVP_PKEY_get1_EC_KEY(devKey))) != curveNID)
         {
-            fprintf(stderr, "weave: ERROR: Value given for --curve option does not match specified key (%s)\n",
-                            gCurveName);
+            fprintf(stderr, "weave: ERROR: Value given for --curve option does not match specified key (%s)\n", gCurveName);
             ExitNow(res = false);
         }
     }
@@ -332,43 +308,43 @@ bool Cmd_GenDeviceCert(int argc, char *argv[])
 
     if (fputs(weaveCertB64, outCertFile) == EOF)
     {
-        fprintf(stderr, "weave: ERROR: Unable to write output certificate file (%s)\n"
-                        "%s.\n",
-                        gOutCertFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to write output certificate file (%s)\n"
+                "%s.\n",
+                gOutCertFileName, strerror(errno));
         ExitNow(res = false);
     }
 
     if (outKeyFile != NULL && fputs(weaveKeyB64, outKeyFile) == EOF)
     {
-        fprintf(stderr, "weave: ERROR: Unable to write output key file (%s)\n"
-                        "%s.\n",
-                        gOutKeyFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to write output key file (%s)\n"
+                "%s.\n",
+                gOutKeyFileName, strerror(errno));
         ExitNow(res = false);
     }
 
-    res = (fclose(outCertFile) != EOF);
+    res         = (fclose(outCertFile) != EOF);
     outCertFile = NULL;
     if (!res)
     {
-        fprintf(stderr, "weave: ERROR: Unable to write output certificate file (%s)\n"
-                        "%s.\n",
-                        gOutCertFileName,
-                        strerror(errno));
+        fprintf(stderr,
+                "weave: ERROR: Unable to write output certificate file (%s)\n"
+                "%s.\n",
+                gOutCertFileName, strerror(errno));
         ExitNow();
     }
 
     if (outKeyFile != NULL)
     {
-        res = (fclose(outKeyFile) != EOF);
+        res        = (fclose(outKeyFile) != EOF);
         outKeyFile = NULL;
         if (!res)
         {
-            fprintf(stderr, "weave: ERROR: Unable to write output key file (%s)\n"
-                            "%s.\n",
-                            gOutKeyFileName,
-                            strerror(errno));
+            fprintf(stderr,
+                    "weave: ERROR: Unable to write output key file (%s)\n"
+                    "%s.\n",
+                    gOutKeyFileName, strerror(errno));
             ExitNow();
         }
     }
@@ -401,7 +377,7 @@ exit:
     return res;
 }
 
-bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -412,24 +388,12 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case 'k':
-        gInCertKeyFileName = arg;
-        break;
-    case 'C':
-        gCACertFileName = arg;
-        break;
-    case 'K':
-        gCAKeyFileName = arg;
-        break;
-    case 'o':
-        gOutCertFileName = arg;
-        break;
-    case 'O':
-        gOutKeyFileName = arg;
-        break;
-    case 'u':
-        gCurveName = arg;
-        break;
+    case 'k': gInCertKeyFileName = arg; break;
+    case 'C': gCACertFileName = arg; break;
+    case 'K': gCAKeyFileName = arg; break;
+    case 'o': gOutCertFileName = arg; break;
+    case 'O': gOutKeyFileName = arg; break;
+    case 'u': gCurveName = arg; break;
     case 'V':
         if (!ParseDateTime(arg, gValidFrom))
         {
@@ -444,15 +408,9 @@ bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *n
             return false;
         }
         break;
-    case '1':
-        gSigHashAlgo = EVP_sha1();
-        break;
-    case '2':
-        gSigHashAlgo = EVP_sha256();
-        break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    case '1': gSigHashAlgo = EVP_sha1(); break;
+    case '2': gSigHashAlgo = EVP_sha256(); break;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;

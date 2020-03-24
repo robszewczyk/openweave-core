@@ -44,18 +44,20 @@ using namespace nl::Weave::TLV;
 
 #define TOOL_NAME "TestCASE"
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg);
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg);
 
 enum
 {
-    TestProfile_1				= 0xAABBCCDD,
-    TestProfile_2				= 0x11223344
+    TestProfile_1 = 0xAABBCCDD,
+    TestProfile_2 = 0x11223344
 };
 
-static const char sLargeString [] =
+static const char sLargeString[] =
     "START..."
-    "!123456789ABCDEF@123456789ABCDEF#123456789ABCDEF$123456789ABCDEF%123456789ABCDEF^123456789ABCDEF&123456789ABCDEF*123456789ABCDEF"
-    "01234567(9ABCDEF01234567)9ABCDEF01234567-9ABCDEF01234567=9ABCDEF01234567[9ABCDEF01234567]9ABCDEF01234567;9ABCDEF01234567'9ABCDEF"
+    "!123456789ABCDEF@123456789ABCDEF#123456789ABCDEF$123456789ABCDEF%123456789ABCDEF^123456789ABCDEF&123456789ABCDEF*"
+    "123456789ABCDEF"
+    "01234567(9ABCDEF01234567)9ABCDEF01234567-9ABCDEF01234567=9ABCDEF01234567[9ABCDEF01234567]9ABCDEF01234567;9ABCDEF01234567'"
+    "9ABCDEF"
     "...END";
 
 void Abort()
@@ -63,7 +65,7 @@ void Abort()
     abort();
 }
 
-void TestAndOpenContainer(nlTestSuite *inSuite, TLVReader& reader, TLVType type, uint64_t tag, TLVReader& containerReader)
+void TestAndOpenContainer(nlTestSuite * inSuite, TLVReader & reader, TLVType type, uint64_t tag, TLVReader & containerReader)
 {
     NL_TEST_ASSERT(inSuite, reader.GetType() == type);
     NL_TEST_ASSERT(inSuite, reader.GetTag() == tag);
@@ -75,8 +77,8 @@ void TestAndOpenContainer(nlTestSuite *inSuite, TLVReader& reader, TLVType type,
     NL_TEST_ASSERT(inSuite, containerReader.GetContainerType() == type);
 }
 
-template<class T>
-void TestAndEnterContainer(nlTestSuite *inSuite, T& t, TLVType type, uint64_t tag, TLVType& outerContainerType)
+template <class T>
+void TestAndEnterContainer(nlTestSuite * inSuite, T & t, TLVType type, uint64_t tag, TLVType & outerContainerType)
 {
     NL_TEST_ASSERT(inSuite, t.GetType() == type);
     NL_TEST_ASSERT(inSuite, t.GetTag() == tag);
@@ -91,27 +93,25 @@ void TestAndEnterContainer(nlTestSuite *inSuite, T& t, TLVType type, uint64_t ta
     NL_TEST_ASSERT(inSuite, t.GetContainerType() == type);
 }
 
-template<class T>
-void TestNext(nlTestSuite *inSuite, T& t)
+template <class T> void TestNext(nlTestSuite * inSuite, T & t)
 {
     WEAVE_ERROR err = t.Next();
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-void TestSkip(nlTestSuite *inSuite, TLVReader& reader)
+void TestSkip(nlTestSuite * inSuite, TLVReader & reader)
 {
     WEAVE_ERROR err = reader.Skip();
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-void TestMove(nlTestSuite *inSuite, TLVUpdater& updater)
+void TestMove(nlTestSuite * inSuite, TLVUpdater & updater)
 {
     WEAVE_ERROR err = updater.Move();
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-template<class T>
-void TestEnd(nlTestSuite *inSuite, T& t)
+template <class T> void TestEnd(nlTestSuite * inSuite, T & t)
 {
     WEAVE_ERROR err;
 
@@ -119,7 +119,7 @@ void TestEnd(nlTestSuite *inSuite, T& t)
     NL_TEST_ASSERT(inSuite, err == WEAVE_END_OF_TLV);
 }
 
-void TestEndAndCloseContainer(nlTestSuite *inSuite, TLVReader& reader, TLVReader& containerReader)
+void TestEndAndCloseContainer(nlTestSuite * inSuite, TLVReader & reader, TLVReader & containerReader)
 {
     WEAVE_ERROR err;
 
@@ -129,8 +129,7 @@ void TestEndAndCloseContainer(nlTestSuite *inSuite, TLVReader& reader, TLVReader
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-template<class T>
-void TestEndAndExitContainer(nlTestSuite *inSuite, T& t, TLVType outerContainerType)
+template <class T> void TestEndAndExitContainer(nlTestSuite * inSuite, T & t, TLVType outerContainerType)
 {
     WEAVE_ERROR err;
 
@@ -142,8 +141,7 @@ void TestEndAndExitContainer(nlTestSuite *inSuite, T& t, TLVType outerContainerT
     NL_TEST_ASSERT(inSuite, t.GetContainerType() == outerContainerType);
 }
 
-template<class S, class T>
-void TestGet(nlTestSuite *inSuite, S& s, TLVType type, uint64_t tag, T expectedVal)
+template <class S, class T> void TestGet(nlTestSuite * inSuite, S & s, TLVType type, uint64_t tag, T expectedVal)
 {
     NL_TEST_ASSERT(inSuite, s.GetType() == type);
     NL_TEST_ASSERT(inSuite, s.GetTag() == tag);
@@ -156,7 +154,8 @@ void TestGet(nlTestSuite *inSuite, S& s, TLVType type, uint64_t tag, T expectedV
     NL_TEST_ASSERT(inSuite, val == expectedVal);
 }
 
-void ForEachElement(nlTestSuite *inSuite, TLVReader& reader, void *context, void (*cb)(nlTestSuite *inSuite, TLVReader& reader, void *context))
+void ForEachElement(nlTestSuite * inSuite, TLVReader & reader, void * context,
+                    void (*cb)(nlTestSuite * inSuite, TLVReader & reader, void * context))
 {
     WEAVE_ERROR err;
 
@@ -195,20 +194,19 @@ void ForEachElement(nlTestSuite *inSuite, TLVReader& reader, void *context, void
 
 struct TestTLVContext
 {
-    nlTestSuite *mSuite;
+    nlTestSuite * mSuite;
     int mEvictionCount;
     int mEvictedBytes;
 };
 
-
-void TestNull(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag)
+void TestNull(nlTestSuite * inSuite, TLVReader & reader, uint64_t tag)
 {
     NL_TEST_ASSERT(inSuite, reader.GetType() == kTLVType_Null);
     NL_TEST_ASSERT(inSuite, reader.GetTag() == tag);
     NL_TEST_ASSERT(inSuite, reader.GetLength() == 0);
 }
 
-void TestString(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const char *expectedVal)
+void TestString(nlTestSuite * inSuite, TLVReader & reader, uint64_t tag, const char * expectedVal)
 {
     NL_TEST_ASSERT(inSuite, reader.GetType() == kTLVType_UTF8String);
     NL_TEST_ASSERT(inSuite, reader.GetTag() == tag);
@@ -216,7 +214,7 @@ void TestString(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const cha
     uint32_t expectedLen = strlen(expectedVal);
     NL_TEST_ASSERT(inSuite, reader.GetLength() == expectedLen);
 
-    char *val = (char *)malloc(expectedLen + 1);
+    char * val = (char *) malloc(expectedLen + 1);
 
     WEAVE_ERROR err = reader.GetString(val, expectedLen + 1);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -226,7 +224,7 @@ void TestString(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const cha
     free(val);
 }
 
-void TestDupString(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const char *expectedVal)
+void TestDupString(nlTestSuite * inSuite, TLVReader & reader, uint64_t tag, const char * expectedVal)
 {
     NL_TEST_ASSERT(inSuite, reader.GetType() == kTLVType_UTF8String);
     NL_TEST_ASSERT(inSuite, reader.GetTag() == tag);
@@ -234,7 +232,7 @@ void TestDupString(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const 
     uint32_t expectedLen = strlen(expectedVal);
     NL_TEST_ASSERT(inSuite, reader.GetLength() == expectedLen);
 
-    char *val = (char *)malloc(expectedLen + 1);
+    char * val = (char *) malloc(expectedLen + 1);
 
     WEAVE_ERROR err = reader.DupString(val);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
@@ -244,14 +242,14 @@ void TestDupString(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const 
     free(val);
 }
 
-void TestDupBytes(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const uint8_t *expectedVal, uint32_t expectedLen)
+void TestDupBytes(nlTestSuite * inSuite, TLVReader & reader, uint64_t tag, const uint8_t * expectedVal, uint32_t expectedLen)
 {
     NL_TEST_ASSERT(inSuite, reader.GetType() == kTLVType_UTF8String);
     NL_TEST_ASSERT(inSuite, reader.GetTag() == tag);
 
     NL_TEST_ASSERT(inSuite, reader.GetLength() == expectedLen);
 
-    uint8_t *val = (uint8_t *)malloc(expectedLen);
+    uint8_t * val   = (uint8_t *) malloc(expectedLen);
     WEAVE_ERROR err = reader.DupBytes(val, expectedLen);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -260,7 +258,7 @@ void TestDupBytes(nlTestSuite *inSuite, TLVReader& reader, uint64_t tag, const u
     free(val);
 }
 
-void TestBufferContents(nlTestSuite *inSuite, PacketBuffer *buf, const uint8_t *expectedVal, uint32_t expectedLen)
+void TestBufferContents(nlTestSuite * inSuite, PacketBuffer * buf, const uint8_t * expectedVal, uint32_t expectedLen)
 {
     while (buf != NULL)
     {
@@ -278,83 +276,68 @@ void TestBufferContents(nlTestSuite *inSuite, PacketBuffer *buf, const uint8_t *
     NL_TEST_ASSERT(inSuite, expectedLen == 0);
 }
 
-static const uint8_t Encoding1[] =
-{
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88, 0x02,
-    0x00, 0x36, 0x00, 0x00, 0x2A, 0x00, 0xEF, 0x02, 0xF0, 0x67, 0xFD, 0xFF, 0x07, 0x00, 0x90, 0x2F,
-    0x50, 0x09, 0x00, 0x00, 0x00, 0x15, 0x18, 0x17, 0xD4, 0xBB, 0xAA, 0xDD, 0xCC, 0x11, 0x00, 0xB4,
-    0xA0, 0xBB, 0x0D, 0x00, 0xB5, 0x00, 0x28, 0x6B, 0xEE, 0x6D, 0x70, 0x11, 0x01, 0x00, 0x0E, 0x01,
-    0x53, 0x54, 0x41, 0x52, 0x54, 0x2E, 0x2E, 0x2E, 0x21, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x40, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x23, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x24, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x25, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x5E, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x26, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x2A, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x28, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x29, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x2D, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x3D, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x5B, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x5D, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x3B, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-    0x27, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x2E, 0x2E, 0x2E, 0x45, 0x4E, 0x44, 0x18, 0x18,
-    0x18, 0xCC, 0xBB, 0xAA, 0xDD, 0xCC, 0x05, 0x00, 0x0E, 0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73,
-    0x20, 0x61, 0x20, 0x74, 0x65, 0x73, 0x74,
-    0x8A, 0xFF, 0xFF, 0x33, 0x33, 0x8f, 0x41,
-    0xAB, 0x00, 0x00, 0x01, 0x00, 0x66, 0x66, 0x66, 0x66, 0x66, 0xE6, 0x31, 0x40, 0x18
+static const uint8_t Encoding1[] = {
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88, 0x02, 0x00, 0x36, 0x00, 0x00,
+    0x2A, 0x00, 0xEF, 0x02, 0xF0, 0x67, 0xFD, 0xFF, 0x07, 0x00, 0x90, 0x2F, 0x50, 0x09, 0x00, 0x00, 0x00, 0x15, 0x18, 0x17,
+    0xD4, 0xBB, 0xAA, 0xDD, 0xCC, 0x11, 0x00, 0xB4, 0xA0, 0xBB, 0x0D, 0x00, 0xB5, 0x00, 0x28, 0x6B, 0xEE, 0x6D, 0x70, 0x11,
+    0x01, 0x00, 0x0E, 0x01, 0x53, 0x54, 0x41, 0x52, 0x54, 0x2E, 0x2E, 0x2E, 0x21, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x40, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42,
+    0x43, 0x44, 0x45, 0x46, 0x23, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46,
+    0x24, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x25, 0x31, 0x32, 0x33,
+    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x5E, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x26, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42,
+    0x43, 0x44, 0x45, 0x46, 0x2A, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x28, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33,
+    0x34, 0x35, 0x36, 0x37, 0x29, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x2D, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x3D, 0x39, 0x41, 0x42,
+    0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x5B, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x5D, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33,
+    0x34, 0x35, 0x36, 0x37, 0x3B, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x27, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x2E, 0x2E, 0x2E, 0x45, 0x4E, 0x44, 0x18, 0x18, 0x18, 0xCC, 0xBB, 0xAA,
+    0xDD, 0xCC, 0x05, 0x00, 0x0E, 0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x20, 0x74, 0x65, 0x73, 0x74, 0x8A,
+    0xFF, 0xFF, 0x33, 0x33, 0x8f, 0x41, 0xAB, 0x00, 0x00, 0x01, 0x00, 0x66, 0x66, 0x66, 0x66, 0x66, 0xE6, 0x31, 0x40, 0x18
 };
 
-static const uint8_t Encoding1_DataMacro [] =
-{
+static const uint8_t Encoding1_DataMacro[] = {
     nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 1)),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
-        nlWeaveTLV_ARRAY(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(0)),
-            nlWeaveTLV_INT8(nlWeaveTLV_TAG_ANONYMOUS, 42),
-            nlWeaveTLV_INT8(nlWeaveTLV_TAG_ANONYMOUS, -17),
-            nlWeaveTLV_INT32(nlWeaveTLV_TAG_ANONYMOUS, -170000),
-            nlWeaveTLV_UINT64(nlWeaveTLV_TAG_ANONYMOUS, 40000000000ULL),
-            nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_ANONYMOUS),
-            nlWeaveTLV_END_OF_CONTAINER,
-            nlWeaveTLV_PATH(nlWeaveTLV_TAG_ANONYMOUS),
-                nlWeaveTLV_NULL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 17)),
-                nlWeaveTLV_NULL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(900000)),
-                nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(4000000000ULL)),
-                    nlWeaveTLV_UTF8_STRING_2ByteLength(nlWeaveTLV_TAG_COMMON_PROFILE_4Bytes(70000), sizeof(sLargeString) - 1,
-                    'S', 'T', 'A', 'R', 'T', '.', '.', '.',
-                    '!', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '@',
-                    '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '#', '1',
-                    '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '$', '1', '2',
-                    '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '%', '1', '2', '3',
-                    '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '^', '1', '2', '3', '4',
-                    '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '&', '1', '2', '3', '4', '5',
-                    '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '*', '1', '2', '3', '4', '5', '6',
-                    '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                    '0', '1', '2', '3', '4', '5', '6', '7', '(', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0',
-                    '1', '2', '3', '4', '5', '6', '7', ')', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1',
-                    '2', '3', '4', '5', '6', '7', '-', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2',
-                    '3', '4', '5', '6', '7', '=', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3',
-                    '4', '5', '6', '7', '[', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4',
-                    '5', '6', '7', ']', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5',
-                    '6', '7', ';', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6',
-                    '7', '\'', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                    '.', '.', '.', 'E', 'N', 'D'),
-                nlWeaveTLV_END_OF_CONTAINER,
-            nlWeaveTLV_END_OF_CONTAINER,
-        nlWeaveTLV_END_OF_CONTAINER,
-        nlWeaveTLV_UTF8_STRING_1ByteLength(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 5), sizeof("This is a test") - 1,
-            'T', 'h', 'i', 's', ' ', 'i', 's', ' ', 'a', ' ', 't', 'e', 's', 't'),
-        nlWeaveTLV_FLOAT32(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(65535),
-            0x33, 0x33, 0x8f, 0x41), // (float)17.9
-        nlWeaveTLV_FLOAT64(nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(65536),
-            0x66, 0x66, 0x66, 0x66, 0x66, 0xE6, 0x31, 0x40), // (double)17.9
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
+    nlWeaveTLV_ARRAY(nlWeaveTLV_TAG_CONTEXT_SPECIFIC(0)),
+    nlWeaveTLV_INT8(nlWeaveTLV_TAG_ANONYMOUS, 42),
+    nlWeaveTLV_INT8(nlWeaveTLV_TAG_ANONYMOUS, -17),
+    nlWeaveTLV_INT32(nlWeaveTLV_TAG_ANONYMOUS, -170000),
+    nlWeaveTLV_UINT64(nlWeaveTLV_TAG_ANONYMOUS, 40000000000ULL),
+    nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_ANONYMOUS),
+    nlWeaveTLV_END_OF_CONTAINER,
+    nlWeaveTLV_PATH(nlWeaveTLV_TAG_ANONYMOUS),
+    nlWeaveTLV_NULL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 17)),
+    nlWeaveTLV_NULL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(900000)),
+    nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(4000000000ULL)),
+    nlWeaveTLV_UTF8_STRING_2ByteLength(
+        nlWeaveTLV_TAG_COMMON_PROFILE_4Bytes(70000), sizeof(sLargeString) - 1, 'S', 'T', 'A', 'R', 'T', '.', '.', '.', '!', '1',
+        '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '@', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+        'B', 'C', 'D', 'E', 'F', '#', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '$', '1', '2', '3',
+        '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '%', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
+        'D', 'E', 'F', '^', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '&', '1', '2', '3', '4', '5',
+        '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', '*', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+        'F', '0', '1', '2', '3', '4', '5', '6', '7', '(', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7',
+        ')', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '-', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0',
+        '1', '2', '3', '4', '5', '6', '7', '=', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '[', '9',
+        'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7', ']', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2',
+        '3', '4', '5', '6', '7', ';', '9', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '\'', '9', 'A',
+        'B', 'C', 'D', 'E', 'F', '.', '.', '.', 'E', 'N', 'D'),
+    nlWeaveTLV_END_OF_CONTAINER,
+    nlWeaveTLV_END_OF_CONTAINER,
+    nlWeaveTLV_END_OF_CONTAINER,
+    nlWeaveTLV_UTF8_STRING_1ByteLength(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 5), sizeof("This is a test") - 1, 'T',
+                                       'h', 'i', 's', ' ', 'i', 's', ' ', 'a', ' ', 't', 'e', 's', 't'),
+    nlWeaveTLV_FLOAT32(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(65535), 0x33, 0x33, 0x8f, 0x41), // (float)17.9
+    nlWeaveTLV_FLOAT64(nlWeaveTLV_TAG_IMPLICIT_PROFILE_4Bytes(65536), 0x66, 0x66, 0x66, 0x66, 0x66, 0xE6, 0x31,
+                       0x40), // (double)17.9
     nlWeaveTLV_END_OF_CONTAINER
 };
 
-void WriteEncoding1(nlTestSuite *inSuite, TLVWriter& writer)
+void WriteEncoding1(nlTestSuite * inSuite, TLVWriter & writer)
 {
     WEAVE_ERROR err;
     TLVWriter writer2;
@@ -432,10 +415,10 @@ void WriteEncoding1(nlTestSuite *inSuite, TLVWriter& writer)
     err = writer2.PutString(ProfileTag(TestProfile_1, 5), "This is a test");
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
-    err = writer2.Put(ProfileTag(TestProfile_2, 65535), (float)17.9);
+    err = writer2.Put(ProfileTag(TestProfile_2, 65535), (float) 17.9);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
-    err = writer2.Put(ProfileTag(TestProfile_2, 65536), (double)17.9);
+    err = writer2.Put(ProfileTag(TestProfile_2, 65536), (double) 17.9);
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
     err = writer.CloseContainer(writer2);
@@ -445,7 +428,7 @@ void WriteEncoding1(nlTestSuite *inSuite, TLVWriter& writer)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-void WriteEmptyEncoding(nlTestSuite *inSuite, TLVWriter& writer)
+void WriteEmptyEncoding(nlTestSuite * inSuite, TLVWriter & writer)
 {
     WEAVE_ERROR err;
     TLVWriter writer2;
@@ -470,7 +453,7 @@ void WriteEmptyEncoding(nlTestSuite *inSuite, TLVWriter& writer)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-void ReadEncoding1(nlTestSuite *inSuite, TLVReader& reader)
+void ReadEncoding1(nlTestSuite * inSuite, TLVReader & reader)
 {
     TestNext<TLVReader>(inSuite, reader);
 
@@ -552,7 +535,8 @@ void ReadEncoding1(nlTestSuite *inSuite, TLVReader& reader)
                 {
                     TLVType outerContainerType;
 
-                    TestAndEnterContainer<TLVReader>(inSuite, reader5, kTLVType_Structure, ProfileTag(TestProfile_2, 4000000000ULL), outerContainerType);
+                    TestAndEnterContainer<TLVReader>(inSuite, reader5, kTLVType_Structure, ProfileTag(TestProfile_2, 4000000000ULL),
+                                                     outerContainerType);
 
                     TestNext<TLVReader>(inSuite, reader5);
 
@@ -573,11 +557,11 @@ void ReadEncoding1(nlTestSuite *inSuite, TLVReader& reader)
 
         TestNext<TLVReader>(inSuite, reader2);
 
-        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65535), (float)17.9);
+        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65535), (float) 17.9);
 
         TestNext<TLVReader>(inSuite, reader2);
 
-        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65536), (double)17.9);
+        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65536), (double) 17.9);
 
         TestEndAndCloseContainer(inSuite, reader, reader2);
     }
@@ -585,7 +569,7 @@ void ReadEncoding1(nlTestSuite *inSuite, TLVReader& reader)
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void WriteEncoding2(nlTestSuite *inSuite, TLVWriter& writer)
+void WriteEncoding2(nlTestSuite * inSuite, TLVWriter & writer)
 {
     WEAVE_ERROR err;
 
@@ -625,7 +609,7 @@ void WriteEncoding2(nlTestSuite *inSuite, TLVWriter& writer)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-void WriteEncoding3(nlTestSuite *inSuite, TLVWriter& writer)
+void WriteEncoding3(nlTestSuite * inSuite, TLVWriter & writer)
 {
     WEAVE_ERROR err;
 
@@ -646,7 +630,7 @@ void WriteEncoding3(nlTestSuite *inSuite, TLVWriter& writer)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-void ReadEncoding3(nlTestSuite *inSuite, TLVReader& reader)
+void ReadEncoding3(nlTestSuite * inSuite, TLVReader & reader)
 {
     TLVReader reader2;
 
@@ -659,32 +643,31 @@ void ReadEncoding3(nlTestSuite *inSuite, TLVReader& reader)
     TestEndAndCloseContainer(inSuite, reader, reader2);
 }
 
-static const uint8_t Encoding5_DataMacro [] =
-{
+static const uint8_t Encoding5_DataMacro[] = {
     nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 1)),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), false),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), true),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), false),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), true),
 
-        nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 1)),
-            nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
-            nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
-        nlWeaveTLV_END_OF_CONTAINER,
-
-        nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(1)),
-            nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
-            nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
-        nlWeaveTLV_END_OF_CONTAINER,
+    nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 1)),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
     nlWeaveTLV_END_OF_CONTAINER,
 
     nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(1)),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
-        nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
+    nlWeaveTLV_END_OF_CONTAINER,
+    nlWeaveTLV_END_OF_CONTAINER,
+
+    nlWeaveTLV_STRUCTURE(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(1)),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_IMPLICIT_PROFILE_2Bytes(2), false),
+    nlWeaveTLV_BOOL(nlWeaveTLV_TAG_FULLY_QUALIFIED_6Bytes(TestProfile_1, 2), true),
     nlWeaveTLV_END_OF_CONTAINER,
 };
 
-void WriteEncoding5(nlTestSuite *inSuite, TLVWriter& writer)
+void WriteEncoding5(nlTestSuite * inSuite, TLVWriter & writer)
 {
     WEAVE_ERROR err;
 
@@ -776,7 +759,7 @@ void WriteEncoding5(nlTestSuite *inSuite, TLVWriter& writer)
  * <TestProfile_1, 1, kTLVType_Structure, <TestProfile_1, 2, true> <TestProfile_2, 2, false> >,
  * <TestProfile_2, 1, kTLVType_Structure, <TestProfile_2, 2, false> <TestProfile_1, 2, true> >
  */
-void AppendEncoding2(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint32_t maxLen, uint32_t& updatedLen)
+void AppendEncoding2(nlTestSuite * inSuite, uint8_t * buf, uint32_t dataLen, uint32_t maxLen, uint32_t & updatedLen)
 {
     WEAVE_ERROR err;
 
@@ -890,7 +873,8 @@ void AppendEncoding2(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint3
  * <TestProfile_1, 1, kTLVType_Structure, <TestProfile_1, 2, true> <TestProfile_2, 2, false> >,
  * <TestProfile_2, 1, kTLVType_Structure, <TestProfile_2, 2, false> <TestProfile_1, 2, true> >
  */
-void FindAppendEncoding2(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint32_t maxLen, uint32_t& updatedLen, bool findContainer)
+void FindAppendEncoding2(nlTestSuite * inSuite, uint8_t * buf, uint32_t dataLen, uint32_t maxLen, uint32_t & updatedLen,
+                         bool findContainer)
 {
     WEAVE_ERROR err;
 
@@ -912,7 +896,8 @@ void FindAppendEncoding2(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, u
         err = tagReader.EnterContainer(outerContainerType);
         NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
-        do {
+        do
+        {
             err = tagReader.Next();
         } while (err != WEAVE_END_OF_TLV);
 
@@ -1009,7 +994,7 @@ void FindAppendEncoding2(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, u
     updatedLen = updater.GetLengthWritten();
 }
 
-void AppendEncoding3(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint32_t maxLen, uint32_t& updatedLen)
+void AppendEncoding3(nlTestSuite * inSuite, uint8_t * buf, uint32_t dataLen, uint32_t maxLen, uint32_t & updatedLen)
 {
     WEAVE_ERROR err;
 
@@ -1048,7 +1033,7 @@ void AppendEncoding3(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint3
     updatedLen = updater.GetLengthWritten();
 }
 
-void AppendEncoding4(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint32_t maxLen, uint32_t& updatedLen)
+void AppendEncoding4(nlTestSuite * inSuite, uint8_t * buf, uint32_t dataLen, uint32_t maxLen, uint32_t & updatedLen)
 {
     WEAVE_ERROR err;
 
@@ -1081,7 +1066,7 @@ void AppendEncoding4(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint3
     updatedLen = updater.GetLengthWritten();
 }
 
-void DeleteEncoding5(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint32_t maxLen, uint32_t& updatedLen)
+void DeleteEncoding5(nlTestSuite * inSuite, uint8_t * buf, uint32_t dataLen, uint32_t maxLen, uint32_t & updatedLen)
 {
     WEAVE_ERROR err;
 
@@ -1154,7 +1139,7 @@ void DeleteEncoding5(nlTestSuite *inSuite, uint8_t *buf, uint32_t dataLen, uint3
     updatedLen = updater.GetLengthWritten();
 }
 
-void ReadAppendedEncoding2(nlTestSuite *inSuite, TLVReader& reader)
+void ReadAppendedEncoding2(nlTestSuite * inSuite, TLVReader & reader)
 {
     TestNext<TLVReader>(inSuite, reader);
 
@@ -1239,7 +1224,7 @@ void ReadAppendedEncoding2(nlTestSuite *inSuite, TLVReader& reader)
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void ReadAppendedEncoding3(nlTestSuite *inSuite, TLVReader& reader)
+void ReadAppendedEncoding3(nlTestSuite * inSuite, TLVReader & reader)
 {
     TestNext<TLVReader>(inSuite, reader);
 
@@ -1262,7 +1247,7 @@ void ReadAppendedEncoding3(nlTestSuite *inSuite, TLVReader& reader)
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void ReadAppendedEncoding4(nlTestSuite *inSuite, TLVReader& reader)
+void ReadAppendedEncoding4(nlTestSuite * inSuite, TLVReader & reader)
 {
     TestNext<TLVReader>(inSuite, reader);
 
@@ -1281,7 +1266,7 @@ void ReadAppendedEncoding4(nlTestSuite *inSuite, TLVReader& reader)
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void ReadDeletedEncoding5(nlTestSuite *inSuite, TLVReader& reader)
+void ReadDeletedEncoding5(nlTestSuite * inSuite, TLVReader & reader)
 {
     TestNext<TLVReader>(inSuite, reader);
 
@@ -1325,7 +1310,7 @@ void ReadDeletedEncoding5(nlTestSuite *inSuite, TLVReader& reader)
 /**
  *  Test Simple Write and Reader
  */
-void CheckSimpleWriteRead(nlTestSuite *inSuite, void *inContext)
+void CheckSimpleWriteRead(nlTestSuite * inSuite, void * inContext)
 {
     uint8_t buf[2048];
     TLVWriter writer;
@@ -1357,7 +1342,6 @@ void CheckSimpleWriteRead(nlTestSuite *inSuite, void *inContext)
     ReadEncoding1(inSuite, reader);
 }
 
-
 /**
  *  Log the specified message in the form of @a aFormat.
  *
@@ -1369,7 +1353,7 @@ void CheckSimpleWriteRead(nlTestSuite *inSuite, void *inContext)
  *                           to the format specifiers in @a aFormat.
  *
  */
-void SimpleDumpWriter(const char *aFormat, ...)
+void SimpleDumpWriter(const char * aFormat, ...)
 {
     va_list args;
 
@@ -1383,7 +1367,7 @@ void SimpleDumpWriter(const char *aFormat, ...)
 /**
  *  Test Pretty Printer
  */
-void CheckPrettyPrinter(nlTestSuite *inSuite, void *inContext)
+void CheckPrettyPrinter(nlTestSuite * inSuite, void * inContext)
 {
     uint8_t buf[2048];
     TLVWriter writer;
@@ -1407,7 +1391,7 @@ void CheckPrettyPrinter(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Data Macros
  */
-void CheckDataMacro(nlTestSuite *inSuite, void *inContext)
+void CheckDataMacro(nlTestSuite * inSuite, void * inContext)
 {
     NL_TEST_ASSERT(inSuite, sizeof(Encoding1_DataMacro) == sizeof(Encoding1));
     NL_TEST_ASSERT(inSuite, memcmp(Encoding1, Encoding1_DataMacro, sizeof(Encoding1)) == 0);
@@ -1423,20 +1407,20 @@ void CheckDataMacro(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, memcmp(buf, Encoding5_DataMacro, encodedLen) == 0);
 }
 
-static WEAVE_ERROR NullIterateHandler(const TLVReader &aReader, size_t aDepth, void *aContext)
+static WEAVE_ERROR NullIterateHandler(const TLVReader & aReader, size_t aDepth, void * aContext)
 {
-    (void)aReader;
-    (void)aDepth;
-    (void)aContext;
+    (void) aReader;
+    (void) aDepth;
+    (void) aContext;
 
     return WEAVE_NO_ERROR;
 }
 
-static WEAVE_ERROR FindContainerWithElement(const TLVReader &aReader, size_t aDepth, void *aContext)
+static WEAVE_ERROR FindContainerWithElement(const TLVReader & aReader, size_t aDepth, void * aContext)
 {
     TLVReader reader;
     TLVReader result;
-    uint64_t * tag = static_cast<uint64_t *>(aContext);
+    uint64_t * tag  = static_cast<uint64_t *>(aContext);
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType containerType;
 
@@ -1467,7 +1451,7 @@ exit:
 /**
  *  Test Weave TLV Utilities
  */
-void CheckWeaveTLVUtilities(nlTestSuite *inSuite, void *inContext)
+void CheckWeaveTLVUtilities(nlTestSuite * inSuite, void * inContext)
 {
     uint8_t buf[2048];
     TLVWriter writer;
@@ -1520,19 +1504,19 @@ void CheckWeaveTLVUtilities(nlTestSuite *inSuite, void *inContext)
         // position the reader on the first element
         reader1.Next();
         uint64_t tag = ProfileTag(TestProfile_1, 1);
-        err = nl::Weave::TLV::Utilities::Find(reader1, FindContainerWithElement, &tag, tagReader, false);
+        err          = nl::Weave::TLV::Utilities::Find(reader1, FindContainerWithElement, &tag, tagReader, false);
         NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_TLV_TAG_NOT_FOUND);
 
         tag = ProfileTag(TestProfile_2, 2);
         err = nl::Weave::TLV::Utilities::Find(reader1, FindContainerWithElement, &tag, tagReader, false);
-        NL_TEST_ASSERT(inSuite, err ==  WEAVE_NO_ERROR);
+        NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
         NL_TEST_ASSERT(inSuite, tagReader.GetType() == kTLVType_Structure);
         NL_TEST_ASSERT(inSuite, tagReader.GetTag() == ProfileTag(TestProfile_1, 1));
 
         // Position the reader on the second element
         reader1.Next();
         err = nl::Weave::TLV::Utilities::Find(reader1, FindContainerWithElement, &tag, tagReader, false);
-        NL_TEST_ASSERT(inSuite, err ==  WEAVE_NO_ERROR);
+        NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
         NL_TEST_ASSERT(inSuite, tagReader.GetType() == kTLVType_Structure);
         NL_TEST_ASSERT(inSuite, tagReader.GetTag() == ProfileTag(TestProfile_2, 1));
     }
@@ -1560,7 +1544,7 @@ void CheckWeaveTLVUtilities(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Weave TLV Empty Find
  */
-void CheckWeaveTLVEmptyFind(nlTestSuite *inSuite, void *inContext)
+void CheckWeaveTLVEmptyFind(nlTestSuite * inSuite, void * inContext)
 {
     uint8_t buf[30];
     TLVWriter writer;
@@ -1583,45 +1567,23 @@ void CheckWeaveTLVEmptyFind(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
-uint8_t Encoding2[] =
-{
+uint8_t Encoding2[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x88, 0x02, 0x00,
-    0x18,
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88, 0x02, 0x00, 0x18,
     // Container 2
-    0x95, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-    0x18
+    0x95, 0x01, 0x00, 0x88, 0x02, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x18
 };
 
-uint8_t AppendedEncoding2[] =
-{
+uint8_t AppendedEncoding2[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x88, 0x02, 0x00,
-        0xC8, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x89, 0x02, 0x00,
-        0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-            0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-            0x88, 0x02, 0x00,
-        0x18,
-        0x95, 0x01, 0x00,
-            0x88, 0x02, 0x00,
-            0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x18,
-    0x18,
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88, 0x02, 0x00, 0xC8, 0xBB, 0xAA, 0xDD,
+    0xCC, 0x02, 0x00, 0x89, 0x02, 0x00, 0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88,
+    0x02, 0x00, 0x18, 0x95, 0x01, 0x00, 0x88, 0x02, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x18, 0x18,
     // Container 2
-    0x95, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-    0x18
+    0x95, 0x01, 0x00, 0x88, 0x02, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x18
 };
 
-void WriteAppendReadTest0(nlTestSuite *inSuite)
+void WriteAppendReadTest0(nlTestSuite * inSuite)
 {
     uint8_t buf[74];
     uint32_t updatedLen;
@@ -1673,7 +1635,7 @@ void WriteAppendReadTest0(nlTestSuite *inSuite)
     ReadAppendedEncoding2(inSuite, reader);
 }
 
-void WriteFindAppendReadTest(nlTestSuite *inSuite, bool findContainer)
+void WriteFindAppendReadTest(nlTestSuite * inSuite, bool findContainer)
 {
     uint8_t buf[74];
     uint32_t updatedLen;
@@ -1725,24 +1687,17 @@ void WriteFindAppendReadTest(nlTestSuite *inSuite, bool findContainer)
     ReadAppendedEncoding2(inSuite, reader);
 }
 
-uint8_t Encoding3[] =
-{
+uint8_t Encoding3[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-    0x18,
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0x88, 0x02, 0x00, 0x18,
 };
 
-uint8_t AppendedEncoding3[] =
-{
+uint8_t AppendedEncoding3[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-        0x89, 0x02, 0x00,
-    0x18
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0x88, 0x02, 0x00, 0x89, 0x02, 0x00, 0x18
 };
 
-void WriteAppendReadTest1(nlTestSuite *inSuite)
+void WriteAppendReadTest1(nlTestSuite * inSuite)
 {
     uint8_t buf[14];
     uint32_t updatedLen;
@@ -1794,15 +1749,12 @@ void WriteAppendReadTest1(nlTestSuite *inSuite)
     ReadAppendedEncoding3(inSuite, reader);
 }
 
-uint8_t AppendedEncoding4[] =
-{
+uint8_t AppendedEncoding4[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-    0x18,
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0x88, 0x02, 0x00, 0x18,
 };
 
-void AppendReadTest(nlTestSuite *inSuite)
+void AppendReadTest(nlTestSuite * inSuite)
 {
     uint8_t buf[11];
     uint32_t updatedLen;
@@ -1844,45 +1796,23 @@ void AppendReadTest(nlTestSuite *inSuite)
     ReadAppendedEncoding4(inSuite, reader);
 }
 
-uint8_t Encoding5[] =
-{
+uint8_t Encoding5[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x88, 0x02, 0x00,
-        0xC8, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x89, 0x02, 0x00,
-        0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-            0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-            0x88, 0x02, 0x00,
-        0x18,
-        0x95, 0x01, 0x00,
-            0x88, 0x02, 0x00,
-            0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x18,
-    0x18,
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88, 0x02, 0x00, 0xC8, 0xBB, 0xAA, 0xDD,
+    0xCC, 0x02, 0x00, 0x89, 0x02, 0x00, 0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88,
+    0x02, 0x00, 0x18, 0x95, 0x01, 0x00, 0x88, 0x02, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x18, 0x18,
     // Container 2
-    0x95, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-    0x18
+    0x95, 0x01, 0x00, 0x88, 0x02, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x18
 };
 
-uint8_t DeletedEncoding5[] =
-{
+uint8_t DeletedEncoding5[] = {
     // Container 1
-    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-        0x88, 0x02, 0x00,
-    0x18,
+    0xD5, 0xBB, 0xAA, 0xDD, 0xCC, 0x01, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x88, 0x02, 0x00, 0x18,
     // Container 2
-    0x95, 0x01, 0x00,
-        0x88, 0x02, 0x00,
-        0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00,
-    0x18
+    0x95, 0x01, 0x00, 0x88, 0x02, 0x00, 0xC9, 0xBB, 0xAA, 0xDD, 0xCC, 0x02, 0x00, 0x18
 };
 
-void WriteDeleteReadTest(nlTestSuite *inSuite)
+void WriteDeleteReadTest(nlTestSuite * inSuite)
 {
     uint8_t buf[74];
     uint32_t updatedLen;
@@ -1925,9 +1855,9 @@ void WriteDeleteReadTest(nlTestSuite *inSuite)
 /**
  *  Test Packet Buffer
  */
-void CheckPacketBuffer(nlTestSuite *inSuite, void *inContext)
+void CheckPacketBuffer(nlTestSuite * inSuite, void * inContext)
 {
-    PacketBuffer *buf = PacketBuffer::New(0);
+    PacketBuffer * buf = PacketBuffer::New(0);
     TLVWriter writer;
     TLVReader reader;
 
@@ -1951,9 +1881,9 @@ void CheckPacketBuffer(nlTestSuite *inSuite, void *inContext)
     PacketBuffer::Free(buf);
 }
 
-WEAVE_ERROR CountEvictedMembers(WeaveCircularTLVBuffer &inBuffer, void * inAppData, TLVReader &inReader)
+WEAVE_ERROR CountEvictedMembers(WeaveCircularTLVBuffer & inBuffer, void * inAppData, TLVReader & inReader)
 {
-    TestTLVContext *context = static_cast<TestTLVContext *>(inAppData);
+    TestTLVContext * context = static_cast<TestTLVContext *>(inAppData);
     WEAVE_ERROR err;
 
     // "Process" the first element in the reader
@@ -1969,7 +1899,7 @@ WEAVE_ERROR CountEvictedMembers(WeaveCircularTLVBuffer &inBuffer, void * inAppDa
     return WEAVE_NO_ERROR;
 }
 
-void CheckCircularTLVBufferSimple(nlTestSuite *inSuite, void *inContext)
+void CheckCircularTLVBufferSimple(nlTestSuite * inSuite, void * inContext)
 {
     // Write 40 bytes as 4 separate events into a 30 byte buffer.  On
     // completion of the test, the buffer should contain 2 elements
@@ -1979,16 +1909,16 @@ void CheckCircularTLVBufferSimple(nlTestSuite *inSuite, void *inContext)
     uint8_t backingStore[30];
     CircularTLVWriter writer;
     CircularTLVReader reader;
-    TestTLVContext *context = static_cast<TestTLVContext *>(inContext);
+    TestTLVContext * context = static_cast<TestTLVContext *>(inContext);
     WeaveCircularTLVBuffer buffer(backingStore, 30);
     writer.Init(&buffer);
     writer.ImplicitProfileId = TestProfile_2;
 
     context->mEvictionCount = 0;
-    context->mEvictedBytes = 0;
+    context->mEvictedBytes  = 0;
 
     buffer.mProcessEvictedElement = CountEvictedMembers;
-    buffer.mAppData = inContext;
+    buffer.mAppData               = inContext;
 
     writer.PutBoolean(ProfileTag(TestProfile_1, 2), true);
 
@@ -2001,7 +1931,7 @@ void CheckCircularTLVBufferSimple(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, context->mEvictionCount == 2);
     NL_TEST_ASSERT(inSuite, context->mEvictedBytes == 18);
     NL_TEST_ASSERT(inSuite, buffer.DataLength() == 22);
-    NL_TEST_ASSERT(inSuite, (buffer.DataLength() + context->mEvictedBytes) ==  writer.GetLengthWritten());
+    NL_TEST_ASSERT(inSuite, (buffer.DataLength() + context->mEvictedBytes) == writer.GetLengthWritten());
 
     // At this point the buffer should contain 2 instances of Encoding3.
     reader.Init(&buffer);
@@ -2019,7 +1949,7 @@ void CheckCircularTLVBufferSimple(nlTestSuite *inSuite, void *inContext)
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void CheckCircularTLVBufferStartMidway(nlTestSuite *inSuite, void *inContext)
+void CheckCircularTLVBufferStartMidway(nlTestSuite * inSuite, void * inContext)
 {
     // Write 40 bytes as 4 separate events into a 30 byte buffer.  On
     // completion of the test, the buffer should contain 2 elements
@@ -2029,16 +1959,16 @@ void CheckCircularTLVBufferStartMidway(nlTestSuite *inSuite, void *inContext)
     uint8_t backingStore[30];
     CircularTLVWriter writer;
     CircularTLVReader reader;
-    TestTLVContext *context = static_cast<TestTLVContext *>(inContext);
+    TestTLVContext * context = static_cast<TestTLVContext *>(inContext);
     WeaveCircularTLVBuffer buffer(backingStore, 30, &(backingStore[15]));
     writer.Init(&buffer);
     writer.ImplicitProfileId = TestProfile_2;
 
     context->mEvictionCount = 0;
-    context->mEvictedBytes = 0;
+    context->mEvictedBytes  = 0;
 
     buffer.mProcessEvictedElement = CountEvictedMembers;
-    buffer.mAppData = inContext;
+    buffer.mAppData               = inContext;
 
     writer.PutBoolean(ProfileTag(TestProfile_1, 2), true);
 
@@ -2051,7 +1981,7 @@ void CheckCircularTLVBufferStartMidway(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, context->mEvictionCount == 2);
     NL_TEST_ASSERT(inSuite, context->mEvictedBytes == 18);
     NL_TEST_ASSERT(inSuite, buffer.DataLength() == 22);
-    NL_TEST_ASSERT(inSuite, (buffer.DataLength() + context->mEvictedBytes) ==  writer.GetLengthWritten());
+    NL_TEST_ASSERT(inSuite, (buffer.DataLength() + context->mEvictedBytes) == writer.GetLengthWritten());
 
     // At this point the buffer should contain 2 instances of Encoding3.
     reader.Init(&buffer);
@@ -2069,7 +1999,7 @@ void CheckCircularTLVBufferStartMidway(nlTestSuite *inSuite, void *inContext)
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void CheckCircularTLVBufferEvictStraddlingEvent(nlTestSuite *inSuite, void *inContext)
+void CheckCircularTLVBufferEvictStraddlingEvent(nlTestSuite * inSuite, void * inContext)
 {
     // Write 95 bytes to the buffer as 9 different TLV elements: 1
     // 7-byte element and 8 11-byte elements.
@@ -2077,7 +2007,7 @@ void CheckCircularTLVBufferEvictStraddlingEvent(nlTestSuite *inSuite, void *inCo
     // and 7 elements should have been evicted in the last call to
     // WriteEncoding.
 
-    TestTLVContext *context = static_cast<TestTLVContext *>(inContext);
+    TestTLVContext * context = static_cast<TestTLVContext *>(inContext);
     uint8_t backingStore[30];
     CircularTLVWriter writer;
     CircularTLVReader reader;
@@ -2086,10 +2016,10 @@ void CheckCircularTLVBufferEvictStraddlingEvent(nlTestSuite *inSuite, void *inCo
     writer.ImplicitProfileId = TestProfile_2;
 
     context->mEvictionCount = 0;
-    context->mEvictedBytes = 0;
+    context->mEvictedBytes  = 0;
 
     buffer.mProcessEvictedElement = CountEvictedMembers;
-    buffer.mAppData = inContext;
+    buffer.mAppData               = inContext;
 
     writer.PutBoolean(ProfileTag(TestProfile_1, 2), true);
 
@@ -2110,9 +2040,11 @@ void CheckCircularTLVBufferEvictStraddlingEvent(nlTestSuite *inSuite, void *inCo
 
     WriteEncoding3(inSuite, writer);
 
-    NL_TEST_ASSERT(inSuite, writer.GetLengthWritten() == (8 * 11 + 7)); // 8 writes of Encoding3 (11 bytes each) and 7 bytes for the initial boolean.
+    NL_TEST_ASSERT(inSuite,
+                   writer.GetLengthWritten() ==
+                       (8 * 11 + 7)); // 8 writes of Encoding3 (11 bytes each) and 7 bytes for the initial boolean.
     NL_TEST_ASSERT(inSuite, buffer.DataLength() == 22);
-    NL_TEST_ASSERT(inSuite, (buffer.DataLength() + context->mEvictedBytes) ==  writer.GetLengthWritten());
+    NL_TEST_ASSERT(inSuite, (buffer.DataLength() + context->mEvictedBytes) == writer.GetLengthWritten());
     NL_TEST_ASSERT(inSuite, context->mEvictionCount == 7);
 
     // At this point the buffer should contain 2 instances of Encoding3.
@@ -2131,9 +2063,9 @@ void CheckCircularTLVBufferEvictStraddlingEvent(nlTestSuite *inSuite, void *inCo
     TestEnd<TLVReader>(inSuite, reader);
 }
 
-void CheckCircularTLVBufferEdge(nlTestSuite *inSuite, void *inContext)
+void CheckCircularTLVBufferEdge(nlTestSuite * inSuite, void * inContext)
 {
-    TestTLVContext *context = static_cast<TestTLVContext *>(inContext);
+    TestTLVContext * context = static_cast<TestTLVContext *>(inContext);
     WEAVE_ERROR err;
     uint8_t backingStore[7];
     uint8_t backingStore1[14];
@@ -2147,10 +2079,10 @@ void CheckCircularTLVBufferEdge(nlTestSuite *inSuite, void *inContext)
     writer.ImplicitProfileId = TestProfile_2;
 
     context->mEvictionCount = 0;
-    context->mEvictedBytes = 0;
+    context->mEvictedBytes  = 0;
 
     buffer.mProcessEvictedElement = CountEvictedMembers;
-    buffer.mAppData = inContext;
+    buffer.mAppData               = inContext;
 
     // Test eviction for an element that fits in the underlying buffer exactly
     err = writer.PutBoolean(ProfileTag(TestProfile_1, 2), true);
@@ -2209,15 +2141,14 @@ void CheckCircularTLVBufferEdge(nlTestSuite *inSuite, void *inContext)
         TestEnd<TLVReader>(inSuite, reader);
     }
 
-
     writer.Init(&buffer1);
     writer.ImplicitProfileId = TestProfile_2;
 
     context->mEvictionCount = 0;
-    context->mEvictedBytes = 0;
+    context->mEvictedBytes  = 0;
 
     buffer1.mProcessEvictedElement = CountEvictedMembers;
-    buffer1.mAppData = inContext;
+    buffer1.mAppData               = inContext;
 
     // Two elements fit in the buffer exactly
     err = writer.PutBoolean(ProfileTag(TestProfile_1, 2), true);
@@ -2287,9 +2218,8 @@ void CheckCircularTLVBufferEdge(nlTestSuite *inSuite, void *inContext)
     reader.ImplicitProfileId = TestProfile_2;
 
     TestEnd<TLVReader>(inSuite, reader);
-
 }
-void CheckWeaveTLVPutStringF(nlTestSuite *inSuite, void *inContext)
+void CheckWeaveTLVPutStringF(nlTestSuite * inSuite, void * inContext)
 {
     const size_t bufsize = 24;
     char strBuffer[bufsize];
@@ -2297,7 +2227,7 @@ void CheckWeaveTLVPutStringF(nlTestSuite *inSuite, void *inContext)
     uint8_t backingStore[bufsize];
     TLVWriter writer;
     TLVReader reader;
-    size_t num = 1;
+    size_t num      = 1;
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     writer.Init(backingStore, bufsize);
@@ -2319,7 +2249,7 @@ void CheckWeaveTLVPutStringF(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, strncmp(valStr, strBuffer, 256) == 0);
 }
 
-void CheckWeaveTLVPutStringFCircular(nlTestSuite *inSuite, void *inContext)
+void CheckWeaveTLVPutStringFCircular(nlTestSuite * inSuite, void * inContext)
 {
     const size_t bufsize = 40;
     char strBuffer[bufsize];
@@ -2328,7 +2258,7 @@ void CheckWeaveTLVPutStringFCircular(nlTestSuite *inSuite, void *inContext)
     CircularTLVWriter writer;
     CircularTLVReader reader;
     WeaveCircularTLVBuffer buffer(backingStore, bufsize);
-    size_t num = 1;
+    size_t num      = 1;
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     // Initial test: Verify that a straight printf works as expected into continuous buffer.
@@ -2350,7 +2280,7 @@ void CheckWeaveTLVPutStringFCircular(nlTestSuite *inSuite, void *inContext)
 
     reader.Init(&buffer);
 
-    //Skip over the initial element
+    // Skip over the initial element
     err = reader.Next();
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
@@ -2384,7 +2314,7 @@ void CheckWeaveTLVPutStringFCircular(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, strncmp(valStr, strBuffer, bufsize) == 0);
 }
 
-void CheckWeaveTLVSkipCircular(nlTestSuite *inSuite, void * inContext)
+void CheckWeaveTLVSkipCircular(nlTestSuite * inSuite, void * inContext)
 {
     const size_t bufsize = 40; // large enough s.t. 2 elements fit, 3rd causes eviction
     uint8_t backingStore[bufsize];
@@ -2419,30 +2349,29 @@ void CheckWeaveTLVSkipCircular(nlTestSuite *inSuite, void * inContext)
 
     err = reader.Skip(); // // Test that the buf ptr is handled correctly within the ReadData() function.
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
-
 }
 
 /**
  *  Test Buffer Overflow
  */
-void CheckBufferOverflow(nlTestSuite *inSuite, void *inContext)
+void CheckBufferOverflow(nlTestSuite * inSuite, void * inContext)
 {
     TLVWriter writer;
     TLVReader reader;
 
-    PacketBuffer *buf = PacketBuffer::New(0);
+    PacketBuffer * buf  = PacketBuffer::New(0);
     uint16_t maxDataLen = buf->MaxDataLength();
-    uint16_t reserve = (sizeof(Encoding1) < maxDataLen) ? (maxDataLen - sizeof(Encoding1)) + 2 : 0;
+    uint16_t reserve    = (sizeof(Encoding1) < maxDataLen) ? (maxDataLen - sizeof(Encoding1)) + 2 : 0;
 
     // Repeatedly write and read a TLV encoding to a chain of PacketBuffers. Use progressively larger
     // and larger amounts of space in the first buffer to force the encoding/decoding to overlap the
     // end of the buffer and the beginning of the next.
-    for ( ; reserve < maxDataLen; reserve++)
+    for (; reserve < maxDataLen; reserve++)
     {
         buf->SetStart(buf->Start() + reserve);
 
         writer.Init(buf);
-        writer.GetNewBuffer = TLVWriter::GetNewPacketBuffer;
+        writer.GetNewBuffer      = TLVWriter::GetNewPacketBuffer;
         writer.ImplicitProfileId = TestProfile_2;
 
         WriteEncoding1(inSuite, writer);
@@ -2471,20 +2400,15 @@ void CheckBufferOverflow(nlTestSuite *inSuite, void *inContext)
  * jira://SAPPHIRE-10921.
  *
  */
-const uint8_t IdentifyResponseBuf[] =
-{
-    0xD5, 0x00, 0x00, 0x0E, 0x00, 0x01, 0x00, 0x25,
-    0x00, 0x5A, 0x23, 0x24, 0x01, 0x07, 0x24, 0x02,
-    0x05, 0x25, 0x03, 0x22, 0x1E, 0x2C, 0x04, 0x10,
-    0x30, 0x34, 0x41, 0x41, 0x30, 0x31, 0x41, 0x43,
-    0x32, 0x33, 0x31, 0x34, 0x30, 0x30, 0x4C, 0x50,
-    0x2C, 0x09, 0x06, 0x31, 0x2E, 0x34, 0x72, 0x63,
-    0x35, 0x24, 0x0C, 0x01, 0x18,
+const uint8_t IdentifyResponseBuf[] = {
+    0xD5, 0x00, 0x00, 0x0E, 0x00, 0x01, 0x00, 0x25, 0x00, 0x5A, 0x23, 0x24, 0x01, 0x07, 0x24, 0x02, 0x05, 0x25,
+    0x03, 0x22, 0x1E, 0x2C, 0x04, 0x10, 0x30, 0x34, 0x41, 0x41, 0x30, 0x31, 0x41, 0x43, 0x32, 0x33, 0x31, 0x34,
+    0x30, 0x30, 0x4C, 0x50, 0x2C, 0x09, 0x06, 0x31, 0x2E, 0x34, 0x72, 0x63, 0x35, 0x24, 0x0C, 0x01, 0x18,
 };
 
 const uint32_t IdentifyResponseLen = 53;
 
-void CheckSapphire10921(nlTestSuite *inSuite, void *inContext)
+void CheckSapphire10921(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
@@ -2501,7 +2425,7 @@ void CheckSapphire10921(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Weave TLV Writer Copy Container
  */
-void TestWeaveTLVWriterCopyContainer(nlTestSuite *inSuite)
+void TestWeaveTLVWriterCopyContainer(nlTestSuite * inSuite)
 {
     uint8_t buf[2048];
 
@@ -2541,21 +2465,23 @@ void TestWeaveTLVWriterCopyContainer(nlTestSuite *inSuite)
 
         int memcmpRes = memcmp(buf, Encoding1, encodedLen);
         NL_TEST_ASSERT(inSuite, memcmpRes == 0);
-
     }
 }
 
 /**
  *  Test Weave TLV Writer Copy Element
  */
-void TestWeaveTLVWriterCopyElement(nlTestSuite *inSuite)
+void TestWeaveTLVWriterCopyElement(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err;
     uint8_t expectedBuf[2048], testBuf[2048];
     uint32_t expectedLen, testLen;
     TLVWriter writer;
     TLVType outerContainerType;
-    enum { kRepeatCount = 3 };
+    enum
+    {
+        kRepeatCount = 3
+    };
 
     writer.Init(expectedBuf, sizeof(expectedBuf));
     writer.ImplicitProfileId = TestProfile_2;
@@ -2574,7 +2500,7 @@ void TestWeaveTLVWriterCopyElement(nlTestSuite *inSuite)
     err = writer.Finalize();
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 
-    expectedLen= writer.GetLengthWritten();
+    expectedLen = writer.GetLengthWritten();
 
     writer.Init(testBuf, sizeof(testBuf));
     writer.ImplicitProfileId = TestProfile_2;
@@ -2609,7 +2535,7 @@ void TestWeaveTLVWriterCopyElement(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, memcmpRes == 0);
 }
 
-void PreserveSizeWrite(nlTestSuite *inSuite, TLVWriter& writer, bool preserveSize)
+void PreserveSizeWrite(nlTestSuite * inSuite, TLVWriter & writer, bool preserveSize)
 {
     WEAVE_ERROR err;
     TLVWriter writer2;
@@ -2681,7 +2607,7 @@ void PreserveSizeWrite(nlTestSuite *inSuite, TLVWriter& writer, bool preserveSiz
 /**
  *  Test Weave TLV Writer with Preserve Size
  */
-void TestWeaveTLVWriterPreserveSize(nlTestSuite *inSuite)
+void TestWeaveTLVWriterPreserveSize(nlTestSuite * inSuite)
 {
     uint8_t buf[2048];
     TLVWriter writer;
@@ -2698,7 +2624,7 @@ void TestWeaveTLVWriterPreserveSize(nlTestSuite *inSuite)
 /**
  *  Test error handling of Weave TLV Writer
  */
-void TestWeaveTLVWriterErrorHandling(nlTestSuite *inSuite)
+void TestWeaveTLVWriterErrorHandling(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err;
     uint8_t buf[2048];
@@ -2733,20 +2659,21 @@ void TestWeaveTLVWriterErrorHandling(nlTestSuite *inSuite)
 
     // EndContainer()
     outerContainerType = kTLVType_Boolean;
-    err = writer.EndContainer(outerContainerType);
+    err                = writer.EndContainer(outerContainerType);
     NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_INCORRECT_STATE);
 
     // PutPreEncodedContainer()
     TLVReader reader;
     reader.Init(buf, 2048);
-    err = writer.PutPreEncodedContainer(ProfileTag(TestProfile_2, 4000000000ULL), kTLVType_Boolean, reader.GetReadPoint(), reader.GetRemainingLength());
+    err = writer.PutPreEncodedContainer(ProfileTag(TestProfile_2, 4000000000ULL), kTLVType_Boolean, reader.GetReadPoint(),
+                                        reader.GetRemainingLength());
     NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_INVALID_ARGUMENT);
 }
 
 /**
  *  Test Weave TLV Writer
  */
-void CheckWeaveTLVWriter(nlTestSuite *inSuite, void *inContext)
+void CheckWeaveTLVWriter(nlTestSuite * inSuite, void * inContext)
 {
     TestWeaveTLVWriterCopyContainer(inSuite);
 
@@ -2757,11 +2684,11 @@ void CheckWeaveTLVWriter(nlTestSuite *inSuite, void *inContext)
     TestWeaveTLVWriterErrorHandling(inSuite);
 }
 
-void SkipNonContainer(nlTestSuite *inSuite)
+void SkipNonContainer(nlTestSuite * inSuite)
 {
     TLVReader reader;
-    const uint8_t *readpoint1 = NULL;
-    const uint8_t *readpoint2 = NULL;
+    const uint8_t * readpoint1 = NULL;
+    const uint8_t * readpoint2 = NULL;
 
     reader.Init(Encoding1, sizeof(Encoding1));
     reader.ImplicitProfileId = TestProfile_2;
@@ -2778,11 +2705,11 @@ void SkipNonContainer(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, readpoint1 == readpoint2);
 }
 
-void SkipContainer(nlTestSuite *inSuite)
+void SkipContainer(nlTestSuite * inSuite)
 {
     TLVReader reader;
-    const uint8_t *readpoint1 = NULL;
-    const uint8_t *readpoint2 = NULL;
+    const uint8_t * readpoint1 = NULL;
+    const uint8_t * readpoint2 = NULL;
 
     reader.Init(Encoding1, sizeof(Encoding1));
     reader.ImplicitProfileId = TestProfile_2;
@@ -2801,7 +2728,7 @@ void SkipContainer(nlTestSuite *inSuite)
     NL_TEST_ASSERT(inSuite, readpoint1 == readpoint2);
 }
 
-void NextContainer(nlTestSuite *inSuite)
+void NextContainer(nlTestSuite * inSuite)
 {
     TLVReader reader;
 
@@ -2817,7 +2744,7 @@ void NextContainer(nlTestSuite *inSuite)
 /**
  *  Test Weave TLV Reader Skip functions
  */
-void TestWeaveTLVReaderSkip(nlTestSuite *inSuite)
+void TestWeaveTLVReaderSkip(nlTestSuite * inSuite)
 {
     SkipNonContainer(inSuite);
 
@@ -2829,7 +2756,7 @@ void TestWeaveTLVReaderSkip(nlTestSuite *inSuite)
 /**
  *  Test Weave TLV Reader Dup functions
  */
-void TestWeaveTLVReaderDup(nlTestSuite *inSuite)
+void TestWeaveTLVReaderDup(nlTestSuite * inSuite)
 {
     TLVReader reader;
 
@@ -2914,7 +2841,8 @@ void TestWeaveTLVReaderDup(nlTestSuite *inSuite)
                 {
                     TLVType outerContainerType;
 
-                    TestAndEnterContainer<TLVReader>(inSuite, reader5, kTLVType_Structure, ProfileTag(TestProfile_2, 4000000000ULL), outerContainerType);
+                    TestAndEnterContainer<TLVReader>(inSuite, reader5, kTLVType_Structure, ProfileTag(TestProfile_2, 4000000000ULL),
+                                                     outerContainerType);
 
                     TestNext<TLVReader>(inSuite, reader5);
 
@@ -2931,15 +2859,15 @@ void TestWeaveTLVReaderDup(nlTestSuite *inSuite)
 
         TestNext<TLVReader>(inSuite, reader2);
 
-        TestDupBytes(inSuite, reader2, ProfileTag(TestProfile_1, 5), (uint8_t *)("This is a test"), 14);
+        TestDupBytes(inSuite, reader2, ProfileTag(TestProfile_1, 5), (uint8_t *) ("This is a test"), 14);
 
         TestNext<TLVReader>(inSuite, reader2);
 
-        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65535), (float)17.9);
+        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65535), (float) 17.9);
 
         TestNext<TLVReader>(inSuite, reader2);
 
-        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65536), (double)17.9);
+        TestGet<TLVReader, double>(inSuite, reader2, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65536), (double) 17.9);
 
         TestEndAndCloseContainer(inSuite, reader, reader2);
     }
@@ -2949,7 +2877,7 @@ void TestWeaveTLVReaderDup(nlTestSuite *inSuite)
 /**
  *  Test error handling of Weave TLV Reader
  */
-void TestWeaveTLVReaderErrorHandling(nlTestSuite *inSuite)
+void TestWeaveTLVReaderErrorHandling(nlTestSuite * inSuite)
 {
     WEAVE_ERROR err;
     uint8_t buf[2048];
@@ -2994,25 +2922,25 @@ void TestWeaveTLVReaderErrorHandling(nlTestSuite *inSuite)
 
     // EnterContainer()
     TLVType outerContainerType = kTLVType_Boolean;
-    err = reader.EnterContainer(outerContainerType);
+    err                        = reader.EnterContainer(outerContainerType);
     NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_INCORRECT_STATE);
 
     // DupString()
-    char *str = (char *)malloc(16);
-    err = reader.DupString(str);
+    char * str = (char *) malloc(16);
+    err        = reader.DupString(str);
     NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_WRONG_TLV_TYPE);
     free(str);
 
     // GetDataPtr()
-    const uint8_t *data = (uint8_t *)malloc(16);
-    err = reader.GetDataPtr(data);
+    const uint8_t * data = (uint8_t *) malloc(16);
+    err                  = reader.GetDataPtr(data);
     NL_TEST_ASSERT(inSuite, err == WEAVE_ERROR_WRONG_TLV_TYPE);
-    free((void *)data);
+    free((void *) data);
 }
 /**
  *  Test Weave TLV Reader in a use case
  */
-void TestWeaveTLVReaderInPractice(nlTestSuite *inSuite)
+void TestWeaveTLVReaderInPractice(nlTestSuite * inSuite)
 {
     uint8_t buf[2048];
     TLVWriter writer;
@@ -3027,7 +2955,8 @@ void TestWeaveTLVReaderInPractice(nlTestSuite *inSuite)
 
     TestNext<TLVReader>(inSuite, reader);
 
-    TestGet<TLVReader, int64_t>(inSuite, reader, kTLVType_SignedInteger, ProfileTag(TestProfile_1, 4000000000ULL), (int64_t) 40000000000ULL);
+    TestGet<TLVReader, int64_t>(inSuite, reader, kTLVType_SignedInteger, ProfileTag(TestProfile_1, 4000000000ULL),
+                                (int64_t) 40000000000ULL);
 
     TestNext<TLVReader>(inSuite, reader);
 
@@ -3035,10 +2964,11 @@ void TestWeaveTLVReaderInPractice(nlTestSuite *inSuite)
 
     TestNext<TLVReader>(inSuite, reader);
 
-    TestGet<TLVReader, double>(inSuite, reader, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_1, 4000000000ULL), (float) 1.0);
+    TestGet<TLVReader, double>(inSuite, reader, kTLVType_FloatingPointNumber, ProfileTag(TestProfile_1, 4000000000ULL),
+                               (float) 1.0);
 }
 
-void TestWeaveTLVReader_NextOverContainer_ProcessElement(nlTestSuite *inSuite, TLVReader& reader, void *context)
+void TestWeaveTLVReader_NextOverContainer_ProcessElement(nlTestSuite * inSuite, TLVReader & reader, void * context)
 {
     WEAVE_ERROR err, nextRes1, nextRes2;
     TLVType outerContainerType;
@@ -3073,7 +3003,7 @@ void TestWeaveTLVReader_NextOverContainer_ProcessElement(nlTestSuite *inSuite, T
 /**
  * Test using Weave TLV Reader Next() method to skip over containers.
  */
-void TestWeaveTLVReader_NextOverContainer(nlTestSuite *inSuite)
+void TestWeaveTLVReader_NextOverContainer(nlTestSuite * inSuite)
 {
     TLVReader reader;
 
@@ -3083,7 +3013,7 @@ void TestWeaveTLVReader_NextOverContainer(nlTestSuite *inSuite)
     ForEachElement(inSuite, reader, NULL, TestWeaveTLVReader_NextOverContainer_ProcessElement);
 }
 
-void TestWeaveTLVReader_SkipOverContainer_ProcessElement(nlTestSuite *inSuite, TLVReader& reader, void *context)
+void TestWeaveTLVReader_SkipOverContainer_ProcessElement(nlTestSuite * inSuite, TLVReader & reader, void * context)
 {
     WEAVE_ERROR err;
     TLVType outerContainerType;
@@ -3115,7 +3045,7 @@ void TestWeaveTLVReader_SkipOverContainer_ProcessElement(nlTestSuite *inSuite, T
 /**
  * Test using Weave TLV Reader Skip() method to skip over containers.
  */
-void TestWeaveTLVReader_SkipOverContainer(nlTestSuite *inSuite)
+void TestWeaveTLVReader_SkipOverContainer(nlTestSuite * inSuite)
 {
     TLVReader reader;
 
@@ -3128,7 +3058,7 @@ void TestWeaveTLVReader_SkipOverContainer(nlTestSuite *inSuite)
 /**
  *  Test Weave TLV Reader
  */
-void CheckWeaveTLVReader(nlTestSuite *inSuite, void *inContext)
+void CheckWeaveTLVReader(nlTestSuite * inSuite, void * inContext)
 {
     TestWeaveTLVReaderSkip(inSuite);
 
@@ -3146,7 +3076,7 @@ void CheckWeaveTLVReader(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Weave TLV Items
  */
-static void TestItems(nlTestSuite *inSuite, void *inContext)
+static void TestItems(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -3233,7 +3163,7 @@ static void TestItems(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Weave TLV Containers
  */
-static void TestContainers(nlTestSuite *inSuite, void *inContext)
+static void TestContainers(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVWriter writer;
@@ -3267,7 +3197,7 @@ static void TestContainers(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Weave TLV Basics
  */
-static void CheckWeaveTLVBasics(nlTestSuite *inSuite, void *inContext)
+static void CheckWeaveTLVBasics(nlTestSuite * inSuite, void * inContext)
 {
     TestItems(inSuite, inContext);
     TestContainers(inSuite, inContext);
@@ -3276,7 +3206,7 @@ static void CheckWeaveTLVBasics(nlTestSuite *inSuite, void *inContext)
 /**
  *  Test Weave TLV Updater
  */
-static void CheckWeaveUpdater(nlTestSuite *inSuite, void *inContext)
+static void CheckWeaveUpdater(nlTestSuite * inSuite, void * inContext)
 {
     WriteAppendReadTest0(inSuite);
 
@@ -3284,7 +3214,7 @@ static void CheckWeaveUpdater(nlTestSuite *inSuite, void *inContext)
 
     WriteFindAppendReadTest(inSuite, false); // Find an element
 
-    WriteFindAppendReadTest(inSuite, true);  // Find a container
+    WriteFindAppendReadTest(inSuite, true); // Find a container
 
     AppendReadTest(inSuite);
 
@@ -3298,20 +3228,20 @@ static void CheckWeaveUpdater(nlTestSuite *inSuite, void *inContext)
 class OptimisticTLVWriter : public TLVWriter
 {
 public:
-    void Init(uint8_t *buf, uint32_t maxLen);
+    void Init(uint8_t * buf, uint32_t maxLen);
 };
 
-void OptimisticTLVWriter::Init(uint8_t *buf, uint32_t maxLen)
+void OptimisticTLVWriter::Init(uint8_t * buf, uint32_t maxLen)
 {
     TLVWriter::Init(buf, maxLen);
     SetCloseContainerReserved(false);
 }
 
-static void CheckCloseContainerReserve(nlTestSuite *inSuite, void *inContext)
+static void CheckCloseContainerReserve(nlTestSuite * inSuite, void * inContext)
 {
     // We are writing the structure looking like:
     //
-    // [{TestProfile_1:2: true}]
+    // [ {TestProfile_1:2: true}]
     //
     // the above should consume 11 bytes in the TLV encoding. The
     // chosen buffer is too small for that, this test verifies that we
@@ -3492,25 +3422,27 @@ static void CheckCloseContainerReserve(nlTestSuite *inSuite, void *inContext)
     }
 }
 
-static WEAVE_ERROR ReadFuzzedEncoding1(nlTestSuite *inSuite, TLVReader& reader)
+static WEAVE_ERROR ReadFuzzedEncoding1(nlTestSuite * inSuite, TLVReader & reader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-#define FUZZ_CHECK_VAL(TYPE, VAL)                                       \
-    do {                                                                \
-        TYPE val;                                                       \
-        err = reader.Get(val);                                          \
-        SuccessOrExit(err);                                             \
-        VerifyOrExit(val == (VAL), err = WEAVE_ERROR_INVALID_ARGUMENT); \
+#define FUZZ_CHECK_VAL(TYPE, VAL)                                                                                                  \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        TYPE val;                                                                                                                  \
+        err = reader.Get(val);                                                                                                     \
+        SuccessOrExit(err);                                                                                                        \
+        VerifyOrExit(val == (VAL), err = WEAVE_ERROR_INVALID_ARGUMENT);                                                            \
     } while (0)
 
-#define FUZZ_CHECK_STRING(VAL)                                                              \
-    do {                                                                                    \
-        char buf[sizeof(VAL)];                                                              \
-        VerifyOrExit(reader.GetLength() == strlen(VAL), err = WEAVE_ERROR_INVALID_ADDRESS); \
-        err = reader.GetString(buf, sizeof(buf));                                           \
-        SuccessOrExit(err);                                                                 \
-        VerifyOrExit(strcmp(buf, (VAL)) == 0, err = WEAVE_ERROR_INVALID_ADDRESS);           \
+#define FUZZ_CHECK_STRING(VAL)                                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        char buf[sizeof(VAL)];                                                                                                     \
+        VerifyOrExit(reader.GetLength() == strlen(VAL), err = WEAVE_ERROR_INVALID_ADDRESS);                                        \
+        err = reader.GetString(buf, sizeof(buf));                                                                                  \
+        SuccessOrExit(err);                                                                                                        \
+        VerifyOrExit(strcmp(buf, (VAL)) == 0, err = WEAVE_ERROR_INVALID_ADDRESS);                                                  \
     } while (0)
 
     err = reader.Next(kTLVType_Structure, ProfileTag(TestProfile_1, 1));
@@ -3635,12 +3567,12 @@ static WEAVE_ERROR ReadFuzzedEncoding1(nlTestSuite *inSuite, TLVReader& reader)
         err = reader.Next(kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65535));
         SuccessOrExit(err);
 
-        FUZZ_CHECK_VAL(double, (float)17.9);
+        FUZZ_CHECK_VAL(double, (float) 17.9);
 
         err = reader.Next(kTLVType_FloatingPointNumber, ProfileTag(TestProfile_2, 65536));
         SuccessOrExit(err);
 
-        FUZZ_CHECK_VAL(double, (double)17.9);
+        FUZZ_CHECK_VAL(double, (double) 17.9);
 
         err = reader.ExitContainer(outerContainer1Type);
         SuccessOrExit(err);
@@ -3655,18 +3587,15 @@ exit:
 }
 
 static uint32_t gFuzzTestDurationSecs = 5;
-static uint8_t gFixedFuzzMask = 0;
+static uint8_t gFixedFuzzMask         = 0;
 
-static void TLVReaderFuzzTest(nlTestSuite *inSuite, void *inContext)
+static void TLVReaderFuzzTest(nlTestSuite * inSuite, void * inContext)
 {
     time_t now, endTime;
     uint8_t fuzzedData[sizeof(Encoding1)];
 
-    static uint8_t sFixedFuzzVals[] =
-    {
-        0x00,
-        0x01,
-        0xFF,
+    static uint8_t sFixedFuzzVals[] = {
+        0x00, 0x01, 0xFF,
         0x20, // 1-byte signed integer with context tag
         0x21, // 2-byte signed integer with context tag
         0x22, // 4-byte signed integer with context tag
@@ -3724,8 +3653,8 @@ static void TLVReaderFuzzTest(nlTestSuite *inSuite, void *inContext)
 
             if (readRes == WEAVE_NO_ERROR)
             {
-                printf("Unexpected success of fuzz test: offset %u, original value 0x%02X, mutated value 0x%02X\n",
-                       (unsigned)i, (unsigned)origVal, (unsigned)fuzzedData[i]);
+                printf("Unexpected success of fuzz test: offset %u, original value 0x%02X, mutated value 0x%02X\n", (unsigned) i,
+                       (unsigned) origVal, (unsigned) fuzzedData[i]);
                 ExitNow();
             }
 
@@ -3736,7 +3665,7 @@ static void TLVReaderFuzzTest(nlTestSuite *inSuite, void *inContext)
             fuzzedData[i] = origVal;
         }
 
-       if (m < sizeof(sFixedFuzzVals))
+        if (m < sizeof(sFixedFuzzVals))
             m++;
     }
 
@@ -3749,35 +3678,33 @@ exit:
 /**
  *  Test Suite that lists all the test functions.
  */
-static const nlTest sTests[] = {
-    NL_TEST_DEF("Simple Write Read Test",              CheckSimpleWriteRead),
-    NL_TEST_DEF("Inet Buffer Test",                    CheckPacketBuffer),
-    NL_TEST_DEF("Buffer Overflow Test",                CheckBufferOverflow),
-    NL_TEST_DEF("Pretty Print Test",                   CheckPrettyPrinter),
-    NL_TEST_DEF("Data Macro Test",                     CheckDataMacro),
-    NL_TEST_DEF("SAPPHIRE-10921 Test",                 CheckSapphire10921),
-    NL_TEST_DEF("Weave TLV Basics",                    CheckWeaveTLVBasics),
-    NL_TEST_DEF("Weave TLV Writer",                    CheckWeaveTLVWriter),
-    NL_TEST_DEF("Weave TLV Reader",                    CheckWeaveTLVReader),
-    NL_TEST_DEF("Weave TLV Utilities",                 CheckWeaveTLVUtilities),
-    NL_TEST_DEF("Weave TLV Updater",                   CheckWeaveUpdater),
-    NL_TEST_DEF("Weave TLV Empty Find",                CheckWeaveTLVEmptyFind),
-    NL_TEST_DEF("Weave Circular TLV buffer, simple",   CheckCircularTLVBufferSimple),
-    NL_TEST_DEF("Weave Circular TLV buffer, mid-buffer start", CheckCircularTLVBufferStartMidway),
-    NL_TEST_DEF("Weave Circular TLV buffer, straddle", CheckCircularTLVBufferEvictStraddlingEvent),
-    NL_TEST_DEF("Weave Circular TLV buffer, edge",     CheckCircularTLVBufferEdge),
-    NL_TEST_DEF("Weave TLV Printf",                    CheckWeaveTLVPutStringF),
-    NL_TEST_DEF("Weave TLV Printf, Circular TLV buf",  CheckWeaveTLVPutStringFCircular),
-    NL_TEST_DEF("Weave TLV Skip non-contiguous",       CheckWeaveTLVSkipCircular),
-    NL_TEST_DEF("Weave TLV Check reserve",             CheckCloseContainerReserve),
-    NL_TEST_DEF("Weave TLV Reader Fuzz Test",          TLVReaderFuzzTest),
-    NL_TEST_SENTINEL()
-};
+static const nlTest sTests[] = { NL_TEST_DEF("Simple Write Read Test", CheckSimpleWriteRead),
+                                 NL_TEST_DEF("Inet Buffer Test", CheckPacketBuffer),
+                                 NL_TEST_DEF("Buffer Overflow Test", CheckBufferOverflow),
+                                 NL_TEST_DEF("Pretty Print Test", CheckPrettyPrinter),
+                                 NL_TEST_DEF("Data Macro Test", CheckDataMacro),
+                                 NL_TEST_DEF("SAPPHIRE-10921 Test", CheckSapphire10921),
+                                 NL_TEST_DEF("Weave TLV Basics", CheckWeaveTLVBasics),
+                                 NL_TEST_DEF("Weave TLV Writer", CheckWeaveTLVWriter),
+                                 NL_TEST_DEF("Weave TLV Reader", CheckWeaveTLVReader),
+                                 NL_TEST_DEF("Weave TLV Utilities", CheckWeaveTLVUtilities),
+                                 NL_TEST_DEF("Weave TLV Updater", CheckWeaveUpdater),
+                                 NL_TEST_DEF("Weave TLV Empty Find", CheckWeaveTLVEmptyFind),
+                                 NL_TEST_DEF("Weave Circular TLV buffer, simple", CheckCircularTLVBufferSimple),
+                                 NL_TEST_DEF("Weave Circular TLV buffer, mid-buffer start", CheckCircularTLVBufferStartMidway),
+                                 NL_TEST_DEF("Weave Circular TLV buffer, straddle", CheckCircularTLVBufferEvictStraddlingEvent),
+                                 NL_TEST_DEF("Weave Circular TLV buffer, edge", CheckCircularTLVBufferEdge),
+                                 NL_TEST_DEF("Weave TLV Printf", CheckWeaveTLVPutStringF),
+                                 NL_TEST_DEF("Weave TLV Printf, Circular TLV buf", CheckWeaveTLVPutStringFCircular),
+                                 NL_TEST_DEF("Weave TLV Skip non-contiguous", CheckWeaveTLVSkipCircular),
+                                 NL_TEST_DEF("Weave TLV Check reserve", CheckCloseContainerReserve),
+                                 NL_TEST_DEF("Weave TLV Reader Fuzz Test", TLVReaderFuzzTest),
+                                 NL_TEST_SENTINEL() };
 
 /**
  *  Set up the test suite.
  */
-static int TestSetup(void *inContext)
+static int TestSetup(void * inContext)
 {
     return (SUCCESS);
 }
@@ -3785,50 +3712,29 @@ static int TestSetup(void *inContext)
 /**
  *  Tear down the test suite.
  */
-static int TestTeardown(void *inContext)
+static int TestTeardown(void * inContext)
 {
     return (SUCCESS);
 }
 
-static OptionDef gToolOptionDefs[] =
-{
-    { "fuzz-duration", kArgumentRequired, 'f' },
-    { "fuzz-mask",     kArgumentRequired, 'm' },
-    { }
-};
+static OptionDef gToolOptionDefs[] = { { "fuzz-duration", kArgumentRequired, 'f' }, { "fuzz-mask", kArgumentRequired, 'm' }, { } };
 
-static const char *const gToolOptionHelp =
+static const char * const gToolOptionHelp =
     "  -f, --fuzz-duration <seconds>\n"
     "       Fuzzing duration in seconds.\n"
     "\n"
     "  -m, --fuzz-mask <int>\n"
     "       Use the specified fuzzing mask, rather than the built-in set of fuzzing values.\n"
-    "\n"
-    ;
+    "\n";
 
-static OptionSet gToolOptions =
-{
-    HandleOption,
-    gToolOptionDefs,
-    "GENERAL OPTIONS",
-    gToolOptionHelp
-};
+static OptionSet gToolOptions = { HandleOption, gToolOptionDefs, "GENERAL OPTIONS", gToolOptionHelp };
 
-static HelpOptions gHelpOptions(
-    TOOL_NAME,
-    "Usage: " TOOL_NAME " [<options...>]\n",
-    WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
-    "Unit tests for Weave TLV encoder/decoder.\n"
-);
+static HelpOptions gHelpOptions(TOOL_NAME, "Usage: " TOOL_NAME " [<options...>]\n", WEAVE_VERSION_STRING "\n" WEAVE_TOOL_COPYRIGHT,
+                                "Unit tests for Weave TLV encoder/decoder.\n");
 
-static OptionSet *gToolOptionSets[] =
-{
-    &gToolOptions,
-    &gHelpOptions,
-    NULL
-};
+static OptionSet * gToolOptionSets[] = { &gToolOptions, &gHelpOptions, NULL };
 
-static bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg)
+static bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg)
 {
     switch (id)
     {
@@ -3846,9 +3752,7 @@ static bool HandleOption(const char *progName, OptionSet *optSet, int id, const 
             return false;
         }
         break;
-    default:
-        PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name);
-        return false;
+    default: PrintArgError("%s: INTERNAL ERROR: Unhandled option: %s\n", progName, name); return false;
     }
 
     return true;
@@ -3857,18 +3761,13 @@ static bool HandleOption(const char *progName, OptionSet *optSet, int id, const 
 /**
  *  Main
  */
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 #if WEAVE_SYSTEM_CONFIG_USE_LWIP
     tcpip_init(NULL, NULL);
 #endif // WEAVE_SYSTEM_CONFIG_USE_LWIP
 
-    nlTestSuite theSuite = {
-        "weave-tlv",
-        &sTests[0],
-        TestSetup,
-        TestTeardown
-    };
+    nlTestSuite theSuite = { "weave-tlv", &sTests[0], TestSetup, TestTeardown };
     TestTLVContext context;
 
     if (!ParseArgs(TOOL_NAME, argc, argv, gToolOptionSets))

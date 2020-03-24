@@ -41,7 +41,6 @@ namespace Internal {
 class ESP32Config
 {
 public:
-
     struct Key;
 
     // Maximum length of an NVS key name, as specified in the ESP-IDF documentation.
@@ -102,14 +101,13 @@ struct ESP32Config::Key
     const char * Namespace;
     const char * Name;
 
-    bool operator==(const Key & other) const;
+    bool operator ==(const Key & other) const;
 };
 
-inline bool ESP32Config::Key::operator==(const Key & other) const
+inline bool ESP32Config::Key::operator ==(const Key & other) const
 {
     return strcmp(Namespace, other.Namespace) == 0 && strcmp(Name, other.Name) == 0;
 }
-
 
 } // namespace Internal
 } // namespace DeviceLayer

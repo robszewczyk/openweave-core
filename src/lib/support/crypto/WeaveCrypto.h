@@ -37,9 +37,10 @@
 
 // If one or more of the enabled Weave features depends on OpenSSL but WEAVE_WITH_OPENSSL has
 // NOT been defined, then assume we will be using OpenSSL and set WEAVE_WITH_OPENSSL == 1.
-#define WEAVE_CONFIG_REQUIRES_OPENSSL (WEAVE_CONFIG_USE_OPENSSL_ECC || WEAVE_CONFIG_RNG_IMPLEMENTATION_OPENSSL || \
-                                       WEAVE_CONFIG_AES_IMPLEMENTATION_OPENSSL || WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL || \
-                                       WEAVE_CONFIG_SUPPORT_PASE_CONFIG1 || WEAVE_CONFIG_ENABLE_PROVISIONING_BUNDLE_SUPPORT)
+#define WEAVE_CONFIG_REQUIRES_OPENSSL                                                                                              \
+    (WEAVE_CONFIG_USE_OPENSSL_ECC || WEAVE_CONFIG_RNG_IMPLEMENTATION_OPENSSL || WEAVE_CONFIG_AES_IMPLEMENTATION_OPENSSL ||         \
+     WEAVE_CONFIG_HASH_IMPLEMENTATION_OPENSSL || WEAVE_CONFIG_SUPPORT_PASE_CONFIG1 ||                                              \
+     WEAVE_CONFIG_ENABLE_PROVISIONING_BUNDLE_SUPPORT)
 #if WEAVE_CONFIG_REQUIRES_OPENSSL && !defined(WEAVE_WITH_OPENSSL)
 #define WEAVE_WITH_OPENSSL 1
 #endif
@@ -67,15 +68,15 @@ namespace Crypto {
 /**
  * Signature of a function used to gather random data from an entropy source.
  */
-typedef int (*EntropyFunct)(uint8_t *buf, size_t bufSize);
+typedef int (*EntropyFunct)(uint8_t * buf, size_t bufSize);
 
-extern bool ConstantTimeCompare(const uint8_t *buf1, const uint8_t *buf2, uint16_t len);
-extern void ClearSecretData(uint8_t *buf, uint32_t len);
+extern bool ConstantTimeCompare(const uint8_t * buf1, const uint8_t * buf2, uint16_t len);
+extern void ClearSecretData(uint8_t * buf, uint32_t len);
 
 #if WEAVE_WITH_OPENSSL
 
-extern WEAVE_ERROR EncodeBIGNUMValueLE(const BIGNUM& val, uint16_t size, uint8_t *& p);
-extern WEAVE_ERROR DecodeBIGNUMValueLE(BIGNUM& val, uint16_t size, const uint8_t *& p);
+extern WEAVE_ERROR EncodeBIGNUMValueLE(const BIGNUM & val, uint16_t size, uint8_t *& p);
+extern WEAVE_ERROR DecodeBIGNUMValueLE(BIGNUM & val, uint16_t size, const uint8_t *& p);
 
 #endif // WEAVE_WITH_OPENSSL
 

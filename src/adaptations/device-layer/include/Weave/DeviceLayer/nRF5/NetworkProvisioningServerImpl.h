@@ -30,9 +30,8 @@ namespace Internal {
  * Concrete implementation of the NetworkProvisioningServer singleton object for the
  * nRF52 platforms.
  */
-class NetworkProvisioningServerImpl final
-    : public NetworkProvisioningServer,
-      public Internal::GenericNetworkProvisioningServerImpl<NetworkProvisioningServerImpl>
+class NetworkProvisioningServerImpl final : public NetworkProvisioningServer,
+                                            public Internal::GenericNetworkProvisioningServerImpl<NetworkProvisioningServerImpl>
 {
     // Allow the NetworkProvisioningServer interface class to delegate method calls to
     // the implementation methods provided by this class.
@@ -43,7 +42,6 @@ class NetworkProvisioningServerImpl final
     friend class Internal::GenericNetworkProvisioningServerImpl<NetworkProvisioningServerImpl>;
 
 private:
-
     // ===== Members that implement the NetworkProvisioningServer public interface.
 
     WEAVE_ERROR _Init(void);

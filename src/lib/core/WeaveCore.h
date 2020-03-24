@@ -36,9 +36,9 @@
 
 #include <InetLayer/InetLayer.h>
 
-//Currently only used on Sapphire
-#define NL_WEAVE_CORE_IDENTITY           "weave-core"
-#define NL_WEAVE_CORE_PREFIX             NL_WEAVE_CORE_IDENTITY ": "
+// Currently only used on Sapphire
+#define NL_WEAVE_CORE_IDENTITY "weave-core"
+#define NL_WEAVE_CORE_PREFIX   NL_WEAVE_CORE_IDENTITY ": "
 
 namespace nl {
 namespace Weave {
@@ -49,8 +49,8 @@ using namespace ::nl::Ble;
 
 using namespace ::nl::Inet;
 
-}
-}
+} // namespace Weave
+} // namespace nl
 
 #include <Weave/Core/WeaveError.h>
 #include <Weave/Core/WeaveKeyIds.h>

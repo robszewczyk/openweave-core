@@ -38,12 +38,12 @@ void DeviceNetworkInfo::Reset()
     memset(this, 0, sizeof(*this));
     NetworkType = kNetworkType_NotSpecified;
 #if WEAVE_DEVICE_CONFIG_ENABLE_WIFI_STATION
-    WiFiMode = kWiFiMode_NotSpecified;
-    WiFiRole = kWiFiRole_NotSpecified;
+    WiFiMode         = kWiFiMode_NotSpecified;
+    WiFiRole         = kWiFiRole_NotSpecified;
     WiFiSecurityType = kWiFiSecurityType_NotSpecified;
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_WIFI_STATION
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
-    ThreadPANId = kThreadPANId_NotSpecified;
+    ThreadPANId   = kThreadPANId_NotSpecified;
     ThreadChannel = kThreadChannel_NotSpecified;
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_THREAD
     WirelessSignalStrength = INT16_MIN;
@@ -55,8 +55,8 @@ WEAVE_ERROR DeviceNetworkInfo::Encode(nl::Weave::TLV::TLVWriter & writer) const
     TLVType outerContainer;
 
     uint64_t tag = (writer.GetContainerType() == kTLVType_Array)
-            ? AnonymousTag
-            : ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_NetworkInformation);
+        ? AnonymousTag
+        : ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_NetworkInformation);
 
     err = writer.StartContainer(tag, kTLVType_Structure, outerContainer);
     SuccessOrExit(err);
@@ -117,29 +117,28 @@ WEAVE_ERROR DeviceNetworkInfo::Encode(nl::Weave::TLV::TLVWriter & writer) const
 
     if (FieldPresent.ThreadExtendedPANId)
     {
-        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadExtendedPANId),
-                ThreadExtendedPANId, kThreadExtendedPANIdLength);
+        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadExtendedPANId), ThreadExtendedPANId,
+                              kThreadExtendedPANIdLength);
         SuccessOrExit(err);
     }
 
     if (FieldPresent.ThreadMeshPrefix)
     {
-        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadMeshPrefix),
-                ThreadMeshPrefix, kThreadMeshPrefixLength);
+        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadMeshPrefix), ThreadMeshPrefix,
+                              kThreadMeshPrefixLength);
         SuccessOrExit(err);
     }
 
     if (FieldPresent.ThreadNetworkKey)
     {
-        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadNetworkKey),
-                ThreadNetworkKey, kThreadNetworkKeyLength);
+        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadNetworkKey), ThreadNetworkKey,
+                              kThreadNetworkKeyLength);
         SuccessOrExit(err);
     }
 
     if (FieldPresent.ThreadPSKc)
     {
-        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadPSKc),
-                ThreadPSKc, kThreadPSKcLength);
+        err = writer.PutBytes(ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_ThreadPSKc), ThreadPSKc, kThreadPSKcLength);
         SuccessOrExit(err);
     }
 
@@ -184,7 +183,7 @@ WEAVE_ERROR DeviceNetworkInfo::Decode(nl::Weave::TLV::TLVReader & reader)
     }
 
     VerifyOrExit(reader.GetTag() == ProfileTag(kWeaveProfile_NetworkProvisioning, kTag_NetworkInformation) ||
-                 reader.GetTag() == AnonymousTag,
+                     reader.GetTag() == AnonymousTag,
                  err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
 
     VerifyOrExit(reader.GetType() == kTLVType_Structure, err = WEAVE_ERROR_WRONG_TLV_TYPE);
@@ -242,8 +241,8 @@ WEAVE_ERROR DeviceNetworkInfo::Decode(nl::Weave::TLV::TLVReader & reader)
             VerifyOrExit(reader.GetType() == kTLVType_ByteString, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
             val = reader.GetLength();
             VerifyOrExit(val <= kMaxWiFiKeyLength, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
-            WiFiKeyLen = (uint16_t)val;
-            err = reader.GetBytes(WiFiKey, sizeof(WiFiKey));
+            WiFiKeyLen = (uint16_t) val;
+            err        = reader.GetBytes(WiFiKey, sizeof(WiFiKey));
             SuccessOrExit(err);
             break;
         case kTag_WiFiSecurityType:
@@ -252,15 +251,13 @@ WEAVE_ERROR DeviceNetworkInfo::Decode(nl::Weave::TLV::TLVReader & reader)
             SuccessOrExit(err);
             WiFiSecurityType = (WiFiSecurityType_t) val;
             break;
-#else // WEAVE_DEVICE_CONFIG_ENABLE_WIFI_STATION
+#else  // WEAVE_DEVICE_CONFIG_ENABLE_WIFI_STATION
         case kTag_WiFiSSID:
         case kTag_WiFiMode:
         case kTag_WiFiRole:
         case kTag_WiFiPreSharedKey:
-        case kTag_WiFiSecurityType:
-            ExitNow(err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
-            break;
-#endif //WEAVE_DEVICE_CONFIG_ENABLE_WIFI_STATION
+        case kTag_WiFiSecurityType: ExitNow(err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE); break;
+#endif // WEAVE_DEVICE_CONFIG_ENABLE_WIFI_STATION
 #if WEAVE_DEVICE_CONFIG_ENABLE_THREAD
         case kTag_ThreadNetworkName:
             VerifyOrExit(reader.GetType() == kTLVType_UTF8String, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
@@ -313,16 +310,14 @@ WEAVE_ERROR DeviceNetworkInfo::Decode(nl::Weave::TLV::TLVReader & reader)
             VerifyOrExit(val <= UINT8_MAX, err = WEAVE_ERROR_INVALID_TLV_ELEMENT);
             ThreadChannel = val;
             break;
-#else // WEAVE_DEVICE_CONFIG_ENABLE_THREAD
+#else  // WEAVE_DEVICE_CONFIG_ENABLE_THREAD
         case kTag_ThreadNetworkName:
         case kTag_ThreadExtendedPANId:
         case kTag_ThreadMeshPrefix:
         case kTag_ThreadNetworkKey:
         case kTag_ThreadPSKc:
         case kTag_ThreadPANId:
-        case kTag_ThreadChannel:
-            ExitNow(err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE);
-            break;
+        case kTag_ThreadChannel: ExitNow(err = WEAVE_ERROR_UNSUPPORTED_WEAVE_FEATURE); break;
 #endif // WEAVE_DEVICE_CONFIG_ENABLE_THREAD
         default:
             // Ignore unknown elements for compatibility with future formats.
@@ -348,7 +343,7 @@ WEAVE_ERROR DeviceNetworkInfo::MergeTo(DeviceNetworkInfo & dest)
     }
     if (FieldPresent.NetworkId)
     {
-        dest.NetworkId = NetworkId;
+        dest.NetworkId              = NetworkId;
         dest.FieldPresent.NetworkId = true;
     }
 

@@ -51,54 +51,54 @@ namespace Weave {
 namespace Profiles {
 namespace StatusReporting {
 
+/*
+ * in-memory, a status report, at its most basic, is a Weave profile
+ * ID and status code pair. then there's the option of chaining on
+ * more status information as TLV.
+ */
+
+class NL_DLL_EXPORT StatusReport
+{
+public:
+    StatusReport(void);
+    ~StatusReport(void);
+
+    WEAVE_ERROR init(uint32_t aProfileId, uint16_t aCode, ReferencedTLVData * aInfo = NULL);
+
     /*
-     * in-memory, a status report, at its most basic, is a Weave profile
-     * ID and status code pair. then there's the option of chaining on
-     * more status information as TLV.
+     * this version of the intializer is provided as a convenience in
+     * the case where we want to make a status report that reports an
+     * internal error.
      */
 
-    class NL_DLL_EXPORT StatusReport
-    {
-    public:
-        StatusReport(void);
-        ~StatusReport(void);
+    WEAVE_ERROR init(WEAVE_ERROR aError);
 
-        WEAVE_ERROR init(uint32_t aProfileId, uint16_t aCode, ReferencedTLVData *aInfo = NULL);
+    WEAVE_ERROR pack(PacketBuffer * aBuffer, uint32_t maxLen = 0xFFFFFFFFUL);
+    uint16_t packedLength(void);
+    static WEAVE_ERROR parse(PacketBuffer * aBuffer, StatusReport & aDestination);
 
-        /*
-         * this version of the intializer is provided as a convenience in
-         * the case where we want to make a status report that reports an
-         * internal error.
-         */
+    bool operator ==(const StatusReport & another) const;
 
-        WEAVE_ERROR init(WEAVE_ERROR aError);
+    bool success(void);
 
-        WEAVE_ERROR pack(PacketBuffer *aBuffer, uint32_t maxLen = 0xFFFFFFFFUL);
-        uint16_t packedLength(void);
-        static WEAVE_ERROR parse(PacketBuffer *aBuffer, StatusReport &aDestination);
+    /*
+     * here are some static convenience methods for adding metadata
+     */
 
-        bool operator == (const StatusReport &another) const;
+    static WEAVE_ERROR StartMetaData(nl::Weave::TLV::TLVWriter & aWriter);
+    static WEAVE_ERROR EndMetaData(nl::Weave::TLV::TLVWriter & aWriter);
 
-        bool success(void);
+    static WEAVE_ERROR AddErrorCode(nl::Weave::TLV::TLVWriter & aWriter, WEAVE_ERROR aError);
 
-        /*
-         * here are some static convenience methods for adding metadata
-         */
+    // data members
 
-        static WEAVE_ERROR StartMetaData(nl::Weave::TLV::TLVWriter &aWriter);
-        static WEAVE_ERROR EndMetaData(nl::Weave::TLV::TLVWriter &aWriter);
+    uint32_t mProfileId;
+    uint16_t mStatusCode;
+    WEAVE_ERROR mError;
+    ReferencedTLVData mAdditionalInfo;
+};
 
-        static WEAVE_ERROR AddErrorCode( nl::Weave::TLV::TLVWriter &aWriter, WEAVE_ERROR aError);
-
-        // data members
-
-        uint32_t mProfileId;
-        uint16_t mStatusCode;
-        WEAVE_ERROR mError;
-        ReferencedTLVData mAdditionalInfo;
-    };
-
-}; // StatusReporting
+}; // namespace StatusReporting
 }; // namespace Profiles
 }; // namespace Weave
 }; // namespace nl

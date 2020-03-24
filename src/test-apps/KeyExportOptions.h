@@ -43,40 +43,41 @@ class KeyExportOptions : public WeaveKeyExportDelegate, public OptionSetBase
 public:
     uint8_t AllowedKeyExportConfigs;
 
-    const uint8_t *mAccessToken;
+    const uint8_t * mAccessToken;
     uint16_t mAccessTokenLength;
 
     KeyExportOptions();
 
-    virtual bool HandleOption(const char *progName, OptionSet *optSet, int id, const char *name, const char *arg) __OVERRIDE;
+    virtual bool HandleOption(const char * progName, OptionSet * optSet, int id, const char * name, const char * arg) __OVERRIDE;
 
 private:
-
 #if !WEAVE_CONFIG_LEGACY_KEY_EXPORT_DELEGATE
 
     WEAVE_ERROR GetNodeCertSet(WeaveKeyExport * keyExport, WeaveCertificateSet & certSet) __OVERRIDE;
     WEAVE_ERROR ReleaseNodeCertSet(WeaveKeyExport * keyExport, WeaveCertificateSet & certSet) __OVERRIDE;
     WEAVE_ERROR GenerateNodeSignature(WeaveKeyExport * keyExport, const uint8_t * msgHash, uint8_t msgHashLen,
-        TLVWriter & writer) __OVERRIDE;
+                                      TLVWriter & writer) __OVERRIDE;
     WEAVE_ERROR BeginCertValidation(WeaveKeyExport * keyExport, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE;
-    WEAVE_ERROR HandleCertValidationResult(WeaveKeyExport * keyExport, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet, uint32_t requestedKeyId) __OVERRIDE;
+                                    WeaveCertificateSet & certSet) __OVERRIDE;
+    WEAVE_ERROR HandleCertValidationResult(WeaveKeyExport * keyExport, ValidationContext & validCtx, WeaveCertificateSet & certSet,
+                                           uint32_t requestedKeyId) __OVERRIDE;
     WEAVE_ERROR EndCertValidation(WeaveKeyExport * keyExport, ValidationContext & validCtx,
-            WeaveCertificateSet & certSet) __OVERRIDE;
+                                  WeaveCertificateSet & certSet) __OVERRIDE;
     WEAVE_ERROR ValidateUnsignedKeyExportMessage(WeaveKeyExport * keyExport, uint32_t requestedKeyId) __OVERRIDE;
 
 #endif // !WEAVE_CONFIG_LEGACY_KEY_EXPORT_DELEGATE
 
-    WEAVE_ERROR GetNodeCertSet(bool isInitiator, WeaveCertificateSet& certSet);
-    WEAVE_ERROR ReleaseNodeCertSet(bool isInitiator, WeaveCertificateSet& certSet);
-    WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t& weavePrivKeyLen);
+    WEAVE_ERROR GetNodeCertSet(bool isInitiator, WeaveCertificateSet & certSet);
+    WEAVE_ERROR ReleaseNodeCertSet(bool isInitiator, WeaveCertificateSet & certSet);
+    WEAVE_ERROR GetNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey, uint16_t & weavePrivKeyLen);
     WEAVE_ERROR ReleaseNodePrivateKey(bool isInitiator, const uint8_t *& weavePrivKey);
-    WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext);
-    WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext,
-            const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgHeader, uint32_t requestedKeyId);
-    WEAVE_ERROR EndCertValidation(bool isInitiator, WeaveCertificateSet& certSet, ValidationContext& validContext);
-    WEAVE_ERROR ValidateUnsignedKeyExportMessage(bool isInitiator, const IPPacketInfo *pktInfo, const WeaveMessageInfo *msgHeader, uint32_t requestedKeyId);
+    WEAVE_ERROR BeginCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext);
+    WEAVE_ERROR HandleCertValidationResult(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext,
+                                           const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgHeader,
+                                           uint32_t requestedKeyId);
+    WEAVE_ERROR EndCertValidation(bool isInitiator, WeaveCertificateSet & certSet, ValidationContext & validContext);
+    WEAVE_ERROR ValidateUnsignedKeyExportMessage(bool isInitiator, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgHeader,
+                                                 uint32_t requestedKeyId);
 };
 
 extern KeyExportOptions gKeyExportOptions;

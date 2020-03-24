@@ -45,18 +45,17 @@ namespace Internal {
  *
  */
 
-template<class ImplClass>
-class GenericSoftwareUpdateManagerImpl_BDX
+template <class ImplClass> class GenericSoftwareUpdateManagerImpl_BDX
 {
-    using BDXTransfer = ::nl::Weave::Profiles::BulkDataTransfer::BDXTransfer;
-    using BDXNode = ::nl::Weave::Profiles::BulkDataTransfer::BdxNode;
+    using BDXTransfer   = ::nl::Weave::Profiles::BulkDataTransfer::BDXTransfer;
+    using BDXNode       = ::nl::Weave::Profiles::BulkDataTransfer::BdxNode;
     using ReceiveAccept = ::nl::Weave::Profiles::BulkDataTransfer::ReceiveAccept;
 
 protected:
     // ===== Members for use by the implementation subclass.
 
     WEAVE_ERROR DoInit(void);
-    WEAVE_ERROR StartImageDownload(char *aURI, uint64_t aStartOffset);
+    WEAVE_ERROR StartImageDownload(char * aURI, uint64_t aStartOffset);
     WEAVE_ERROR GetUpdateSchemeList(::nl::Weave::Profiles::SoftwareUpdate::UpdateSchemeList * aUpdateSchemeList);
     void AbortDownload(void);
 
@@ -67,8 +66,7 @@ private:
     WEAVE_ERROR StartDownload(void);
     void ResetState(void);
 
-    static void BlockReceiveHandler(BDXTransfer * aXfer, uint64_t alength, uint8_t * aDataBlock,
-                                    bool aIsLastBlock);
+    static void BlockReceiveHandler(BDXTransfer * aXfer, uint64_t alength, uint8_t * aDataBlock, bool aIsLastBlock);
     static void ErrorHandler(BDXTransfer * aXfer, WEAVE_ERROR anErrorCode);
     static WEAVE_ERROR ReceiveAcceptHandler(BDXTransfer * aXfer, ReceiveAccept * aEeceiveAcceptMsg);
     static void ReceiveRejectHandler(BDXTransfer * aXfer, nl::Weave::StatusReport * aReport);

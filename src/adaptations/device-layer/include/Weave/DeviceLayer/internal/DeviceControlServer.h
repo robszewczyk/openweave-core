@@ -35,14 +35,12 @@ namespace Internal {
 /**
  * Implements the Weave Device Control profile for a Weave device.
  */
-class DeviceControlServer final
-    : public ::nl::Weave::Profiles::DeviceControl::DeviceControlServer,
-      public ::nl::Weave::Profiles::DeviceControl::DeviceControlDelegate
+class DeviceControlServer final : public ::nl::Weave::Profiles::DeviceControl::DeviceControlServer,
+                                  public ::nl::Weave::Profiles::DeviceControl::DeviceControlDelegate
 {
     using ServerBaseClass = ::nl::Weave::Profiles::DeviceControl::DeviceControlServer;
 
 public:
-
     // ===== Members for internal use by other Device Layer components.
 
     WEAVE_ERROR Init();
@@ -68,7 +66,6 @@ public:
     bool IsPairedToAccount() const override;
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend DeviceControlServer & DeviceControlSvr(void);
@@ -76,15 +73,14 @@ private:
     static DeviceControlServer sInstance;
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    DeviceControlServer() = default;
+    DeviceControlServer()  = default;
     ~DeviceControlServer() = default;
 
     // No copy, move or assignment.
-    DeviceControlServer(const DeviceControlServer &) = delete;
+    DeviceControlServer(const DeviceControlServer &)  = delete;
     DeviceControlServer(const DeviceControlServer &&) = delete;
-    DeviceControlServer & operator=(const DeviceControlServer &) = delete;
+    DeviceControlServer & operator =(const DeviceControlServer &) = delete;
 };
 
 /**

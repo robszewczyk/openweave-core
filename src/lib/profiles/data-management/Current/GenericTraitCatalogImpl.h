@@ -43,8 +43,7 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
  *  @brief A Weave provided implementation of the TraitCatalogBase interface for a collection of trait data instances
  *         that all refer to the same resource. It provides a c++ map-backed storage for these instances.
  */
-template <typename T>
-class GenericTraitCatalogImpl : public TraitCatalogBase<T>
+template <typename T> class GenericTraitCatalogImpl : public TraitCatalogBase<T>
 {
 public:
     GenericTraitCatalogImpl(void);

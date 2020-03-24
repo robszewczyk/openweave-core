@@ -65,7 +65,7 @@ namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNames
 /*********************/
 struct eventStats
 {
-    const char *str;
+    const char * str;
 };
 
 struct eventStruct
@@ -74,129 +74,103 @@ struct eventStruct
     eventStats b;
 };
 
-namespace SampleTrait
+namespace SampleTrait {
+struct samplesArray
 {
-    struct samplesArray
-    {
-        uint32_t num_samples;
-        uint32_t *samples_buf;
-    };
-
-    struct Event
-    {
-        uint32_t state;
-        uint32_t timestamp;
-
-        eventStruct structure;
-
-        // Array of elements
-        samplesArray samples;
-    };
-
+    uint32_t num_samples;
+    uint32_t * samples_buf;
 };
+
+struct Event
+{
+    uint32_t state;
+    uint32_t timestamp;
+
+    eventStruct structure;
+
+    // Array of elements
+    samplesArray samples;
+};
+
+}; // namespace SampleTrait
 
 /************************/
 /*  SCHEMA DESCRIPTORS  */
 /************************/
-nl::FieldDescriptor eventStatsFieldDescriptors[] =
-{
+nl::FieldDescriptor eventStatsFieldDescriptors[] = {
     // STR
-    {
-        NULL, offsetof(eventStats, str), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1
-    }
+    { NULL, offsetof(eventStats, str), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUTF8String, 0), 1 }
 };
 
 // Schema Descriptors
-const nl::SchemaFieldDescriptor eventStatsSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(eventStatsFieldDescriptors)/sizeof(eventStatsFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor eventStatsSchema = { .mNumFieldDescriptorElements =
+                                                         sizeof(eventStatsFieldDescriptors) / sizeof(eventStatsFieldDescriptors[0]),
 
-    .mFields = eventStatsFieldDescriptors,
+                                                     .mFields = eventStatsFieldDescriptors,
 
-    .mSize = sizeof(eventStats)
-};
+                                                     .mSize = sizeof(eventStats) };
 
-nl::FieldDescriptor eventStructFieldDescriptors[] =
-{
+nl::FieldDescriptor eventStructFieldDescriptors[] = {
     // A
-    {
-        NULL, offsetof(eventStruct, a), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 1
-    },
+    { NULL, offsetof(eventStruct, a), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeBoolean, 0), 1 },
     // STRUCTURE (eventStats)
-    {
-        &eventStatsSchema, offsetof(eventStruct, b), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2
-    }
+    { &eventStatsSchema, offsetof(eventStruct, b), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 2 }
 };
 
-const nl::SchemaFieldDescriptor eventStructSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(eventStructFieldDescriptors)/sizeof(eventStructFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor eventStructSchema = { .mNumFieldDescriptorElements = sizeof(eventStructFieldDescriptors) /
+                                                          sizeof(eventStructFieldDescriptors[0]),
 
-    .mFields = eventStructFieldDescriptors,
+                                                      .mFields = eventStructFieldDescriptors,
 
-    .mSize = sizeof(eventStruct)
-};
+                                                      .mSize = sizeof(eventStruct) };
 
-nl::FieldDescriptor sampleEventFieldDescriptors[] =
-{
+nl::FieldDescriptor sampleEventFieldDescriptors[] = {
     // STATE
-    {
-        NULL, offsetof(SampleTrait::Event, state), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
+    { NULL, offsetof(SampleTrait::Event, state), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
     // TIMESTAMP
-    {
-        NULL, offsetof(SampleTrait::Event, timestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 2
-    },
+    { NULL, offsetof(SampleTrait::Event, timestamp), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 2 },
     // STRUCTURE (eventStruct)
-    {
-        &eventStructSchema, offsetof(SampleTrait::Event, structure), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 3
-    },
+    { &eventStructSchema, offsetof(SampleTrait::Event, structure), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeStructure, 0), 3 },
     // ARRAY (samples)
-    {
-        NULL, offsetof(SampleTrait::Event, samples) + offsetof(SampleTrait::samplesArray, num_samples), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 4
-    },
+    { NULL, offsetof(SampleTrait::Event, samples) + offsetof(SampleTrait::samplesArray, num_samples),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 4 },
     // SAMPLES TYPE
     // This is a little weird, we need to somehow convey that it is an array of ____
-    {
-        NULL, offsetof(SampleTrait::Event, samples) + offsetof(SampleTrait::samplesArray, samples_buf), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 4
-    }
+    { NULL, offsetof(SampleTrait::Event, samples) + offsetof(SampleTrait::samplesArray, samples_buf),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 4 }
 };
 
-const nl::SchemaFieldDescriptor sampleEventSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(sampleEventFieldDescriptors)/sizeof(sampleEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor sampleEventSchema = { .mNumFieldDescriptorElements = sizeof(sampleEventFieldDescriptors) /
+                                                          sizeof(sampleEventFieldDescriptors[0]),
 
-    .mFields = sampleEventFieldDescriptors,
+                                                      .mFields = sampleEventFieldDescriptors,
 
-    .mSize = sizeof(SampleTrait::Event)
-};
+                                                      .mSize = sizeof(SampleTrait::Event) };
 
-const nl::Weave::Profiles::DataManagement::EventSchema sampleSchema =
-{
-    .mProfileId = 0x200,
+const nl::Weave::Profiles::DataManagement::EventSchema sampleSchema = {
+    .mProfileId     = 0x200,
     .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
+    .mImportance    = nl::Weave::Profiles::DataManagement::Production,
 };
 
-inline event_id_t LogSampleEvent(SampleTrait::Event *aEvent, ImportanceType aImportance)
+inline event_id_t LogSampleEvent(SampleTrait::Event * aEvent, ImportanceType aImportance)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &sampleEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &sampleEventSchema };
 
-    return LogEvent(sampleSchema, SerializedDataToTLVWriterHelper, (void *)&eventSchemaPair);
+    return LogEvent(sampleSchema, SerializedDataToTLVWriterHelper, (void *) &eventSchemaPair);
 }
 
-inline WEAVE_ERROR DeserializeSampleEvent(nl::Weave::TLV::TLVReader &aReader, SampleTrait::Event *aEvent, nl::SerializationContext *aContext = NULL)
+inline WEAVE_ERROR DeserializeSampleEvent(nl::Weave::TLV::TLVReader & aReader, SampleTrait::Event * aEvent,
+                                          nl::SerializationContext * aContext = NULL)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &sampleEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &sampleEventSchema };
 
-    return nl::TLVReaderToDeserializedDataHelper(aReader, kTag_EventData, (void *)&eventSchemaPair, aContext);
+    return nl::TLVReaderToDeserializedDataHelper(aReader, kTag_EventData, (void *) &eventSchemaPair, aContext);
 }
 
 /**********************************/
 /*        END SAMPLE TRAIT        */
 /**********************************/
-
-
 
 /**********************************/
 /*      START OPENCLOSE TRAIT     */
@@ -211,43 +185,36 @@ inline WEAVE_ERROR DeserializeSampleEvent(nl::Weave::TLV::TLVReader &aReader, Sa
 //  }
 // }
 
-namespace OpenCloseTrait
+namespace OpenCloseTrait {
+struct Event
 {
-    struct Event
-    {
-        uint32_t state;
-    };
+    uint32_t state;
 };
+}; // namespace OpenCloseTrait
 
-FieldDescriptor openCloseEventFieldDescriptors[] =
-{
+FieldDescriptor openCloseEventFieldDescriptors[] = {
     // STATE
-    {
-        NULL, offsetof(OpenCloseTrait::Event, state), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1
-    },
+    { NULL, offsetof(OpenCloseTrait::Event, state), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt32, 0), 1 },
 };
 
-const nl::SchemaFieldDescriptor openCloseEventSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(openCloseEventFieldDescriptors)/sizeof(openCloseEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor openCloseEventSchema = { .mNumFieldDescriptorElements = sizeof(openCloseEventFieldDescriptors) /
+                                                             sizeof(openCloseEventFieldDescriptors[0]),
 
-    .mFields = openCloseEventFieldDescriptors,
+                                                         .mFields = openCloseEventFieldDescriptors,
 
-    .mSize = sizeof(OpenCloseTrait::Event)
-};
+                                                         .mSize = sizeof(OpenCloseTrait::Event) };
 
-const nl::Weave::Profiles::DataManagement::EventSchema openCloseSchema =
-{
-    .mProfileId = 0x208,
+const nl::Weave::Profiles::DataManagement::EventSchema openCloseSchema = {
+    .mProfileId     = 0x208,
     .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
+    .mImportance    = nl::Weave::Profiles::DataManagement::Production,
 };
 
-inline event_id_t LogOpenCloseEvent(OpenCloseTrait::Event *aEvent, ImportanceType aImportance)
+inline event_id_t LogOpenCloseEvent(OpenCloseTrait::Event * aEvent, ImportanceType aImportance)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &openCloseEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &openCloseEventSchema };
 
-    return LogEvent(openCloseSchema, SerializedDataToTLVWriterHelper, (void *)&eventSchemaPair);
+    return LogEvent(openCloseSchema, SerializedDataToTLVWriterHelper, (void *) &eventSchemaPair);
 }
 
 /**********************************/
@@ -255,107 +222,99 @@ inline event_id_t LogOpenCloseEvent(OpenCloseTrait::Event *aEvent, ImportanceTyp
 /**********************************/
 // END GENERATED
 
-namespace ByteStringTestTrait
+namespace ByteStringTestTrait {
+struct Event
 {
-    struct Event
-    {
-        nl::SerializedByteString byte_string;
-    };
+    nl::SerializedByteString byte_string;
+};
+}; // namespace ByteStringTestTrait
+
+FieldDescriptor ByteStringTestEventFieldDescriptors[] = {
+    { NULL, offsetof(ByteStringTestTrait::Event, byte_string), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1 },
 };
 
-FieldDescriptor ByteStringTestEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(ByteStringTestTrait::Event, byte_string), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1
-    },
-};
-
-const nl::SchemaFieldDescriptor ByteStringTestEventSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(ByteStringTestEventFieldDescriptors)/sizeof(ByteStringTestEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor ByteStringTestEventSchema = {
+    .mNumFieldDescriptorElements = sizeof(ByteStringTestEventFieldDescriptors) / sizeof(ByteStringTestEventFieldDescriptors[0]),
 
     .mFields = ByteStringTestEventFieldDescriptors,
 
     .mSize = sizeof(ByteStringTestTrait::Event)
 };
 
-const nl::Weave::Profiles::DataManagement::EventSchema ByteStringTestSchema =
-{
-    .mProfileId = 0x209,
+const nl::Weave::Profiles::DataManagement::EventSchema ByteStringTestSchema = {
+    .mProfileId     = 0x209,
     .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
+    .mImportance    = nl::Weave::Profiles::DataManagement::Production,
 };
 
-inline event_id_t LogByteStringTestEvent(ByteStringTestTrait::Event *aEvent)
+inline event_id_t LogByteStringTestEvent(ByteStringTestTrait::Event * aEvent)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &ByteStringTestEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &ByteStringTestEventSchema };
 
-    return LogEvent(ByteStringTestSchema, SerializedDataToTLVWriterHelper, (void *)&eventSchemaPair);
+    return LogEvent(ByteStringTestSchema, SerializedDataToTLVWriterHelper, (void *) &eventSchemaPair);
 }
 
-inline WEAVE_ERROR DeserializeByteStringTestEvent(nl::Weave::TLV::TLVReader &aReader, ByteStringTestTrait::Event *aEvent, nl::SerializationContext *aContext = NULL)
+inline WEAVE_ERROR DeserializeByteStringTestEvent(nl::Weave::TLV::TLVReader & aReader, ByteStringTestTrait::Event * aEvent,
+                                                  nl::SerializationContext * aContext = NULL)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &ByteStringTestEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &ByteStringTestEventSchema };
 
-    return nl::TLVReaderToDeserializedDataHelper(aReader, kTag_EventData, (void *)&eventSchemaPair, aContext);
+    return nl::TLVReaderToDeserializedDataHelper(aReader, kTag_EventData, (void *) &eventSchemaPair, aContext);
 }
 
-namespace ByteStringArrayTestTrait
+namespace ByteStringArrayTestTrait {
+struct byteString_array
 {
-    struct byteString_array {
-        uint32_t num;
-        nl::SerializedByteString *buf;
-    };
-
-    struct Event
-    {
-        byteString_array testArray;
-    };
+    uint32_t num;
+    nl::SerializedByteString * buf;
 };
 
-FieldDescriptor ByteStringArrayTestEventFieldDescriptors[] =
+struct Event
 {
-    {
-        NULL, offsetof(ByteStringArrayTestTrait::Event, testArray) + offsetof(ByteStringArrayTestTrait::byteString_array, num), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 1
-    },
-    {
-        NULL, offsetof(ByteStringArrayTestTrait::Event, testArray) + offsetof(ByteStringArrayTestTrait::byteString_array, buf), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1
-    },
+    byteString_array testArray;
+};
+}; // namespace ByteStringArrayTestTrait
+
+FieldDescriptor ByteStringArrayTestEventFieldDescriptors[] = {
+    { NULL, offsetof(ByteStringArrayTestTrait::Event, testArray) + offsetof(ByteStringArrayTestTrait::byteString_array, num),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeArray, 0), 1 },
+    { NULL, offsetof(ByteStringArrayTestTrait::Event, testArray) + offsetof(ByteStringArrayTestTrait::byteString_array, buf),
+      SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 0), 1 },
 };
 
-const nl::SchemaFieldDescriptor ByteStringArrayTestEventSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(ByteStringArrayTestEventFieldDescriptors)/sizeof(ByteStringArrayTestEventFieldDescriptors[0]),
+const nl::SchemaFieldDescriptor ByteStringArrayTestEventSchema = { .mNumFieldDescriptorElements =
+                                                                       sizeof(ByteStringArrayTestEventFieldDescriptors) /
+                                                                       sizeof(ByteStringArrayTestEventFieldDescriptors[0]),
 
-    .mFields = ByteStringArrayTestEventFieldDescriptors,
+                                                                   .mFields = ByteStringArrayTestEventFieldDescriptors,
 
-    .mSize = sizeof(ByteStringArrayTestTrait::Event)
-};
+                                                                   .mSize = sizeof(ByteStringArrayTestTrait::Event) };
 
-const nl::Weave::Profiles::DataManagement::EventSchema ByteStringArrayTestSchema =
-{
-    .mProfileId = 0x209,
+const nl::Weave::Profiles::DataManagement::EventSchema ByteStringArrayTestSchema = {
+    .mProfileId     = 0x209,
     .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::Production,
+    .mImportance    = nl::Weave::Profiles::DataManagement::Production,
 };
 
-inline event_id_t LogByteStringArrayTestEvent(ByteStringArrayTestTrait::Event *aEvent)
+inline event_id_t LogByteStringArrayTestEvent(ByteStringArrayTestTrait::Event * aEvent)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &ByteStringArrayTestEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &ByteStringArrayTestEventSchema };
 
-    return LogEvent(ByteStringArrayTestSchema, SerializedDataToTLVWriterHelper, (void *)&eventSchemaPair);
+    return LogEvent(ByteStringArrayTestSchema, SerializedDataToTLVWriterHelper, (void *) &eventSchemaPair);
 }
 
-inline WEAVE_ERROR DeserializeByteStringArrayTestEvent(nl::Weave::TLV::TLVReader &aReader, ByteStringArrayTestTrait::Event *aEvent, nl::SerializationContext *aContext = NULL)
+inline WEAVE_ERROR DeserializeByteStringArrayTestEvent(nl::Weave::TLV::TLVReader & aReader,
+                                                       ByteStringArrayTestTrait::Event * aEvent,
+                                                       nl::SerializationContext * aContext = NULL)
 {
-    nl::StructureSchemaPointerPair eventSchemaPair = { (void *)aEvent, &ByteStringArrayTestEventSchema };
+    nl::StructureSchemaPointerPair eventSchemaPair = { (void *) aEvent, &ByteStringArrayTestEventSchema };
 
-    return nl::TLVReaderToDeserializedDataHelper(aReader, kTag_EventData, (void *)&eventSchemaPair, aContext);
+    return nl::TLVReaderToDeserializedDataHelper(aReader, kTag_EventData, (void *) &eventSchemaPair, aContext);
 }
 
-} // WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
-} // Profiles
-} // Weave
-} // nl
+} // namespace WeaveMakeManagedNamespaceIdentifier(DataManagement, kWeaveManagedNamespaceDesignation_Current)
+} // namespace Profiles
+} // namespace Weave
+} // namespace nl
 
 #endif //_PROFILE_WEAVE_EVENT_LOGGING_SCHEMA_DEFINITIONS_H

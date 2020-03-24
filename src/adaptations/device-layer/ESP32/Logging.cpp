@@ -32,7 +32,7 @@ using namespace ::nl::Weave::DeviceLayer::Internal;
 
 namespace {
 
-void GetModuleName(char *buf, uint8_t module)
+void GetModuleName(char * buf, uint8_t module)
 {
     if (module == ::nl::Weave::Logging::kLogModule_DeviceLayer)
     {
@@ -50,7 +50,7 @@ namespace nl {
 namespace Weave {
 namespace Logging {
 
-void Log(uint8_t module, uint8_t category, const char *msg, ...)
+void Log(uint8_t module, uint8_t category, const char * msg, ...)
 {
     va_list v;
 
@@ -58,7 +58,8 @@ void Log(uint8_t module, uint8_t category, const char *msg, ...)
 
     if (IsCategoryEnabled(category))
     {
-        enum {
+        enum
+        {
             kMaxTagLen = 7 + nlWeaveLoggingModuleNameLen
         };
         char tag[kMaxTagLen + 1];
@@ -68,24 +69,19 @@ void Log(uint8_t module, uint8_t category, const char *msg, ...)
         strcpy(tag, "weave[");
         tagLen = strlen(tag);
         ::GetModuleName(tag + tagLen, module);
-        tagLen = strlen(tag);
+        tagLen        = strlen(tag);
         tag[tagLen++] = ']';
-        tag[tagLen] = 0;
+        tag[tagLen]   = 0;
 
         vsnprintf(formattedMsg, sizeof(formattedMsg), msg, v);
 
-        switch (category) {
-        case kLogCategory_Error:
-            ESP_LOGE(tag, "%s", formattedMsg);
-            break;
+        switch (category)
+        {
+        case kLogCategory_Error: ESP_LOGE(tag, "%s", formattedMsg); break;
         case kLogCategory_Progress:
         case kLogCategory_Retain:
-        default:
-            ESP_LOGI(tag, "%s", formattedMsg);
-            break;
-        case kLogCategory_Detail:
-            ESP_LOGV(tag, "%s", formattedMsg);
-            break;
+        default: ESP_LOGI(tag, "%s", formattedMsg); break;
+        case kLogCategory_Detail: ESP_LOGV(tag, "%s", formattedMsg); break;
         }
     }
 
@@ -95,4 +91,3 @@ void Log(uint8_t module, uint8_t category, const char *msg, ...)
 } // namespace Logging
 } // namespace Weave
 } // namespace nl
-

@@ -79,7 +79,6 @@ typedef const char * (*MessageNameFunct)(uint32_t inProfileId, uint8_t inMsgType
  */
 typedef const char * (*ProfileNameFunct)(uint32_t inProfileId);
 
-
 /**
  *  @brief
  *    Typedef for a callback function that returns a human-readable
@@ -123,11 +122,14 @@ typedef const char * (*StatusReportFormatStringFunct)(uint32_t inProfileId, uint
  */
 struct ProfileStringInfo
 {
-    uint32_t                       mProfileId;                      ///< The profile identifier under which to register string callbacks.
+    uint32_t mProfileId; ///< The profile identifier under which to register string callbacks.
 
-    MessageNameFunct               mMessageNameFunct;               ///< An optional pointer to a callback to return descriptive names associated with profile message types.
-    ProfileNameFunct               mProfileNameFunct;               ///< An optional pointer to a callback to return a descriptive name associated with the profile.
-    StatusReportFormatStringFunct  mStatusReportFormatStringFunct;  ///< An optional pointer to a callback to return a descriptive string for profile status codes.
+    MessageNameFunct
+        mMessageNameFunct; ///< An optional pointer to a callback to return descriptive names associated with profile message types.
+    ProfileNameFunct
+        mProfileNameFunct; ///< An optional pointer to a callback to return a descriptive name associated with the profile.
+    StatusReportFormatStringFunct mStatusReportFormatStringFunct; ///< An optional pointer to a callback to return a descriptive
+                                                                  ///< string for profile status codes.
 };
 
 /**
@@ -143,19 +145,19 @@ struct ProfileStringInfo
  */
 struct ProfileStringContext
 {
-    ProfileStringContext *         mNext;        ///< A pointer to the next
-                                                 ///< context in the registry.
+    ProfileStringContext * mNext; ///< A pointer to the next
+                                  ///< context in the registry.
 
-    const ProfileStringInfo &      mStringInfo;  ///< A read-only reference to
-                                                 ///< the profile string
-                                                 ///< support callbacks
-                                                 ///< associated with this
-                                                 ///< context.
+    const ProfileStringInfo & mStringInfo; ///< A read-only reference to
+                                           ///< the profile string
+                                           ///< support callbacks
+                                           ///< associated with this
+                                           ///< context.
 };
 
-extern WEAVE_ERROR RegisterProfileStringInfo(ProfileStringContext &inOutContext);
-extern WEAVE_ERROR UnregisterProfileStringInfo(ProfileStringContext &inOutContext);
-extern const ProfileStringInfo *FindProfileStringInfo(uint32_t inProfileId);
+extern WEAVE_ERROR RegisterProfileStringInfo(ProfileStringContext & inOutContext);
+extern WEAVE_ERROR UnregisterProfileStringInfo(ProfileStringContext & inOutContext);
+extern const ProfileStringInfo * FindProfileStringInfo(uint32_t inProfileId);
 
 }; // namespace Support
 

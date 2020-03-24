@@ -39,64 +39,54 @@ using namespace ::nl::Weave::Profiles::DataManagement;
 // Property Table
 //
 
-const TraitSchemaEngine::PropertyInfo PropertyMap[] = {
-};
+const TraitSchemaEngine::PropertyInfo PropertyMap[] = { };
 
 //
 // Schema
 //
 
-const TraitSchemaEngine TraitSchema = {
-    {
-        kWeaveProfileId,
-        PropertyMap,
-        sizeof(PropertyMap) / sizeof(PropertyMap[0]),
-        1,
+const TraitSchemaEngine TraitSchema = { {
+    kWeaveProfileId,
+    PropertyMap,
+    sizeof(PropertyMap) / sizeof(PropertyMap[0]),
+    1,
 #if (TDM_EXTENSION_SUPPORT) || (TDM_VERSIONING_SUPPORT)
-        2,
+    2,
 #endif
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 #if (TDM_EXTENSION_SUPPORT)
-        NULL,
+    NULL,
 #endif
 #if (TDM_VERSIONING_SUPPORT)
-        NULL,
+    NULL,
 #endif
-    }
-};
+} };
 
-    //
-    // Events
-    //
+//
+// Events
+//
 
-const nl::FieldDescriptor LivenessSignalEventFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(LivenessSignalEvent, signalType), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1
-    },
+const nl::FieldDescriptor LivenessSignalEventFieldDescriptors[] = {
+    { NULL, offsetof(LivenessSignalEvent, signalType), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 1 },
 
-    {
-        NULL, offsetof(LivenessSignalEvent, wdmSubscriptionId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 1), 2
-    },
+    { NULL, offsetof(LivenessSignalEvent, wdmSubscriptionId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt64, 1), 2 },
 
 };
 
-const nl::SchemaFieldDescriptor LivenessSignalEvent::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(LivenessSignalEventFieldDescriptors)/sizeof(LivenessSignalEventFieldDescriptors[0]),
-    .mFields = LivenessSignalEventFieldDescriptors,
-    .mSize = sizeof(LivenessSignalEvent)
+const nl::SchemaFieldDescriptor LivenessSignalEvent::FieldSchema = {
+    .mNumFieldDescriptorElements = sizeof(LivenessSignalEventFieldDescriptors) / sizeof(LivenessSignalEventFieldDescriptors[0]),
+    .mFields                     = LivenessSignalEventFieldDescriptors,
+    .mSize                       = sizeof(LivenessSignalEvent)
 };
-const nl::Weave::Profiles::DataManagement::EventSchema LivenessSignalEvent::Schema =
-{
-    .mProfileId = kWeaveProfileId,
-    .mStructureType = 0x1,
-    .mImportance = nl::Weave::Profiles::DataManagement::ProductionCritical,
-    .mDataSchemaVersion = 1,
+const nl::Weave::Profiles::DataManagement::EventSchema LivenessSignalEvent::Schema = {
+    .mProfileId                      = kWeaveProfileId,
+    .mStructureType                  = 0x1,
+    .mImportance                     = nl::Weave::Profiles::DataManagement::ProductionCritical,
+    .mDataSchemaVersion              = 1,
     .mMinCompatibleDataSchemaVersion = 1,
 };
 

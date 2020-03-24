@@ -29,15 +29,14 @@
 
 #include "JNIUtils.h"
 
-
 namespace nl {
 namespace Weave {
 
-JavaVM *JNIUtils::sJVM;
+JavaVM * JNIUtils::sJVM;
 jclass JNIUtils::sJavaObjectClass;
 jclass JNIUtils::sWeaveErrorClass;
 
-WEAVE_ERROR JNIUtils::Init(JavaVM *jvm, JNIEnv *env, const char *weaveErrorClassName)
+WEAVE_ERROR JNIUtils::Init(JavaVM * jvm, JNIEnv * env, const char * weaveErrorClassName)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -59,7 +58,7 @@ exit:
     return err;
 }
 
-void JNIUtils::Shutdown(JNIEnv *env)
+void JNIUtils::Shutdown(JNIEnv * env)
 {
     if (sJavaObjectClass != NULL)
     {
@@ -73,12 +72,12 @@ void JNIUtils::Shutdown(JNIEnv *env)
     }
 }
 
-static WEAVE_ERROR MakeClassName(const char *basePackageName, const char *relativeClassName, char *& classNameBuf)
+static WEAVE_ERROR MakeClassName(const char * basePackageName, const char * relativeClassName, char *& classNameBuf)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     size_t totalLen = strlen(basePackageName) + strlen(relativeClassName) + 2;
 
-    classNameBuf = (char *)realloc(classNameBuf, totalLen);
+    classNameBuf = (char *) realloc(classNameBuf, totalLen);
     VerifyOrExit(classNameBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     snprintf(classNameBuf, totalLen, "%s/%s", basePackageName, relativeClassName);
@@ -87,15 +86,16 @@ exit:
     return err;
 }
 
-WEAVE_ERROR JNIUtils::RegisterLibraryMethods(JNIEnv *env, const char *basePackageName, const JNILibraryMethod *libMethods, size_t numLibMethods)
+WEAVE_ERROR JNIUtils::RegisterLibraryMethods(JNIEnv * env, const char * basePackageName, const JNILibraryMethod * libMethods,
+                                             size_t numLibMethods)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     jint regRes;
-    char *className = NULL;
+    char * className = NULL;
 
     for (size_t i = 0; i < numLibMethods; i++)
     {
-        const JNILibraryMethod& libMethod = libMethods[i];
+        const JNILibraryMethod & libMethod = libMethods[i];
 
         err = MakeClassName(basePackageName, libMethod.ClassName, className);
         SuccessOrExit(err);
@@ -104,9 +104,9 @@ WEAVE_ERROR JNIUtils::RegisterLibraryMethods(JNIEnv *env, const char *basePackag
         VerifyOrExit(cls != NULL, err = WEAVE_JNI_ERROR_TYPE_NOT_FOUND);
 
         JNINativeMethod nativeMethod;
-        nativeMethod.name = (char *)libMethod.MethodName;
-        nativeMethod.signature = (char *)libMethod.MethodSignature;
-        nativeMethod.fnPtr = libMethod.MethodFunction;
+        nativeMethod.name      = (char *) libMethod.MethodName;
+        nativeMethod.signature = (char *) libMethod.MethodSignature;
+        nativeMethod.fnPtr     = libMethod.MethodFunction;
 
         regRes = env->RegisterNatives(cls, &nativeMethod, 1);
         VerifyOrExit(regRes == 0, err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
@@ -120,7 +120,7 @@ exit:
     return err;
 }
 
-void JNIUtils::ThrowError(JNIEnv *env, WEAVE_ERROR errToThrow)
+void JNIUtils::ThrowError(JNIEnv * env, WEAVE_ERROR errToThrow)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     jthrowable ex;
@@ -140,19 +140,19 @@ exit:
     return;
 }
 
-WEAVE_ERROR J2N_ByteArray(JNIEnv *env, jbyteArray inArray, uint8_t *& outArray, uint32_t& outArrayLen)
+WEAVE_ERROR J2N_ByteArray(JNIEnv * env, jbyteArray inArray, uint8_t *& outArray, uint32_t & outArrayLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
     outArrayLen = env->GetArrayLength(inArray);
 
-    outArray = (uint8_t *)malloc(outArrayLen);
+    outArray = (uint8_t *) malloc(outArrayLen);
     VerifyOrExit(outArray != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     if (outArrayLen != 0)
     {
         env->ExceptionClear();
-        env->GetByteArrayRegion(inArray, 0, outArrayLen, (jbyte *)outArray);
+        env->GetByteArrayRegion(inArray, 0, outArrayLen, (jbyte *) outArray);
         VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
     }
 
@@ -170,7 +170,7 @@ exit:
 }
 
 // A version of J2N_ByteArray that copies into an existing buffer, rather than allocating memory.
-WEAVE_ERROR J2N_ByteArrayInPlace(JNIEnv *env, jbyteArray inArray, uint8_t * outArray, uint32_t maxArrayLen)
+WEAVE_ERROR J2N_ByteArrayInPlace(JNIEnv * env, jbyteArray inArray, uint8_t * outArray, uint32_t maxArrayLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     uint32_t arrayLen;
@@ -183,7 +183,7 @@ WEAVE_ERROR J2N_ByteArrayInPlace(JNIEnv *env, jbyteArray inArray, uint8_t * outA
     if (arrayLen != 0)
     {
         env->ExceptionClear();
-        env->GetByteArrayRegion(inArray, 0, arrayLen, (jbyte *)outArray);
+        env->GetByteArrayRegion(inArray, 0, arrayLen, (jbyte *) outArray);
         VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
     }
 
@@ -191,25 +191,25 @@ exit:
     return err;
 }
 
-WEAVE_ERROR JNIUtils::N2J_ByteArray(JNIEnv *env, const uint8_t *inArray, uint32_t inArrayLen, jbyteArray& outArray)
+WEAVE_ERROR JNIUtils::N2J_ByteArray(JNIEnv * env, const uint8_t * inArray, uint32_t inArrayLen, jbyteArray & outArray)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    outArray = env->NewByteArray((int)inArrayLen);
+    outArray = env->NewByteArray((int) inArrayLen);
     VerifyOrExit(outArray != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     env->ExceptionClear();
-    env->SetByteArrayRegion(outArray, 0, inArrayLen, (jbyte *)inArray);
+    env->SetByteArrayRegion(outArray, 0, inArrayLen, (jbyte *) inArray);
     VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
 exit:
     return err;
 }
 
-WEAVE_ERROR J2N_EnumVal(JNIEnv *env, jobject enumObj, int& outVal)
+WEAVE_ERROR J2N_EnumVal(JNIEnv * env, jobject enumObj, int & outVal)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass enumCls = NULL;
+    jclass enumCls  = NULL;
     jfieldID fieldId;
 
     enumCls = env->GetObjectClass(enumObj);
@@ -227,7 +227,7 @@ exit:
     return err;
 }
 
-WEAVE_ERROR J2N_EnumFieldVal(JNIEnv *env, jobject obj, const char *fieldName, const char *fieldType, int& outVal)
+WEAVE_ERROR J2N_EnumFieldVal(JNIEnv * env, jobject obj, const char * fieldName, const char * fieldType, int & outVal)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     jclass objCls = NULL, enumCls = NULL;
@@ -266,10 +266,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR J2N_ShortFieldVal(JNIEnv *env, jobject obj, const char *fieldName, jshort& outVal)
+WEAVE_ERROR J2N_ShortFieldVal(JNIEnv * env, jobject obj, const char * fieldName, jshort & outVal)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass objCls = NULL;
+    jclass objCls   = NULL;
     jfieldID fieldId;
 
     objCls = env->GetObjectClass(obj);
@@ -287,10 +287,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR J2N_IntFieldVal(JNIEnv *env, jobject obj, const char *fieldName, jint& outVal)
+WEAVE_ERROR J2N_IntFieldVal(JNIEnv * env, jobject obj, const char * fieldName, jint & outVal)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass objCls = NULL;
+    jclass objCls   = NULL;
     jfieldID fieldId;
 
     objCls = env->GetObjectClass(obj);
@@ -308,10 +308,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR J2N_LongFieldVal(JNIEnv *env, jobject obj, const char *fieldName, jlong& outVal)
+WEAVE_ERROR J2N_LongFieldVal(JNIEnv * env, jobject obj, const char * fieldName, jlong & outVal)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass objCls = NULL;
+    jclass objCls   = NULL;
     jfieldID fieldId;
 
     objCls = env->GetObjectClass(obj);
@@ -329,13 +329,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR J2N_StringFieldVal(JNIEnv *env, jobject obj, const char *fieldName, char *& outVal)
+WEAVE_ERROR J2N_StringFieldVal(JNIEnv * env, jobject obj, const char * fieldName, char *& outVal)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass objCls = NULL;
+    jclass objCls   = NULL;
     jfieldID fieldId;
     jstring strObj = NULL;
-    const char *nativeStr;
+    const char * nativeStr;
 
     objCls = env->GetObjectClass(obj);
     VerifyOrExit(objCls != NULL, err = WEAVE_JNI_ERROR_TYPE_NOT_FOUND);
@@ -344,13 +344,13 @@ WEAVE_ERROR J2N_StringFieldVal(JNIEnv *env, jobject obj, const char *fieldName, 
     VerifyOrExit(fieldId != NULL, err = WEAVE_JNI_ERROR_METHOD_NOT_FOUND);
 
     env->ExceptionClear();
-    strObj = (jstring)env->GetObjectField(obj, fieldId);
+    strObj = (jstring) env->GetObjectField(obj, fieldId);
     VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
     if (strObj != NULL)
     {
         nativeStr = env->GetStringUTFChars(strObj, 0);
-        outVal = strdup(nativeStr);
+        outVal    = strdup(nativeStr);
         env->ReleaseStringUTFChars(strObj, nativeStr);
     }
     else
@@ -362,10 +362,10 @@ exit:
     return err;
 }
 
-WEAVE_ERROR J2N_ByteArrayFieldVal(JNIEnv *env, jobject obj, const char *fieldName, uint8_t *& outArray, uint32_t& outArrayLen)
+WEAVE_ERROR J2N_ByteArrayFieldVal(JNIEnv * env, jobject obj, const char * fieldName, uint8_t *& outArray, uint32_t & outArrayLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass objCls = NULL;
+    jclass objCls   = NULL;
     jfieldID fieldId;
     jbyteArray byteArrayObj = NULL;
 
@@ -376,7 +376,7 @@ WEAVE_ERROR J2N_ByteArrayFieldVal(JNIEnv *env, jobject obj, const char *fieldNam
     VerifyOrExit(fieldId != NULL, err = WEAVE_JNI_ERROR_METHOD_NOT_FOUND);
 
     env->ExceptionClear();
-    byteArrayObj = (jbyteArray)env->GetObjectField(obj, fieldId);
+    byteArrayObj = (jbyteArray) env->GetObjectField(obj, fieldId);
     VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
     if (byteArrayObj != NULL)
@@ -386,7 +386,7 @@ WEAVE_ERROR J2N_ByteArrayFieldVal(JNIEnv *env, jobject obj, const char *fieldNam
     }
     else
     {
-        outArray = NULL;
+        outArray    = NULL;
         outArrayLen = 0;
     }
 
@@ -396,13 +396,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR JNIUtils::N2J_Error(JNIEnv *env, WEAVE_ERROR inErr, jthrowable& outEx)
+WEAVE_ERROR JNIUtils::N2J_Error(JNIEnv * env, WEAVE_ERROR inErr, jthrowable & outEx)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     jmethodID constructor;
-    const char *errStr = NULL;
-    jstring errStrObj = NULL;
-    jclass exCls = NULL;
+    const char * errStr = NULL;
+    jstring errStrObj   = NULL;
+    jclass exCls        = NULL;
 
     if (inErr == WEAVE_ERROR_INVALID_ARGUMENT)
     {
@@ -413,7 +413,7 @@ WEAVE_ERROR JNIUtils::N2J_Error(JNIEnv *env, WEAVE_ERROR inErr, jthrowable& outE
         VerifyOrExit(constructor != NULL, err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
         env->ExceptionClear();
-        outEx = (jthrowable)env->NewObject(exCls, constructor);
+        outEx = (jthrowable) env->NewObject(exCls, constructor);
         VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
     }
 
@@ -426,25 +426,26 @@ WEAVE_ERROR JNIUtils::N2J_Error(JNIEnv *env, WEAVE_ERROR inErr, jthrowable& outE
         VerifyOrExit(constructor != NULL, err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
         env->ExceptionClear();
-        outEx = (jthrowable)env->NewObject(exCls, constructor);
+        outEx = (jthrowable) env->NewObject(exCls, constructor);
         VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
     }
 
-    else {
-        constructor = env->GetMethodID(sWeaveErrorClass, "<init>", "(ILjava/lang/String;)V");
+    else
+    {
+        constructor = env->GetMethodID(sWeaveErrorClass, "<init>", "(ILjava/lang/String; )V");
         VerifyOrExit(constructor != NULL, err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
 
         switch (inErr)
         {
-        case WEAVE_JNI_ERROR_TYPE_NOT_FOUND          : errStr = "JNI type not found"; break;
-        case WEAVE_JNI_ERROR_METHOD_NOT_FOUND        : errStr = "JNI method not found"; break;
-        case WEAVE_JNI_ERROR_FIELD_NOT_FOUND         : errStr = "JNI field not found"; break;
-        default:                                     ; errStr = nl::ErrorStr(inErr); break;
+        case WEAVE_JNI_ERROR_TYPE_NOT_FOUND: errStr = "JNI type not found"; break;
+        case WEAVE_JNI_ERROR_METHOD_NOT_FOUND: errStr = "JNI method not found"; break;
+        case WEAVE_JNI_ERROR_FIELD_NOT_FOUND: errStr = "JNI field not found"; break;
+        default:; errStr = nl::ErrorStr(inErr); break;
         }
         errStrObj = (errStr != NULL) ? env->NewStringUTF(errStr) : NULL;
 
         env->ExceptionClear();
-        outEx = (jthrowable)env->NewObject(sWeaveErrorClass, constructor, (jint)inErr, errStrObj);
+        outEx = (jthrowable) env->NewObject(sWeaveErrorClass, constructor, (jint) inErr, errStrObj);
         VerifyOrExit(!env->ExceptionCheck(), err = WEAVE_JNI_ERROR_EXCEPTION_THROWN);
     }
 
@@ -454,15 +455,15 @@ exit:
     return err;
 }
 
-WEAVE_ERROR JNIUtils::GetGlobalClassRef(JNIEnv *env, const char *clsType, jclass& outCls)
+WEAVE_ERROR JNIUtils::GetGlobalClassRef(JNIEnv * env, const char * clsType, jclass & outCls)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    jclass cls = NULL;
+    jclass cls      = NULL;
 
     cls = env->FindClass(clsType);
     VerifyOrExit(cls != NULL, err = WEAVE_JNI_ERROR_TYPE_NOT_FOUND);
 
-    outCls = (jclass)env->NewGlobalRef((jobject)cls);
+    outCls = (jclass) env->NewGlobalRef((jobject) cls);
     VerifyOrExit(outCls != NULL, err = WEAVE_JNI_ERROR_TYPE_NOT_FOUND);
 
 exit:
@@ -470,6 +471,5 @@ exit:
     return err;
 }
 
-
 } // namespace Weave
-} // namespave nl
+} // namespace nl

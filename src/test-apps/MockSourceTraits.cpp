@@ -48,7 +48,6 @@
 #include <Weave/Profiles/security/ApplicationKeysStructSchema.h>
 #include <schema/weave/common/DayOfWeekEnum.h>
 
-
 using namespace ::nl::Weave::TLV;
 using namespace ::nl::Weave::Profiles::DataManagement;
 using namespace ::nl::Weave::Profiles::Security::AppKeys;
@@ -72,11 +71,11 @@ static size_t MOCK_strlcpy(char * dst, const char * src, size_t size)
     return strlen(src);
 }
 
-LocaleSettingsTraitDataSource::LocaleSettingsTraitDataSource():
+LocaleSettingsTraitDataSource::LocaleSettingsTraitDataSource() :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-     TraitUpdatableDataSource(&LocaleSettingsTrait::TraitSchema)
+    TraitUpdatableDataSource(&LocaleSettingsTrait::TraitSchema)
 #else
-     TraitDataSource(&LocaleSettingsTrait::TraitSchema)
+    TraitDataSource(&LocaleSettingsTrait::TraitSchema)
 #endif
 {
     SetVersion(300);
@@ -87,12 +86,12 @@ LocaleSettingsTraitDataSource::LocaleSettingsTraitDataSource():
 void LocaleSettingsTraitDataSource::Mutate()
 {
     static unsigned int whichLocale = 0;
-    static const char * locales[] = { "en-US", "zh-TW", "ja-JP", "pl-PL", "zh-CN" };
+    static const char * locales[]   = { "en-US", "zh-TW", "ja-JP", "pl-PL", "zh-CN" };
 
     Lock();
 
     MOCK_strlcpy(mLocale, locales[whichLocale], sizeof(mLocale));
-    whichLocale = (whichLocale + 1) % (sizeof(locales)/sizeof(locales[0]));
+    whichLocale = (whichLocale + 1) % (sizeof(locales) / sizeof(locales[0]));
 
     SetDirty(LocaleSettingsTrait::kPropertyHandle_active_locale);
 
@@ -101,27 +100,26 @@ void LocaleSettingsTraitDataSource::Mutate()
 
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 WEAVE_ERROR
-LocaleSettingsTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader)
+LocaleSettingsTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aLeafHandle) {
-        case LocaleSettingsTrait::kPropertyHandle_active_locale:
-            char next_locale[24];
-            err = aReader.GetString(next_locale, MAX_LOCALE_SIZE);
-            SuccessOrExit(err);
-            if (strncmp(next_locale, mLocale, MAX_LOCALE_SIZE) != 0)
-            {
-                WeaveLogDetail(DataManagement, "<<  active_locale is changed from \"%s\" to \"%s\"", mLocale, next_locale);
-                memcpy(mLocale, next_locale, MAX_LOCALE_SIZE);
-            }
+    switch (aLeafHandle)
+    {
+    case LocaleSettingsTrait::kPropertyHandle_active_locale:
+        char next_locale[24];
+        err = aReader.GetString(next_locale, MAX_LOCALE_SIZE);
+        SuccessOrExit(err);
+        if (strncmp(next_locale, mLocale, MAX_LOCALE_SIZE) != 0)
+        {
+            WeaveLogDetail(DataManagement, "<<  active_locale is changed from \"%s\" to \"%s\"", mLocale, next_locale);
+            memcpy(mLocale, next_locale, MAX_LOCALE_SIZE);
+        }
 
-            WeaveLogDetail(DataManagement, "<<  active_locale = \"%s\"", mLocale);
-            break;
+        WeaveLogDetail(DataManagement, "<<  active_locale = \"%s\"", mLocale);
+        break;
 
-        default:
-            WeaveLogDetail(DataManagement, "<<  UNKNOWN!");
-            err = WEAVE_ERROR_TLV_TAG_NOT_FOUND;
+    default: WeaveLogDetail(DataManagement, "<<  UNKNOWN!"); err = WEAVE_ERROR_TLV_TAG_NOT_FOUND;
     }
 
 exit:
@@ -131,21 +129,20 @@ exit:
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
 WEAVE_ERROR
-LocaleSettingsTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+LocaleSettingsTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aLeafHandle) {
-        case LocaleSettingsTrait::kPropertyHandle_active_locale:
-            err = aWriter.PutString(aTagToWrite, mLocale);
-            SuccessOrExit(err);
+    switch (aLeafHandle)
+    {
+    case LocaleSettingsTrait::kPropertyHandle_active_locale:
+        err = aWriter.PutString(aTagToWrite, mLocale);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  active_locale = \"%s\"", mLocale);
-            break;
+        WeaveLogDetail(DataManagement, ">>  active_locale = \"%s\"", mLocale);
+        break;
 
-        default:
-            WeaveLogDetail(DataManagement, ">>  UNKNOWN!");
-            ExitNow(err = WEAVE_ERROR_TLV_TAG_NOT_FOUND);
+    default: WeaveLogDetail(DataManagement, ">>  UNKNOWN!"); ExitNow(err = WEAVE_ERROR_TLV_TAG_NOT_FOUND);
     }
 
 exit:
@@ -156,9 +153,11 @@ exit:
 
 LocaleCapabilitiesTraitDataSource::LocaleCapabilitiesTraitDataSource()
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-    :TraitUpdatableDataSource(&LocaleCapabilitiesTrait::TraitSchema)
+    :
+    TraitUpdatableDataSource(&LocaleCapabilitiesTrait::TraitSchema)
 #else
-    :TraitDataSource(&LocaleCapabilitiesTrait::TraitSchema)
+    :
+    TraitDataSource(&LocaleCapabilitiesTrait::TraitSchema)
 #endif
 {
     SetVersion(400);
@@ -172,24 +171,25 @@ void LocaleCapabilitiesTraitDataSource::Mutate()
 {
     Lock();
 
-    switch (GetVersion() % 3) {
-        case 0:
-            mNumLocales = 2;
-            memcpy(mLocales[0], "en-US", MAX_LOCALE_SIZE);
-            memcpy(mLocales[1], "zh-TW", MAX_LOCALE_SIZE);
-            break;
+    switch (GetVersion() % 3)
+    {
+    case 0:
+        mNumLocales = 2;
+        memcpy(mLocales[0], "en-US", MAX_LOCALE_SIZE);
+        memcpy(mLocales[1], "zh-TW", MAX_LOCALE_SIZE);
+        break;
 
-        case 1:
-            mNumLocales = 1;
-            memcpy(mLocales[0], "zh-CN", MAX_LOCALE_SIZE);
-            break;
+    case 1:
+        mNumLocales = 1;
+        memcpy(mLocales[0], "zh-CN", MAX_LOCALE_SIZE);
+        break;
 
-        case 2:
-            mNumLocales = 3;
-            memcpy(mLocales[0], "ja-JP", MAX_LOCALE_SIZE);
-            memcpy(mLocales[1], "pl-PL", MAX_LOCALE_SIZE);
-            memcpy(mLocales[2], "zh-CN", MAX_LOCALE_SIZE);
-            break;
+    case 2:
+        mNumLocales = 3;
+        memcpy(mLocales[0], "ja-JP", MAX_LOCALE_SIZE);
+        memcpy(mLocales[1], "pl-PL", MAX_LOCALE_SIZE);
+        memcpy(mLocales[2], "zh-CN", MAX_LOCALE_SIZE);
+        break;
     }
 
     SetDirty(LocaleCapabilitiesTrait::kPropertyHandle_available_locales);
@@ -199,7 +199,7 @@ void LocaleCapabilitiesTraitDataSource::Mutate()
 
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 WEAVE_ERROR
-LocaleCapabilitiesTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader)
+LocaleCapabilitiesTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     char next_locale[kMaxNumOfCharsPerLocale];
@@ -225,8 +225,9 @@ LocaleCapabilitiesTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, T
             SuccessOrExit(err);
             if (strncmp(next_locale, mLocales[mNumLocales], MAX_LOCALE_SIZE) != 0)
             {
-                 WeaveLogDetail(DataManagement,  "<<  locale[%u]  is changed from [%s] to [%s]", mNumLocales, mLocales[mNumLocales], next_locale);
-                 memcpy(mLocales[mNumLocales], next_locale, MAX_LOCALE_SIZE);
+                WeaveLogDetail(DataManagement, "<<  locale[%u]  is changed from [%s] to [%s]", mNumLocales, mLocales[mNumLocales],
+                               next_locale);
+                memcpy(mLocales[mNumLocales], next_locale, MAX_LOCALE_SIZE);
             }
 
             WeaveLogDetail(DataManagement, "<<  locale[%u] = [%s]", mNumLocales, mLocales[mNumLocales]);
@@ -257,17 +258,19 @@ exit:
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
 WEAVE_ERROR
-LocaleCapabilitiesTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+LocaleCapabilitiesTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    if (LocaleCapabilitiesTrait::kPropertyHandle_available_locales == aLeafHandle) {
+    if (LocaleCapabilitiesTrait::kPropertyHandle_available_locales == aLeafHandle)
+    {
         nl::Weave::TLV::TLVType OuterContainerType;
 
         err = aWriter.StartContainer(aTagToWrite, nl::Weave::TLV::kTLVType_Array, OuterContainerType);
         SuccessOrExit(err);
 
-        for (uint8_t i = 0; i < mNumLocales; ++i) {
+        for (uint8_t i = 0; i < mNumLocales; ++i)
+        {
             err = aWriter.PutString(nl::Weave::TLV::AnonymousTag, mLocales[i]);
             SuccessOrExit(err);
 
@@ -277,7 +280,8 @@ LocaleCapabilitiesTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, u
         err = aWriter.EndContainer(OuterContainerType);
         SuccessOrExit(err);
     }
-    else {
+    else
+    {
         WeaveLogDetail(DataManagement, ">>  UNKNOWN!");
         ExitNow(err = WEAVE_ERROR_INVALID_TLV_TAG);
     }
@@ -288,12 +292,11 @@ exit:
     return err;
 }
 
-BoltLockSettingTraitDataSource::BoltLockSettingTraitDataSource()
-    : TraitDataSource(&BoltLockSettingTrait::TraitSchema)
+BoltLockSettingTraitDataSource::BoltLockSettingTraitDataSource() : TraitDataSource(&BoltLockSettingTrait::TraitSchema)
 {
     SetVersion(500);
 
-    mAutoRelockOn = false;
+    mAutoRelockOn       = false;
     mAutoRelockDuration = 2;
 }
 
@@ -301,11 +304,13 @@ void BoltLockSettingTraitDataSource::Mutate()
 {
     Lock();
 
-    if ((GetVersion() % 2) == 0) {
+    if ((GetVersion() % 2) == 0)
+    {
         SetDirty(BoltLockSettingTrait::kPropertyHandle_auto_relock_on);
         mAutoRelockOn = !mAutoRelockOn;
     }
-    else {
+    else
+    {
         SetDirty(BoltLockSettingTrait::kPropertyHandle_auto_relock_duration);
         mAutoRelockDuration++;
     }
@@ -314,28 +319,27 @@ void BoltLockSettingTraitDataSource::Mutate()
 }
 
 WEAVE_ERROR
-BoltLockSettingTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+BoltLockSettingTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aLeafHandle) {
-        case BoltLockSettingTrait::kPropertyHandle_auto_relock_on:
-            err = aWriter.PutBoolean(aTagToWrite, mAutoRelockOn);
-            SuccessOrExit(err);
+    switch (aLeafHandle)
+    {
+    case BoltLockSettingTrait::kPropertyHandle_auto_relock_on:
+        err = aWriter.PutBoolean(aTagToWrite, mAutoRelockOn);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  auto_relock_on = %s", mAutoRelockOn ? "true" : "false");
-            break;
+        WeaveLogDetail(DataManagement, ">>  auto_relock_on = %s", mAutoRelockOn ? "true" : "false");
+        break;
 
-        case BoltLockSettingTrait::kPropertyHandle_auto_relock_duration:
-            err = aWriter.Put(aTagToWrite, mAutoRelockDuration);
-            SuccessOrExit(err);
+    case BoltLockSettingTrait::kPropertyHandle_auto_relock_duration:
+        err = aWriter.Put(aTagToWrite, mAutoRelockDuration);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  auto_relock_duration = %u", mAutoRelockDuration);
-            break;
+        WeaveLogDetail(DataManagement, ">>  auto_relock_duration = %u", mAutoRelockDuration);
+        break;
 
-        default:
-            WeaveLogDetail(DataManagement, ">>  UNKNOWN!");
-            ExitNow(err = WEAVE_ERROR_TLV_TAG_NOT_FOUND);
+    default: WeaveLogDetail(DataManagement, ">>  UNKNOWN!"); ExitNow(err = WEAVE_ERROR_TLV_TAG_NOT_FOUND);
     }
 
 exit:
@@ -343,35 +347,36 @@ exit:
     return err;
 }
 
-TestATraitDataSource::TestATraitDataSource():
+TestATraitDataSource::TestATraitDataSource() :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-     TraitUpdatableDataSource(&TestATrait::TraitSchema),
+    TraitUpdatableDataSource(&TestATrait::TraitSchema),
 #else
-     TraitDataSource(&TestATrait::TraitSchema),
+    TraitDataSource(&TestATrait::TraitSchema),
 #endif
-     mActiveCommand(NULL)
+    mActiveCommand(NULL)
 {
-    uint8_t *tmp;
+    uint8_t * tmp;
     SetVersion(100);
     mTestCounter = 0;
-    taa = TestATrait::ENUM_A_VALUE_1;
-    tab = TestCommon::COMMON_ENUM_A_VALUE_1;
-    tac = 3;
-    tad.saA = 4;
-    tad.saB = true;
+    taa          = TestATrait::ENUM_A_VALUE_1;
+    tab          = TestCommon::COMMON_ENUM_A_VALUE_1;
+    tac          = 3;
+    tad.saA      = 4;
+    tad.saB      = true;
 
     mTraitTestSet = 0;
 
-    for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++) {
+    for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++)
+    {
         tae[i] = i + 5;
     }
 
     tap = 1491859262000;
 
-    tag_use_ref = false;
-    tag_ref = 10;
+    tag_use_ref    = false;
+    tag_ref        = 10;
     tam_resourceid = 0x18b4300000beefULL;
-    tan_type = 1;
+    tan_type       = 1;
 
     tmp = &tan[0];
     nl::Weave::Encoding::LittleEndian::Write16(tmp, tan_type);
@@ -386,12 +391,14 @@ TestATraitDataSource::TestATraitDataSource():
     tav = true;
     tax = 800;
 
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < 4; i++)
+    {
         tai_map[i] = 100 + i;
     }
 
-    for (size_t i = 0; i < 4; i++) {
-        taj_map[i] = { 300 + (uint32_t)i, true };
+    for (size_t i = 0; i < 4; i++)
+    {
+        taj_map[i] = { 300 + (uint32_t) i, true };
     }
 
     tal = DAY_OF_WEEK_SUNDAY;
@@ -402,29 +409,34 @@ void TestATraitDataSource::Mutate()
     Lock();
     uint8_t kNumTestCases;
 
-    WeaveLogDetail(DataManagement, "TestATraitDataSource: mTraitTestSet: %" PRIu32 ", mTestCounter: %" PRIu32 "", mTraitTestSet, mTestCounter);
+    WeaveLogDetail(DataManagement, "TestATraitDataSource: mTraitTestSet: %" PRIu32 ", mTestCounter: %" PRIu32 "", mTraitTestSet,
+                   mTestCounter);
 
     if (mTraitTestSet == 0)
     {
         kNumTestCases = 8;
 
-        if ((mTestCounter % kNumTestCases) == 6) {
+        if ((mTestCounter % kNumTestCases) == 6)
+        {
             // enums
             SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
             SetDirty(TestATrait::kPropertyHandle_TaD_SaB);
             SetDirty(TestATrait::kPropertyHandle_TaA);
 
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
             tad.saA++;
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 1) {
+        else if ((mTestCounter % kNumTestCases) == 1)
+        {
             // timestamp and duration
             SetDirty(TestATrait::kPropertyHandle_TaP);
             SetDirty(TestATrait::kPropertyHandle_TaC);
@@ -436,16 +448,18 @@ void TestATraitDataSource::Mutate()
             tar++;
             tas++;
         }
-        else if ((mTestCounter % kNumTestCases) == 2) {
+        else if ((mTestCounter % kNumTestCases) == 2)
+        {
             // resource id, implicit and otherwise
-            uint8_t *tmp = &tan[0];
+            uint8_t * tmp = &tan[0];
             SetDirty(TestATrait::kPropertyHandle_TaM);
             SetDirty(TestATrait::kPropertyHandle_TaN);
 
             tan_type = (tan_type + 1) % 8;
             nl::Weave::Encoding::LittleEndian::Write16(tmp, tan_type);
         }
-        else if ((mTestCounter % kNumTestCases) == 3) {
+        else if ((mTestCounter % kNumTestCases) == 3)
+        {
             // string ref
             SetDirty(TestATrait::kPropertyHandle_TaG);
 
@@ -503,46 +517,58 @@ void TestATraitDataSource::Mutate()
 
         // For dictionary testing, we need to do a couple of different directed tests.
         //
-        // 0. Generate a notify directed at the dictionary for modification of the dictionary as a whole (path = parent of dictionary). This results in a replace of the dictionary (2nd level replace)
+        // 0. Generate a notify directed at the dictionary for modification of the dictionary as a whole (path = parent of
+        // dictionary). This results in a replace of the dictionary (2nd level replace)
         // 1. Generate a notify directed at the dictionary item for modification of a single existing item (path = dictionary item)
-        // 2. Generate a notify directed deep within a dictionary item for modification of a single existing item (path = deep in dictionary item)
-        // 3. Generate a notify directed at the dictionary item for modification of multiple items (path = dictionary, merge operation)
+        // 2. Generate a notify directed deep within a dictionary item for modification of a single existing item (path = deep in
+        // dictionary item)
+        // 3. Generate a notify directed at the dictionary item for modification of multiple items (path = dictionary, merge
+        // operation)
         // 4. Generate a notify indicating the addition of multiplle dictionary items (path = dictionary, merge)
         // 5. Generate a notify indicating the deletion of a dictionary item (path = dictionary, delete)
         // 6. Generate a notify indicating the deletion of multiple dictionary items (path = dictionary, delete)
-        // 7. Generate a notify indicating the deletion of multiple dictionary items that overflows delete handle set (path = parent of dictionary, replace)
+        // 7. Generate a notify indicating the deletion of multiple dictionary items that overflows delete handle set (path = parent
+        // of dictionary, replace)
         // 8. Generate a notify indicating the deletion of an item + addition of another item (path = dictionary, add + delete)
-        // 9. Generate a notify indicating deletion of an item followed by the re-addition of that item (path = dictionary, modify of item).
-        // 10. Generate a notify indicating the modification of an item followed by a deletion of that item (path = dictionary, delete of item).
+        // 9. Generate a notify indicating deletion of an item followed by the re-addition of that item (path = dictionary, modify
+        // of item).
+        // 10. Generate a notify indicating the modification of an item followed by a deletion of that item (path = dictionary,
+        // delete of item).
         // 11. Generate a notify indicating the deletion of a single item from two different dictionaries (path = root)
         // 12. Generate a notify indicating the deletion of addition of a single item into two different dictionaries (path = root)
         // 13. Wipe out both dictionaries (path = root)
         // The line numbers above correspond to the various 'if' statement branches below.
         //
 
-        if ((mTestCounter % 14) == 0) {
+        if ((mTestCounter % 14) == 0)
+        {
             SetDirty(TestATrait::kPropertyHandle_TaJ);
 
-            for (uint32_t i = 0; i < 4; i++) {
-                taj_map[i] = { 300 + (uint32_t)i, false };
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                taj_map[i] = { 300 + (uint32_t) i, false };
             }
         }
-        else if ((mTestCounter % 14) == 1) {
+        else if ((mTestCounter % 14) == 1)
+        {
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 1));
             taj_map[1].saA += 100;
         }
-        else if ((mTestCounter % 14) == 2) {
+        else if ((mTestCounter % 14) == 2)
+        {
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value_SaA, 1));
             taj_map[1].saA += 100;
         }
-        else if ((mTestCounter % 14) == 3) {
+        else if ((mTestCounter % 14) == 3)
+        {
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 2));
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 3));
 
             taj_map[2].saA += 100;
             taj_map[3].saA += 100;
         }
-        else if ((mTestCounter % 14) == 4) {
+        else if ((mTestCounter % 14) == 4)
+        {
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 4));
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 5));
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 6));
@@ -551,25 +577,28 @@ void TestATraitDataSource::Mutate()
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 9));
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 10));
 
-            taj_map[4] = { 304, false };
-            taj_map[5] = { 305, false };
-            taj_map[6] = { 306, false };
-            taj_map[7] = { 307, false };
-            taj_map[8] = { 308, false };
-            taj_map[9] = { 309, false };
+            taj_map[4]  = { 304, false };
+            taj_map[5]  = { 305, false };
+            taj_map[6]  = { 306, false };
+            taj_map[7]  = { 307, false };
+            taj_map[8]  = { 308, false };
+            taj_map[9]  = { 309, false };
             taj_map[10] = { 310, false };
         }
-        else if ((mTestCounter % 14) == 5) {
+        else if ((mTestCounter % 14) == 5)
+        {
             taj_map.erase(10);
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 10));
         }
-        else if ((mTestCounter % 14) == 6) {
+        else if ((mTestCounter % 14) == 6)
+        {
             taj_map.erase(9);
             taj_map.erase(8);
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 9));
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 8));
         }
-        else if ((mTestCounter % 14) == 7) {
+        else if ((mTestCounter % 14) == 7)
+        {
             taj_map.erase(7);
             taj_map.erase(6);
             taj_map.erase(5);
@@ -582,14 +611,16 @@ void TestATraitDataSource::Mutate()
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 4));
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 3));
         }
-        else if ((mTestCounter % 14) == 8) {
+        else if ((mTestCounter % 14) == 8)
+        {
             taj_map.erase(2);
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 2));
 
             taj_map[3] = { 303, false };
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 3));
         }
-        else if ((mTestCounter % 14) == 9) {
+        else if ((mTestCounter % 14) == 9)
+        {
             TestATrait::StructA tmp = taj_map[3];
 
             taj_map.erase(3);
@@ -598,7 +629,8 @@ void TestATraitDataSource::Mutate()
             taj_map[3] = { tmp.saA + 100, tmp.saB };
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 3));
         }
-        else if ((mTestCounter % 14) == 10) {
+        else if ((mTestCounter % 14) == 10)
+        {
             taj_map[2].saA += 100;
             taj_map[2].saB = !taj_map[3].saB;
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 2));
@@ -606,23 +638,27 @@ void TestATraitDataSource::Mutate()
             taj_map.erase(2);
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 2));
         }
-        else if ((mTestCounter % 14) == 11) {
+        else if ((mTestCounter % 14) == 11)
+        {
             taj_map.erase(3);
             tai_map.erase(3);
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 3));
             DeleteKey(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI_Value, 3));
         }
-        else if ((mTestCounter % 14) == 12) {
+        else if ((mTestCounter % 14) == 12)
+        {
             taj_map[3] = { 303, false };
             tai_map[3] = 103;
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaJ_Value, 3));
             SetDirty(CreatePropertyPathHandle(TestATrait::kPropertyHandle_TaI_Value, 3));
         }
-        else if ((mTestCounter % 14) == 13) {
+        else if ((mTestCounter % 14) == 13)
+        {
             taj_map.clear();
             tai_map.clear();
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i++)
+            {
                 tai_map[i] = 100 + i;
             }
 
@@ -634,8 +670,9 @@ void TestATraitDataSource::Mutate()
         // This is the behavior for WDM update tests
 
         kNumTestCases = 11;
-        if ((mTestCounter % kNumTestCases) == 0) {
-            //sink 3 leaf properties changes, source 3 leaf properties changes
+        if ((mTestCounter % kNumTestCases) == 0)
+        {
+            // sink 3 leaf properties changes, source 3 leaf properties changes
             SetDirty(TestATrait::kPropertyHandle_TaP);
             SetDirty(TestATrait::kPropertyHandle_TaC);
             SetDirty(TestATrait::kPropertyHandle_TaR);
@@ -644,8 +681,9 @@ void TestATraitDataSource::Mutate()
             tac++;
             tar++;
         }
-        else if ((mTestCounter % kNumTestCases) == 1) {
-            //sink 3 leaf properties changes, source 4 leaf properties changes
+        else if ((mTestCounter % kNumTestCases) == 1)
+        {
+            // sink 3 leaf properties changes, source 4 leaf properties changes
             SetDirty(TestATrait::kPropertyHandle_TaP);
             SetDirty(TestATrait::kPropertyHandle_TaC);
             SetDirty(TestATrait::kPropertyHandle_TaR);
@@ -656,75 +694,89 @@ void TestATraitDataSource::Mutate()
             tar++;
             tas++;
         }
-        else if ((mTestCounter % kNumTestCases) == 2) {
-            //sink 3 leaf properties changes, source 2 leaf properties changes
+        else if ((mTestCounter % kNumTestCases) == 2)
+        {
+            // sink 3 leaf properties changes, source 2 leaf properties changes
             SetDirty(TestATrait::kPropertyHandle_TaP);
             SetDirty(TestATrait::kPropertyHandle_TaC);
 
             tap++;
             tac++;
         }
-        else if ((mTestCounter % kNumTestCases) == 3) {
+        else if ((mTestCounter % kNumTestCases) == 3)
+        {
             // mock sink, one independent leaf and one leaf in one structure property changes
             // mock source, one independent leaf and one leaf in one structure property changes
-            //SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
+            // SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
             SetDirty(TestATrait::kPropertyHandle_TaD_SaB);
 
             SetDirty(TestATrait::kPropertyHandle_TaA);
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
             // tad.saA++;
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 4) {
+        else if ((mTestCounter % kNumTestCases) == 4)
+        {
             // sink, one independent leaf, one leaf in one structure property changes, mark this structure dirty, merge
             // source, one independent leaf and two leaf in one structure property changes
             SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
             SetDirty(TestATrait::kPropertyHandle_TaA);
             SetDirty(TestATrait::kPropertyHandle_TaD);
 
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 5) {
+        else if ((mTestCounter % kNumTestCases) == 5)
+        {
             SetDirty(TestATrait::kPropertyHandle_TaI);
 
-            for (uint16_t i = 0; i < 10; i++) {
-                tai_map[i] = { (uint32_t)i + 1 };
+            for (uint16_t i = 0; i < 10; i++)
+            {
+                tai_map[i] = { (uint32_t) i + 1 };
             }
         }
-        else if ((mTestCounter % kNumTestCases) == 6) {
+        else if ((mTestCounter % kNumTestCases) == 6)
+        {
             SetDirty(TestATrait::kPropertyHandle_TaI);
 
-            for (uint16_t i = 0; i < 10; i++) {
-                tai_map[i] = { (uint32_t)i + 1 };
+            for (uint16_t i = 0; i < 10; i++)
+            {
+                tai_map[i] = { (uint32_t) i + 1 };
             }
 
             SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
             SetDirty(TestATrait::kPropertyHandle_TaA);
             SetDirty(TestATrait::kPropertyHandle_TaD);
 
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 7) {
+        else if ((mTestCounter % kNumTestCases) == 7)
+        {
             // sink, all merge with root handle, cut dictionary
             SetDirty(TestATrait::kPropertyHandle_Root);
             SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
@@ -732,19 +784,23 @@ void TestATraitDataSource::Mutate()
             SetDirty(TestATrait::kPropertyHandle_TaD);
             SetDirty(TestATrait::kPropertyHandle_TaI);
 
-            for (uint16_t i = 0; i < 10; i++) {
-                tai_map[i] = { (uint32_t)i + 1 };
+            for (uint16_t i = 0; i < 10; i++)
+            {
+                tai_map[i] = { (uint32_t) i + 1 };
             }
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 8) {
+        else if ((mTestCounter % kNumTestCases) == 8)
+        {
             WeaveLogDetail(DataManagement, "Update member ta_d, which is a StructA");
 
             SetDirty(TestATrait::kPropertyHandle_TaD);
@@ -752,7 +808,8 @@ void TestATraitDataSource::Mutate()
             tad.saA = mTestCounter;
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 9) {
+        else if ((mTestCounter % kNumTestCases) == 9)
+        {
             WeaveLogDetail(DataManagement, "all merge with root handle, cut dictionary");
 
             SetDirty(TestATrait::kPropertyHandle_Root);
@@ -762,19 +819,23 @@ void TestATraitDataSource::Mutate()
             SetDirty(TestATrait::kPropertyHandle_TaI);
 
             tai_map.clear();
-            for (uint16_t i = 0; i < 3; i++) {
-                tai_map[i] = { ((uint32_t)i + 1)*10 + 7 };
+            for (uint16_t i = 0; i < 3; i++)
+            {
+                tai_map[i] = { ((uint32_t) i + 1) * 10 + 7 };
             }
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
             tad.saB = !tad.saB;
         }
-        else if ((mTestCounter % kNumTestCases) == 10) {
+        else if ((mTestCounter % kNumTestCases) == 10)
+        {
             WeaveLogDetail(DataManagement, "all merge with root handle, cut oversized dictionary");
             SetDirty(TestATrait::kPropertyHandle_Root);
             SetDirty(TestATrait::kPropertyHandle_TaD_SaA);
@@ -783,13 +844,16 @@ void TestATraitDataSource::Mutate()
             SetDirty(TestATrait::kPropertyHandle_TaI);
 
             tai_map.clear();
-            for (uint16_t i = 0; i < 800; i++) {
-                tai_map[i] = { (uint32_t)i + 1 };
+            for (uint16_t i = 0; i < 800; i++)
+            {
+                tai_map[i] = { (uint32_t) i + 1 };
             }
-            if (taa == TestATrait::ENUM_A_VALUE_1) {
+            if (taa == TestATrait::ENUM_A_VALUE_1)
+            {
                 taa = TestATrait::ENUM_A_VALUE_2;
             }
-            else {
+            else
+            {
                 taa = TestATrait::ENUM_A_VALUE_1;
             }
 
@@ -802,38 +866,47 @@ void TestATraitDataSource::Mutate()
 }
 
 template <typename T>
-WEAVE_ERROR GetNextDictionaryItemKeyHelper(std::map<uint16_t, T> *aMap, typename std::map<uint16_t, T>::iterator &it, uintptr_t &aContext, PropertyDictionaryKey &aKey)
+WEAVE_ERROR GetNextDictionaryItemKeyHelper(std::map<uint16_t, T> * aMap, typename std::map<uint16_t, T>::iterator & it,
+                                           uintptr_t & aContext, PropertyDictionaryKey & aKey)
 {
-    if (aContext == 0) {
+    if (aContext == 0)
+    {
         it = aMap->begin();
     }
-    else {
+    else
+    {
         it++;
     }
 
-    aContext = (uintptr_t)&it;
-    if (it == aMap->end()) {
+    aContext = (uintptr_t) &it;
+    if (it == aMap->end())
+    {
         return WEAVE_END_OF_INPUT;
     }
-    else {
+    else
+    {
         aKey = it->first;
     }
 
     return WEAVE_NO_ERROR;
 }
 
-WEAVE_ERROR TestATraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, PropertyDictionaryKey &aKey)
+WEAVE_ERROR TestATraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t & aContext,
+                                                           PropertyDictionaryKey & aKey)
 {
     static std::map<uint16_t, uint32_t>::iterator tai_iter;
     static std::map<uint16_t, TestATrait::StructA>::iterator taj_iter;
 
-    if (aDictionaryHandle == TestATrait::kPropertyHandle_TaI) {
+    if (aDictionaryHandle == TestATrait::kPropertyHandle_TaI)
+    {
         return GetNextDictionaryItemKeyHelper(&tai_map, tai_iter, aContext, aKey);
     }
-    else if (aDictionaryHandle == TestATrait::kPropertyHandle_TaJ) {
+    else if (aDictionaryHandle == TestATrait::kPropertyHandle_TaJ)
+    {
         return GetNextDictionaryItemKeyHelper(&taj_map, taj_iter, aContext, aKey);
     }
-    else {
+    else
+    {
         return WEAVE_ERROR_INVALID_ARGUMENT;
     }
 }
@@ -852,254 +925,252 @@ void TestATraitDataSource::SetNullifiedPath(PropertyPathHandle aHandle, bool isN
 
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 WEAVE_ERROR
-TestATraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader)
+TestATraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (GetPropertySchemaHandle(aLeafHandle)) {
-        case TestATrait::kPropertyHandle_TaA:
-            err = aReader.Get(taa);
-            SuccessOrExit(err);
+    switch (GetPropertySchemaHandle(aLeafHandle))
+    {
+    case TestATrait::kPropertyHandle_TaA:
+        err = aReader.Get(taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<<  ta_a = %u", taa);
-            break;
+        WeaveLogDetail(DataManagement, "<<  ta_a = %u", taa);
+        break;
 
-        case TestATrait::kPropertyHandle_TaB:
-            err = aReader.Get(tab);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaB:
+        err = aReader.Get(tab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<<  ta_b = %u", tab);
-            break;
+        WeaveLogDetail(DataManagement, "<<  ta_b = %u", tab);
+        break;
 
-        case TestATrait::kPropertyHandle_TaC:
-            uint32_t next_tac;
-            err = aReader.Get(next_tac);
-            SuccessOrExit(err);
-            if (next_tac != tac)
-            {
-                WeaveLogDetail(DataManagement, "<<  ta_c is changed from %u to %u", tac, next_tac);
-                tac = next_tac;
-            }
-
-            WeaveLogDetail(DataManagement, "<<  ta_c = %u", tac);
-            break;
-
-        case TestATrait::kPropertyHandle_TaD_SaA:
-            uint32_t next_tad_saa;
-            err = aReader.Get(next_tad_saa);
-            SuccessOrExit(err);
-            if (next_tad_saa != tad.saA)
-            {
-                WeaveLogDetail(DataManagement, "<<  ta_d.sa_a is changed from %u to %u", tad.saA, next_tad_saa);
-                tad.saA = next_tad_saa;
-            }
-
-            WeaveLogDetail(DataManagement, "<<  ta_d.sa_a = %u", tad.saA);
-            break;
-
-        case TestATrait::kPropertyHandle_TaD_SaB:
-            bool next_tad_sab;
-            err = aReader.Get(next_tad_sab);
-            SuccessOrExit(err);
-            if (next_tad_sab != tad.saB)
-            {
-                WeaveLogDetail(DataManagement, "<<  ta_d.sa_b is changed from %u to %u", tad.saB, next_tad_sab);
-                tad.saB = next_tad_sab;
-            }
-
-            WeaveLogDetail(DataManagement, "<<  ta_d.sa_b = %u", tad.saB);
-            break;
-
-        case TestATrait::kPropertyHandle_TaE:
+    case TestATrait::kPropertyHandle_TaC:
+        uint32_t next_tac;
+        err = aReader.Get(next_tac);
+        SuccessOrExit(err);
+        if (next_tac != tac)
         {
-            TLVType outerType;
-            uint32_t i = 0;
-
-            err = aReader.EnterContainer(outerType);
-            SuccessOrExit(err);
-
-            while (((err = aReader.Next()) == WEAVE_NO_ERROR) && (i < (sizeof(tae) / sizeof(tae[0])))) {
-                uint32_t next_tae;
-                err = aReader.Get(next_tae);
-                SuccessOrExit(err);
-                if (tae[i] != next_tae)
-                {
-                    WeaveLogDetail(DataManagement, "<<  ta_e[%u] is changed from %u to %u", i, tae[i], next_tae);
-                    tae[i] = next_tae;
-                }
-
-                WeaveLogDetail(DataManagement, "<<  ta_e[%u] = %u", i, tae[i]);
-                i++;
-            }
-
-            err = aReader.ExitContainer(outerType);
-            break;
+            WeaveLogDetail(DataManagement, "<<  ta_c is changed from %u to %u", tac, next_tac);
+            tac = next_tac;
         }
 
-        case TestATrait::kPropertyHandle_TaG:
+        WeaveLogDetail(DataManagement, "<<  ta_c = %u", tac);
+        break;
+
+    case TestATrait::kPropertyHandle_TaD_SaA:
+        uint32_t next_tad_saa;
+        err = aReader.Get(next_tad_saa);
+        SuccessOrExit(err);
+        if (next_tad_saa != tad.saA)
         {
-            if (aReader.GetType() == kTLVType_UTF8String)
-            {
-                err = aReader.GetString(tag_string, sizeof(tag_string));
-                SuccessOrExit(err);
-
-                tag_use_ref = false;
-
-                WeaveLogDetail(DataManagement, "<<  ta_g string = %s", tag_string);
-            }
-            else
-            {
-                err = aReader.Get(tag_ref);
-                SuccessOrExit(err);
-
-                tag_use_ref = true;
-
-                WeaveLogDetail(DataManagement, "<<  ta_g ref = %u", tag_ref);
-            }
+            WeaveLogDetail(DataManagement, "<<  ta_d.sa_a is changed from %u to %u", tad.saA, next_tad_saa);
+            tad.saA = next_tad_saa;
         }
-            break;
 
-        case TestATrait::kPropertyHandle_TaK:
-            err = aReader.GetBytes(&tak[0], sizeof(tak));
+        WeaveLogDetail(DataManagement, "<<  ta_d.sa_a = %u", tad.saA);
+        break;
+
+    case TestATrait::kPropertyHandle_TaD_SaB:
+        bool next_tad_sab;
+        err = aReader.Get(next_tad_sab);
+        SuccessOrExit(err);
+        if (next_tad_sab != tad.saB)
+        {
+            WeaveLogDetail(DataManagement, "<<  ta_d.sa_b is changed from %u to %u", tad.saB, next_tad_sab);
+            tad.saB = next_tad_sab;
+        }
+
+        WeaveLogDetail(DataManagement, "<<  ta_d.sa_b = %u", tad.saB);
+        break;
+
+    case TestATrait::kPropertyHandle_TaE:
+    {
+        TLVType outerType;
+        uint32_t i = 0;
+
+        err = aReader.EnterContainer(outerType);
+        SuccessOrExit(err);
+
+        while (((err = aReader.Next()) == WEAVE_NO_ERROR) && (i < (sizeof(tae) / sizeof(tae[0]))))
+        {
+            uint32_t next_tae;
+            err = aReader.Get(next_tae);
             SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_k %d bytes", sizeof(tak));
-            break;
-
-        case TestATrait::kPropertyHandle_TaL:
-            err = aReader.Get(tal);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_l = %x", tal);
-            break;
-
-        case TestATrait::kPropertyHandle_TaM:
-            err = aReader.Get(tam_resourceid);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_m = %" PRIx64 , tam_resourceid);
-            break;
-
-        case TestATrait::kPropertyHandle_TaN:
-            err = aReader.GetBytes(&tan[0], sizeof(tan));
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_n %d bytes", sizeof(tan));
-            DumpMemory(&tan[0], sizeof(tan), "WEAVE:DMG: <<  ta_n ", 16);
-            break;
-
-        case TestATrait::kPropertyHandle_TaO:
-            err = aReader.Get(tao);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_o = %d", tao);
-            break;
-
-        case TestATrait::kPropertyHandle_TaP:
-            int64_t next_tap;
-            err = aReader.Get(next_tap);
-            SuccessOrExit(err);
-
-            if (next_tap != tap)
+            if (tae[i] != next_tae)
             {
-                WeaveLogDetail(DataManagement, "<<  ta_p is changed from %d to %d", tap, next_tap);
-                tap = next_tap;
+                WeaveLogDetail(DataManagement, "<<  ta_e[%u] is changed from %u to %u", i, tae[i], next_tae);
+                tae[i] = next_tae;
             }
-            WeaveLogDetail(DataManagement, "<<  ta_p = %d", tap);
-            break;
 
-        case TestATrait::kPropertyHandle_TaQ:
-            err = aReader.Get(taq);
-            SuccessOrExit(err);
+            WeaveLogDetail(DataManagement, "<<  ta_e[%u] = %u", i, tae[i]);
+            i++;
+        }
 
-            WeaveLogDetail(DataManagement, "<<  ta_q %" PRId64 , taq);
-            break;
-
-        case TestATrait::kPropertyHandle_TaR:
-            err = aReader.Get(tar);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_r %u", tar);
-            break;
-
-        case TestATrait::kPropertyHandle_TaS:
-            err = aReader.Get(tas);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_s %u", tas);
-            break;
-
-        case TestATrait::kPropertyHandle_TaT:
-            err = aReader.Get(tat);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_t %u", tat);
-            break;
-
-        case TestATrait::kPropertyHandle_TaU:
-            err = aReader.Get(tau);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_u %d", tau);
-            break;
-
-        case TestATrait::kPropertyHandle_TaV:
-            err = aReader.Get(tav);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_v %u", tav);
-            break;
-
-        case TestATrait::kPropertyHandle_TaW:
-            err = aReader.GetString(&taw[0], sizeof(taw));
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_w %s", taw);
-            break;
-
-        case TestATrait::kPropertyHandle_TaX:
-            err = aReader.Get(tax);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  ta_x %d", tax);
-            break;
-
-        case TestATrait::kPropertyHandle_TaI_Value:
-            err = aReader.Get(tai_stageditem);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  tai[%u] = %u", GetPropertyDictionaryKey(aLeafHandle), tai_stageditem);
-            break;
-
-        case TestATrait::kPropertyHandle_TaJ_Value_SaA:
-            err = aReader.Get(taj_stageditem.saA);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  taj[%u].sa_a = %u", GetPropertyDictionaryKey(aLeafHandle), taj_stageditem.saA);
-            break;
-
-        case TestATrait::kPropertyHandle_TaJ_Value_SaB:
-            err = aReader.Get(taj_stageditem.saB);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, "<<  taj[%u].sa_b = %u", GetPropertyDictionaryKey(aLeafHandle), taj_stageditem.saB);
-            break;
-
-        default:
-            WeaveLogDetail(DataManagement, "<<  UNKNOWN!");
+        err = aReader.ExitContainer(outerType);
+        break;
     }
 
-    exit:
+    case TestATrait::kPropertyHandle_TaG:
+    {
+        if (aReader.GetType() == kTLVType_UTF8String)
+        {
+            err = aReader.GetString(tag_string, sizeof(tag_string));
+            SuccessOrExit(err);
+
+            tag_use_ref = false;
+
+            WeaveLogDetail(DataManagement, "<<  ta_g string = %s", tag_string);
+        }
+        else
+        {
+            err = aReader.Get(tag_ref);
+            SuccessOrExit(err);
+
+            tag_use_ref = true;
+
+            WeaveLogDetail(DataManagement, "<<  ta_g ref = %u", tag_ref);
+        }
+    }
+    break;
+
+    case TestATrait::kPropertyHandle_TaK:
+        err = aReader.GetBytes(&tak[0], sizeof(tak));
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_k %d bytes", sizeof(tak));
+        break;
+
+    case TestATrait::kPropertyHandle_TaL:
+        err = aReader.Get(tal);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_l = %x", tal);
+        break;
+
+    case TestATrait::kPropertyHandle_TaM:
+        err = aReader.Get(tam_resourceid);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_m = %" PRIx64, tam_resourceid);
+        break;
+
+    case TestATrait::kPropertyHandle_TaN:
+        err = aReader.GetBytes(&tan[0], sizeof(tan));
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_n %d bytes", sizeof(tan));
+        DumpMemory(&tan[0], sizeof(tan), "WEAVE:DMG: <<  ta_n ", 16);
+        break;
+
+    case TestATrait::kPropertyHandle_TaO:
+        err = aReader.Get(tao);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_o = %d", tao);
+        break;
+
+    case TestATrait::kPropertyHandle_TaP:
+        int64_t next_tap;
+        err = aReader.Get(next_tap);
+        SuccessOrExit(err);
+
+        if (next_tap != tap)
+        {
+            WeaveLogDetail(DataManagement, "<<  ta_p is changed from %d to %d", tap, next_tap);
+            tap = next_tap;
+        }
+        WeaveLogDetail(DataManagement, "<<  ta_p = %d", tap);
+        break;
+
+    case TestATrait::kPropertyHandle_TaQ:
+        err = aReader.Get(taq);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_q %" PRId64, taq);
+        break;
+
+    case TestATrait::kPropertyHandle_TaR:
+        err = aReader.Get(tar);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_r %u", tar);
+        break;
+
+    case TestATrait::kPropertyHandle_TaS:
+        err = aReader.Get(tas);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_s %u", tas);
+        break;
+
+    case TestATrait::kPropertyHandle_TaT:
+        err = aReader.Get(tat);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_t %u", tat);
+        break;
+
+    case TestATrait::kPropertyHandle_TaU:
+        err = aReader.Get(tau);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_u %d", tau);
+        break;
+
+    case TestATrait::kPropertyHandle_TaV:
+        err = aReader.Get(tav);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_v %u", tav);
+        break;
+
+    case TestATrait::kPropertyHandle_TaW:
+        err = aReader.GetString(&taw[0], sizeof(taw));
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_w %s", taw);
+        break;
+
+    case TestATrait::kPropertyHandle_TaX:
+        err = aReader.Get(tax);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  ta_x %d", tax);
+        break;
+
+    case TestATrait::kPropertyHandle_TaI_Value:
+        err = aReader.Get(tai_stageditem);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  tai[%u] = %u", GetPropertyDictionaryKey(aLeafHandle), tai_stageditem);
+        break;
+
+    case TestATrait::kPropertyHandle_TaJ_Value_SaA:
+        err = aReader.Get(taj_stageditem.saA);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  taj[%u].sa_a = %u", GetPropertyDictionaryKey(aLeafHandle), taj_stageditem.saA);
+        break;
+
+    case TestATrait::kPropertyHandle_TaJ_Value_SaB:
+        err = aReader.Get(taj_stageditem.saB);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, "<<  taj[%u].sa_b = %u", GetPropertyDictionaryKey(aLeafHandle), taj_stageditem.saB);
+        break;
+
+    default: WeaveLogDetail(DataManagement, "<<  UNKNOWN!");
+    }
+
+exit:
     return err;
 }
 
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
-WEAVE_ERROR TestATraitDataSource::GetData(PropertyPathHandle aHandle,
-                                          uint64_t aTagToWrite,
-                                          TLVWriter &aWriter,
-                                          bool &aIsNull,
-                                          bool &aIsPresent)
+WEAVE_ERROR TestATraitDataSource::GetData(PropertyPathHandle aHandle, uint64_t aTagToWrite, TLVWriter & aWriter, bool & aIsNull,
+                                          bool & aIsPresent)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -1123,224 +1194,224 @@ WEAVE_ERROR TestATraitDataSource::GetData(PropertyPathHandle aHandle,
     return err;
 }
 
-WEAVE_ERROR TestATraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+WEAVE_ERROR TestATraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (GetPropertySchemaHandle(aLeafHandle)) {
-        case TestATrait::kPropertyHandle_TaA:
-            err = aWriter.Put(aTagToWrite, taa);
-            SuccessOrExit(err);
+    switch (GetPropertySchemaHandle(aLeafHandle))
+    {
+    case TestATrait::kPropertyHandle_TaA:
+        err = aWriter.Put(aTagToWrite, taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_a = %u", taa);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_a = %u", taa);
+        break;
 
-        case TestATrait::kPropertyHandle_TaB:
-            err = aWriter.Put(aTagToWrite, tab);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaB:
+        err = aWriter.Put(aTagToWrite, tab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_b = %u", tab);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_b = %u", tab);
+        break;
 
-        case TestATrait::kPropertyHandle_TaC:
-            err = aWriter.Put(aTagToWrite, tac);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaC:
+        err = aWriter.Put(aTagToWrite, tac);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_c = %u", tac);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_c = %u", tac);
+        break;
 
-        case TestATrait::kPropertyHandle_TaD_SaA:
-            err = aWriter.Put(aTagToWrite, tad.saA);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaD_SaA:
+        err = aWriter.Put(aTagToWrite, tad.saA);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_d.sa_a = %u", tad.saA);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_d.sa_a = %u", tad.saA);
+        break;
 
-        case TestATrait::kPropertyHandle_TaD_SaB:
-            err = aWriter.PutBoolean(aTagToWrite, tad.saB);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaD_SaB:
+        err = aWriter.PutBoolean(aTagToWrite, tad.saB);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_d.sa_b = %s", tad.saB ? "true" : "false");
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_d.sa_b = %s", tad.saB ? "true" : "false");
+        break;
 
-        case TestATrait::kPropertyHandle_TaE:
+    case TestATrait::kPropertyHandle_TaE:
+    {
+        TLVType outerType;
+
+        err = aWriter.StartContainer(aTagToWrite, kTLVType_Array, outerType);
+        SuccessOrExit(err);
+
+        for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++)
         {
-            TLVType outerType;
-
-            err = aWriter.StartContainer(aTagToWrite, kTLVType_Array, outerType);
+            err = aWriter.Put(AnonymousTag, tae[i]);
             SuccessOrExit(err);
 
-            for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++) {
-                err = aWriter.Put(AnonymousTag, tae[i]);
-                SuccessOrExit(err);
-
-                WeaveLogDetail(DataManagement, ">>  ta_e[%u] = %u", i, tae[i]);
-            }
-
-            err = aWriter.EndContainer(outerType);
-            break;
+            WeaveLogDetail(DataManagement, ">>  ta_e[%u] = %u", i, tae[i]);
         }
 
-        case TestATrait::kPropertyHandle_TaG:
+        err = aWriter.EndContainer(outerType);
+        break;
+    }
+
+    case TestATrait::kPropertyHandle_TaG:
+    {
+        if (tag_use_ref)
         {
-            if (tag_use_ref)
-            {
-                err = aWriter.Put(aTagToWrite, tag_ref);
-                SuccessOrExit(err);
-
-                WeaveLogDetail(DataManagement, ">>  ta_g ref = %u", tag_ref);
-            }
-            else
-            {
-                err = aWriter.PutString(aTagToWrite, tag_string);
-                SuccessOrExit(err);
-
-                WeaveLogDetail(DataManagement, ">>  ta_g string = %s", tag_string);
-            }
-        }
-            break;
-
-        case TestATrait::kPropertyHandle_TaH:
-            // maybe TODO
-            break;
-
-        case TestATrait::kPropertyHandle_TaK:
-            err = aWriter.PutBytes(aTagToWrite, tak, sizeof(tak));
+            err = aWriter.Put(aTagToWrite, tag_ref);
             SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_k %d bytes", sizeof(tak));
-            break;
-
-        case TestATrait::kPropertyHandle_TaL:
+            WeaveLogDetail(DataManagement, ">>  ta_g ref = %u", tag_ref);
+        }
+        else
         {
-            err = aWriter.Put(aTagToWrite, tal);
+            err = aWriter.PutString(aTagToWrite, tag_string);
             SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_l = %x", tal);
-            break;
+            WeaveLogDetail(DataManagement, ">>  ta_g string = %s", tag_string);
         }
+    }
+    break;
 
-        case TestATrait::kPropertyHandle_TaM:
-            err = aWriter.Put(aTagToWrite, tam_resourceid);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaH:
+        // maybe TODO
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_m = %" PRIx64 , tam_resourceid);
-            break;
+    case TestATrait::kPropertyHandle_TaK:
+        err = aWriter.PutBytes(aTagToWrite, tak, sizeof(tak));
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaN:
-            err = aWriter.PutBytes(aTagToWrite, tan, sizeof(tan));
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_k %d bytes", sizeof(tak));
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_n %d bytes", sizeof(tan));
-            DumpMemory(&tan[0], sizeof(tan), "WEAVE:DMG: >>  ta_n ", 16);
-            break;
+    case TestATrait::kPropertyHandle_TaL:
+    {
+        err = aWriter.Put(aTagToWrite, tal);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaO:
-            err = aWriter.Put(aTagToWrite, tao);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_l = %x", tal);
+        break;
+    }
 
-            WeaveLogDetail(DataManagement, ">>  ta_o %u", tao);
-            break;
+    case TestATrait::kPropertyHandle_TaM:
+        err = aWriter.Put(aTagToWrite, tam_resourceid);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaP:
-            err = aWriter.Put(aTagToWrite, tap);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_m = %" PRIx64, tam_resourceid);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_p %" PRId64 , tap);
-            break;
+    case TestATrait::kPropertyHandle_TaN:
+        err = aWriter.PutBytes(aTagToWrite, tan, sizeof(tan));
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaQ:
-            err = aWriter.Put(aTagToWrite, taq);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_n %d bytes", sizeof(tan));
+        DumpMemory(&tan[0], sizeof(tan), "WEAVE:DMG: >>  ta_n ", 16);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_q %" PRId64 , taq);
-            break;
+    case TestATrait::kPropertyHandle_TaO:
+        err = aWriter.Put(aTagToWrite, tao);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaR:
-            err = aWriter.Put(aTagToWrite, tar);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_o %u", tao);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_r %u", tar);
-            break;
+    case TestATrait::kPropertyHandle_TaP:
+        err = aWriter.Put(aTagToWrite, tap);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaS:
-            err = aWriter.Put(aTagToWrite, tas);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_p %" PRId64, tap);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_s %u", tas);
-            break;
+    case TestATrait::kPropertyHandle_TaQ:
+        err = aWriter.Put(aTagToWrite, taq);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaT:
-            err = aWriter.Put(aTagToWrite, tat);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_q %" PRId64, taq);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_t %u", tat);
-            break;
+    case TestATrait::kPropertyHandle_TaR:
+        err = aWriter.Put(aTagToWrite, tar);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaU:
-            err = aWriter.Put(aTagToWrite, tau);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_r %u", tar);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_u %d", tau);
-            break;
+    case TestATrait::kPropertyHandle_TaS:
+        err = aWriter.Put(aTagToWrite, tas);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaV:
-            err = aWriter.PutBoolean(aTagToWrite, tav);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_s %u", tas);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_v %u", tav);
-            break;
+    case TestATrait::kPropertyHandle_TaT:
+        err = aWriter.Put(aTagToWrite, tat);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaW:
-            err = aWriter.PutString(aTagToWrite, taw);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_t %u", tat);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_w %s", taw);
-            break;
+    case TestATrait::kPropertyHandle_TaU:
+        err = aWriter.Put(aTagToWrite, tau);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaX:
-            err = aWriter.Put(aTagToWrite, tax);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_u %d", tau);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_x %d", tax);
-            break;
+    case TestATrait::kPropertyHandle_TaV:
+        err = aWriter.PutBoolean(aTagToWrite, tav);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaI_Value:
-        {
-            PropertyDictionaryKey key = GetPropertyDictionaryKey(aLeafHandle);
+        WeaveLogDetail(DataManagement, ">>  ta_v %u", tav);
+        break;
 
-            err = aWriter.Put(aTagToWrite, tai_map[key]);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaW:
+        err = aWriter.PutString(aTagToWrite, taw);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_i[%u] = %u", key, tai_map[key]);
-            break;
-        }
+        WeaveLogDetail(DataManagement, ">>  ta_w %s", taw);
+        break;
 
-        case TestATrait::kPropertyHandle_TaJ_Value_SaA:
-        {
-            PropertyDictionaryKey key = GetPropertyDictionaryKey(aLeafHandle);
+    case TestATrait::kPropertyHandle_TaX:
+        err = aWriter.Put(aTagToWrite, tax);
+        SuccessOrExit(err);
 
-            err = aWriter.Put(aTagToWrite, taj_map[key].saA);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  ta_x %d", tax);
+        break;
 
-            WeaveLogDetail(DataManagement, ">>  ta_j[%u].sa_a = %u", key, taj_map[key].saA);
-            break;
-        }
+    case TestATrait::kPropertyHandle_TaI_Value:
+    {
+        PropertyDictionaryKey key = GetPropertyDictionaryKey(aLeafHandle);
 
+        err = aWriter.Put(aTagToWrite, tai_map[key]);
+        SuccessOrExit(err);
 
-        case TestATrait::kPropertyHandle_TaJ_Value_SaB:
-        {
-            PropertyDictionaryKey key = GetPropertyDictionaryKey(aLeafHandle);
+        WeaveLogDetail(DataManagement, ">>  ta_i[%u] = %u", key, tai_map[key]);
+        break;
+    }
 
-            err = aWriter.PutBoolean(aTagToWrite, taj_map[key].saB);
-            SuccessOrExit(err);
+    case TestATrait::kPropertyHandle_TaJ_Value_SaA:
+    {
+        PropertyDictionaryKey key = GetPropertyDictionaryKey(aLeafHandle);
 
-            WeaveLogDetail(DataManagement, ">>  ta_j[%u].sa_b = %u", key, taj_map[key].saB);
-            break;
-        }
+        err = aWriter.Put(aTagToWrite, taj_map[key].saA);
+        SuccessOrExit(err);
 
-        default:
-            WeaveLogDetail(DataManagement, ">>  UNKNOWN! %08x", aLeafHandle);
+        WeaveLogDetail(DataManagement, ">>  ta_j[%u].sa_a = %u", key, taj_map[key].saA);
+        break;
+    }
+
+    case TestATrait::kPropertyHandle_TaJ_Value_SaB:
+    {
+        PropertyDictionaryKey key = GetPropertyDictionaryKey(aLeafHandle);
+
+        err = aWriter.PutBoolean(aTagToWrite, taj_map[key].saB);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  ta_j[%u].sa_b = %u", key, taj_map[key].saB);
+        break;
+    }
+
+    default: WeaveLogDetail(DataManagement, ">>  UNKNOWN! %08x", aLeafHandle);
     }
 
 exit:
@@ -1348,15 +1419,15 @@ exit:
     return err;
 }
 
-void TestATraitDataSource::HandleCommandOperationTimeout(nl::Weave::System::Layer* aSystemLayer, void *aAppState,
-        nl::Weave::System::Error aErr)
+void TestATraitDataSource::HandleCommandOperationTimeout(nl::Weave::System::Layer * aSystemLayer, void * aAppState,
+                                                         nl::Weave::System::Error aErr)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err                         = WEAVE_NO_ERROR;
     TestATraitDataSource * const datasource = reinterpret_cast<TestATraitDataSource *>(aAppState);
 
     WeaveLogDetail(DataManagement, "Test trait A %s", __func__);
 
-    VerifyOrExit (NULL != datasource->mActiveCommand, err = WEAVE_ERROR_INCORRECT_STATE);
+    VerifyOrExit(NULL != datasource->mActiveCommand, err = WEAVE_ERROR_INCORRECT_STATE);
 
     // If Command was OneWay, exit and close Command.
 
@@ -1365,14 +1436,14 @@ void TestATraitDataSource::HandleCommandOperationTimeout(nl::Weave::System::Laye
     // send back response for command type 2
     {
 
-        PacketBuffer *msgBuf = PacketBuffer::New();
+        PacketBuffer * msgBuf = PacketBuffer::New();
         if (NULL == msgBuf)
         {
             // It's unlikely we'll have packet buffer to send out the status report, but let us try anyways
-            err = datasource->mActiveCommand->SendError(nl::Weave::Profiles::kWeaveProfile_Common,
-                    nl::Weave::Profiles::Common::kStatus_OutOfMemory, WEAVE_ERROR_NO_MEMORY);
+            err                        = datasource->mActiveCommand->SendError(nl::Weave::Profiles::kWeaveProfile_Common,
+                                                        nl::Weave::Profiles::Common::kStatus_OutOfMemory, WEAVE_ERROR_NO_MEMORY);
             datasource->mActiveCommand = NULL;
-            ExitNow ();
+            ExitNow();
         }
 
         // Add response data here
@@ -1415,17 +1486,13 @@ exit:
 }
 
 void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::Command * aCommand,
-            const nl::Weave::WeaveMessageInfo * aMsgInfo,
-            nl::Weave::PacketBuffer * aPayload,
-            const uint64_t & aCommandType,
-            const bool aIsExpiryTimeValid,
-            const int64_t & aExpiryTimeMicroSecond,
-            const bool aIsMustBeVersionValid,
-            const uint64_t & aMustBeVersion,
-            nl::Weave::TLV::TLVReader & aArgumentReader)
+                                           const nl::Weave::WeaveMessageInfo * aMsgInfo, nl::Weave::PacketBuffer * aPayload,
+                                           const uint64_t & aCommandType, const bool aIsExpiryTimeValid,
+                                           const int64_t & aExpiryTimeMicroSecond, const bool aIsMustBeVersionValid,
+                                           const uint64_t & aMustBeVersion, nl::Weave::TLV::TLVReader & aArgumentReader)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint32_t reportProfileId = nl::Weave::Profiles::kWeaveProfile_Common;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
+    uint32_t reportProfileId  = nl::Weave::Profiles::kWeaveProfile_Common;
     uint16_t reportStatusCode = nl::Weave::Profiles::Common::kStatus_BadRequest;
 
     WeaveLogDetail(DataManagement, "Test trait A %s", __func__);
@@ -1435,10 +1502,10 @@ void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::
     if (NULL != mActiveCommand)
     {
         // we already have one active command. Reject this new one directly
-        reportProfileId = nl::Weave::Profiles::kWeaveProfile_Common;
+        reportProfileId  = nl::Weave::Profiles::kWeaveProfile_Common;
         reportStatusCode = nl::Weave::Profiles::Common::kStatus_OutOfMemory;
-        err = WEAVE_ERROR_NO_MEMORY;
-        ExitNow ();
+        err              = WEAVE_ERROR_NO_MEMORY;
+        ExitNow();
     }
 
     // verify if this command comes with a valid EC with the right peer node ID, key ID, and authenticator
@@ -1448,13 +1515,14 @@ void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::
     // someone is making a request.
     if (aIsMustBeVersionValid)
     {
-        WeaveLogDetail(DataManagement, "Actual version is 0x%" PRIx64 ", while must-be version is: 0x%" PRIx64, GetVersion(), aMustBeVersion);
+        WeaveLogDetail(DataManagement, "Actual version is 0x%" PRIx64 ", while must-be version is: 0x%" PRIx64, GetVersion(),
+                       aMustBeVersion);
 
         if (aMustBeVersion != GetVersion())
         {
-            reportProfileId = nl::Weave::Profiles::kWeaveProfile_WDM;
+            reportProfileId  = nl::Weave::Profiles::kWeaveProfile_WDM;
             reportStatusCode = kStatus_VersionMismatch;
-            ExitNow ();
+            ExitNow();
         }
     }
 
@@ -1523,15 +1591,15 @@ void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::
             if (NULL == msgBuf)
             {
                 // It's unlikely we'll have packet buffer to send out the status report, but let us try anyways
-                reportProfileId = nl::Weave::Profiles::kWeaveProfile_Common;
+                reportProfileId  = nl::Weave::Profiles::kWeaveProfile_Common;
                 reportStatusCode = nl::Weave::Profiles::Common::kStatus_OutOfMemory;
-                err = WEAVE_ERROR_NO_MEMORY;
-                ExitNow ();
+                err              = WEAVE_ERROR_NO_MEMORY;
+                ExitNow();
             }
 
             aCommand->SendResponse(GetVersion(), msgBuf);
             aCommand = NULL;
-            msgBuf = NULL;
+            msgBuf   = NULL;
         }
     }
     // command type 2: with delayed, verifiable custom data in response
@@ -1590,7 +1658,8 @@ void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::
         // send back response later
         // note this is just an example of some operation which would take 2 seconds to complete
         // if the requested operation can be finished without delay, a response can be sent from here
-        err = aCommand->GetExchangeContext()->ExchangeMgr->MessageLayer->SystemLayer->StartTimer(2000, HandleCommandOperationTimeout, this);
+        err = aCommand->GetExchangeContext()->ExchangeMgr->MessageLayer->SystemLayer->StartTimer(
+            2000, HandleCommandOperationTimeout, this);
         SuccessOrExit(err);
 
         err = aCommand->SendInProgress();
@@ -1598,7 +1667,7 @@ void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::
 
         // transfer ownership
         mActiveCommand = aCommand;
-        aCommand = NULL;
+        aCommand       = NULL;
     }
     else
     {
@@ -1607,7 +1676,6 @@ void TestATraitDataSource::OnCustomCommand(nl::Weave::Profiles::DataManagement::
         err = WEAVE_ERROR_NOT_IMPLEMENTED;
         ExitNow();
     }
-
 
 exit:
     WeaveLogFunctError(err);
@@ -1625,17 +1693,17 @@ exit:
     }
 }
 
-TestBTraitDataSource::TestBTraitDataSource()
-    : TraitDataSource(&TestBTrait::TraitSchema)
+TestBTraitDataSource::TestBTraitDataSource() : TraitDataSource(&TestBTrait::TraitSchema)
 {
     SetVersion(200);
-    taa = TestATrait::ENUM_A_VALUE_1;
-    tab = TestCommon::COMMON_ENUM_A_VALUE_1;
-    tac = 3;
+    taa     = TestATrait::ENUM_A_VALUE_1;
+    tab     = TestCommon::COMMON_ENUM_A_VALUE_1;
+    tac     = 3;
     tad_saa = 4;
     tad_sab = true;
 
-    for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++) {
+    for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++)
+    {
         tae[i] = i + 5;
     }
 
@@ -1654,20 +1722,24 @@ void TestBTraitDataSource::Mutate()
 {
     Lock();
 
-    if ((GetVersion() % 3) == 0) {
+    if ((GetVersion() % 3) == 0)
+    {
         SetDirty(TestBTrait::kPropertyHandle_TbB_SbB);
         SetDirty(TestBTrait::kPropertyHandle_TaA);
 
-        if (taa == TestATrait::ENUM_A_VALUE_1) {
+        if (taa == TestATrait::ENUM_A_VALUE_1)
+        {
             taa = TestATrait::ENUM_A_VALUE_2;
         }
-        else {
+        else
+        {
             taa = TestATrait::ENUM_A_VALUE_1;
         }
 
         tbb_sbb++;
     }
-    else if ((GetVersion() % 3) == 1) {
+    else if ((GetVersion() % 3) == 1)
+    {
         SetDirty(TestBTrait::kPropertyHandle_TaC);
         SetDirty(TestBTrait::kPropertyHandle_TaP);
         SetDirty(TestBTrait::kPropertyHandle_TbC_SaB);
@@ -1686,123 +1758,124 @@ void TestBTraitDataSource::Mutate()
     Unlock();
 }
 
-WEAVE_ERROR TestBTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+WEAVE_ERROR TestBTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aLeafHandle) {
+    switch (aLeafHandle)
+    {
         //
         // TestATrait
         //
 
-        case TestBTrait::kPropertyHandle_TaA:
-            err = aWriter.Put(aTagToWrite, taa);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaA:
+        err = aWriter.Put(aTagToWrite, taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_a = %u", taa);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_a = %u", taa);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaB:
-            err = aWriter.Put(aTagToWrite, tab);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaB:
+        err = aWriter.Put(aTagToWrite, tab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_b = %u", tab);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_b = %u", tab);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaC:
-            err = aWriter.Put(aTagToWrite, tac);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaC:
+        err = aWriter.Put(aTagToWrite, tac);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_c = %u", tac);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_c = %u", tac);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaD_SaA:
-            err = aWriter.Put(aTagToWrite, tad_saa);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaD_SaA:
+        err = aWriter.Put(aTagToWrite, tad_saa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_d.sa_a = %u", tad_saa);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_d.sa_a = %u", tad_saa);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaD_SaB:
-            err = aWriter.PutBoolean(aTagToWrite, tad_sab);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaD_SaB:
+        err = aWriter.PutBoolean(aTagToWrite, tad_sab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_d.sa_b = %s", tad_sab ? "true" : "false");
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_d.sa_b = %s", tad_sab ? "true" : "false");
+        break;
 
-        case TestBTrait::kPropertyHandle_TaE:
+    case TestBTrait::kPropertyHandle_TaE:
+    {
+        TLVType outerType;
+
+        err = aWriter.StartContainer(aTagToWrite, kTLVType_Array, outerType);
+        SuccessOrExit(err);
+
+        for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++)
         {
-            TLVType outerType;
-
-            err = aWriter.StartContainer(aTagToWrite, kTLVType_Array, outerType);
+            err = aWriter.Put(AnonymousTag, tae[i]);
             SuccessOrExit(err);
 
-            for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++) {
-                err = aWriter.Put(AnonymousTag, tae[i]);
-                SuccessOrExit(err);
-
-                WeaveLogDetail(DataManagement, ">>  ta_e[%u] = %u", i, tae[i]);
-            }
-
-            err = aWriter.EndContainer(outerType);
-            break;
+            WeaveLogDetail(DataManagement, ">>  ta_e[%u] = %u", i, tae[i]);
         }
 
-        case TestBTrait::kPropertyHandle_TaP:
-            err = aWriter.Put(aTagToWrite, tap);
-            SuccessOrExit(err);
+        err = aWriter.EndContainer(outerType);
+        break;
+    }
 
-            WeaveLogDetail(DataManagement, ">>  ta_p = %" PRId64, tap);
-            break;
+    case TestBTrait::kPropertyHandle_TaP:
+        err = aWriter.Put(aTagToWrite, tap);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  ta_p = %" PRId64, tap);
+        break;
 
         //
         // TestBTrait
         //
 
-        case TestBTrait::kPropertyHandle_TbA:
-            err = aWriter.Put(aTagToWrite, tba);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TbA:
+        err = aWriter.Put(aTagToWrite, tba);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tb_a = %u", tba);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tb_a = %u", tba);
+        break;
 
-        case TestBTrait::kPropertyHandle_TbB_SbA:
-            err = aWriter.PutString(aTagToWrite, tbb_sba);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TbB_SbA:
+        err = aWriter.PutString(aTagToWrite, tbb_sba);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tb_b.sb_a = \"%s\"", tbb_sba);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tb_b.sb_a = \"%s\"", tbb_sba);
+        break;
 
-        case TestBTrait::kPropertyHandle_TbB_SbB:
-            err = aWriter.Put(aTagToWrite, tbb_sbb);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TbB_SbB:
+        err = aWriter.Put(aTagToWrite, tbb_sbb);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tb_b.sb_b = %u", tbb_sbb);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tb_b.sb_b = %u", tbb_sbb);
+        break;
 
-        case TestBTrait::kPropertyHandle_TbC_SaA:
-            err = aWriter.Put(aTagToWrite, tbc_saa);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TbC_SaA:
+        err = aWriter.Put(aTagToWrite, tbc_saa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tb_c.sa_a = %u", tbc_saa);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tb_c.sa_a = %u", tbc_saa);
+        break;
 
-        case TestBTrait::kPropertyHandle_TbC_SaB:
-            err = aWriter.PutBoolean(aTagToWrite, tbc_sab);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TbC_SaB:
+        err = aWriter.PutBoolean(aTagToWrite, tbc_sab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tb_c.sa_b = %s", tbc_sab ? "true" : "false");
-            break;
+        WeaveLogDetail(DataManagement, ">>  tb_c.sa_b = %s", tbc_sab ? "true" : "false");
+        break;
 
-        case TestBTrait::kPropertyHandle_TbC_SeaC:
-            err = aWriter.PutString(aTagToWrite, tbc_seac);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TbC_SeaC:
+        err = aWriter.PutString(aTagToWrite, tbc_seac);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tb_c.sea_c = %s", tbc_seac);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tb_c.sea_c = %s", tbc_seac);
+        break;
 
-        default:
-            WeaveLogDetail(DataManagement, ">>  UNKNOWN! %08x", aLeafHandle);
+    default: WeaveLogDetail(DataManagement, ">>  UNKNOWN! %08x", aLeafHandle);
     }
 
 exit:
@@ -1810,22 +1883,23 @@ exit:
     return err;
 }
 
-WEAVE_ERROR TestBTraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, PropertyDictionaryKey &aKey)
+WEAVE_ERROR TestBTraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t & aContext,
+                                                           PropertyDictionaryKey & aKey)
 {
     return WEAVE_END_OF_INPUT;
 }
 
-TestBLargeTraitDataSource::TestBLargeTraitDataSource()
-        : TraitDataSource(&TestBTrait::TraitSchema)
+TestBLargeTraitDataSource::TestBLargeTraitDataSource() : TraitDataSource(&TestBTrait::TraitSchema)
 {
     SetVersion(200);
-    taa = TestATrait::ENUM_A_VALUE_1;
-    tab = TestCommon::COMMON_ENUM_A_VALUE_1;
-    tac = 3;
+    taa     = TestATrait::ENUM_A_VALUE_1;
+    tab     = TestCommon::COMMON_ENUM_A_VALUE_1;
+    tac     = 3;
     tad_saa = 4;
     tad_sab = true;
 
-    for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++) {
+    for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++)
+    {
         tae[i] = i + 5;
     }
 
@@ -1844,20 +1918,24 @@ void TestBLargeTraitDataSource::Mutate()
 {
     Lock();
 
-    if ((GetVersion() % 3) == 0) {
+    if ((GetVersion() % 3) == 0)
+    {
         SetDirty(TestBTrait::kPropertyHandle_TbB_SbB);
         SetDirty(TestBTrait::kPropertyHandle_TaA);
 
-        if (taa == TestATrait::ENUM_A_VALUE_1) {
+        if (taa == TestATrait::ENUM_A_VALUE_1)
+        {
             taa = TestATrait::ENUM_A_VALUE_2;
         }
-        else {
+        else
+        {
             taa = TestATrait::ENUM_A_VALUE_1;
         }
 
         tbb_sbb++;
     }
-    else if ((GetVersion() % 3) == 1) {
+    else if ((GetVersion() % 3) == 1)
+    {
         SetDirty(TestBTrait::kPropertyHandle_TaC);
         SetDirty(TestBTrait::kPropertyHandle_TaP);
         SetDirty(TestBTrait::kPropertyHandle_TbC_SaB);
@@ -1866,7 +1944,8 @@ void TestBLargeTraitDataSource::Mutate()
         tac++;
         tbc_sab = !tbc_sab;
     }
-    else if ((GetVersion() % 3) == 2) {
+    else if ((GetVersion() % 3) == 2)
+    {
         SetDirty(TestBTrait::kPropertyHandle_TaP);
 
         tap++;
@@ -1875,137 +1954,138 @@ void TestBLargeTraitDataSource::Mutate()
     Unlock();
 }
 
-WEAVE_ERROR TestBLargeTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+WEAVE_ERROR TestBLargeTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aLeafHandle) {
+    switch (aLeafHandle)
+    {
         //
         // TestATrait
         //
 
-        case TestBTrait::kPropertyHandle_TaA:
-            err = aWriter.Put(aTagToWrite, taa);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaA:
+        err = aWriter.Put(aTagToWrite, taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_a = %u", taa);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_a = %u", taa);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaB:
-            err = aWriter.Put(aTagToWrite, tab);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaB:
+        err = aWriter.Put(aTagToWrite, tab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_b = %u", tab);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_b = %u", tab);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaC:
-            err = aWriter.Put(aTagToWrite, tac);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaC:
+        err = aWriter.Put(aTagToWrite, tac);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_c = %u", tac);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_c = %u", tac);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaD_SaA:
-            err = aWriter.Put(aTagToWrite, tad_saa);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaD_SaA:
+        err = aWriter.Put(aTagToWrite, tad_saa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_d.sa_a = %u", tad_saa);
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_d.sa_a = %u", tad_saa);
+        break;
 
-        case TestBTrait::kPropertyHandle_TaD_SaB:
-            err = aWriter.PutBoolean(aTagToWrite, tad_sab);
-            SuccessOrExit(err);
+    case TestBTrait::kPropertyHandle_TaD_SaB:
+        err = aWriter.PutBoolean(aTagToWrite, tad_sab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  ta_d.sa_b = %s", tad_sab ? "true" : "false");
-            break;
+        WeaveLogDetail(DataManagement, ">>  ta_d.sa_b = %s", tad_sab ? "true" : "false");
+        break;
 
-        case TestBTrait::kPropertyHandle_TaE:
+    case TestBTrait::kPropertyHandle_TaE:
+    {
+        TLVType outerType;
+
+        err = aWriter.StartContainer(aTagToWrite, kTLVType_Array, outerType);
+        SuccessOrExit(err);
+
+        for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++)
         {
-            TLVType outerType;
-
-            err = aWriter.StartContainer(aTagToWrite, kTLVType_Array, outerType);
+            err = aWriter.Put(AnonymousTag, tae[i]);
             SuccessOrExit(err);
 
-            for (size_t i = 0; i < (sizeof(tae) / sizeof(tae[0])); i++) {
-                err = aWriter.Put(AnonymousTag, tae[i]);
-                SuccessOrExit(err);
-
-                WeaveLogDetail(DataManagement, ">>  ta_e[%u] = %u", i, tae[i]);
-            }
-
-            err = aWriter.EndContainer(outerType);
-            break;
+            WeaveLogDetail(DataManagement, ">>  ta_e[%u] = %u", i, tae[i]);
         }
 
-        case TestBTrait::kPropertyHandle_TaP:
-            err = aWriter.Put(aTagToWrite, tap);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  ta_p = %d", tap);
-            break;
-
-            //
-            // TestBTrait
-            //
-
-        case TestBTrait::kPropertyHandle_TbA:
-            err = aWriter.Put(aTagToWrite, tba);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  tb_a = %u", tba);
-            break;
-
-        case TestBTrait::kPropertyHandle_TbB_SbA:
-            err = aWriter.PutString(aTagToWrite, tbb_sba);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  tb_b.sb_a = \"%s\"", tbb_sba);
-            break;
-
-        case TestBTrait::kPropertyHandle_TbB_SbB:
-            err = aWriter.Put(aTagToWrite, tbb_sbb);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  tb_b.sb_b = %u", tbb_sbb);
-            break;
-
-        case TestBTrait::kPropertyHandle_TbC_SaA:
-            err = aWriter.Put(aTagToWrite, tbc_saa);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  tb_c.sa_a = %u", tbc_saa);
-            break;
-
-        case TestBTrait::kPropertyHandle_TbC_SaB:
-            err = aWriter.PutBoolean(aTagToWrite, tbc_sab);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  tb_c.sa_b = %s", tbc_sab ? "true" : "false");
-            break;
-
-        case TestBTrait::kPropertyHandle_TbC_SeaC:
-            err = aWriter.PutString(aTagToWrite, tbc_seac);
-            SuccessOrExit(err);
-
-            WeaveLogDetail(DataManagement, ">>  tb_c.sea_c = %s", tbc_seac);
-            break;
-
-        default:
-            WeaveLogDetail(DataManagement, ">>  UNKNOWN!");
+        err = aWriter.EndContainer(outerType);
+        break;
     }
 
-    exit:
+    case TestBTrait::kPropertyHandle_TaP:
+        err = aWriter.Put(aTagToWrite, tap);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  ta_p = %d", tap);
+        break;
+
+        //
+        // TestBTrait
+        //
+
+    case TestBTrait::kPropertyHandle_TbA:
+        err = aWriter.Put(aTagToWrite, tba);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  tb_a = %u", tba);
+        break;
+
+    case TestBTrait::kPropertyHandle_TbB_SbA:
+        err = aWriter.PutString(aTagToWrite, tbb_sba);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  tb_b.sb_a = \"%s\"", tbb_sba);
+        break;
+
+    case TestBTrait::kPropertyHandle_TbB_SbB:
+        err = aWriter.Put(aTagToWrite, tbb_sbb);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  tb_b.sb_b = %u", tbb_sbb);
+        break;
+
+    case TestBTrait::kPropertyHandle_TbC_SaA:
+        err = aWriter.Put(aTagToWrite, tbc_saa);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  tb_c.sa_a = %u", tbc_saa);
+        break;
+
+    case TestBTrait::kPropertyHandle_TbC_SaB:
+        err = aWriter.PutBoolean(aTagToWrite, tbc_sab);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  tb_c.sa_b = %s", tbc_sab ? "true" : "false");
+        break;
+
+    case TestBTrait::kPropertyHandle_TbC_SeaC:
+        err = aWriter.PutString(aTagToWrite, tbc_seac);
+        SuccessOrExit(err);
+
+        WeaveLogDetail(DataManagement, ">>  tb_c.sea_c = %s", tbc_seac);
+        break;
+
+    default: WeaveLogDetail(DataManagement, ">>  UNKNOWN!");
+    }
+
+exit:
     WeaveLogFunctError(err);
     return err;
 }
 
-WEAVE_ERROR TestBLargeTraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, PropertyDictionaryKey &aKey)
+WEAVE_ERROR TestBLargeTraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t & aContext,
+                                                                PropertyDictionaryKey & aKey)
 {
     return WEAVE_END_OF_INPUT;
 }
 
-ApplicationKeysTraitDataSource::ApplicationKeysTraitDataSource(void)
-    : TraitDataSource(&ApplicationKeysTrait::TraitSchema)
+ApplicationKeysTraitDataSource::ApplicationKeysTraitDataSource(void) : TraitDataSource(&ApplicationKeysTrait::TraitSchema)
 {
     SetVersion(kInitialTraitVersionNumber);
 
@@ -2013,33 +2093,34 @@ ApplicationKeysTraitDataSource::ApplicationKeysTraitDataSource(void)
     ClearGroupMasterKeys();
 
     AddEpochKey(sEpochKey1_Number, sEpochKey1_StartTime, sEpochKey1_Key, sEpochKey1_KeyLen);
-    AddGroupMasterKey(sAppGroupMasterKey4_Number, sAppGroupMasterKey4_GlobalId, sAppGroupMasterKey4_Key, sAppGroupMasterKey4_KeyLen);
+    AddGroupMasterKey(sAppGroupMasterKey4_Number, sAppGroupMasterKey4_GlobalId, sAppGroupMasterKey4_Key,
+                      sAppGroupMasterKey4_KeyLen);
 }
 
 WEAVE_ERROR ApplicationKeysTraitDataSource::Mutate(void)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    bool mutateEpochKeys = true;
+    WEAVE_ERROR err            = WEAVE_NO_ERROR;
+    bool mutateEpochKeys       = true;
     bool mutateGroupMasterKeys = true;
 
     Lock();
 
+    switch (GetVersion() % 3)
+    {
+    case 0:
+        mutateEpochKeys       = true;
+        mutateGroupMasterKeys = false;
+        break;
 
-    switch (GetVersion() % 3) {
-        case 0:
-            mutateEpochKeys = true;
-            mutateGroupMasterKeys = false;
-            break;
+    case 1:
+        mutateEpochKeys       = false;
+        mutateGroupMasterKeys = true;
+        break;
 
-        case 1:
-            mutateEpochKeys = false;
-            mutateGroupMasterKeys = true;
-            break;
-
-        case 2:
-            mutateEpochKeys = true;
-            mutateGroupMasterKeys = true;
-            break;
+    case 2:
+        mutateEpochKeys       = true;
+        mutateGroupMasterKeys = true;
+        break;
     }
 
     if (mutateEpochKeys)
@@ -2068,54 +2149,55 @@ WEAVE_ERROR ApplicationKeysTraitDataSource::MutateEpochKeys(void)
 
     // Picked 6 pairs of epoch keys, which rotate in the following order:
     // {0, 1} --> {1, 2} --> {2, 3} --> {3, 4} --> {4, 5} --> {5, 0}
-    switch (GetVersion() % 6) {
-        case 0:
-            err = AddEpochKey(sEpochKey0_Number, sEpochKey0_StartTime, sEpochKey0_Key, sEpochKey0_KeyLen);
-            SuccessOrExit(err);
+    switch (GetVersion() % 6)
+    {
+    case 0:
+        err = AddEpochKey(sEpochKey0_Number, sEpochKey0_StartTime, sEpochKey0_Key, sEpochKey0_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddEpochKey(sEpochKey1_Number, sEpochKey1_StartTime, sEpochKey1_Key, sEpochKey1_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddEpochKey(sEpochKey1_Number, sEpochKey1_StartTime, sEpochKey1_Key, sEpochKey1_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 1:
-            err = AddEpochKey(sEpochKey1_Number, sEpochKey1_StartTime, sEpochKey1_Key, sEpochKey1_KeyLen);
-            SuccessOrExit(err);
+    case 1:
+        err = AddEpochKey(sEpochKey1_Number, sEpochKey1_StartTime, sEpochKey1_Key, sEpochKey1_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddEpochKey(sEpochKey2_Number, sEpochKey2_StartTime, sEpochKey2_Key, sEpochKey2_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddEpochKey(sEpochKey2_Number, sEpochKey2_StartTime, sEpochKey2_Key, sEpochKey2_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 2:
-            err = AddEpochKey(sEpochKey2_Number, sEpochKey2_StartTime, sEpochKey2_Key, sEpochKey2_KeyLen);
-            SuccessOrExit(err);
+    case 2:
+        err = AddEpochKey(sEpochKey2_Number, sEpochKey2_StartTime, sEpochKey2_Key, sEpochKey2_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddEpochKey(sEpochKey3_Number, sEpochKey3_StartTime, sEpochKey3_Key, sEpochKey3_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddEpochKey(sEpochKey3_Number, sEpochKey3_StartTime, sEpochKey3_Key, sEpochKey3_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 3:
-            err = AddEpochKey(sEpochKey3_Number, sEpochKey3_StartTime, sEpochKey3_Key, sEpochKey3_KeyLen);
-            SuccessOrExit(err);
+    case 3:
+        err = AddEpochKey(sEpochKey3_Number, sEpochKey3_StartTime, sEpochKey3_Key, sEpochKey3_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddEpochKey(sEpochKey4_Number, sEpochKey4_StartTime, sEpochKey4_Key, sEpochKey4_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddEpochKey(sEpochKey4_Number, sEpochKey4_StartTime, sEpochKey4_Key, sEpochKey4_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 4:
-            err = AddEpochKey(sEpochKey4_Number, sEpochKey4_StartTime, sEpochKey4_Key, sEpochKey4_KeyLen);
-            SuccessOrExit(err);
+    case 4:
+        err = AddEpochKey(sEpochKey4_Number, sEpochKey4_StartTime, sEpochKey4_Key, sEpochKey4_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddEpochKey(sEpochKey5_Number, sEpochKey5_StartTime, sEpochKey5_Key, sEpochKey5_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddEpochKey(sEpochKey5_Number, sEpochKey5_StartTime, sEpochKey5_Key, sEpochKey5_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 5:
-            err = AddEpochKey(sEpochKey5_Number, sEpochKey5_StartTime, sEpochKey5_Key, sEpochKey5_KeyLen);
-            SuccessOrExit(err);
+    case 5:
+        err = AddEpochKey(sEpochKey5_Number, sEpochKey5_StartTime, sEpochKey5_Key, sEpochKey5_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddEpochKey(sEpochKey0_Number, sEpochKey0_StartTime, sEpochKey0_Key, sEpochKey0_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddEpochKey(sEpochKey0_Number, sEpochKey0_StartTime, sEpochKey0_Key, sEpochKey0_KeyLen);
+        SuccessOrExit(err);
+        break;
     }
 
 exit:
@@ -2131,47 +2213,57 @@ WEAVE_ERROR ApplicationKeysTraitDataSource::MutateGroupMasterKeys(void)
     ClearGroupMasterKeys();
 
     // Picked 5 (arbitrary) sets of group master keys to test key update fanctionality.
-    switch (GetVersion() % 5) {
-        case 0:
-            err = AddGroupMasterKey(sAppGroupMasterKey10_Number, sAppGroupMasterKey10_GlobalId, sAppGroupMasterKey10_Key, sAppGroupMasterKey10_KeyLen);
-            SuccessOrExit(err);
+    switch (GetVersion() % 5)
+    {
+    case 0:
+        err = AddGroupMasterKey(sAppGroupMasterKey10_Number, sAppGroupMasterKey10_GlobalId, sAppGroupMasterKey10_Key,
+                                sAppGroupMasterKey10_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddGroupMasterKey(sAppGroupMasterKey7_Number, sAppGroupMasterKey7_GlobalId, sAppGroupMasterKey7_Key, sAppGroupMasterKey7_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddGroupMasterKey(sAppGroupMasterKey7_Number, sAppGroupMasterKey7_GlobalId, sAppGroupMasterKey7_Key,
+                                sAppGroupMasterKey7_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 1:
-            err = AddGroupMasterKey(sAppGroupMasterKey0_Number, sAppGroupMasterKey0_GlobalId, sAppGroupMasterKey0_Key, sAppGroupMasterKey0_KeyLen);
-            SuccessOrExit(err);
-            break;
+    case 1:
+        err = AddGroupMasterKey(sAppGroupMasterKey0_Number, sAppGroupMasterKey0_GlobalId, sAppGroupMasterKey0_Key,
+                                sAppGroupMasterKey0_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 2:
-            err = AddGroupMasterKey(sAppGroupMasterKey4_Number, sAppGroupMasterKey4_GlobalId, sAppGroupMasterKey4_Key, sAppGroupMasterKey4_KeyLen);
-            SuccessOrExit(err);
+    case 2:
+        err = AddGroupMasterKey(sAppGroupMasterKey4_Number, sAppGroupMasterKey4_GlobalId, sAppGroupMasterKey4_Key,
+                                sAppGroupMasterKey4_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddGroupMasterKey(sAppGroupMasterKey7_Number, sAppGroupMasterKey7_GlobalId, sAppGroupMasterKey7_Key, sAppGroupMasterKey7_KeyLen);
-            SuccessOrExit(err);
+        err = AddGroupMasterKey(sAppGroupMasterKey7_Number, sAppGroupMasterKey7_GlobalId, sAppGroupMasterKey7_Key,
+                                sAppGroupMasterKey7_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddGroupMasterKey(sAppGroupMasterKey54_Number, sAppGroupMasterKey54_GlobalId, sAppGroupMasterKey54_Key, sAppGroupMasterKey54_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddGroupMasterKey(sAppGroupMasterKey54_Number, sAppGroupMasterKey54_GlobalId, sAppGroupMasterKey54_Key,
+                                sAppGroupMasterKey54_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 3:
-            err = AddGroupMasterKey(sAppGroupMasterKey10_Number, sAppGroupMasterKey10_GlobalId, sAppGroupMasterKey10_Key, sAppGroupMasterKey10_KeyLen);
-            SuccessOrExit(err);
+    case 3:
+        err = AddGroupMasterKey(sAppGroupMasterKey10_Number, sAppGroupMasterKey10_GlobalId, sAppGroupMasterKey10_Key,
+                                sAppGroupMasterKey10_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddGroupMasterKey(sAppGroupMasterKey4_Number, sAppGroupMasterKey4_GlobalId, sAppGroupMasterKey4_Key, sAppGroupMasterKey4_KeyLen);
-            SuccessOrExit(err);
+        err = AddGroupMasterKey(sAppGroupMasterKey4_Number, sAppGroupMasterKey4_GlobalId, sAppGroupMasterKey4_Key,
+                                sAppGroupMasterKey4_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddGroupMasterKey(sAppGroupMasterKey7_Number, sAppGroupMasterKey7_GlobalId, sAppGroupMasterKey7_Key, sAppGroupMasterKey7_KeyLen);
-            SuccessOrExit(err);
+        err = AddGroupMasterKey(sAppGroupMasterKey7_Number, sAppGroupMasterKey7_GlobalId, sAppGroupMasterKey7_Key,
+                                sAppGroupMasterKey7_KeyLen);
+        SuccessOrExit(err);
 
-            err = AddGroupMasterKey(sAppGroupMasterKey54_Number, sAppGroupMasterKey54_GlobalId, sAppGroupMasterKey54_Key, sAppGroupMasterKey54_KeyLen);
-            SuccessOrExit(err);
-            break;
+        err = AddGroupMasterKey(sAppGroupMasterKey54_Number, sAppGroupMasterKey54_GlobalId, sAppGroupMasterKey54_Key,
+                                sAppGroupMasterKey54_KeyLen);
+        SuccessOrExit(err);
+        break;
 
-        case 4:
-            break;
+    case 4: break;
     }
 
 exit:
@@ -2190,11 +2282,12 @@ void ApplicationKeysTraitDataSource::ClearGroupMasterKeys(void)
     memset(reinterpret_cast<uint8_t *>(&GroupMasterKeys), 0, sizeof(GroupMasterKeys));
 }
 
-WEAVE_ERROR ApplicationKeysTraitDataSource::AddEpochKey(uint8_t epochKeyNumber, uint32_t startTime, const uint8_t *key, uint8_t keyLen)
+WEAVE_ERROR ApplicationKeysTraitDataSource::AddEpochKey(uint8_t epochKeyNumber, uint32_t startTime, const uint8_t * key,
+                                                        uint8_t keyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint32_t keyId = WeaveKeyId::MakeEpochKeyId(epochKeyNumber);
-    int keyInd = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS;
+    uint32_t keyId  = WeaveKeyId::MakeEpochKeyId(epochKeyNumber);
+    int keyInd      = WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS;
 
     VerifyOrExit(keyLen <= sizeof(EpochKeys[0].Key), err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -2214,8 +2307,8 @@ WEAVE_ERROR ApplicationKeysTraitDataSource::AddEpochKey(uint8_t epochKeyNumber, 
 
     VerifyOrExit(keyInd < WEAVE_CONFIG_MAX_APPLICATION_EPOCH_KEYS, err = WEAVE_ERROR_NO_MEMORY);
 
-    EpochKeys[keyInd].KeyId = keyId;
-    EpochKeys[keyInd].KeyLen = keyLen;
+    EpochKeys[keyInd].KeyId     = keyId;
+    EpochKeys[keyInd].KeyLen    = keyLen;
     EpochKeys[keyInd].StartTime = startTime;
     memcpy(EpochKeys[keyInd].Key, key, keyLen);
 
@@ -2223,11 +2316,12 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ApplicationKeysTraitDataSource::AddGroupMasterKey(uint8_t appGroupLocalNumber, uint32_t globalId, const uint8_t *key, uint8_t keyLen)
+WEAVE_ERROR ApplicationKeysTraitDataSource::AddGroupMasterKey(uint8_t appGroupLocalNumber, uint32_t globalId, const uint8_t * key,
+                                                              uint8_t keyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    uint32_t keyId = WeaveKeyId::MakeAppGroupMasterKeyId(appGroupLocalNumber);
-    int keyInd = WEAVE_CONFIG_MAX_APPLICATION_GROUPS;
+    uint32_t keyId  = WeaveKeyId::MakeAppGroupMasterKeyId(appGroupLocalNumber);
+    int keyInd      = WEAVE_CONFIG_MAX_APPLICATION_GROUPS;
 
     VerifyOrExit(keyLen <= sizeof(GroupMasterKeys[0].Key), err = WEAVE_ERROR_INVALID_ARGUMENT);
 
@@ -2247,8 +2341,8 @@ WEAVE_ERROR ApplicationKeysTraitDataSource::AddGroupMasterKey(uint8_t appGroupLo
 
     VerifyOrExit(keyInd < WEAVE_CONFIG_MAX_APPLICATION_GROUPS, err = WEAVE_ERROR_NO_MEMORY);
 
-    GroupMasterKeys[keyInd].KeyId = keyId;
-    GroupMasterKeys[keyInd].KeyLen = keyLen;
+    GroupMasterKeys[keyInd].KeyId    = keyId;
+    GroupMasterKeys[keyInd].KeyLen   = keyLen;
     GroupMasterKeys[keyInd].GlobalId = globalId;
     memcpy(GroupMasterKeys[keyInd].Key, key, keyLen);
 
@@ -2256,12 +2350,13 @@ exit:
     return err;
 }
 
-WEAVE_ERROR ApplicationKeysTraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t &aContext, PropertyDictionaryKey &aKey)
+WEAVE_ERROR ApplicationKeysTraitDataSource::GetNextDictionaryItemKey(PropertyPathHandle aDictionaryHandle, uintptr_t & aContext,
+                                                                     PropertyDictionaryKey & aKey)
 {
     return WEAVE_END_OF_INPUT;
 }
 
-WEAVE_ERROR ApplicationKeysTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+WEAVE_ERROR ApplicationKeysTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType outerContainerType;
@@ -2281,7 +2376,7 @@ WEAVE_ERROR ApplicationKeysTraitDataSource::GetLeafData(PropertyPathHandle aLeaf
                 SuccessOrExit(err);
 
                 const uint32_t epochKeyNumber = WeaveKeyId::GetEpochKeyNumber(EpochKeys[i].KeyId);
-                err = aWriter.Put(ContextTag(kTag_EpochKey_KeyId), epochKeyNumber);
+                err                           = aWriter.Put(ContextTag(kTag_EpochKey_KeyId), epochKeyNumber);
                 SuccessOrExit(err);
 
                 err = aWriter.Put(ContextTag(kTag_EpochKey_StartTime), (static_cast<int64_t>(EpochKeys[i].StartTime) * 1000));
@@ -2312,7 +2407,7 @@ WEAVE_ERROR ApplicationKeysTraitDataSource::GetLeafData(PropertyPathHandle aLeaf
                 SuccessOrExit(err);
 
                 const uint32_t appGroupLocalNumber = WeaveKeyId::GetAppGroupLocalNumber(GroupMasterKeys[i].KeyId);
-                err = aWriter.Put(ContextTag(kTag_ApplicationGroup_ShortId), appGroupLocalNumber);
+                err                                = aWriter.Put(ContextTag(kTag_ApplicationGroup_ShortId), appGroupLocalNumber);
                 SuccessOrExit(err);
 
                 err = aWriter.PutBytes(ContextTag(kTag_ApplicationGroup_Key), GroupMasterKeys[i].Key, GroupMasterKeys[i].KeyLen);
@@ -2340,26 +2435,27 @@ exit:
     return err;
 }
 
-TestCTraitDataSource::TestCTraitDataSource():
+TestCTraitDataSource::TestCTraitDataSource() :
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-        TraitUpdatableDataSource(&TestCTrait::TraitSchema)
+    TraitUpdatableDataSource(&TestCTrait::TraitSchema)
 #else
-        TraitDataSource(&TestCTrait::TraitSchema)
+    TraitDataSource(&TestCTrait::TraitSchema)
 #endif
 {
     SetVersion(300);
-    taa = true;
-    tab = TestCTrait::ENUM_C_VALUE_1;
-    tac.scA= 3;
+    taa     = true;
+    tab     = TestCTrait::ENUM_C_VALUE_1;
+    tac.scA = 3;
     tac.scB = true;
-    tad = 4;
+    tad     = 4;
 }
 
 void TestCTraitDataSource::Mutate()
 {
     Lock();
 
-    if ((GetVersion() % 2) == 0) {
+    if ((GetVersion() % 2) == 0)
+    {
         SetDirty(TestCTrait::kPropertyHandle_TcA);
         taa = !taa;
     }
@@ -2367,7 +2463,7 @@ void TestCTraitDataSource::Mutate()
     {
         SetDirty(TestCTrait::kPropertyHandle_TcC_ScA);
         SetDirty(TestCTrait::kPropertyHandle_TcC_ScB);
-        tac.scA ++;
+        tac.scA++;
         tac.scB = !tac.scB;
     }
 
@@ -2375,7 +2471,7 @@ void TestCTraitDataSource::Mutate()
 }
 
 #if WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
-void TestCTraitDataSource::TLVPrettyPrinter(const char *aFormat, ...)
+void TestCTraitDataSource::TLVPrettyPrinter(const char * aFormat, ...)
 {
     va_list args;
 
@@ -2387,45 +2483,44 @@ void TestCTraitDataSource::TLVPrettyPrinter(const char *aFormat, ...)
 }
 
 WEAVE_ERROR
-TestCTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader &aReader)
+TestCTraitDataSource::SetLeafData(PropertyPathHandle aLeafHandle, TLVReader & aReader)
 {
 
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    switch (aLeafHandle) {
-        case TestCTrait::kPropertyHandle_TcA:
-            err = aReader.Get(taa);
-            SuccessOrExit(err);
+    switch (aLeafHandle)
+    {
+    case TestCTrait::kPropertyHandle_TcA:
+        err = aReader.Get(taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<< taa = %s", taa ? "true" : "false");
-            break;
-        case TestCTrait::kPropertyHandle_TcB:
-            err = aReader.Get(tab);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, "<< taa = %s", taa ? "true" : "false");
+        break;
+    case TestCTrait::kPropertyHandle_TcB:
+        err = aReader.Get(tab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<<  tab %d", tab);
-            break;
-        case TestCTrait::kPropertyHandle_TcC_ScA:
-            err = aReader.Get(tac.scA);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, "<<  tab %d", tab);
+        break;
+    case TestCTrait::kPropertyHandle_TcC_ScA:
+        err = aReader.Get(tac.scA);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<<  tac.scA %u", tac.scA);
-            break;
-        case TestCTrait::kPropertyHandle_TcC_ScB:
-            err = aReader.Get(tac.scB);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, "<<  tac.scA %u", tac.scA);
+        break;
+    case TestCTrait::kPropertyHandle_TcC_ScB:
+        err = aReader.Get(tac.scB);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<<  tac.scB = %s",  tac.scB ? "true" : "false");
-            break;
-        case TestCTrait::kPropertyHandle_TcD:
-            err = aReader.Get(tad);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, "<<  tac.scB = %s", tac.scB ? "true" : "false");
+        break;
+    case TestCTrait::kPropertyHandle_TcD:
+        err = aReader.Get(tad);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, "<<  tad %u", tad);
-            break;
+        WeaveLogDetail(DataManagement, "<<  tad %u", tad);
+        break;
 
-        default:
-            WeaveLogDetail(DataManagement, "<<  UNKNOWN!");
-            err = WEAVE_ERROR_TLV_TAG_NOT_FOUND;
+    default: WeaveLogDetail(DataManagement, "<<  UNKNOWN!"); err = WEAVE_ERROR_TLV_TAG_NOT_FOUND;
     }
 
 exit:
@@ -2435,47 +2530,46 @@ exit:
 #endif // WDM_ENABLE_PUBLISHER_UPDATE_SERVER_SUPPORT
 
 WEAVE_ERROR
-TestCTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter &aWriter)
+TestCTraitDataSource::GetLeafData(PropertyPathHandle aLeafHandle, uint64_t aTagToWrite, TLVWriter & aWriter)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
-    switch (aLeafHandle) {
-        case TestCTrait::kPropertyHandle_TcA:
-            err = aWriter.PutBoolean(aTagToWrite, taa);
-            SuccessOrExit(err);
+    switch (aLeafHandle)
+    {
+    case TestCTrait::kPropertyHandle_TcA:
+        err = aWriter.PutBoolean(aTagToWrite, taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  taa = %s", taa ? "true" : "false");
-            break;
-        case TestCTrait::kPropertyHandle_TcB:
-            err = aWriter.Put(aTagToWrite, tab);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  taa = %s", taa ? "true" : "false");
+        break;
+    case TestCTrait::kPropertyHandle_TcB:
+        err = aWriter.Put(aTagToWrite, tab);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tab = %d", tab);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tab = %d", tab);
+        break;
 
-        case TestCTrait::kPropertyHandle_TcC_ScA:
-            err = aWriter.Put(aTagToWrite, tac.scA);
-            SuccessOrExit(err);
+    case TestCTrait::kPropertyHandle_TcC_ScA:
+        err = aWriter.Put(aTagToWrite, tac.scA);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tac.scA = %u", tac.scA);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tac.scA = %u", tac.scA);
+        break;
 
-        case TestCTrait::kPropertyHandle_TcC_ScB:
-            err = aWriter.PutBoolean(aTagToWrite, taa);
-            SuccessOrExit(err);
+    case TestCTrait::kPropertyHandle_TcC_ScB:
+        err = aWriter.PutBoolean(aTagToWrite, taa);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tac.scB = %s",  tac.scB ? "true" : "false");
-            break;
-        case TestCTrait::kPropertyHandle_TcD:
-            err = aWriter.Put(aTagToWrite, tad);
-            SuccessOrExit(err);
+        WeaveLogDetail(DataManagement, ">>  tac.scB = %s", tac.scB ? "true" : "false");
+        break;
+    case TestCTrait::kPropertyHandle_TcD:
+        err = aWriter.Put(aTagToWrite, tad);
+        SuccessOrExit(err);
 
-            WeaveLogDetail(DataManagement, ">>  tad = %u", tad);
-            break;
+        WeaveLogDetail(DataManagement, ">>  tad = %u", tad);
+        break;
 
-        default:
-            WeaveLogDetail(DataManagement, ">>  UNKNOWN!");
-            ExitNow(err = WEAVE_ERROR_TLV_TAG_NOT_FOUND);
+    default: WeaveLogDetail(DataManagement, ">>  UNKNOWN!"); ExitNow(err = WEAVE_ERROR_TLV_TAG_NOT_FOUND);
     }
 
 exit:

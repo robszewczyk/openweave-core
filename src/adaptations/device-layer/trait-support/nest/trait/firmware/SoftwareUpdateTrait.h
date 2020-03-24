@@ -31,7 +31,6 @@
 
 #include <weave/common/ProfileSpecificStatusCodeStructSchema.h>
 
-
 namespace Schema {
 namespace Nest {
 namespace Trait {
@@ -40,15 +39,17 @@ namespace SoftwareUpdateTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x235aU << 16) | 0x505U
+enum
+{
+    kWeaveProfileId = (0x235aU << 16) | 0x505U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -76,19 +77,20 @@ struct SoftwareUpdateStartEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct SoftwareUpdateStartEvent_array {
+struct SoftwareUpdateStartEvent_array
+{
     uint32_t num;
-    SoftwareUpdateStartEvent *buf;
+    SoftwareUpdateStartEvent * buf;
 };
-
 
 struct FailureEvent
 {
@@ -106,22 +108,24 @@ struct FailureEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsRemoteStatusCodePresent(void);
 #endif
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x2U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x2U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct FailureEvent_array {
+struct FailureEvent_array
+{
     uint32_t num;
-    FailureEvent *buf;
+    FailureEvent * buf;
 };
 
 inline void FailureEvent::SetPrimaryStatusCodeNull(void)
@@ -174,22 +178,24 @@ struct DownloadFailureEvent
     bool IsRemoteStatusCodePresent(void);
 #endif
     uint64_t bytesDownloaded;
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x3U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x3U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct DownloadFailureEvent_array {
+struct DownloadFailureEvent_array
+{
     uint32_t num;
-    DownloadFailureEvent *buf;
+    DownloadFailureEvent * buf;
 };
 
 inline void DownloadFailureEvent::SetPrimaryStatusCodeNull(void)
@@ -269,22 +275,24 @@ struct QueryBeginEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsQueryServerIdPresent(void);
 #endif
-    uint8_t __nullified_fields__[7/8 + 1];
+    uint8_t __nullified_fields__[7 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x4U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x4U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct QueryBeginEvent_array {
+struct QueryBeginEvent_array
+{
     uint32_t num;
-    QueryBeginEvent *buf;
+    QueryBeginEvent * buf;
 };
 
 inline void QueryBeginEvent::SetCurrentSwVersionNull(void)
@@ -414,22 +422,24 @@ struct QueryFinishEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsImageVersionPresent(void);
 #endif
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x5U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x5U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct QueryFinishEvent_array {
+struct QueryFinishEvent_array
+{
     uint32_t num;
-    QueryFinishEvent *buf;
+    QueryFinishEvent * buf;
 };
 
 inline void QueryFinishEvent::SetImageUrlNull(void)
@@ -497,22 +507,24 @@ struct DownloadStartEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsDestinationPresent(void);
 #endif
-    uint8_t __nullified_fields__[5/8 + 1];
+    uint8_t __nullified_fields__[5 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x6U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x6U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct DownloadStartEvent_array {
+struct DownloadStartEvent_array
+{
     uint32_t num;
-    DownloadStartEvent *buf;
+    DownloadStartEvent * buf;
 };
 
 inline void DownloadStartEvent::SetImageUrlNull(void)
@@ -622,22 +634,24 @@ struct DownloadFinishEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsDestinationPresent(void);
 #endif
-    uint8_t __nullified_fields__[4/8 + 1];
+    uint8_t __nullified_fields__[4 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x7U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x7U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct DownloadFinishEvent_array {
+struct DownloadFinishEvent_array
+{
     uint32_t num;
-    DownloadFinishEvent *buf;
+    DownloadFinishEvent * buf;
 };
 
 inline void DownloadFinishEvent::SetImageUrlNull(void)
@@ -731,22 +745,24 @@ struct InstallStartEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsDestinationPresent(void);
 #endif
-    uint8_t __nullified_fields__[4/8 + 1];
+    uint8_t __nullified_fields__[4 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x8U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x8U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct InstallStartEvent_array {
+struct InstallStartEvent_array
+{
     uint32_t num;
-    InstallStartEvent *buf;
+    InstallStartEvent * buf;
 };
 
 inline void InstallStartEvent::SetImageVersionNull(void)
@@ -828,22 +844,24 @@ struct InstallFinishEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsSubImageNamePresent(void);
 #endif
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0x9U
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0x9U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct InstallFinishEvent_array {
+struct InstallFinishEvent_array
+{
     uint32_t num;
-    InstallFinishEvent *buf;
+    InstallFinishEvent * buf;
 };
 
 inline void InstallFinishEvent::SetImageVersionNull(void)
@@ -905,22 +923,24 @@ struct ImageRollbackEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsRollbackToPresent(void);
 #endif
-    uint8_t __nullified_fields__[4/8 + 1];
+    uint8_t __nullified_fields__[4 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x235aU << 16) | 0x505U,
-        kEventTypeId = 0xaU
+    enum
+    {
+        kWeaveProfileId = (0x235aU << 16) | 0x505U,
+        kEventTypeId    = 0xaU
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct ImageRollbackEvent_array {
+struct ImageRollbackEvent_array
+{
     uint32_t num;
-    ImageRollbackEvent *buf;
+    ImageRollbackEvent * buf;
 };
 
 inline void ImageRollbackEvent::SetImageVersionNull(void)
@@ -992,22 +1012,24 @@ inline bool ImageRollbackEvent::IsRollbackToPresent(void)
 // Enums
 //
 
-enum State {
-    STATE_IDLE = 1,
-    STATE_QUERYING = 2,
-    STATE_DOWNLOADING = 3,
-    STATE_INSTALLING = 4,
+enum State
+{
+    STATE_IDLE         = 1,
+    STATE_QUERYING     = 2,
+    STATE_DOWNLOADING  = 3,
+    STATE_INSTALLING   = 4,
     STATE_ROLLING_BACK = 5,
 };
 
-enum StartTrigger {
+enum StartTrigger
+{
     START_TRIGGER_USER_INITIATED = 1,
-    START_TRIGGER_SCHEDULED = 2,
-    START_TRIGGER_USB = 3,
-    START_TRIGGER_FROM_DFU = 4,
-    START_TRIGGER_BLE = 5,
-    START_TRIGGER_REMOTE_AGENT = 6,
-    START_TRIGGER_OTHER = 7,
+    START_TRIGGER_SCHEDULED      = 2,
+    START_TRIGGER_USB            = 3,
+    START_TRIGGER_FROM_DFU       = 4,
+    START_TRIGGER_BLE            = 5,
+    START_TRIGGER_REMOTE_AGENT   = 6,
+    START_TRIGGER_OTHER          = 7,
 };
 
 } // namespace SoftwareUpdateTrait

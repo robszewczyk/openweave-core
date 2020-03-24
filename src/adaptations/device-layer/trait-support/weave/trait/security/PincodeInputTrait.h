@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace PincodeInputTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe05U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe05U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -85,22 +85,24 @@ struct KeypadEntryEvent
 #endif
     uint32_t invalidEntryCount;
     int32_t pincodeEntryResult;
-    uint8_t __nullified_fields__[2/8 + 1];
+    uint8_t __nullified_fields__[2 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xe05U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xe05U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct KeypadEntryEvent_array {
+struct KeypadEntryEvent_array
+{
     uint32_t num;
-    KeypadEntryEvent *buf;
+    KeypadEntryEvent * buf;
 };
 
 inline void KeypadEntryEvent::SetPincodeCredentialEnabledNull(void)
@@ -145,22 +147,24 @@ struct PincodeInputStateChangeEvent
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     bool IsUserIdPresent(void);
 #endif
-    uint8_t __nullified_fields__[1/8 + 1];
+    uint8_t __nullified_fields__[1 / 8 + 1];
 
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xe05U,
-        kEventTypeId = 0x2U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xe05U,
+        kEventTypeId    = 0x2U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct PincodeInputStateChangeEvent_array {
+struct PincodeInputStateChangeEvent_array
+{
     uint32_t num;
-    PincodeInputStateChangeEvent *buf;
+    PincodeInputStateChangeEvent * buf;
 };
 
 inline void PincodeInputStateChangeEvent::SetUserIdNull(void)
@@ -184,15 +188,17 @@ inline bool PincodeInputStateChangeEvent::IsUserIdPresent(void)
 // Enums
 //
 
-enum PincodeEntryResult {
-    PINCODE_ENTRY_RESULT_FAILURE_INVALID_PINCODE = 1,
-    PINCODE_ENTRY_RESULT_FAILURE_OUT_OF_SCHEDULE = 2,
+enum PincodeEntryResult
+{
+    PINCODE_ENTRY_RESULT_FAILURE_INVALID_PINCODE  = 1,
+    PINCODE_ENTRY_RESULT_FAILURE_OUT_OF_SCHEDULE  = 2,
     PINCODE_ENTRY_RESULT_FAILURE_PINCODE_DISABLED = 3,
-    PINCODE_ENTRY_RESULT_SUCCESS = 4,
+    PINCODE_ENTRY_RESULT_SUCCESS                  = 4,
 };
 
-enum PincodeInputState {
-    PINCODE_INPUT_STATE_ENABLED = 1,
+enum PincodeInputState
+{
+    PINCODE_INPUT_STATE_ENABLED  = 1,
     PINCODE_INPUT_STATE_DISABLED = 2,
 };
 

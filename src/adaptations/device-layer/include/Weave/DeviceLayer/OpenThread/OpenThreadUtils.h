@@ -21,7 +21,6 @@
  *          Utility functions for working with OpenThread.
  */
 
-
 #ifndef OPENTHREAD_UTILS_H
 #define OPENTHREAD_UTILS_H
 
@@ -41,7 +40,7 @@ namespace Internal {
  *      The base value for OpenThread errors when mapped into the Weave error space.
  */
 #ifndef WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN
-#define WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN                  9000000
+#define WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN 9000000
 #endif // WEAVE_CONFIG_OPEN_THREAD_ERROR_MIN
 
 /**
@@ -51,9 +50,8 @@ namespace Internal {
  *      The max value for OpenThread errors when mapped into the Weave error space.
  */
 #ifndef WEAVE_CONFIG_OPEN_THREAD_ERROR_MAX
-#define WEAVE_CONFIG_OPEN_THREAD_ERROR_MAX                  9000999
+#define WEAVE_CONFIG_OPEN_THREAD_ERROR_MAX 9000999
 #endif // WEAVE_CONFIG_OPEN_THREAD_ERROR_MAX
-
 
 extern WEAVE_ERROR MapOpenThreadError(otError otErr);
 extern void RegisterOpenThreadErrorFormatter(void);

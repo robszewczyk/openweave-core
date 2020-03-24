@@ -37,15 +37,18 @@ inline void RunSystemClockUnitTest(void)
 
     // Sanity check microsecond monotonic clock tick
     clock = ::nl::Weave::System::Layer::GetClock_Monotonic();
-    while (clock == ::nl::Weave::System::Layer::GetClock_Monotonic());
+    while (clock == ::nl::Weave::System::Layer::GetClock_Monotonic())
+        ;
 
     // Sanity check millisecond monotonic clock tick
     clock = ::nl::Weave::System::Layer::GetClock_MonotonicMS();
-    while (clock == ::nl::Weave::System::Layer::GetClock_Monotonic());
+    while (clock == ::nl::Weave::System::Layer::GetClock_Monotonic())
+        ;
 
     // Sanity check hi-res monotonic clock tick
     clock = ::nl::Weave::System::Layer::GetClock_MonotonicMS();
-    while (clock == ::nl::Weave::System::Layer::GetClock_MonotonicMS());
+    while (clock == ::nl::Weave::System::Layer::GetClock_MonotonicMS())
+        ;
 
     // Set the real-time clock value to a "contemporary" value.
     err = ::nl::Weave::System::Layer::SetClock_RealTime(kEpochTime_20180101 * kMicrosecondsPerSecond);
@@ -91,10 +94,9 @@ inline void RunSystemClockUnitTest(void)
     VerifyOrDie(err == WEAVE_SYSTEM_ERROR_REAL_TIME_NOT_SYNCED);
 }
 
-} // namespace internal
+} // namespace Internal
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-
 
 #endif // WEAVE_DEVICE_SYSTEM_CLOCK_UNIT_TEST_H

@@ -32,7 +32,6 @@
 
 #include <weave/trait/power/PowerSourceTrait.h>
 
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -41,15 +40,17 @@ namespace PowerSourcesTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0x1aU
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0x1aU
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -57,7 +58,7 @@ enum {
     //---------------------------------------------------------------------------------------------------------------------------//
 
     //
-    //  condition                           weave.trait.power.PowerSourceTrait.PowerSourceStatus int               NO              NO
+    //  condition                           weave.trait.power.PowerSourceTrait.PowerSourceStatus int               NO NO
     //
     kPropertyHandle_Condition = 2,
 

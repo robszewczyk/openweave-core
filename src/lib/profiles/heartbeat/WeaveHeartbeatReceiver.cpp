@@ -32,8 +32,8 @@ namespace Heartbeat {
 
 WeaveHeartbeatReceiver::WeaveHeartbeatReceiver()
 {
-    FabricState = NULL;
-    ExchangeMgr = NULL;
+    FabricState         = NULL;
+    ExchangeMgr         = NULL;
     OnHeartbeatReceived = NULL;
 }
 
@@ -48,7 +48,7 @@ WeaveHeartbeatReceiver::WeaveHeartbeatReceiver()
  *                                                              already been registered.
  * @retval #WEAVE_NO_ERROR                                      On success.
  */
-WEAVE_ERROR WeaveHeartbeatReceiver::Init(WeaveExchangeManager *exchangeMgr)
+WEAVE_ERROR WeaveHeartbeatReceiver::Init(WeaveExchangeManager * exchangeMgr)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -56,11 +56,12 @@ WEAVE_ERROR WeaveHeartbeatReceiver::Init(WeaveExchangeManager *exchangeMgr)
 
     VerifyOrExit(exchangeMgr != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
-    ExchangeMgr = exchangeMgr;
-    FabricState = exchangeMgr->FabricState;
+    ExchangeMgr         = exchangeMgr;
+    FabricState         = exchangeMgr->FabricState;
     OnHeartbeatReceived = NULL;
 
-    err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Heartbeat, kHeartbeatMessageType_Heartbeat, HandleHeartbeat, this);
+    err = ExchangeMgr->RegisterUnsolicitedMessageHandler(kWeaveProfile_Heartbeat, kHeartbeatMessageType_Heartbeat, HandleHeartbeat,
+                                                         this);
 
 exit:
     return err;
@@ -85,7 +86,6 @@ WEAVE_ERROR WeaveHeartbeatReceiver::Shutdown()
     return WEAVE_NO_ERROR;
 }
 
-
 /**
  * Handle Weave Heartbeat messages when received.
  *
@@ -98,23 +98,23 @@ WEAVE_ERROR WeaveHeartbeatReceiver::Shutdown()
  *
  * @retval #WEAVE_NO_ERROR  On success.
  */
-void WeaveHeartbeatReceiver::HandleHeartbeat(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-        const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload)
+void WeaveHeartbeatReceiver::HandleHeartbeat(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                             uint32_t profileId, uint8_t msgType, PacketBuffer * payload)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
-    WeaveHeartbeatReceiver *receiver;
-    uint8_t *p = NULL;
+    WeaveHeartbeatReceiver * receiver;
+    uint8_t * p   = NULL;
     uint8_t state = 0;
 
-    VerifyOrExit(ec != NULL,        err = WEAVE_ERROR_INVALID_ARGUMENT);
-    VerifyOrExit(payload != NULL,   err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(ec != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
+    VerifyOrExit(payload != NULL, err = WEAVE_ERROR_INVALID_ARGUMENT);
 
     receiver = static_cast<WeaveHeartbeatReceiver *>(ec->AppState);
 
     if (receiver->OnHeartbeatReceived != NULL)
     {
-        p       = payload->Start();
-        state   = nl::Weave::Encoding::Read8(p);
+        p     = payload->Start();
+        state = nl::Weave::Encoding::Read8(p);
 
         receiver->OnHeartbeatReceived(msgInfo, state, err);
     }

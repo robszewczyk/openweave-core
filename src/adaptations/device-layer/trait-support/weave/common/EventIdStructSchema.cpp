@@ -30,31 +30,19 @@ namespace Schema {
 namespace Weave {
 namespace Common {
 
+const nl::FieldDescriptor EventIdFieldDescriptors[] = {
+    { NULL, offsetof(EventId, resourceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 1), 1 },
 
-const nl::FieldDescriptor EventIdFieldDescriptors[] =
-{
-    {
-        NULL, offsetof(EventId, resourceId), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeByteString, 1), 1
-    },
+    { NULL, offsetof(EventId, importance), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2 },
 
-    {
-        NULL, offsetof(EventId, importance), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeInt32, 0), 2
-    },
-
-    {
-        NULL, offsetof(EventId, id), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 3
-    },
+    { NULL, offsetof(EventId, id), SET_TYPE_AND_FLAGS(nl::SerializedFieldTypeUInt64, 0), 3 },
 
 };
 
-const nl::SchemaFieldDescriptor EventId::FieldSchema =
-{
-    .mNumFieldDescriptorElements = sizeof(EventIdFieldDescriptors)/sizeof(EventIdFieldDescriptors[0]),
-    .mFields = EventIdFieldDescriptors,
-    .mSize = sizeof(EventId)
-};
-
-
+const nl::SchemaFieldDescriptor EventId::FieldSchema = { .mNumFieldDescriptorElements =
+                                                             sizeof(EventIdFieldDescriptors) / sizeof(EventIdFieldDescriptors[0]),
+                                                         .mFields = EventIdFieldDescriptors,
+                                                         .mSize   = sizeof(EventId) };
 
 } // namespace Common
 } // namespace Weave

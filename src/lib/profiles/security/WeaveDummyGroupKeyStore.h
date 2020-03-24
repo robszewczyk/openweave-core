@@ -47,11 +47,11 @@ public:
     DummyGroupKeyStore(void);
 
     // Manage application group key material storage.
-    virtual WEAVE_ERROR RetrieveGroupKey(uint32_t keyId, WeaveGroupKey& key);
-    virtual WEAVE_ERROR StoreGroupKey(const WeaveGroupKey& key);
+    virtual WEAVE_ERROR RetrieveGroupKey(uint32_t keyId, WeaveGroupKey & key);
+    virtual WEAVE_ERROR StoreGroupKey(const WeaveGroupKey & key);
     virtual WEAVE_ERROR DeleteGroupKey(uint32_t keyId);
     virtual WEAVE_ERROR DeleteGroupKeysOfAType(uint32_t keyType);
-    virtual WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t *keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount);
+    virtual WEAVE_ERROR EnumerateGroupKeys(uint32_t keyType, uint32_t * keyIds, uint8_t keyIdsArraySize, uint8_t & keyCount);
     virtual WEAVE_ERROR Clear(void);
 
 private:
@@ -60,7 +60,7 @@ private:
     virtual WEAVE_ERROR StoreLastUsedEpochKeyId(void);
 
     // Get current platform UTC time in seconds.
-    virtual WEAVE_ERROR GetCurrentUTCTime(uint32_t& utcTime);
+    virtual WEAVE_ERROR GetCurrentUTCTime(uint32_t & utcTime);
 };
 
 } // namespace AppKeys

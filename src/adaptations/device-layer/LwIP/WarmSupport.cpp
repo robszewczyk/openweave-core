@@ -38,7 +38,6 @@
 #include <openthread/ip6.h>
 #endif // WARM_CONFIG_SUPPORT_THREAD
 
-
 using namespace ::nl::Weave::DeviceLayer;
 using namespace ::nl::Weave::DeviceLayer::Internal;
 
@@ -74,13 +73,14 @@ void RequestInvokeActions(void)
     ::nl::Weave::Warm::InvokeActions();
 }
 
-PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, uint8_t inPrefixLength, bool inAdd)
+PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, uint8_t inPrefixLength,
+                                    bool inAdd)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     err_t lwipErr;
     struct netif * netif;
     ip6_addr_t ip6addr = inAddress.ToIPv6();
-    bool lockHeld = false;
+    bool lockHeld      = false;
 
     // If an address is being added/removed from the tunnel interface, and the address in question
     // is a ULA referring to the Weave Primary WiFi subnet, substitute the Thread Mesh subnet id.
@@ -88,7 +88,8 @@ PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::I
     // have a Thread radio, and therefore a Thread subnet Weave ULA to which packets can be routed.
     if (inInterfaceType == kInterfaceTypeTunnel && inAddress.IsIPv6ULA() && inAddress.Subnet() == kWeaveSubnetId_PrimaryWiFi)
     {
-        Inet::IPAddress altAddr = Inet::IPAddress::MakeULA(inAddress.GlobalId(), kWeaveSubnetId_ThreadMesh, inAddress.InterfaceId());
+        Inet::IPAddress altAddr =
+            Inet::IPAddress::MakeULA(inAddress.GlobalId(), kWeaveSubnetId_ThreadMesh, inAddress.InterfaceId());
         ip6addr = altAddr.ToIPv6();
     }
 
@@ -102,11 +103,11 @@ PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::I
     {
         s8_t addrIdx;
         lwipErr = netif_add_ip6_address_with_route(netif, &ip6addr, inPrefixLength, &addrIdx);
-        err = System::MapErrorLwIP(lwipErr);
+        err     = System::MapErrorLwIP(lwipErr);
         if (err != WEAVE_NO_ERROR)
         {
             WeaveLogError(DeviceLayer, "netif_add_ip6_address_with_route() failed for %s interface: %s",
-                    WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
+                          WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
             ExitNow();
         }
         netif_ip6_addr_set_state(netif, addrIdx, IP6_ADDR_PREFERRED);
@@ -119,11 +120,11 @@ PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::I
             ip6_addr_t solNodeAddr;
             ip6_addr_set_solicitednode(&solNodeAddr, ip6addr.addr[3]);
             lwipErr = mld6_joingroup_netif(netif, &solNodeAddr);
-            err = System::MapErrorLwIP(lwipErr);
+            err     = System::MapErrorLwIP(lwipErr);
             if (err != WEAVE_NO_ERROR)
             {
                 WeaveLogError(DeviceLayer, "mld6_joingroup_netif() failed for %s interface: %s",
-                        WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
+                              WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
                 ExitNow();
             }
         }
@@ -145,7 +146,7 @@ PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::I
         if (err != WEAVE_NO_ERROR)
         {
             WeaveLogError(DeviceLayer, "netif_remove_ip6_address_with_route() failed for %s interface: %s",
-                     WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
+                          WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
             ExitNow();
         }
 
@@ -168,13 +169,9 @@ PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::I
         GetInterfaceName(netif, interfaceName, sizeof(interfaceName));
         char ipAddrStr[INET6_ADDRSTRLEN];
         inAddress.ToString(ipAddrStr, sizeof(ipAddrStr));
-        WeaveLogProgress(DeviceLayer, "%s %s %s LwIP %s interface (%s): %s/%" PRId8,
-                 (inAdd) ? "Adding" : "Removing",
-                 CharacterizeIPv6Address(inAddress),
-                 (inAdd) ? "to" : "from",
-                 WarmInterfaceTypeToStr(inInterfaceType),
-                 interfaceName,
-                 ipAddrStr, inPrefixLength);
+        WeaveLogProgress(DeviceLayer, "%s %s %s LwIP %s interface (%s): %s/%" PRId8, (inAdd) ? "Adding" : "Removing",
+                         CharacterizeIPv6Address(inAddress), (inAdd) ? "to" : "from", WarmInterfaceTypeToStr(inInterfaceType),
+                         interfaceName, ipAddrStr, inPrefixLength);
     }
 #endif // WEAVE_PROGRESS_LOGGING
 
@@ -192,7 +189,8 @@ exit:
     return (err == WEAVE_NO_ERROR) ? kPlatformResultSuccess : kPlatformResultFailure;
 }
 
-PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority, bool inAdd)
+PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority,
+                                  bool inAdd)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     struct netif * netif;
@@ -224,17 +222,17 @@ PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPP
         // LWIP_IPV6_ROUTE_TABLE_SUPPORT extension.
 
         struct ip6_prefix lwipIP6prefix;
-        lwipIP6prefix.addr = inPrefix.IPAddr.ToIPv6();
+        lwipIP6prefix.addr       = inPrefix.IPAddr.ToIPv6();
         lwipIP6prefix.prefix_len = inPrefix.Length;
 
         if (inAdd)
         {
             err_t lwipErr = ip6_add_route_entry(&lwipIP6prefix, netif, NULL, NULL);
-            err = System::MapErrorLwIP(lwipErr);
+            err           = System::MapErrorLwIP(lwipErr);
             if (err != WEAVE_NO_ERROR)
             {
                 WeaveLogError(DeviceLayer, "ip6_add_route_entry() failed for %s interface: %s",
-                         WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
+                              WarmInterfaceTypeToStr(inInterfaceType), nl::ErrorStr(err));
                 ExitNow();
             }
         }
@@ -268,18 +266,14 @@ PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPP
             inPrefix.IPAddr.ToString(prefixAddrStr, sizeof(prefixAddrStr));
             const char * prefixDesc = CharacterizeIPv6Prefix(inPrefix);
             WeaveLogProgress(DeviceLayer, "IPv6 route%s%s %s LwIP %s interface (%s): %s/%" PRId8,
-                     (prefixDesc != NULL) ? " for " : "",
-                     (prefixDesc != NULL) ? prefixDesc : "",
-                     (inAdd) ? "added to" : "removed from",
-                     WarmInterfaceTypeToStr(inInterfaceType),
-                     interfaceName,
-                     prefixAddrStr, inPrefix.Length);
+                             (prefixDesc != NULL) ? " for " : "", (prefixDesc != NULL) ? prefixDesc : "",
+                             (inAdd) ? "added to" : "removed from", WarmInterfaceTypeToStr(inInterfaceType), interfaceName,
+                             prefixAddrStr, inPrefix.Length);
         }
         else
         {
             WeaveLogProgress(DeviceLayer, "LwIP default interface set to %s interface (%s)",
-                     WarmInterfaceTypeToStr(inInterfaceType),
-                     interfaceName);
+                             WarmInterfaceTypeToStr(inInterfaceType), interfaceName);
         }
     }
 #endif // WEAVE_PROGRESS_LOGGING
@@ -300,16 +294,16 @@ exit:
 
 #if WARM_CONFIG_SUPPORT_THREAD
 
-PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet::IPAddress &inAddress, bool inAdd)
+PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, bool inAdd)
 {
     otError otErr;
     otNetifAddress otAddress;
 
     memset(&otAddress, 0, sizeof(otAddress));
-    otAddress.mAddress = ToOpenThreadIP6Address(inAddress);
+    otAddress.mAddress      = ToOpenThreadIP6Address(inAddress);
     otAddress.mPrefixLength = 64;
-    otAddress.mValid = true;
-    otAddress.mPreferred = true;
+    otAddress.mValid        = true;
+    otAddress.mPreferred    = true;
 
     ThreadStackMgrImpl().LockThreadStack();
 
@@ -339,11 +333,8 @@ PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet:
 #if WEAVE_PROGRESS_LOGGING
         char ipAddrStr[INET6_ADDRSTRLEN];
         inAddress.ToString(ipAddrStr, sizeof(ipAddrStr));
-        WeaveLogProgress(DeviceLayer, "%s %s %s OpenThread stack: %s/64",
-                 (inAdd) ? "Adding" : "Removing",
-                 CharacterizeIPv6Address(inAddress),
-                 (inAdd) ? "to" : "from",
-                 ipAddrStr);
+        WeaveLogProgress(DeviceLayer, "%s %s %s OpenThread stack: %s/64", (inAdd) ? "Adding" : "Removing",
+                         CharacterizeIPv6Address(inAddress), (inAdd) ? "to" : "from", ipAddrStr);
 #endif // WEAVE_PROGRESS_LOGGING
     }
     else
@@ -360,7 +351,7 @@ PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet:
 
 #error "Weave Thread router support not implemented"
 
-PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, bool inStart)
+PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, bool inStart)
 {
     // TODO: implement me
 }
@@ -371,12 +362,13 @@ PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const
 
 #error "Weave border router support not implemented"
 
-PlatformResult AddRemoveThreadRoute(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority, bool inAdd)
+PlatformResult AddRemoveThreadRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority,
+                                    bool inAdd)
 {
     // TODO: implement me
 }
 
-PlatformResult SetThreadRoutePriority(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority)
+PlatformResult SetThreadRoutePriority(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority)
 {
     // TODO: implement me
 }
@@ -401,22 +393,19 @@ WEAVE_ERROR GetLwIPNetifForWarmInterfaceType(InterfaceType inInterfaceType, stru
 
     for (netif = netif_list; netif != NULL; netif = netif->next)
     {
-        if (inInterfaceType == kInterfaceTypeWiFi &&
-            netif->name[0] == WEAVE_DEVICE_CONFIG_LWIP_WIFI_STATION_IF_NAME[0] &&
+        if (inInterfaceType == kInterfaceTypeWiFi && netif->name[0] == WEAVE_DEVICE_CONFIG_LWIP_WIFI_STATION_IF_NAME[0] &&
             netif->name[1] == WEAVE_DEVICE_CONFIG_LWIP_WIFI_STATION_IF_NAME[1])
         {
             ExitNow(err = WEAVE_NO_ERROR);
         }
 
-        if (inInterfaceType == kInterfaceTypeTunnel &&
-            netif->name[0] == WEAVE_DEVICE_CONFIG_LWIP_SERVICE_TUN_IF_NAME[0] &&
+        if (inInterfaceType == kInterfaceTypeTunnel && netif->name[0] == WEAVE_DEVICE_CONFIG_LWIP_SERVICE_TUN_IF_NAME[0] &&
             netif->name[1] == WEAVE_DEVICE_CONFIG_LWIP_SERVICE_TUN_IF_NAME[1])
         {
             ExitNow(err = WEAVE_NO_ERROR);
         }
 
-        if (inInterfaceType == kInterfaceTypeThread &&
-            netif->name[0] == WEAVE_DEVICE_CONFIG_LWIP_THREAD_IF_NAME[0] &&
+        if (inInterfaceType == kInterfaceTypeThread && netif->name[0] == WEAVE_DEVICE_CONFIG_LWIP_THREAD_IF_NAME[0] &&
             netif->name[1] == WEAVE_DEVICE_CONFIG_LWIP_THREAD_IF_NAME[1])
         {
             ExitNow(err = WEAVE_NO_ERROR);
@@ -442,18 +431,12 @@ const char * WarmInterfaceTypeToStr(InterfaceType inInterfaceType)
 {
     switch (inInterfaceType)
     {
-    case kInterfaceTypeLegacy6LoWPAN:
-        return "Legacy 6LoWPAN";
-    case kInterfaceTypeThread:
-        return "Thread";
-    case kInterfaceTypeWiFi:
-        return "WiFi station";
-    case kInterfaceTypeTunnel:
-        return "Tunnel";
-    case kInterfaceTypeCellular:
-        return "Cellular";
-    default:
-        return "(unknown)";
+    case kInterfaceTypeLegacy6LoWPAN: return "Legacy 6LoWPAN";
+    case kInterfaceTypeThread: return "Thread";
+    case kInterfaceTypeWiFi: return "WiFi station";
+    case kInterfaceTypeTunnel: return "Tunnel";
+    case kInterfaceTypeCellular: return "Cellular";
+    default: return "(unknown)";
     }
 }
 

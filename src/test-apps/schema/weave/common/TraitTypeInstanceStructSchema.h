@@ -29,8 +29,6 @@
 #include <Weave/Support/SerializationUtils.h>
 #include <Weave/Profiles/data-management/DataManagement.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Common {
@@ -41,15 +39,13 @@ struct TraitTypeInstance
     uint32_t instanceId;
 
     static const nl::SchemaFieldDescriptor FieldSchema;
-
 };
 
-struct TraitTypeInstance_array {
+struct TraitTypeInstance_array
+{
     uint32_t num;
-    TraitTypeInstance *buf;
+    TraitTypeInstance * buf;
 };
-
-
 
 } // namespace Common
 } // namespace Weave

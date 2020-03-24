@@ -37,7 +37,8 @@
 
 using namespace nl::Weave::Warm;
 
-typedef enum {
+typedef enum
+{
     kAPITagHostAddress = 0,
     kAPITagHostRoute,
     kAPITagThreadAddress,
@@ -50,18 +51,17 @@ typedef enum {
     kAPITagInit
 } WarmAPITag_t;
 
-static uint32_t sAPICallCounters[] =
-{
-    /* kAPITagHostAddress */                    0,
-    /* kAPITagHostRoute */                      0,
-    /* kAPITagThreadAddress */                  0,
-    /* kAPITagThreadAdvertisement */            0,
-    /* kAPITagThreadRoute */                    0,
-    /* kAPITagThreadRoutePriority */            0,
-    /* kAPITagCriticalSectionEnter */           0,
-    /* kAPITagCriticalSectionExit */            0,
-    /* kAPITagInitRequestInvokeActions */       0,
-    /* kAPITagInit */                           0
+static uint32_t sAPICallCounters[] = {
+    /* kAPITagHostAddress */ 0,
+    /* kAPITagHostRoute */ 0,
+    /* kAPITagThreadAddress */ 0,
+    /* kAPITagThreadAdvertisement */ 0,
+    /* kAPITagThreadRoute */ 0,
+    /* kAPITagThreadRoutePriority */ 0,
+    /* kAPITagCriticalSectionEnter */ 0,
+    /* kAPITagCriticalSectionExit */ 0,
+    /* kAPITagInitRequestInvokeActions */ 0,
+    /* kAPITagInit */ 0
 };
 
 static bool sAPIInterfaceStateHostAddress[Warm::kInterfaceTypeMax];
@@ -71,10 +71,10 @@ static bool sAPIInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax];
 static bool sAPIInterfaceStateThreadRoute[Warm::kInterfaceTypeMax];
 
 static nl::Inet::IPAddress sAPIInterfaceAddressHostAddress[Warm::kInterfaceTypeMax];
-static nl::Inet::IPPrefix  sAPIInterfaceHostRoute[Warm::kInterfaceTypeMax];
+static nl::Inet::IPPrefix sAPIInterfaceHostRoute[Warm::kInterfaceTypeMax];
 static nl::Inet::IPAddress zeroIPAddress;
 
-const uint64_t kTestNodeId = 0x18B43000002DCF71ULL;
+const uint64_t kTestNodeId   = 0x18B43000002DCF71ULL;
 const uint64_t kTestFabricId = 0x123456789abcdef0ULL;
 
 static WeaveFabricState sFabricState;
@@ -109,7 +109,8 @@ namespace Platform {
  *          kPlatformResultInProgress - If the request will complete asynchronously.
  *
  */
-PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::IPAddress &inAddress, uint8_t inPrefixLength, bool inAssign)
+PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, uint8_t inPrefixLength,
+                                    bool inAssign)
 {
     sAPICallCounters[kAPITagHostAddress]++;
 
@@ -140,7 +141,8 @@ PlatformResult AddRemoveHostAddress(InterfaceType inInterfaceType, const Inet::I
  *          kPlatformResultInProgress - If the request will complete asynchronously.
  *
  */
-PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority, bool inAssign)
+PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority,
+                                  bool inAssign)
 {
     sAPICallCounters[kAPITagHostRoute]++;
 
@@ -169,7 +171,7 @@ PlatformResult AddRemoveHostRoute(InterfaceType inInterfaceType, const Inet::IPP
  *          kPlatformResultInProgress - If the request will complete asynchronously.
  *
  */
-PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet::IPAddress &inAddress, bool inAssign)
+PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet::IPAddress & inAddress, bool inAssign)
 {
     sAPICallCounters[kAPITagThreadAddress]++;
 
@@ -196,7 +198,7 @@ PlatformResult AddRemoveThreadAddress(InterfaceType inInterfaceType, const Inet:
  *          kPlatformResultInProgress - If the request will complete asynchronously.
  *
  */
-PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, bool inAdvertise)
+PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, bool inAdvertise)
 {
     sAPICallCounters[kAPITagThreadAdvertisement]++;
 
@@ -225,7 +227,8 @@ PlatformResult StartStopThreadAdvertisement(InterfaceType inInterfaceType, const
  *          kPlatformResultInProgress - If the request will complete asynchronously.
  *
  */
-PlatformResult AddRemoveThreadRoute(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority, bool inAssign)
+PlatformResult AddRemoveThreadRoute(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority,
+                                    bool inAssign)
 {
     sAPICallCounters[kAPITagThreadRoute]++;
 
@@ -252,7 +255,7 @@ PlatformResult AddRemoveThreadRoute(InterfaceType inInterfaceType, const Inet::I
  *          kPlatformResultInProgress - If the request will complete asynchronously.
  *
  */
-PlatformResult SetThreadRoutePriority(InterfaceType inInterfaceType, const Inet::IPPrefix &inPrefix, RoutePriority inPriority)
+PlatformResult SetThreadRoutePriority(InterfaceType inInterfaceType, const Inet::IPPrefix & inPrefix, RoutePriority inPriority)
 {
     sAPICallCounters[kAPITagThreadRoutePriority]++;
 
@@ -314,7 +317,7 @@ void RequestInvokeActions(void)
  *  @return 0 on success, error code otherwise.
  *
  */
-WEAVE_ERROR  Init(WarmFabricStateDelegate *inFabricStateDelegate)
+WEAVE_ERROR Init(WarmFabricStateDelegate * inFabricStateDelegate)
 {
     sAPICallCounters[kAPITagInit]++;
 
@@ -331,33 +334,33 @@ WEAVE_ERROR  Init(WarmFabricStateDelegate *inFabricStateDelegate)
 
 static void InitPlatformState(void)
 {
-    memset(sAPICallCounters,                        0, sizeof(sAPICallCounters));
-    memset(sAPIInterfaceStateHostAddress,           0, sizeof(sAPIInterfaceStateHostAddress));
-    memset(sAPIInterfaceStateHostRoute,             0, sizeof(sAPIInterfaceStateHostRoute));
-    memset(sAPIInterfaceHostRoute,                  0, sizeof(sAPIInterfaceHostRoute));
-    memset(sAPIInterfaceStateThreadAddress,         0, sizeof(sAPIInterfaceStateThreadAddress));
-    memset(sAPIInterfaceStateThreadAdvertisement,   0, sizeof(sAPIInterfaceStateThreadAdvertisement));
-    memset(sAPIInterfaceStateThreadRoute,           0, sizeof(sAPIInterfaceStateThreadRoute));
+    memset(sAPICallCounters, 0, sizeof(sAPICallCounters));
+    memset(sAPIInterfaceStateHostAddress, 0, sizeof(sAPIInterfaceStateHostAddress));
+    memset(sAPIInterfaceStateHostRoute, 0, sizeof(sAPIInterfaceStateHostRoute));
+    memset(sAPIInterfaceHostRoute, 0, sizeof(sAPIInterfaceHostRoute));
+    memset(sAPIInterfaceStateThreadAddress, 0, sizeof(sAPIInterfaceStateThreadAddress));
+    memset(sAPIInterfaceStateThreadAdvertisement, 0, sizeof(sAPIInterfaceStateThreadAdvertisement));
+    memset(sAPIInterfaceStateThreadRoute, 0, sizeof(sAPIInterfaceStateThreadRoute));
 }
 
-static void Setup(nlTestSuite *inSuite, void *inContext)
+static void Setup(nlTestSuite * inSuite, void * inContext)
 {
     WEAVE_ERROR err;
-    static nlDEFINE_ALIGNED_VAR(sTestGroupKeyStore, sizeof(TestGroupKeyStore), void*);
+    static nlDEFINE_ALIGNED_VAR(sTestGroupKeyStore, sizeof(TestGroupKeyStore), void *);
 
     err = sFabricState.Init(new (&sTestGroupKeyStore) TestGroupKeyStore());
 
     sFabricState.LocalNodeId = kTestNodeId;
-    sFabricState.FabricId = kTestFabricId;
+    sFabricState.FabricId    = kTestFabricId;
 
     NL_TEST_ASSERT(inSuite, err == WEAVE_NO_ERROR);
 }
 
 // confirms the proper platform API's are called in response to calling nl::Weave::Warm::Init
-static void CheckInit(nlTestSuite *inSuite, void *inContext)
+static void CheckInit(nlTestSuite * inSuite, void * inContext)
 {
     uint32_t callCounterSnapshot[sizeof(sAPICallCounters) / sizeof(sAPICallCounters[0])];
-    const WeaveFabricState *fabricState;
+    const WeaveFabricState * fabricState;
     WEAVE_ERROR err;
 
     InitPlatformState();
@@ -370,16 +373,17 @@ static void CheckInit(nlTestSuite *inSuite, void *inContext)
 
     Warm::Init(sFabricState);
     // Test that the expected number of platform API calls are made after calling Init()
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress]                     == sAPICallCounters[kAPITagHostAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute]                       == sAPICallCounters[kAPITagHostRoute]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress]                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement]             == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                     == sAPICallCounters[kAPITagThreadRoute]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagCriticalSectionEnter] + 3        == sAPICallCounters[kAPITagCriticalSectionEnter]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagCriticalSectionExit] + 3         == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]               == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 1    == sAPICallCounters[kAPITagInitRequestInvokeActions]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInit] + 1                        == sAPICallCounters[kAPITagInit]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagCriticalSectionEnter] + 3 == sAPICallCounters[kAPITagCriticalSectionEnter]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagCriticalSectionExit] + 3 == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 1 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInit] + 1 == sAPICallCounters[kAPITagInit]);
     // Test the interface state for the API assign
 
     // Test that the GetFabricState API works as intended.
@@ -388,22 +392,21 @@ static void CheckInit(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, fabricState == &sFabricState);
 
     sFabricState.ClearFabricState();
-
 }
 
 #if WARM_CONFIG_SUPPORT_THREAD
-static void CheckThread(nlTestSuite *inSuite, void *inContext)
+static void CheckThread(nlTestSuite * inSuite, void * inContext)
 {
     uint32_t callCounterSnapshot[sizeof(sAPICallCounters) / sizeof(sAPICallCounters[0])];
-                                                                                       // legacy, thread, wifi, tunnel, cellular
-    const bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax]           = { true, true, false, false, false };
+    // legacy, thread, wifi, tunnel, cellular
+    const bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax] = { true, true, false, false, false };
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    const bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax]             = { false, true, false, false, false };
-#endif //WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    const bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]         = { true, true, false, false, false };
-    const bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax]   = { false, false, false, false, false };
-    const bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]           = { false, false, false, false, false };
-    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]          = { false, false, false, false, false };
+    const bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax] = { false, true, false, false, false };
+#endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
+    const bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]       = { true, true, false, false, false };
+    const bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax] = { false, false, false, false, false };
+    const bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]         = { false, false, false, false, false };
+    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]        = { false, false, false, false, false };
     const uint64_t interfaceId = nl::Weave::WeaveNodeIdToIPv6InterfaceId(sFabricState.LocalNodeId);
     uint64_t globalId;
     nl::Inet::IPAddress address;
@@ -420,26 +423,37 @@ static void CheckThread(nlTestSuite *inSuite, void *inContext)
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 2                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 2 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement]                 == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                         == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 2        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 2 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
 
     // Test that the expected platform State exists after making the API calls.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(inSuite,
+                   0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that the IP Addresses are set as expected.
     globalId = nl::Weave::WeaveFabricIdToIPv6GlobalId(sFabricState.FabricId);
@@ -470,23 +484,34 @@ static void CheckThread(nlTestSuite *inSuite, void *inContext)
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 4                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 4 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement]                 == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                         == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 4        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 4 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
 
     // Test that the expected platform State exists after making the API calls.
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that correct addresses are removed.
     address = nl::Inet::IPAddress::MakeULA(globalId, nl::Weave::kWeaveSubnetId_ThreadMesh, interfaceId);
@@ -498,18 +523,18 @@ static void CheckThread(nlTestSuite *inSuite, void *inContext)
 
 #if WARM_CONFIG_SUPPORT_WIFI
 // confirms the proper platform API's are called in response to configuring the system for WiFi + Thread + NO_Routing
-static void CheckWiFiThread(nlTestSuite *inSuite, void *inContext)
+static void CheckWiFiThread(nlTestSuite * inSuite, void * inContext)
 {
     uint32_t callCounterSnapshot[sizeof(sAPICallCounters) / sizeof(sAPICallCounters[0])];
-                                                                                       // legacy, thread, wifi, tunnel, cellular
-    const bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax]           = { true, true, true, false, false };
+    // legacy, thread, wifi, tunnel, cellular
+    const bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax] = { true, true, true, false, false };
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    const bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax]             = { false, true, false, false, false };
+    const bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax] = { false, true, false, false, false };
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    const bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]         = { true, true, false, false, false };
-    const bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax]   = { false, false, false, false, false };
-    const bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]           = { false, false, false, false, false };
-    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]          = { false, false, false, false, false };
+    const bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]       = { true, true, false, false, false };
+    const bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax] = { false, false, false, false, false };
+    const bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]         = { false, false, false, false, false };
+    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]        = { false, false, false, false, false };
 
     const uint64_t interfaceId = nl::Weave::WeaveNodeIdToIPv6InterfaceId(sFabricState.LocalNodeId);
     uint64_t globalId;
@@ -528,26 +553,37 @@ static void CheckWiFiThread(nlTestSuite *inSuite, void *inContext)
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 3                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 3 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement]                 == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                         == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 3        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 3 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
 
     // Test that the expected platform State exists after making the API calls.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(inSuite,
+                   0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that the IP Addresses are set as expected.
     globalId = nl::Weave::WeaveFabricIdToIPv6GlobalId(sFabricState.FabricId);
@@ -579,24 +615,35 @@ static void CheckWiFiThread(nlTestSuite *inSuite, void *inContext)
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 6                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 6 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement]                 == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                         == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 6        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 6 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
 
     // Test that the expected platform State exists after undoing the settings for this test.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that correct addresses are removed.
 
@@ -612,18 +659,18 @@ static void CheckWiFiThread(nlTestSuite *inSuite, void *inContext)
 
 #if WARM_CONFIG_SUPPORT_THREAD_ROUTING
 // confirms the proper platform API's are called in response to configuring the system for WiFi + Thread + ThreadRouting
-static void CheckWiFiThreadRoute(nlTestSuite *inSuite, void *inContext)
+static void CheckWiFiThreadRoute(nlTestSuite * inSuite, void * inContext)
 {
     uint32_t callCounterSnapshot[sizeof(sAPICallCounters) / sizeof(sAPICallCounters[0])];
-                                                                                       // legacy, thread, wifi, tunnel, cellular
-    const bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax]           = { true, true, true, false, false };
+    // legacy, thread, wifi, tunnel, cellular
+    const bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax] = { true, true, true, false, false };
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    const bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax]             = { false, true, false, false, false };
+    const bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax] = { false, true, false, false, false };
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    const bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]         = { true, true, false, false, false };
-    const bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax]   = { false, true, false, false, false };
-    const bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]           = { false, false, false, false, false };
-    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]          = { false, false, false, false, false };
+    const bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]       = { true, true, false, false, false };
+    const bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax] = { false, true, false, false, false };
+    const bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]         = { false, false, false, false, false };
+    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]        = { false, false, false, false, false };
     const uint64_t interfaceId = nl::Weave::WeaveNodeIdToIPv6InterfaceId(sFabricState.LocalNodeId);
     uint64_t globalId;
     nl::Inet::IPAddress address;
@@ -642,26 +689,37 @@ static void CheckWiFiThreadRoute(nlTestSuite *inSuite, void *inContext)
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 3                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 3 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 1             == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                         == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 1 == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 4        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 4 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
 
     // Test that the expected platform State exists after making the API calls.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(inSuite,
+                   0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that the IP Addresses are set as expected.
     globalId = nl::Weave::WeaveFabricIdToIPv6GlobalId(sFabricState.FabricId);
@@ -694,24 +752,35 @@ static void CheckWiFiThreadRoute(nlTestSuite *inSuite, void *inContext)
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 6                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 6 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 2             == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute]                         == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 2 == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 8        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 8 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
 
     // Test that the expected platform State exists after undoing the settings for this test.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that correct addresses are removed.
 
@@ -726,21 +795,22 @@ static void CheckWiFiThreadRoute(nlTestSuite *inSuite, void *inContext)
 }
 
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
-// confirms the proper platform API's are called in response to configuring the system for WiFi + Thread + ThreadRouting + BorderRouting + Tunnel
-static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inContext)
+// confirms the proper platform API's are called in response to configuring the system for WiFi + Thread + ThreadRouting +
+// BorderRouting + Tunnel
+static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite * inSuite, void * inContext)
 {
     uint32_t callCounterSnapshot[sizeof(sAPICallCounters) / sizeof(sAPICallCounters[0])];
-                                                                              // legacy, thread, wifi, tunnel, cellular
-    bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax]           = { true,  true,  true,  true,  false };
+    // legacy, thread, wifi, tunnel, cellular
+    bool requiredInterfaceStateHostAddress[Warm::kInterfaceTypeMax] = { true, true, true, true, false };
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax]             = { false, true,  false, true,  false };
+    bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax] = { false, true, false, true, false };
 #else
-    bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax]             = { false, false,  false, true,  false };
+    bool requiredInterfaceStateHostRoute[Warm::kInterfaceTypeMax] = { false, false, false, true, false };
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]         = { true,  true,  false, false, false };
-    bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax]   = { false, true,  false, false, false };
-    bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]           = { false, true,  false, false, false };
-    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]    = { false, false, false, false, false };
+    bool requiredInterfaceStateThreadAddress[Warm::kInterfaceTypeMax]       = { true, true, false, false, false };
+    bool requiredInterfaceStateThreadAdvertisement[Warm::kInterfaceTypeMax] = { false, true, false, false, false };
+    bool requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeMax]         = { false, true, false, false, false };
+    const bool requiredInterfaceStateAfterCleanUp[Warm::kInterfaceTypeMax]  = { false, false, false, false, false };
     const uint64_t interfaceId = nl::Weave::WeaveNodeIdToIPv6InterfaceId(sFabricState.LocalNodeId);
     uint64_t globalId;
     nl::Inet::IPAddress address;
@@ -760,34 +830,48 @@ static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inConte
     Warm::ThreadInterfaceStateChange(Warm::kInterfaceStateUp);
     Warm::ThreadRoutingStateChange(Warm::kInterfaceStateUp);
     // Profiles::WeaveTunnel::Platform::TunnelInterfaceUp calls Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateUp)
-    Profiles::WeaveTunnel::Platform::TunnelInterfaceUp((InterfaceId)0);
-    // Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished calls Warm::TunnelServiceStateChange(Warm::kInterfaceStateUp, Profiles::WeaveTunnel::Platform::kMode_Primary)
-    Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished((InterfaceId)0, Profiles::WeaveTunnel::Platform::kMode_Primary);
-    // Profiles::WeaveTunnel::Platform::ServiceTunnelModeChange calls Warm::ServiceTunnelModeChange(InterfaceId tunIf, TunnelAvailabilityMode tunMode)
-    Profiles::WeaveTunnel::Platform::ServiceTunnelModeChange((InterfaceId)0, Profiles::WeaveTunnel::Platform::kMode_PrimaryAndBackup);
+    Profiles::WeaveTunnel::Platform::TunnelInterfaceUp((InterfaceId) 0);
+    // Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished calls Warm::TunnelServiceStateChange(Warm::kInterfaceStateUp,
+    // Profiles::WeaveTunnel::Platform::kMode_Primary)
+    Profiles::WeaveTunnel::Platform::ServiceTunnelEstablished((InterfaceId) 0, Profiles::WeaveTunnel::Platform::kMode_Primary);
+    // Profiles::WeaveTunnel::Platform::ServiceTunnelModeChange calls Warm::ServiceTunnelModeChange(InterfaceId tunIf,
+    // TunnelAvailabilityMode tunMode)
+    Profiles::WeaveTunnel::Platform::ServiceTunnelModeChange((InterfaceId) 0,
+                                                             Profiles::WeaveTunnel::Platform::kMode_PrimaryAndBackup);
     Warm::BorderRouterStateChange(Warm::kInterfaceStateUp);
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 4                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 4 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2 == sAPICallCounters[kAPITagHostRoute]);
 #else
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 1 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 1             == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] + 1                     == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 2 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 1 == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] + 1 == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 8        == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 8 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
     // Test that the expected platform State exists after making the API calls.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that the IP Addresses are set as expected.
     globalId = nl::Weave::WeaveFabricIdToIPv6GlobalId(sFabricState.FabricId);
@@ -808,11 +892,11 @@ static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inConte
 
     // Test that the route installation for the Tunnel interface is correct
 #if WARM_CONFIG_ENABLE_FABRIC_DEFAULT_ROUTING
-    address = nl::Inet::IPAddress::MakeULA(globalId, 0, 0);
+    address       = nl::Inet::IPAddress::MakeULA(globalId, 0, 0);
     prefix.IPAddr = address;
     prefix.Length = 48;
 #else
-    address = nl::Inet::IPAddress::MakeULA(globalId, nl::Weave::kWeaveSubnetId_Service, 0);
+    address       = nl::Inet::IPAddress::MakeULA(globalId, nl::Weave::kWeaveSubnetId_Service, 0);
     prefix.IPAddr = address;
     prefix.Length = 64;
 #endif
@@ -832,25 +916,49 @@ static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inConte
     {
         requiredInterfaceStateThreadRoute[Warm::kInterfaceTypeThread] = false;
 
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+        NL_TEST_ASSERT(inSuite,
+                       0 ==
+                           memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress,
+                                  sizeof(sAPIInterfaceStateThreadAddress)));
+        NL_TEST_ASSERT(inSuite,
+                       0 ==
+                           memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                                  sizeof(sAPIInterfaceStateThreadAdvertisement)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
     }
 
-    //Profiles::WeaveTunnel::Platform::TunnelInterfaceDown Calls--> Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateDown);
-    Profiles::WeaveTunnel::Platform::TunnelInterfaceDown((InterfaceId)0);
+    // Profiles::WeaveTunnel::Platform::TunnelInterfaceDown Calls--> Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateDown);
+    Profiles::WeaveTunnel::Platform::TunnelInterfaceDown((InterfaceId) 0);
 
     {
         requiredInterfaceStateHostAddress[Warm::kInterfaceTypeTunnel] = false;
-        requiredInterfaceStateHostRoute[Warm::kInterfaceTypeTunnel] = false;
+        requiredInterfaceStateHostRoute[Warm::kInterfaceTypeTunnel]   = false;
 
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+        NL_TEST_ASSERT(inSuite,
+                       0 ==
+                           memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress,
+                                  sizeof(sAPIInterfaceStateThreadAddress)));
+        NL_TEST_ASSERT(inSuite,
+                       0 ==
+                           memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                                  sizeof(sAPIInterfaceStateThreadAdvertisement)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
     }
 
     Warm::WiFiInterfaceStateChange(Warm::kInterfaceStateDown);
@@ -858,11 +966,23 @@ static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inConte
     {
         requiredInterfaceStateHostAddress[Warm::kInterfaceTypeWiFi] = false;
 
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostAddress,         sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateHostRoute,           sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAddress,       sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-        NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateThreadRoute,         sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateHostAddress, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateHostRoute, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+        NL_TEST_ASSERT(inSuite,
+                       0 ==
+                           memcmp(requiredInterfaceStateThreadAddress, sAPIInterfaceStateThreadAddress,
+                                  sizeof(sAPIInterfaceStateThreadAddress)));
+        NL_TEST_ASSERT(inSuite,
+                       0 ==
+                           memcmp(requiredInterfaceStateThreadAdvertisement, sAPIInterfaceStateThreadAdvertisement,
+                                  sizeof(sAPIInterfaceStateThreadAdvertisement)));
+        NL_TEST_ASSERT(
+            inSuite,
+            0 == memcmp(requiredInterfaceStateThreadRoute, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
     }
 
     // Undo the settings for this test.
@@ -871,33 +991,45 @@ static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inConte
     Warm::WiFiInterfaceStateChange(Warm::kInterfaceStateDown);
     Warm::ThreadInterfaceStateChange(Warm::kInterfaceStateDown);
     Warm::ThreadRoutingStateChange(Warm::kInterfaceStateDown);
-    //Profiles::WeaveTunnel::Platform::TunnelInterfaceDown Calls--> Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateDown);
-    Profiles::WeaveTunnel::Platform::TunnelInterfaceDown((InterfaceId)0);
-    // Profiles::WeaveTunnel::Platform::ServiceTunnelDisconnected calls Warm::TunnelServiceStateChange(Warm::kInterfaceStateDown, Profiles::WeaveTunnel::Platform::kState_Normal)
-    Profiles::WeaveTunnel::Platform::ServiceTunnelDisconnected((InterfaceId)0);
+    // Profiles::WeaveTunnel::Platform::TunnelInterfaceDown Calls--> Warm::TunnelInterfaceStateChange(Warm::kInterfaceStateDown);
+    Profiles::WeaveTunnel::Platform::TunnelInterfaceDown((InterfaceId) 0);
+    // Profiles::WeaveTunnel::Platform::ServiceTunnelDisconnected calls Warm::TunnelServiceStateChange(Warm::kInterfaceStateDown,
+    // Profiles::WeaveTunnel::Platform::kState_Normal)
+    Profiles::WeaveTunnel::Platform::ServiceTunnelDisconnected((InterfaceId) 0);
     Warm::BorderRouterStateChange(Warm::kInterfaceStateDown);
 
     // Test that the expected number of platform API calls are made.
 
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 8                     == sAPICallCounters[kAPITagHostAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostAddress] + 8 == sAPICallCounters[kAPITagHostAddress]);
 #if WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 4                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 4 == sAPICallCounters[kAPITagHostRoute]);
 #else
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2                       == sAPICallCounters[kAPITagHostRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagHostRoute] + 2 == sAPICallCounters[kAPITagHostRoute]);
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4                   == sAPICallCounters[kAPITagThreadAddress]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 2             == sAPICallCounters[kAPITagThreadAdvertisement]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] + 2                     == sAPICallCounters[kAPITagThreadRoute]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAddress] + 4 == sAPICallCounters[kAPITagThreadAddress]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadAdvertisement] + 2 == sAPICallCounters[kAPITagThreadAdvertisement]);
+    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagThreadRoute] + 2 == sAPICallCounters[kAPITagThreadRoute]);
 
-    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter]                   == sAPICallCounters[kAPITagCriticalSectionExit]);
-    NL_TEST_ASSERT(inSuite, callCounterSnapshot[kAPITagInitRequestInvokeActions] + 15       == sAPICallCounters[kAPITagInitRequestInvokeActions]);
+    NL_TEST_ASSERT(inSuite, sAPICallCounters[kAPITagCriticalSectionEnter] == sAPICallCounters[kAPITagCriticalSectionExit]);
+    NL_TEST_ASSERT(inSuite,
+                   callCounterSnapshot[kAPITagInitRequestInvokeActions] + 15 == sAPICallCounters[kAPITagInitRequestInvokeActions]);
     // Test that the expected platform State exists after undoing the settings.
 
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress,         sizeof(sAPIInterfaceStateHostAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute,           sizeof(sAPIInterfaceStateHostRoute)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress,       sizeof(sAPIInterfaceStateThreadAddress)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement, sizeof(sAPIInterfaceStateThreadAdvertisement)));
-    NL_TEST_ASSERT(inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute,         sizeof(sAPIInterfaceStateThreadRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostAddress, sizeof(sAPIInterfaceStateHostAddress)));
+    NL_TEST_ASSERT(
+        inSuite, 0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateHostRoute, sizeof(sAPIInterfaceStateHostRoute)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAddress, sizeof(sAPIInterfaceStateThreadAddress)));
+    NL_TEST_ASSERT(inSuite,
+                   0 ==
+                       memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadAdvertisement,
+                              sizeof(sAPIInterfaceStateThreadAdvertisement)));
+    NL_TEST_ASSERT(
+        inSuite,
+        0 == memcmp(requiredInterfaceStateAfterCleanUp, sAPIInterfaceStateThreadRoute, sizeof(sAPIInterfaceStateThreadRoute)));
 
     // Test that correct addresses are removed.
 
@@ -919,30 +1051,27 @@ static void CheckWiFiThreadRouteBorderTunnel(nlTestSuite *inSuite, void *inConte
 #endif // WARM_CONFIG_ENABLE_BACKUP_ROUTING_OVER_THREAD
 
     NL_TEST_ASSERT(inSuite, prefix == sAPIInterfaceHostRoute[Warm::kInterfaceTypeTunnel]);
-
 }
 #endif // WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
 #endif // WARM_CONFIG_SUPPORT_THREAD_ROUTING
 #endif // WARM_CONFIG_SUPPORT_WIFI
 #endif // WARM_CONFIG_SUPPORT_THREAD
 
-static const nlTest sTests[] = {
-    NL_TEST_DEF("Setup",                     Setup),
-    NL_TEST_DEF("init",                      CheckInit),
+static const nlTest sTests[] = { NL_TEST_DEF("Setup", Setup),
+                                 NL_TEST_DEF("init", CheckInit),
 #if WARM_CONFIG_SUPPORT_THREAD
-    NL_TEST_DEF("Thread",                    CheckThread),
+                                 NL_TEST_DEF("Thread", CheckThread),
 #if WARM_CONFIG_SUPPORT_WIFI
-    NL_TEST_DEF("WiFi+Thread",               CheckWiFiThread),
+                                 NL_TEST_DEF("WiFi+Thread", CheckWiFiThread),
 #if WARM_CONFIG_SUPPORT_THREAD_ROUTING
-    NL_TEST_DEF("WiFi+Thread+Route",         CheckWiFiThreadRoute),
+                                 NL_TEST_DEF("WiFi+Thread+Route", CheckWiFiThreadRoute),
 #if WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
-    NL_TEST_DEF("WiFi+Thread+Route+Tunnel",  CheckWiFiThreadRouteBorderTunnel),
+                                 NL_TEST_DEF("WiFi+Thread+Route+Tunnel", CheckWiFiThreadRouteBorderTunnel),
 #endif // WARM_CONFIG_SUPPORT_WEAVE_TUNNEL && WARM_CONFIG_SUPPORT_BORDER_ROUTING
 #endif // WARM_CONFIG_SUPPORT_THREAD_ROUTING
 #endif // WARM_CONFIG_SUPPORT_WIFI
 #endif // WARM_CONFIG_SUPPORT_THREAD
-    NL_TEST_SENTINEL()
-};
+                                 NL_TEST_SENTINEL() };
 
 int main(void)
 {
@@ -951,10 +1080,7 @@ int main(void)
     err = nl::Weave::Platform::Security::InitSecureRandomDataSource(NULL, 64, NULL, 0);
     FAIL_ERROR(err, "InitSecureRandomDataSource() failed");
 
-    nlTestSuite theSuite = {
-        "warm",
-        &sTests[0]
-    };
+    nlTestSuite theSuite = { "warm", &sTests[0] };
 
     nl_test_set_output_style(OUTPUT_CSV);
 

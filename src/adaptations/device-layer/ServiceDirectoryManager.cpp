@@ -43,10 +43,9 @@ namespace {
 
 uint8_t ServiceDirectoryCache[WEAVE_DEVICE_CONFIG_SERVICE_DIRECTORY_CACHE_SIZE];
 
-extern WEAVE_ERROR GetRootDirectoryEntry(uint8_t *buf, uint16_t bufSize);
+extern WEAVE_ERROR GetRootDirectoryEntry(uint8_t * buf, uint16_t bufSize);
 
 } // unnamed namespace
-
 
 WEAVE_ERROR InitServiceDirectoryManager(void)
 {
@@ -54,15 +53,12 @@ WEAVE_ERROR InitServiceDirectoryManager(void)
 
     new (&ServiceDirectoryMgr) ServiceDirectory::WeaveServiceManager();
 
-    err = ServiceDirectoryMgr.init(&ExchangeMgr,
-            ServiceDirectoryCache, sizeof(ServiceDirectoryCache),
-            GetRootDirectoryEntry,
-            kWeaveAuthMode_CASE_ServiceEndPoint,
+    err = ServiceDirectoryMgr.init(&ExchangeMgr, ServiceDirectoryCache, sizeof(ServiceDirectoryCache), GetRootDirectoryEntry,
+                                   kWeaveAuthMode_CASE_ServiceEndPoint,
 #if WEAVE_DEVICE_CONFIG_ENABLE_SERVICE_DIRECTORY_TIME_SYNC
-            TimeSyncManager::MarkServiceDirRequestStart,
-            TimeSyncManager::ProcessServiceDirTimeData);
+                                   TimeSyncManager::MarkServiceDirRequestStart, TimeSyncManager::ProcessServiceDirTimeData);
 #else
-            NULL, NULL);
+                                   NULL, NULL);
 #endif
     if (err != WEAVE_NO_ERROR)
     {
@@ -74,19 +70,18 @@ WEAVE_ERROR InitServiceDirectoryManager(void)
 
 namespace {
 
-WEAVE_ERROR EncodeRootDirectoryFromServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen,
-        uint8_t * rootDirBuf, uint16_t rootDirBufSize)
+WEAVE_ERROR EncodeRootDirectoryFromServiceConfig(const uint8_t * serviceConfig, uint16_t serviceConfigLen, uint8_t * rootDirBuf,
+                                                 uint16_t rootDirBufSize)
 {
     WEAVE_ERROR err;
     TLVReader reader;
     TLVType container;
     uint64_t directoryEndpointId;
     uint8_t numHostPortEntries = 0;
-    uint8_t * p = rootDirBuf;
+    uint8_t * p                = rootDirBuf;
 
-    static const uint16_t kMinRootDirSize =
-            1 +     // Directory Entry Control Byte
-            8;      // Service Endpoint Id
+    static const uint16_t kMinRootDirSize = 1 + // Directory Entry Control Byte
+        8;                                      // Service Endpoint Id
 
     VerifyOrExit(rootDirBufSize > kMinRootDirSize, err = WEAVE_ERROR_BUFFER_TOO_SMALL);
 
@@ -121,8 +116,8 @@ WEAVE_ERROR EncodeRootDirectoryFromServiceConfig(const uint8_t * serviceConfig, 
     SuccessOrExit(err);
 
     // Encode the initial portion of the directory entry.
-    Write8(p, 0x40);                                // Directory Entry Control Byte (Entry Type = Host/Port List, Host/Port List Length = 0)
-    LittleEndian::Write64(p, directoryEndpointId);  // Service Endpoint Id
+    Write8(p, 0x40); // Directory Entry Control Byte (Entry Type = Host/Port List, Host/Port List Length = 0)
+    LittleEndian::Write64(p, directoryEndpointId); // Service Endpoint Id
 
     while (numHostPortEntries < 7 && (err = reader.Next()) == WEAVE_NO_ERROR)
     {
@@ -148,7 +143,7 @@ WEAVE_ERROR EncodeRootDirectoryFromServiceConfig(const uint8_t * serviceConfig, 
         if (err == WEAVE_END_OF_TLV)
         {
             port = WEAVE_PORT;
-            err = WEAVE_NO_ERROR;
+            err  = WEAVE_NO_ERROR;
         }
         else
         {
@@ -157,11 +152,10 @@ WEAVE_ERROR EncodeRootDirectoryFromServiceConfig(const uint8_t * serviceConfig, 
             SuccessOrExit(err);
         }
 
-        const size_t encodedEntrySize =
-                1 +                         // Host/Port Entry Control Byte
-                1 +                         // Host Name length
-                hostNameLen +               // Host Name string
-                2;                          // Port
+        const size_t encodedEntrySize = 1 + // Host/Port Entry Control Byte
+            1 +                             // Host Name length
+            hostNameLen +                   // Host Name string
+            2;                              // Port
 
         const ptrdiff_t remainingSpace = (rootDirBuf + rootDirBufSize) - p;
 
@@ -172,11 +166,12 @@ WEAVE_ERROR EncodeRootDirectoryFromServiceConfig(const uint8_t * serviceConfig, 
         }
 
         // Encode the Host/Port entry
-        Write8(p, 0x08);                    // Host/Port Entry Control Byte (Type = Fully Qualified, Suffix Index Present = false, Port Id Present = true)
-        Write8(p, (uint8_t)hostNameLen);    // Host Name length
-        memcpy(p, hostName, hostNameLen);   // Host Name string
+        Write8(p,
+               0x08); // Host/Port Entry Control Byte (Type = Fully Qualified, Suffix Index Present = false, Port Id Present = true)
+        Write8(p, (uint8_t) hostNameLen); // Host Name length
+        memcpy(p, hostName, hostNameLen); // Host Name string
         p += hostNameLen;
-        LittleEndian::Write16(p, port);     // Port
+        LittleEndian::Write16(p, port); // Port
 
         numHostPortEntries++;
 
@@ -207,7 +202,7 @@ WEAVE_ERROR GetRootDirectoryEntry(uint8_t * rootDirBuf, uint16_t rootDirBufSize)
     SuccessOrExit(err);
 
     // Allocate a buffer to hold the service config data.
-    serviceConfig = (uint8_t *)malloc(serviceConfigLen);
+    serviceConfig = (uint8_t *) malloc(serviceConfigLen);
     VerifyOrExit(serviceConfig != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
     // Fetch the service config from the configuration manager.
@@ -234,4 +229,3 @@ exit:
 } // namespace DeviceLayer
 } // namespace Weave
 } // namespace nl
-

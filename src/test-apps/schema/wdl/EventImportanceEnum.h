@@ -29,11 +29,12 @@
 namespace Schema {
 namespace Wdl {
 
-enum EventImportance {
+enum EventImportance
+{
     EVENT_IMPORTANCE_PRODUCTION_CRITICAL = 1,
     EVENT_IMPORTANCE_PRODUCTION_STANDARD = 2,
-    EVENT_IMPORTANCE_INFO = 3,
-    EVENT_IMPORTANCE_DEBUG = 4,
+    EVENT_IMPORTANCE_INFO                = 3,
+    EVENT_IMPORTANCE_DEBUG               = 4,
 };
 
 } // namespace Wdl

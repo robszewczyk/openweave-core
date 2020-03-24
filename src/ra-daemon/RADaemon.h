@@ -39,79 +39,79 @@
 #include <errno.h>
 #endif
 
-#define RAD_MAX_ADVERTISING_LINKS   2
-#define RAD_MAX_PREFIXES_PER_LINK   4
+#define RAD_MAX_ADVERTISING_LINKS 2
+#define RAD_MAX_PREFIXES_PER_LINK 4
 
 #define IFNAMSIZE 16
-
 
 namespace nl {
 namespace Inet {
 
 using ::nl::Weave::System::PacketBuffer;
 
-#define FSM_NO_PREFIX       0  //This state must always be zero.
-#define FSM_ADVERTISING     1
+#define FSM_NO_PREFIX   0 // This state must always be zero.
+#define FSM_ADVERTISING 1
 
 // RADaemon -- The object containing the per-link FSMs that periodically or on demand send Router Advertisements.
 // NOTE: it is assumed that a single thread instanciates a single RADaemon object.
 class RADaemon
 {
 private:
-    struct  IPPrefixInformation
+    struct IPPrefixInformation
     {
-        IPPrefix    IPPrefx;
-        uint32_t    ValidLifetime;
-        uint32_t    PreferredLifetime;
+        IPPrefix IPPrefx;
+        uint32_t ValidLifetime;
+        uint32_t PreferredLifetime;
     };
 
-    struct  LinkInformation
+    struct LinkInformation
     {
-        uint8_t                 FSMState;
-        int8_t                  RSesDownCounter;
-        uint16_t                NumRAsSentSoFar;
-        InterfaceId             Link;
-        IPAddress               LLAddr;
-        RawEndPoint            *RawEP;          //Used to send all RAs
-        RawEndPoint            *RawEPListen;    //Used to received RSes
-        RADaemon               *Self;
-        IPPrefixInformation     IPPrefixInfo[RAD_MAX_PREFIXES_PER_LINK];
+        uint8_t FSMState;
+        int8_t RSesDownCounter;
+        uint16_t NumRAsSentSoFar;
+        InterfaceId Link;
+        IPAddress LLAddr;
+        RawEndPoint * RawEP;       // Used to send all RAs
+        RawEndPoint * RawEPListen; // Used to received RSes
+        RADaemon * Self;
+        IPPrefixInformation IPPrefixInfo[RAD_MAX_PREFIXES_PER_LINK];
     };
 
-    static void MulticastRA(InetLayer* inet, void* appState, INET_ERROR err);
-    static void HandleMessageReceived2(RawEndPoint *RawEPListen, PacketBuffer *msg, const IPPacketInfo *pktInfo);
-    static void HandleReceiveError2(RawEndPoint *endPoint, INET_ERROR err, const IPPacketInfo *pktInfo);
-    static void HandleMessageReceived(RawEndPoint *RawEPListen, PacketBuffer *msg, const IPPacketInfo *pktInfo);
-    static void HandleReceiveError(RawEndPoint *endPoint, INET_ERROR err, const IPPacketInfo *pktInfo);
-    static void BuildRA(PacketBuffer *RAPacket, LinkInformation *linkInfo, const IPAddress &destAddr);
-    static uint16_t CalculateChecksum(uint16_t *startpos, uint16_t checklen);
-    static void MulticastPeriodicRA(Weave::System::Layer* aSystemLayer, void* aAppState, Weave::System::Error aError);
-    static void TrackRSes(Weave::System::Layer* aSystemLayer, void* aAppState, Weave::System::Error aError);
-    static void UpdateLinkLocalAddr(LinkInformation *linkInfo, IPAddress *llAddr);
-    static void McastAllPrefixes(LinkInformation *linkInfo);
+    static void MulticastRA(InetLayer * inet, void * appState, INET_ERROR err);
+    static void HandleMessageReceived2(RawEndPoint * RawEPListen, PacketBuffer * msg, const IPPacketInfo * pktInfo);
+    static void HandleReceiveError2(RawEndPoint * endPoint, INET_ERROR err, const IPPacketInfo * pktInfo);
+    static void HandleMessageReceived(RawEndPoint * RawEPListen, PacketBuffer * msg, const IPPacketInfo * pktInfo);
+    static void HandleReceiveError(RawEndPoint * endPoint, INET_ERROR err, const IPPacketInfo * pktInfo);
+    static void BuildRA(PacketBuffer * RAPacket, LinkInformation * linkInfo, const IPAddress & destAddr);
+    static uint16_t CalculateChecksum(uint16_t * startpos, uint16_t checklen);
+    static void MulticastPeriodicRA(Weave::System::Layer * aSystemLayer, void * aAppState, Weave::System::Error aError);
+    static void TrackRSes(Weave::System::Layer * aSystemLayer, void * aAppState, Weave::System::Error aError);
+    static void UpdateLinkLocalAddr(LinkInformation * linkInfo, IPAddress * llAddr);
+    static void McastAllPrefixes(LinkInformation * linkInfo);
 
 public:
-    Weave::System::Layer*   SystemLayer;
-    InetLayer*              Inet;
-    LinkInformation         LinkInfo[RAD_MAX_ADVERTISING_LINKS];
+    Weave::System::Layer * SystemLayer;
+    InetLayer * Inet;
+    LinkInformation LinkInfo[RAD_MAX_ADVERTISING_LINKS];
 
     static uint8_t ICMP6Types[];
     static uint8_t ICMP6TypesListen[];
     static uint8_t PeriodicRAsWorked;
 
-    void        Init(Weave::System::Layer& aSystemLayer, InetLayer& aInetLayer);
+    void Init(Weave::System::Layer & aSystemLayer, InetLayer & aInetLayer);
 
 #if INET_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-    void        Init(InetLayer* aInetLayer);
+    void Init(InetLayer * aInetLayer);
 #endif
 
-    INET_ERROR  SetPrefixInfo(InterfaceId link, IPAddress llAddr, IPPrefix ipPrefix, uint32_t validLifetime, uint32_t preferredLifetime);
-    void        DelPrefixInfo(InterfaceId link, IPPrefix ipPrefix);
-    void        DelLinkInfo(InterfaceId link);
+    INET_ERROR SetPrefixInfo(InterfaceId link, IPAddress llAddr, IPPrefix ipPrefix, uint32_t validLifetime,
+                             uint32_t preferredLifetime);
+    void DelPrefixInfo(InterfaceId link, IPPrefix ipPrefix);
+    void DelLinkInfo(InterfaceId link);
 };
 
 #if INET_CONFIG_PROVIDE_OBSOLESCENT_INTERFACES
-inline void RADaemon::Init(InetLayer* aInetLayer)
+inline void RADaemon::Init(InetLayer * aInetLayer)
 {
     this->Init(*aInetLayer->SystemLayer(), *aInetLayer);
 }

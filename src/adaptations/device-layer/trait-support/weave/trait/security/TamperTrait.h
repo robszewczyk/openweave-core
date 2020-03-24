@@ -30,8 +30,6 @@
 #include <Weave/Profiles/data-management/DataManagement.h>
 #include <Weave/Support/SerializationUtils.h>
 
-
-
 namespace Schema {
 namespace Weave {
 namespace Trait {
@@ -40,15 +38,17 @@ namespace TamperTrait {
 
 extern const nl::Weave::Profiles::DataManagement::TraitSchemaEngine TraitSchema;
 
-enum {
-      kWeaveProfileId = (0x0U << 16) | 0xe07U
+enum
+{
+    kWeaveProfileId = (0x0U << 16) | 0xe07U
 };
 
 //
 // Properties
 //
 
-enum {
+enum
+{
     kPropertyHandle_Root = 1,
 
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -87,25 +87,27 @@ struct TamperStateChangeEvent
     static const nl::SchemaFieldDescriptor FieldSchema;
 
     // Statically-known Event Struct Attributes:
-    enum {
-            kWeaveProfileId = (0x0U << 16) | 0xe07U,
-        kEventTypeId = 0x1U
+    enum
+    {
+        kWeaveProfileId = (0x0U << 16) | 0xe07U,
+        kEventTypeId    = 0x1U
     };
 
     static const nl::Weave::Profiles::DataManagement::EventSchema Schema;
 };
 
-struct TamperStateChangeEvent_array {
+struct TamperStateChangeEvent_array
+{
     uint32_t num;
-    TamperStateChangeEvent *buf;
+    TamperStateChangeEvent * buf;
 };
-
 
 //
 // Commands
 //
 
-enum {
+enum
+{
     kResetTamperRequestId = 0x1,
 };
 
@@ -113,10 +115,11 @@ enum {
 // Enums
 //
 
-enum TamperState {
-    TAMPER_STATE_CLEAR = 1,
+enum TamperState
+{
+    TAMPER_STATE_CLEAR    = 1,
     TAMPER_STATE_TAMPERED = 2,
-    TAMPER_STATE_UNKNOWN = 3,
+    TAMPER_STATE_UNKNOWN  = 3,
 };
 
 } // namespace TamperTrait

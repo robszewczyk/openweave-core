@@ -35,19 +35,16 @@ namespace Internal {
 /**
  * Implements the Weave Echo Profile for a Weave Device.
  */
-class EchoServer final
-    : public ::nl::Weave::Profiles::Echo_Next::WeaveEchoServer
+class EchoServer final : public ::nl::Weave::Profiles::Echo_Next::WeaveEchoServer
 {
     typedef ::nl::Weave::Profiles::Echo_Next::WeaveEchoServer ServerBaseClass;
 
 public:
-
     // ===== Members for internal use by other Device Layer components.
 
     WEAVE_ERROR Init();
 
 private:
-
     // ===== Members for internal use by the following friends.
 
     friend EchoServer & EchoSvr(void);
@@ -55,15 +52,14 @@ private:
     static EchoServer sInstance;
 
 protected:
-
     // Construction/destruction limited to subclasses.
-    EchoServer() = default;
+    EchoServer()  = default;
     ~EchoServer() = default;
 
     // No copy, move or assignment.
-    EchoServer(const EchoServer &) = delete;
+    EchoServer(const EchoServer &)  = delete;
     EchoServer(const EchoServer &&) = delete;
-    EchoServer & operator=(const EchoServer &) = delete;
+    EchoServer & operator =(const EchoServer &) = delete;
 };
 
 /**

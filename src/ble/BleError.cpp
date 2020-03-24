@@ -40,11 +40,7 @@ namespace Ble {
  */
 void RegisterBleLayerErrorFormatter(void)
 {
-    static ErrorFormatter sBleLayerErrorFormatter =
-    {
-        FormatBleLayerError,
-        NULL
-    };
+    static ErrorFormatter sBleLayerErrorFormatter = { FormatBleLayerError, NULL };
 
     RegisterErrorFormatter(&sBleLayerErrorFormatter);
 }

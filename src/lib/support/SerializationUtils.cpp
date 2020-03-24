@@ -56,19 +56,19 @@ static MemoryManagement sDefaultMemoryManagement = { malloc, free, realloc };
 #else // HAVE_MALLOC && HAVE_FREE && HAVE_REALLOC
 #error "Implementations of malloc, free, and realloc must be present in order to use stdlib memory management."
 #endif // HAVE_MALLOC && HAVE_FREE && HAVE_REALLOC
-#else // !WEAVE_CONFIG_SERIALIZATION_USE_MALLOC
-static void *unsupported_malloc(size_t size)
+#else  // !WEAVE_CONFIG_SERIALIZATION_USE_MALLOC
+static void * unsupported_malloc(size_t size)
 {
     WeaveLogError(Support, "malloc() not supported");
     return NULL;
 }
 
-static void unsupported_free(void *ptr)
+static void unsupported_free(void * ptr)
 {
     WeaveLogError(Support, "free() not supported");
 }
 
-static void *unsupported_realloc(void *ptr, size_t size)
+static void * unsupported_realloc(void * ptr, size_t size)
 {
     WeaveLogError(Support, "realloc() not supported");
     return NULL;
@@ -77,41 +77,39 @@ static void *unsupported_realloc(void *ptr, size_t size)
 static MemoryManagement sDefaultMemoryManagement = { unsupported_malloc, unsupported_free, unsupported_realloc };
 #endif // !WEAVE_CONFIG_SERIALIZATION_USE_MALLOC
 
-static WEAVE_ERROR ReadArrayData(TLVReader &aReader,
-                                 void *aStructureData,
-                                 const FieldDescriptor * aFieldPtr,
-                                 SerializationContext *aContext = NULL);
+static WEAVE_ERROR ReadArrayData(TLVReader & aReader, void * aStructureData, const FieldDescriptor * aFieldPtr,
+                                 SerializationContext * aContext = NULL);
 
-static WEAVE_ERROR CheckForEndOfTLV(TLVReader &aReader, bool &aEndOfTLV);
+static WEAVE_ERROR CheckForEndOfTLV(TLVReader & aReader, bool & aEndOfTLV);
 
-static WEAVE_ERROR DeallocateDeserializedArray(void *aArrayData,
-                                               const SchemaFieldDescriptor *aFieldDescriptors,
-                                               SerializationContext *aContext = NULL);
+static WEAVE_ERROR DeallocateDeserializedArray(void * aArrayData, const SchemaFieldDescriptor * aFieldDescriptors,
+                                               SerializationContext * aContext = NULL);
 
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 
-static WEAVE_ERROR WriteArrayData(TLVWriter &aWriter,
-                                  void *aStructureData,
-                                  const FieldDescriptor * aFieldPtr);
+static WEAVE_ERROR WriteArrayData(TLVWriter & aWriter, void * aStructureData, const FieldDescriptor * aFieldPtr);
 
-static WEAVE_ERROR WriteDataForType(TLVWriter &aWriter,
-                                    void *aStructureData,
-                                    const FieldDescriptor *&aFieldPtr,
-                                    SerializedFieldType aType,
-                                    bool aInArray);
+static WEAVE_ERROR WriteDataForType(TLVWriter & aWriter, void * aStructureData, const FieldDescriptor *& aFieldPtr,
+                                    SerializedFieldType aType, bool aInArray);
 
-static WEAVE_ERROR ReadDataForType(TLVReader &aReader,
-                                   void *aStructureData,
-                                   const FieldDescriptor *&aFieldPtr,
-                                   SerializedFieldType aType,
-                                   bool aInArray,
-                                   SerializationContext *aContext = NULL);
+static WEAVE_ERROR ReadDataForType(TLVReader & aReader, void * aStructureData, const FieldDescriptor *& aFieldPtr,
+                                   SerializedFieldType aType, bool aInArray, SerializationContext * aContext = NULL);
 
 #if WEAVE_CONFIG_SERIALIZATION_DEBUG_LOGGING
 static int32_t sIndentationLevel = 0;
 #define LogReadWrite(aFormat, ...) WeaveLogDetail(Support, "%*s" aFormat, sIndentationLevel, "", __VA_ARGS__)
-#define LogReadWriteStartContainer(aFormat, ...) do { LogReadWrite(aFormat, __VA_ARGS__); sIndentationLevel += 2; } while (0);
-#define LogReadWriteEndContainer(aFormat, ...) do { sIndentationLevel -= 2; LogReadWrite(aFormat, __VA_ARGS__); } while (0);
+#define LogReadWriteStartContainer(aFormat, ...)                                                                                   \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        LogReadWrite(aFormat, __VA_ARGS__);                                                                                        \
+        sIndentationLevel += 2;                                                                                                    \
+    } while (0);
+#define LogReadWriteEndContainer(aFormat, ...)                                                                                     \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        sIndentationLevel -= 2;                                                                                                    \
+        LogReadWrite(aFormat, __VA_ARGS__);                                                                                        \
+    } while (0);
 #else // WEAVE_CONFIG_SERIALIZATION_DEBUG_LOGGING
 #define LogReadWrite(aFormat, ...)
 #define LogReadWriteStartContainer(aFormat, ...)
@@ -123,26 +121,25 @@ static bool IsValidFieldType(SerializedFieldType aType)
     return (aType <= SerializedFieldTypeArray);
 }
 
-const static uint8_t sElementSize[] =
-{
-    sizeof(bool),                   //SerializedFieldTypeBoolean
-    sizeof(uint8_t),                //SerializedFieldTypeUInt8,
-    sizeof(uint16_t),               //SerializedFieldTypeUInt16,
-    sizeof(uint32_t),               //SerializedFieldTypeUInt32,
-    sizeof(uint64_t),               //SerializedFieldTypeUInt64,
-    sizeof(int8_t),                 //SerializedFieldTypeInt8,
-    sizeof(int16_t),                //SerializedFieldTypeInt16,
-    sizeof(int32_t),                //SerializedFieldTypeInt32,
-    sizeof(int64_t),                //SerializedFieldTypeInt64,
-    sizeof(float),                  //SerializedFieldTypeFloatingPoint32,
-    sizeof(double),                 //SerializedFieldTypeFloatingPoint64,
-    sizeof(char *),                 //SerializedFieldTypeUTF8String,
-    sizeof(SerializedByteString),   //SerializedFieldTypeByteString,
-    sizeof(void *),                 //SerializedFieldTypeStructure,
-    sizeof(void *)                  //SerializedFieldTypeArray,
+const static uint8_t sElementSize[] = {
+    sizeof(bool),                 // SerializedFieldTypeBoolean
+    sizeof(uint8_t),              // SerializedFieldTypeUInt8,
+    sizeof(uint16_t),             // SerializedFieldTypeUInt16,
+    sizeof(uint32_t),             // SerializedFieldTypeUInt32,
+    sizeof(uint64_t),             // SerializedFieldTypeUInt64,
+    sizeof(int8_t),               // SerializedFieldTypeInt8,
+    sizeof(int16_t),              // SerializedFieldTypeInt16,
+    sizeof(int32_t),              // SerializedFieldTypeInt32,
+    sizeof(int64_t),              // SerializedFieldTypeInt64,
+    sizeof(float),                // SerializedFieldTypeFloatingPoint32,
+    sizeof(double),               // SerializedFieldTypeFloatingPoint64,
+    sizeof(char *),               // SerializedFieldTypeUTF8String,
+    sizeof(SerializedByteString), // SerializedFieldTypeByteString,
+    sizeof(void *),               // SerializedFieldTypeStructure,
+    sizeof(void *)                // SerializedFieldTypeArray,
 };
 
-static WEAVE_ERROR GetArrayElementSize(uint32_t &aOutSize, const FieldDescriptor * aFieldPtr, SerializedFieldType aType)
+static WEAVE_ERROR GetArrayElementSize(uint32_t & aOutSize, const FieldDescriptor * aFieldPtr, SerializedFieldType aType)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -180,14 +177,14 @@ exit:
  * @retval other          Other errors that mey be returned from the aWriter.
  *
  */
-WEAVE_ERROR WriteArrayData(TLVWriter &aWriter, void *aStructureData, const FieldDescriptor * aFieldPtr)
+WEAVE_ERROR WriteArrayData(TLVWriter & aWriter, void * aStructureData, const FieldDescriptor * aFieldPtr)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err           = WEAVE_NO_ERROR;
     const bool writingInArray = true;
     SerializedFieldType type;
-    ArrayLengthAndBuffer *array;
-    const FieldDescriptor *fieldPtr = aFieldPtr;
-    uint32_t elementSize = 0;
+    ArrayLengthAndBuffer * array;
+    const FieldDescriptor * fieldPtr = aFieldPtr;
+    uint32_t elementSize             = 0;
 
     // aStructureData should be pointing to the wrapped length and buffer structure
     array = static_cast<ArrayLengthAndBuffer *>(aStructureData);
@@ -207,9 +204,12 @@ WEAVE_ERROR WriteArrayData(TLVWriter &aWriter, void *aStructureData, const Field
         // Increment based on type
         aFieldPtr = fieldPtr;
 
-        LogReadWrite("%s aStructureData 0x%x array 0x%x array->mNumElements %d array->mElementBuffer 0x%x idx %d idx * elementSize 0x%x", "W", aStructureData, array, array->mNumElements, array->mElementBuffer, idx, idx * elementSize);
+        LogReadWrite(
+            "%s aStructureData 0x%x array 0x%x array->mNumElements %d array->mElementBuffer 0x%x idx %d idx * elementSize 0x%x",
+            "W", aStructureData, array, array->mNumElements, array->mElementBuffer, idx, idx * elementSize);
 
-        err = WriteDataForType(aWriter, static_cast<char *>(array->mElementBuffer) + idx * elementSize, aFieldPtr, type, writingInArray);
+        err = WriteDataForType(aWriter, static_cast<char *>(array->mElementBuffer) + idx * elementSize, aFieldPtr, type,
+                               writingInArray);
         SuccessOrExit(err);
     }
 
@@ -240,7 +240,8 @@ exit:
  * @retval other          TLV errors while writing.
  *
  */
-WEAVE_ERROR WriteNullableDataForType(TLVWriter &aWriter, void *aStructureData, const FieldDescriptor *&aFieldPtr, SerializedFieldType aType, bool aIsNullified)
+WEAVE_ERROR WriteNullableDataForType(TLVWriter & aWriter, void * aStructureData, const FieldDescriptor *& aFieldPtr,
+                                     SerializedFieldType aType, bool aIsNullified)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -284,7 +285,8 @@ exit:
  * @retval other          Other errors that mey be returned from the aWriter.
  *
  */
-WEAVE_ERROR WriteDataForType(TLVWriter &aWriter, void *aStructureData, const FieldDescriptor *&aFieldPtr, SerializedFieldType aType, bool aInArray)
+WEAVE_ERROR WriteDataForType(TLVWriter & aWriter, void * aStructureData, const FieldDescriptor *& aFieldPtr,
+                             SerializedFieldType aType, bool aInArray)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType containerType;
@@ -295,205 +297,201 @@ WEAVE_ERROR WriteDataForType(TLVWriter &aWriter, void *aStructureData, const Fie
 
     switch (aType)
     {
-        case SerializedFieldTypeBoolean:
-        {
-            bool v = *static_cast<bool *>(aStructureData);
+    case SerializedFieldTypeBoolean:
+    {
+        bool v = *static_cast<bool *>(aStructureData);
 
-            LogReadWrite("%s boolean '%s'", "W", v ? "true" : "false");
+        LogReadWrite("%s boolean '%s'", "W", v ? "true" : "false");
 
-            err = aWriter.PutBoolean(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.PutBoolean(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeUInt8:
-        {
-            uint8_t v = *static_cast<uint8_t *>(aStructureData);
+    case SerializedFieldTypeUInt8:
+    {
+        uint8_t v = *static_cast<uint8_t *>(aStructureData);
 
-            LogReadWrite("%s uint8 %u", "W", v);
+        LogReadWrite("%s uint8 %u", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeUInt16:
-        {
-            uint16_t v = *static_cast<uint16_t *>(aStructureData);
+    case SerializedFieldTypeUInt16:
+    {
+        uint16_t v = *static_cast<uint16_t *>(aStructureData);
 
-            LogReadWrite("%s uint16 %u", "W", v);
+        LogReadWrite("%s uint16 %u", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeUInt32:
-        {
-            uint32_t v = *static_cast<uint32_t *>(aStructureData);
+    case SerializedFieldTypeUInt32:
+    {
+        uint32_t v = *static_cast<uint32_t *>(aStructureData);
 
-            LogReadWrite("%s uint32 %u", "W", v);
+        LogReadWrite("%s uint32 %u", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeUInt64:
-        {
-            uint64_t v = *static_cast<uint64_t *>(aStructureData);
+    case SerializedFieldTypeUInt64:
+    {
+        uint64_t v = *static_cast<uint64_t *>(aStructureData);
 
-            LogReadWrite("%s uint64 %llu", "W", v);
+        LogReadWrite("%s uint64 %llu", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeInt8:
-        {
-            int8_t v = *static_cast<int8_t *>(aStructureData);
+    case SerializedFieldTypeInt8:
+    {
+        int8_t v = *static_cast<int8_t *>(aStructureData);
 
-            LogReadWrite("%s int8 %d", "W", v);
+        LogReadWrite("%s int8 %d", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeInt16:
-        {
-            int16_t v = *static_cast<int16_t *>(aStructureData);
+    case SerializedFieldTypeInt16:
+    {
+        int16_t v = *static_cast<int16_t *>(aStructureData);
 
-            LogReadWrite("%s int16 %d", "W", v);
+        LogReadWrite("%s int16 %d", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeInt32:
-        {
-            int32_t v = *static_cast<int32_t *>(aStructureData);
+    case SerializedFieldTypeInt32:
+    {
+        int32_t v = *static_cast<int32_t *>(aStructureData);
 
-            LogReadWrite("%s int32 %d", "W", v);
+        LogReadWrite("%s int32 %d", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeInt64:
-        {
-            int64_t v = *static_cast<int64_t *>(aStructureData);
+    case SerializedFieldTypeInt64:
+    {
+        int64_t v = *static_cast<int64_t *>(aStructureData);
 
-            LogReadWrite("%s int64 %d", "W", v);
+        LogReadWrite("%s int64 %d", "W", v);
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeFloatingPoint32:
-        {
-            float v = *static_cast<float *>(aStructureData);
-
-#if WEAVE_CONFIG_SERIALIZATION_LOG_FLOATS
-            LogReadWrite("%s float %f", "W", v);
-#endif
-
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
-
-        case SerializedFieldTypeFloatingPoint64:
-        {
-            double v = *static_cast<double *>(aStructureData);
+    case SerializedFieldTypeFloatingPoint32:
+    {
+        float v = *static_cast<float *>(aStructureData);
 
 #if WEAVE_CONFIG_SERIALIZATION_LOG_FLOATS
-            LogReadWrite("%s double %f", "W", v);
+        LogReadWrite("%s float %f", "W", v);
 #endif
 
-            err = aWriter.Put(tag, v);
-            SuccessOrExit(err);
-            break;
-        }
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
 
-        case SerializedFieldTypeUTF8String:
+    case SerializedFieldTypeFloatingPoint64:
+    {
+        double v = *static_cast<double *>(aStructureData);
+
+#if WEAVE_CONFIG_SERIALIZATION_LOG_FLOATS
+        LogReadWrite("%s double %f", "W", v);
+#endif
+
+        err = aWriter.Put(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
+
+    case SerializedFieldTypeUTF8String:
+    {
+        const char * v = *static_cast<const char **>(aStructureData);
+
+        LogReadWrite("%s utf8string '%s'", "W", v);
+
+        err = aWriter.PutString(tag, v);
+        SuccessOrExit(err);
+        break;
+    }
+
+    case SerializedFieldTypeByteString:
+    {
+        SerializedByteString v = *static_cast<SerializedByteString *>(aStructureData);
+
+        LogReadWrite("%s bytestring len: %u", "W", v.mLen);
+
+        err = aWriter.PutBytes(tag, v.mBuf, v.mLen);
+        SuccessOrExit(err);
+        break;
+    }
+
+    // We can hit this case when we have an array of structures.
+    case SerializedFieldTypeStructure:
+    {
+        err = aWriter.StartContainer(tag, kTLVType_Structure, containerType);
+        SuccessOrExit(err);
+
+        LogReadWriteStartContainer("%s Structure Start", "W");
+
+        err = SerializedDataToTLVWriter(aWriter, aStructureData, aFieldPtr->mNestedFieldDescriptors);
+        SuccessOrExit(err);
+
+        LogReadWriteEndContainer("%s Structure End", "W");
+
+        err = aWriter.EndContainer(containerType);
+        SuccessOrExit(err);
+        break;
+    }
+
+    case SerializedFieldTypeArray:
+    {
+        err = aWriter.StartContainer(tag, kTLVType_Array, containerType);
+        SuccessOrExit(err);
+
+        LogReadWriteStartContainer("%s Array Start", "W");
+
+        err = WriteArrayData(aWriter, aStructureData, aFieldPtr);
+        if (err == WEAVE_END_OF_TLV)
         {
-            const char *v = *static_cast<const char**>(aStructureData);
-
-            LogReadWrite("%s utf8string '%s'", "W", v);
-
-            err = aWriter.PutString(tag, v);
-            SuccessOrExit(err);
-            break;
+            err = WEAVE_NO_ERROR;
         }
+        SuccessOrExit(err);
 
-        case SerializedFieldTypeByteString:
-        {
-            SerializedByteString v = *static_cast<SerializedByteString *>(aStructureData);
+        LogReadWriteEndContainer("%s Array End", "W");
 
-            LogReadWrite("%s bytestring len: %u", "W", v.mLen);
+        err = aWriter.EndContainer(containerType);
+        SuccessOrExit(err);
 
-            err = aWriter.PutBytes(tag, v.mBuf, v.mLen);
-            SuccessOrExit(err);
-            break;
-        }
+        // Skip over the elements.
+        aFieldPtr++;
 
-        // We can hit this case when we have an array of structures.
-        case SerializedFieldTypeStructure:
-        {
-            err = aWriter.StartContainer(tag,
-                                         kTLVType_Structure,
-                                         containerType);
-            SuccessOrExit(err);
+        break;
+    }
 
-            LogReadWriteStartContainer("%s Structure Start", "W");
-
-            err = SerializedDataToTLVWriter(aWriter, aStructureData, aFieldPtr->mNestedFieldDescriptors);
-            SuccessOrExit(err);
-
-            LogReadWriteEndContainer("%s Structure End", "W");
-
-            err = aWriter.EndContainer(containerType);
-            SuccessOrExit(err);
-            break;
-        }
-
-        case SerializedFieldTypeArray:
-        {
-            err = aWriter.StartContainer(tag,
-                                         kTLVType_Array,
-                                         containerType);
-            SuccessOrExit(err);
-
-            LogReadWriteStartContainer("%s Array Start", "W");
-
-            err = WriteArrayData(aWriter, aStructureData, aFieldPtr);
-            if (err == WEAVE_END_OF_TLV)
-            {
-                err = WEAVE_NO_ERROR;
-            }
-            SuccessOrExit(err);
-
-            LogReadWriteEndContainer("%s Array End", "W");
-
-            err = aWriter.EndContainer(containerType);
-            SuccessOrExit(err);
-
-            // Skip over the elements.
-            aFieldPtr++;
-
-            break;
-        }
-
-        default:
-        {
-            err = WEAVE_ERROR_INVALID_ARGUMENT;
-            break;
-        }
+    default:
+    {
+        err = WEAVE_ERROR_INVALID_ARGUMENT;
+        break;
+    }
     }
     aFieldPtr++;
 exit:
@@ -516,20 +514,21 @@ exit:
  * @retval other          Other errors that mey be returned from the aWriter.
  *
  */
-WEAVE_ERROR ReadArrayData(TLVReader &aReader, void *aStructureData, const FieldDescriptor * aFieldPtr, SerializationContext *aContext)
+WEAVE_ERROR ReadArrayData(TLVReader & aReader, void * aStructureData, const FieldDescriptor * aFieldPtr,
+                          SerializationContext * aContext)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
+    WEAVE_ERROR err            = WEAVE_NO_ERROR;
     const bool readingOutArray = true;
     SerializedFieldType type;
-    ArrayLengthAndBuffer *array;
-    const FieldDescriptor *fieldPtr = aFieldPtr;
-    size_t count = 0;
-    char *outputBuffer = NULL;
-    size_t outputBufferNumItems = 0;
-    size_t outputBufferNumResizes = 0;
-    MemoryManagement *memMgmt = NULL;
-    uint32_t elementSize = 0;
-    bool endOfTLV = false;
+    ArrayLengthAndBuffer * array;
+    const FieldDescriptor * fieldPtr = aFieldPtr;
+    size_t count                     = 0;
+    char * outputBuffer              = NULL;
+    size_t outputBufferNumItems      = 0;
+    size_t outputBufferNumResizes    = 0;
+    MemoryManagement * memMgmt       = NULL;
+    uint32_t elementSize             = 0;
+    bool endOfTLV                    = false;
 
     if ((aContext == NULL) || !(aContext->memMgmt.mem_alloc && aContext->memMgmt.mem_free && aContext->memMgmt.mem_realloc))
     {
@@ -544,7 +543,7 @@ WEAVE_ERROR ReadArrayData(TLVReader &aReader, void *aStructureData, const FieldD
     array = static_cast<ArrayLengthAndBuffer *>(aStructureData);
 
     // Initialize.
-    array->mNumElements = 0;
+    array->mNumElements   = 0;
     array->mElementBuffer = NULL;
 
     // the type of the array is next in the FieldDescriptors list
@@ -571,7 +570,7 @@ WEAVE_ERROR ReadArrayData(TLVReader &aReader, void *aStructureData, const FieldD
         if (count >= outputBufferNumItems)
         {
             outputBufferNumItems = (1 << ++outputBufferNumResizes);
-            outputBuffer = (char *)memMgmt->mem_realloc((void *)outputBuffer, outputBufferNumItems*elementSize);
+            outputBuffer         = (char *) memMgmt->mem_realloc((void *) outputBuffer, outputBufferNumItems * elementSize);
             VerifyOrExit(outputBuffer != NULL, err = WEAVE_ERROR_NO_MEMORY);
 
             LogReadWrite("%s allocating array memory at 0x%x", "R", outputBuffer);
@@ -580,16 +579,17 @@ WEAVE_ERROR ReadArrayData(TLVReader &aReader, void *aStructureData, const FieldD
         // Increment based on type
         aFieldPtr = fieldPtr;
 
-        LogReadWrite("%s aStructureData 0x%x array 0x%x count %d outputBuffer 0x%x count*elementSize 0x%x", "R", aStructureData, array, count, outputBuffer, count, count*elementSize);
+        LogReadWrite("%s aStructureData 0x%x array 0x%x count %d outputBuffer 0x%x count*elementSize 0x%x", "R", aStructureData,
+                     array, count, outputBuffer, count, count * elementSize);
 
-        err = ReadDataForType(aReader, outputBuffer + count*elementSize, aFieldPtr, type, readingOutArray, aContext);
+        err = ReadDataForType(aReader, outputBuffer + count * elementSize, aFieldPtr, type, readingOutArray, aContext);
         if (err == WEAVE_END_OF_TLV)
         {
             count++;
 
-            array->mNumElements = count;
+            array->mNumElements   = count;
             array->mElementBuffer = outputBuffer;
-            err = WEAVE_NO_ERROR;
+            err                   = WEAVE_NO_ERROR;
             break;
         }
 
@@ -622,7 +622,7 @@ exit:
  * @retval other          Other errors that may be returned from the aReader.
  *
  */
-static WEAVE_ERROR CheckForEndOfTLV(TLVReader &aReader, bool &aEndOfTLV)
+static WEAVE_ERROR CheckForEndOfTLV(TLVReader & aReader, bool & aEndOfTLV)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
@@ -642,7 +642,7 @@ static WEAVE_ERROR CheckForEndOfTLV(TLVReader &aReader, bool &aEndOfTLV)
     if (err == WEAVE_END_OF_TLV)
     {
         aEndOfTLV = true;
-        err = WEAVE_NO_ERROR;
+        err       = WEAVE_NO_ERROR;
     }
 
 exit:
@@ -675,7 +675,8 @@ exit:
  * @retval other          TLV errors while writing.
  *
  */
-WEAVE_ERROR ReadNullableDataForType(TLVReader &aReader, void *aStructureData, const FieldDescriptor *&aFieldPtr, SerializedFieldType aType, bool &aIsNullified, SerializationContext *aContext)
+WEAVE_ERROR ReadNullableDataForType(TLVReader & aReader, void * aStructureData, const FieldDescriptor *& aFieldPtr,
+                                    SerializedFieldType aType, bool & aIsNullified, SerializationContext * aContext)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
 
@@ -689,7 +690,7 @@ WEAVE_ERROR ReadNullableDataForType(TLVReader &aReader, void *aStructureData, co
     else
     {
         aIsNullified = false;
-        err = ReadDataForType(aReader, aStructureData, aFieldPtr, aType, false, aContext);
+        err          = ReadDataForType(aReader, aStructureData, aFieldPtr, aType, false, aContext);
     }
 
     return err;
@@ -719,12 +720,13 @@ WEAVE_ERROR ReadNullableDataForType(TLVReader &aReader, void *aStructureData, co
  * @retval other          Other errors that mey be returned from the aReader.
  *
  */
-WEAVE_ERROR ReadDataForType(TLVReader &aReader, void *aStructureData, const FieldDescriptor *&aFieldPtr, SerializedFieldType aType, bool aInArray, SerializationContext *aContext)
+WEAVE_ERROR ReadDataForType(TLVReader & aReader, void * aStructureData, const FieldDescriptor *& aFieldPtr,
+                            SerializedFieldType aType, bool aInArray, SerializationContext * aContext)
 {
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType containerType;
-    MemoryManagement *memMgmt = NULL;
+    MemoryManagement * memMgmt = NULL;
 
     if ((aContext == NULL) || !(aContext->memMgmt.mem_alloc && aContext->memMgmt.mem_free && aContext->memMgmt.mem_realloc))
     {
@@ -739,231 +741,229 @@ WEAVE_ERROR ReadDataForType(TLVReader &aReader, void *aStructureData, const Fiel
 
     switch (aType)
     {
-        case SerializedFieldTypeBoolean:
-        {
-            bool v = false;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeBoolean:
+    {
+        bool v = false;
+        err    = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s boolean '%s'", "R", v ? "true" : "false");
+        LogReadWrite("%s boolean '%s'", "R", v ? "true" : "false");
 
-            *static_cast<bool *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<bool *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeUInt8:
-        {
-            uint8_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeUInt8:
+    {
+        uint8_t v = 0;
+        err       = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s uint8 %d", "R", v);
+        LogReadWrite("%s uint8 %d", "R", v);
 
-            *static_cast<uint8_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<uint8_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeUInt16:
-        {
-            uint16_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeUInt16:
+    {
+        uint16_t v = 0;
+        err        = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s unt16 %u", "R", v);
+        LogReadWrite("%s unt16 %u", "R", v);
 
-            *static_cast<uint16_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<uint16_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeUInt32:
-        {
-            uint32_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeUInt32:
+    {
+        uint32_t v = 0;
+        err        = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s uint32 %u", "R", v);
+        LogReadWrite("%s uint32 %u", "R", v);
 
-            *static_cast<uint32_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<uint32_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeUInt64:
-        {
-            uint64_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeUInt64:
+    {
+        uint64_t v = 0;
+        err        = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s uint64 %llu", "R", v);
+        LogReadWrite("%s uint64 %llu", "R", v);
 
-            *static_cast<uint64_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<uint64_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeInt8:
-        {
-            int8_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeInt8:
+    {
+        int8_t v = 0;
+        err      = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s int8 %d", "R", v);
+        LogReadWrite("%s int8 %d", "R", v);
 
-            *static_cast<int8_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<int8_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeInt16:
-        {
-            int16_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeInt16:
+    {
+        int16_t v = 0;
+        err       = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s int16 %d", "R", v);
+        LogReadWrite("%s int16 %d", "R", v);
 
-            *static_cast<int16_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<int16_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeInt32:
-        {
-            int32_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeInt32:
+    {
+        int32_t v = 0;
+        err       = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s int32 %d", "R", v);
+        LogReadWrite("%s int32 %d", "R", v);
 
-            *static_cast<int32_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<int32_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeInt64:
-        {
-            int64_t v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeInt64:
+    {
+        int64_t v = 0;
+        err       = aReader.Get(v);
+        SuccessOrExit(err);
 
-            LogReadWrite("%s int64 %lld", "R", v);
+        LogReadWrite("%s int64 %lld", "R", v);
 
-            *static_cast<int64_t *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<int64_t *>(aStructureData) = v;
+        break;
+    }
 
-        case SerializedFieldTypeFloatingPoint32:
-        {
-            double v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
-
-#if WEAVE_CONFIG_SERIALIZATION_LOG_FLOATS
-            LogReadWrite("%s float %f", "R", v);
-#endif
-
-            *static_cast<float *>(aStructureData) = (float)v;
-            break;
-        }
-
-        case SerializedFieldTypeFloatingPoint64:
-        {
-            double v = 0;
-            err = aReader.Get(v);
-            SuccessOrExit(err);
+    case SerializedFieldTypeFloatingPoint32:
+    {
+        double v = 0;
+        err      = aReader.Get(v);
+        SuccessOrExit(err);
 
 #if WEAVE_CONFIG_SERIALIZATION_LOG_FLOATS
-            LogReadWrite("%s double %f", "R", v);
+        LogReadWrite("%s float %f", "R", v);
 #endif
 
-            *static_cast<double *>(aStructureData) = v;
-            break;
-        }
+        *static_cast<float *>(aStructureData) = (float) v;
+        break;
+    }
 
-        case SerializedFieldTypeUTF8String:
+    case SerializedFieldTypeFloatingPoint64:
+    {
+        double v = 0;
+        err      = aReader.Get(v);
+        SuccessOrExit(err);
+
+#if WEAVE_CONFIG_SERIALIZATION_LOG_FLOATS
+        LogReadWrite("%s double %f", "R", v);
+#endif
+
+        *static_cast<double *>(aStructureData) = v;
+        break;
+    }
+
+    case SerializedFieldTypeUTF8String:
+    {
+        char * dst = NULL;
+        // TLV Strings are not null terminated
+        uint32_t length = aReader.GetLength() + 1;
+
+        dst = (char *) memMgmt->mem_alloc(length);
+        VerifyOrExit(dst != NULL, err = WEAVE_ERROR_NO_MEMORY);
+
+        err = aReader.GetString(dst, length);
+        SuccessOrExit(err);
+
+        LogReadWrite("%s utf8string '%s' allocating %d bytes at %p", "R", dst, length, dst);
+        *static_cast<char **>(aStructureData) = dst;
+        break;
+    }
+
+    case SerializedFieldTypeByteString:
+    {
+        SerializedByteString byteString;
+        byteString.mLen = aReader.GetLength();
+
+        byteString.mBuf = static_cast<uint8_t *>(memMgmt->mem_alloc(byteString.mLen));
+        VerifyOrExit(byteString.mBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
+        aReader.GetBytes(byteString.mBuf, byteString.mLen);
+
+        LogReadWrite("%s bytestring allocated %d bytes at %p", "R", byteString.mLen, byteString.mBuf);
+        *static_cast<SerializedByteString *>(aStructureData) = byteString;
+        break;
+    }
+
+    // We can hit this case when we have an array of structures.
+    case SerializedFieldTypeStructure:
+        err = aReader.EnterContainer(containerType);
+        SuccessOrExit(err);
+        VerifyOrExit(aReader.GetContainerType() == nl::Weave::TLV::kTLVType_Structure, err = WEAVE_ERROR_WRONG_TLV_TYPE);
+
+        err = aReader.Next();
+        if (err == WEAVE_END_OF_TLV)
+            err = WEAVE_NO_ERROR;
+        SuccessOrExit(err);
+
+        LogReadWriteStartContainer("%s Structure Start", "R");
+
+        err = TLVReaderToDeserializedData(aReader, aStructureData, aFieldPtr->mNestedFieldDescriptors, aContext);
+        if (err == WEAVE_END_OF_TLV)
         {
-            char *dst = NULL;
-            // TLV Strings are not null terminated
-            uint32_t length = aReader.GetLength() + 1;
-
-            dst = (char *)memMgmt->mem_alloc(length);
-            VerifyOrExit(dst != NULL, err = WEAVE_ERROR_NO_MEMORY);
-
-            err = aReader.GetString(dst, length);
-            SuccessOrExit(err);
-
-            LogReadWrite("%s utf8string '%s' allocating %d bytes at %p", "R", dst, length, dst);
-            *static_cast<char**>(aStructureData) = dst;
-            break;
+            err = WEAVE_NO_ERROR;
         }
+        SuccessOrExit(err);
 
-        case SerializedFieldTypeByteString:
-        {
-            SerializedByteString byteString;
-            byteString.mLen = aReader.GetLength();
+        LogReadWriteEndContainer("%s Structure End", "R");
 
-            byteString.mBuf = static_cast<uint8_t *>(memMgmt->mem_alloc(byteString.mLen));
-            VerifyOrExit(byteString.mBuf != NULL, err = WEAVE_ERROR_NO_MEMORY);
-            aReader.GetBytes(byteString.mBuf, byteString.mLen);
+        err = aReader.ExitContainer(containerType);
+        break;
+    case SerializedFieldTypeArray:
+    {
+        err = aReader.EnterContainer(containerType);
+        SuccessOrExit(err);
+        VerifyOrExit(aReader.GetContainerType() == nl::Weave::TLV::kTLVType_Array, err = WEAVE_ERROR_WRONG_TLV_TYPE);
 
-            LogReadWrite("%s bytestring allocated %d bytes at %p", "R", byteString.mLen, byteString.mBuf);
-            *static_cast<SerializedByteString *>(aStructureData) = byteString;
-            break;
-        }
+        err = aReader.Next();
+        if (err == WEAVE_END_OF_TLV)
+            err = WEAVE_NO_ERROR;
+        SuccessOrExit(err);
 
-        // We can hit this case when we have an array of structures.
-        case SerializedFieldTypeStructure:
-            err = aReader.EnterContainer(containerType);
-            SuccessOrExit(err);
-            VerifyOrExit(aReader.GetContainerType() == nl::Weave::TLV::kTLVType_Structure, err = WEAVE_ERROR_WRONG_TLV_TYPE);
+        LogReadWriteStartContainer("%s Array Start", "R");
 
-            err = aReader.Next();
-            if (err == WEAVE_END_OF_TLV)
-                err = WEAVE_NO_ERROR;
-            SuccessOrExit(err);
+        err = ReadArrayData(aReader, aStructureData, aFieldPtr, aContext);
+        SuccessOrExit(err);
 
-            LogReadWriteStartContainer("%s Structure Start", "R");
+        LogReadWriteEndContainer("%s Array End", "R");
 
-            err = TLVReaderToDeserializedData(aReader, aStructureData, aFieldPtr->mNestedFieldDescriptors, aContext);
-            if (err == WEAVE_END_OF_TLV)
-            {
-                err = WEAVE_NO_ERROR;
-            }
-            SuccessOrExit(err);
+        err = aReader.ExitContainer(containerType);
 
-            LogReadWriteEndContainer("%s Structure End", "R");
+        // Skip over elements.
+        aFieldPtr++;
 
-            err = aReader.ExitContainer(containerType);
-            break;
-        case SerializedFieldTypeArray:
-        {
-            err = aReader.EnterContainer(containerType);
-            SuccessOrExit(err);
-            VerifyOrExit(aReader.GetContainerType() == nl::Weave::TLV::kTLVType_Array, err = WEAVE_ERROR_WRONG_TLV_TYPE);
-
-            err = aReader.Next();
-            if (err == WEAVE_END_OF_TLV)
-                err = WEAVE_NO_ERROR;
-            SuccessOrExit(err);
-
-            LogReadWriteStartContainer("%s Array Start", "R");
-
-            err = ReadArrayData(aReader, aStructureData, aFieldPtr, aContext);
-            SuccessOrExit(err);
-
-            LogReadWriteEndContainer("%s Array End", "R");
-
-            err = aReader.ExitContainer(containerType);
-
-            // Skip over elements.
-            aFieldPtr++;
-
-            break;
-        }
-        default:
-            err = WEAVE_ERROR_INVALID_ARGUMENT;
-            break;
+        break;
+    }
+    default: err = WEAVE_ERROR_INVALID_ARGUMENT; break;
     }
     aFieldPtr++;
     err = aReader.Next();
 exit:
     return err;
-#else // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
+#else  // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 }
@@ -995,11 +995,12 @@ exit:
  *                                       doesn't match expectation.
  *
  */
-static WEAVE_ERROR FindNullifiedFieldsArray(void *aStructureData, const SchemaFieldDescriptor *aSchemaDescriptor, uint8_t *&aNullifiedFields)
+static WEAVE_ERROR FindNullifiedFieldsArray(void * aStructureData, const SchemaFieldDescriptor * aSchemaDescriptor,
+                                            uint8_t *& aNullifiedFields)
 {
     uint32_t offset;
     WEAVE_ERROR err;
-    const FieldDescriptor *lastFieldDescriptor = &(aSchemaDescriptor->mFields[aSchemaDescriptor->mNumFieldDescriptorElements - 1]);
+    const FieldDescriptor * lastFieldDescriptor = &(aSchemaDescriptor->mFields[aSchemaDescriptor->mNumFieldDescriptorElements - 1]);
 
     err = GetArrayElementSize(offset, lastFieldDescriptor, lastFieldDescriptor->GetType());
     SuccessOrExit(err);
@@ -1025,39 +1026,34 @@ exit:
  * @retval other          Other errors that mey be returned from the aWriter.
  *
  */
-WEAVE_ERROR SerializedDataToTLVWriter(TLVWriter &aWriter, void *aStructureData, const SchemaFieldDescriptor *aFieldDescriptors)
+WEAVE_ERROR SerializedDataToTLVWriter(TLVWriter & aWriter, void * aStructureData, const SchemaFieldDescriptor * aFieldDescriptors)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const FieldDescriptor *fieldPtr = aFieldDescriptors->mFields;
-    const FieldDescriptor *endFieldPtr = &(aFieldDescriptors->mFields[aFieldDescriptors->mNumFieldDescriptorElements]);
-    int nullifiedBitIdx = 0;
-    uint8_t *nullifiedFields = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    const FieldDescriptor * fieldPtr    = aFieldDescriptors->mFields;
+    const FieldDescriptor * endFieldPtr = &(aFieldDescriptors->mFields[aFieldDescriptors->mNumFieldDescriptorElements]);
+    int nullifiedBitIdx                 = 0;
+    uint8_t * nullifiedFields           = NULL;
 
     err = FindNullifiedFieldsArray(aStructureData, aFieldDescriptors, nullifiedFields);
     SuccessOrExit(err);
 
     while (fieldPtr < endFieldPtr)
     {
-        bool aIsNullified = fieldPtr->IsNullable() &&
-            GET_FIELD_NULLIFIED_BIT(nullifiedFields, nullifiedBitIdx);
+        bool aIsNullified = fieldPtr->IsNullable() && GET_FIELD_NULLIFIED_BIT(nullifiedFields, nullifiedBitIdx);
 
         if (fieldPtr->IsNullable())
         {
             nullifiedBitIdx++;
         }
 
-        err = WriteNullableDataForType(aWriter,
-                               static_cast<char *>(aStructureData) + fieldPtr->mOffset,
-                               fieldPtr,
-                               fieldPtr->GetType(),
-                               aIsNullified);
+        err = WriteNullableDataForType(aWriter, static_cast<char *>(aStructureData) + fieldPtr->mOffset, fieldPtr,
+                                       fieldPtr->GetType(), aIsNullified);
         SuccessOrExit(err);
     }
 
 exit:
     return err;
 }
-
 
 /**
  * @brief
@@ -1076,15 +1072,13 @@ exit:
  * @retval other          Other errors that mey be returned from the aWriter.
  *
  */
-WEAVE_ERROR SerializedDataToTLVWriterHelper(TLVWriter &aWriter, uint8_t aDataTag, void *aAppData)
+WEAVE_ERROR SerializedDataToTLVWriterHelper(TLVWriter & aWriter, uint8_t aDataTag, void * aAppData)
 {
-    StructureSchemaPointerPair *structureSchemaPair = static_cast<StructureSchemaPointerPair *>(aAppData);
-    const bool inArray = false;
-    FieldDescriptor descriptor = { structureSchemaPair->mFieldSchema,
-                                   0,
-                                   static_cast<uint8_t>(SerializedFieldTypeStructure),
+    StructureSchemaPointerPair * structureSchemaPair = static_cast<StructureSchemaPointerPair *>(aAppData);
+    const bool inArray                               = false;
+    FieldDescriptor descriptor = { structureSchemaPair->mFieldSchema, 0, static_cast<uint8_t>(SerializedFieldTypeStructure),
                                    aDataTag };
-    const FieldDescriptor * pDescriptor = & descriptor;
+    const FieldDescriptor * pDescriptor = &descriptor;
 
 #if WEAVE_CONFIG_SERIALIZATION_DEBUG_LOGGING
     sIndentationLevel = 0;
@@ -1115,17 +1109,15 @@ WEAVE_ERROR SerializedDataToTLVWriterHelper(TLVWriter &aWriter, uint8_t aDataTag
  * @retval other          Other errors that may be returned from the aReader.
  *
  */
-WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader &aReader,
-                                        void *aStructureData,
-                                        const SchemaFieldDescriptor *aFieldDescriptors,
-                                        SerializationContext *aContext)
+WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader & aReader, void * aStructureData,
+                                        const SchemaFieldDescriptor * aFieldDescriptors, SerializationContext * aContext)
 {
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const FieldDescriptor *fieldPtr = aFieldDescriptors->mFields;
-    const FieldDescriptor *endFieldPtr = &(aFieldDescriptors->mFields[aFieldDescriptors->mNumFieldDescriptorElements]);
-    int nullifiedBitIdx = 0;
-    uint8_t *nullifiedFields = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    const FieldDescriptor * fieldPtr    = aFieldDescriptors->mFields;
+    const FieldDescriptor * endFieldPtr = &(aFieldDescriptors->mFields[aFieldDescriptors->mNumFieldDescriptorElements]);
+    int nullifiedBitIdx                 = 0;
+    uint8_t * nullifiedFields           = NULL;
 
     err = FindNullifiedFieldsArray(aStructureData, aFieldDescriptors, nullifiedFields);
     SuccessOrExit(err);
@@ -1134,10 +1126,9 @@ WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader &aReader,
     while (fieldPtr < endFieldPtr)
     {
         // Tentatively searches for the next schema field matching the TLV tag in head.
-        const FieldDescriptor *searchFieldPtr = fieldPtr;
-        int searchNullifiedBitIdx = nullifiedBitIdx;
-        while (searchFieldPtr < endFieldPtr
-            && TagNumFromTag(aReader.GetTag()) != searchFieldPtr->mTVDContextTag)
+        const FieldDescriptor * searchFieldPtr = fieldPtr;
+        int searchNullifiedBitIdx              = nullifiedBitIdx;
+        while (searchFieldPtr < endFieldPtr && TagNumFromTag(aReader.GetTag()) != searchFieldPtr->mTVDContextTag)
         {
             // Sets any nullable skipped fields to NULL
             if (searchFieldPtr->IsNullable())
@@ -1153,17 +1144,13 @@ WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader &aReader,
         if (searchFieldPtr != endFieldPtr)
         {
             // Commit to found schema
-            fieldPtr = searchFieldPtr;
+            fieldPtr        = searchFieldPtr;
             nullifiedBitIdx = searchNullifiedBitIdx;
 
             bool isNullified = false;
-            bool isNullable = fieldPtr->IsNullable();
-            err = ReadNullableDataForType(aReader,
-                                  static_cast<char *>(aStructureData) + fieldPtr->mOffset,
-                                  fieldPtr,
-                                  fieldPtr->GetType(),
-                                  isNullified,
-                                  aContext);
+            bool isNullable  = fieldPtr->IsNullable();
+            err              = ReadNullableDataForType(aReader, static_cast<char *>(aStructureData) + fieldPtr->mOffset, fieldPtr,
+                                          fieldPtr->GetType(), isNullified, aContext);
 
             if (isNullable)
             {
@@ -1211,7 +1198,7 @@ WEAVE_ERROR TLVReaderToDeserializedData(nl::Weave::TLV::TLVReader &aReader,
 
 exit:
     return err;
-#else // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
+#else  // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 }
@@ -1244,45 +1231,41 @@ exit:
  * @retval other          Other errors that mey be returned from the aReader.
  *
  */
-WEAVE_ERROR TLVReaderToDeserializedDataHelper(nl::Weave::TLV::TLVReader &aReader,
-                                              uint8_t aDataTag,
-                                              void *aAppData,
-                                              SerializationContext *aContext)
+WEAVE_ERROR TLVReaderToDeserializedDataHelper(nl::Weave::TLV::TLVReader & aReader, uint8_t aDataTag, void * aAppData,
+                                              SerializationContext * aContext)
 {
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    StructureSchemaPointerPair *structureSchemaPair = static_cast<StructureSchemaPointerPair *>(aAppData);
-    const bool inArray = false;
-    FieldDescriptor descriptor = { structureSchemaPair->mFieldSchema,
-                                   0,
-                                   static_cast<uint8_t>(SerializedFieldTypeStructure),
+    WEAVE_ERROR err                                  = WEAVE_NO_ERROR;
+    StructureSchemaPointerPair * structureSchemaPair = static_cast<StructureSchemaPointerPair *>(aAppData);
+    const bool inArray                               = false;
+    FieldDescriptor descriptor = { structureSchemaPair->mFieldSchema, 0, static_cast<uint8_t>(SerializedFieldTypeStructure),
                                    aDataTag };
-    const FieldDescriptor * pDescriptor = & descriptor;
+    const FieldDescriptor * pDescriptor = &descriptor;
 
 #if WEAVE_CONFIG_SERIALIZATION_DEBUG_LOGGING
     sIndentationLevel = 0;
 #endif
 
-    err = ReadDataForType(aReader, structureSchemaPair->mStructureData, pDescriptor, SerializedFieldTypeStructure, inArray, aContext);
+    err =
+        ReadDataForType(aReader, structureSchemaPair->mStructureData, pDescriptor, SerializedFieldTypeStructure, inArray, aContext);
     if (err == WEAVE_END_OF_TLV)
     {
         err = WEAVE_NO_ERROR;
     }
 
     return err;
-#else // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
+#else  // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 }
 
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
-WEAVE_ERROR DeallocateDeserializedArray(void *aArrayData,
-                                        const SchemaFieldDescriptor *aFieldDescriptors,
-                                        SerializationContext *aContext/* = NULL*/)
+WEAVE_ERROR DeallocateDeserializedArray(void * aArrayData, const SchemaFieldDescriptor * aFieldDescriptors,
+                                        SerializationContext * aContext /* = NULL*/)
 {
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    MemoryManagement *memMgmt = NULL;
-    ArrayLengthAndBuffer *array = NULL;
+    WEAVE_ERROR err              = WEAVE_NO_ERROR;
+    MemoryManagement * memMgmt   = NULL;
+    ArrayLengthAndBuffer * array = NULL;
 
     // aStructureData should be pointing to the wrapped length and buffer structure
     array = static_cast<ArrayLengthAndBuffer *>(aArrayData);
@@ -1308,8 +1291,8 @@ WEAVE_ERROR DeallocateDeserializedArray(void *aArrayData,
         // The elements are structures, and we need to deallocate each one.
         for (uint32_t i = 0; i < array->mNumElements; i++)
         {
-            char *element = static_cast<char *>(array->mElementBuffer) + i*aFieldDescriptors->mSize;
-            err = DeallocateDeserializedStructure(element, aFieldDescriptors, aContext);
+            char * element = static_cast<char *>(array->mElementBuffer) + i * aFieldDescriptors->mSize;
+            err            = DeallocateDeserializedStructure(element, aFieldDescriptors, aContext);
             SuccessOrExit(err);
         }
 
@@ -1324,15 +1307,14 @@ exit:
 }
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 
-WEAVE_ERROR DeallocateDeserializedStructure(void *aStructureData,
-                                            const SchemaFieldDescriptor *aFieldDescriptors,
-                                            SerializationContext *aContext/* = NULL*/)
+WEAVE_ERROR DeallocateDeserializedStructure(void * aStructureData, const SchemaFieldDescriptor * aFieldDescriptors,
+                                            SerializationContext * aContext /* = NULL*/)
 {
 #if WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
-    WEAVE_ERROR err = WEAVE_NO_ERROR;
-    const FieldDescriptor *fieldPtr = aFieldDescriptors->mFields;
-    const FieldDescriptor *endFieldPtr = &(aFieldDescriptors->mFields[aFieldDescriptors->mNumFieldDescriptorElements]);
-    MemoryManagement *memMgmt = NULL;
+    WEAVE_ERROR err                     = WEAVE_NO_ERROR;
+    const FieldDescriptor * fieldPtr    = aFieldDescriptors->mFields;
+    const FieldDescriptor * endFieldPtr = &(aFieldDescriptors->mFields[aFieldDescriptors->mNumFieldDescriptorElements]);
+    MemoryManagement * memMgmt          = NULL;
 
     if ((aContext == NULL) || !(aContext->memMgmt.mem_alloc && aContext->memMgmt.mem_free && aContext->memMgmt.mem_realloc))
     {
@@ -1345,50 +1327,46 @@ WEAVE_ERROR DeallocateDeserializedStructure(void *aStructureData,
 
     while (fieldPtr < endFieldPtr)
     {
-        char *currentFieldData = static_cast<char *>(aStructureData) + fieldPtr->mOffset;
+        char * currentFieldData = static_cast<char *>(aStructureData) + fieldPtr->mOffset;
 
         switch (fieldPtr->GetType())
         {
-            case SerializedFieldTypeStructure:
-            {
-                err = DeallocateDeserializedStructure(currentFieldData,
-                                                      fieldPtr->mNestedFieldDescriptors,
-                                                      aContext);
-                SuccessOrExit(err);
-                break;
-            }
+        case SerializedFieldTypeStructure:
+        {
+            err = DeallocateDeserializedStructure(currentFieldData, fieldPtr->mNestedFieldDescriptors, aContext);
+            SuccessOrExit(err);
+            break;
+        }
 
-            case SerializedFieldTypeArray:
-            {
-                // fieldPtr is telling us we have an array, but the
-                // elements reside at the next field.  Increment
-                // fieldPtr to get us to the elements, but leave
-                // currentFieldData where it is.
-                fieldPtr++;
+        case SerializedFieldTypeArray:
+        {
+            // fieldPtr is telling us we have an array, but the
+            // elements reside at the next field.  Increment
+            // fieldPtr to get us to the elements, but leave
+            // currentFieldData where it is.
+            fieldPtr++;
 
-                err = DeallocateDeserializedArray(currentFieldData,
-                                                  fieldPtr->mNestedFieldDescriptors,
-                                                  aContext);
-                SuccessOrExit(err);
-                break;
-            }
+            err = DeallocateDeserializedArray(currentFieldData, fieldPtr->mNestedFieldDescriptors, aContext);
+            SuccessOrExit(err);
+            break;
+        }
 
-            case SerializedFieldTypeUTF8String:
-            {
-                char *str = *((char **)currentFieldData);
+        case SerializedFieldTypeUTF8String:
+        {
+            char * str = *((char **) currentFieldData);
 
-                LogReadWrite("%s Freeing UTF8String '%s' at 0x%x", "R", str, str);
+            LogReadWrite("%s Freeing UTF8String '%s' at 0x%x", "R", str, str);
 
-                // Go ahead and free it here.
-                memMgmt->mem_free(str);
-                break;
-            }
+            // Go ahead and free it here.
+            memMgmt->mem_free(str);
+            break;
+        }
 
-            default:
-            {
-                // A primitive type, doesn't need to be deallocated.
-                break;
-            }
+        default:
+        {
+            // A primitive type, doesn't need to be deallocated.
+            break;
+        }
         }
 
         fieldPtr++;
@@ -1400,9 +1378,9 @@ exit:
         err = WEAVE_NO_ERROR;
     }
     return err;
-#else // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
+#else  // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
     return WEAVE_ERROR_NOT_IMPLEMENTED;
 #endif // WEAVE_CONFIG_SERIALIZATION_ENABLE_DESERIALIZATION
 }
 
-} // nl
+} // namespace nl

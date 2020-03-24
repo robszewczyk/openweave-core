@@ -22,7 +22,6 @@
  *          for use on FreeRTOS platforms.
  */
 
-
 #ifndef GENERIC_THREAD_STACK_MANAGER_IMPL_FREERTOS_H
 #define GENERIC_THREAD_STACK_MANAGER_IMPL_FREERTOS_H
 
@@ -52,11 +51,9 @@ namespace Internal {
  * inherited, directly or indirectly, by the ThreadStackManagerImpl class, which also appears as
  * the template's ImplClass parameter.
  */
-template<class ImplClass>
-class GenericThreadStackManagerImpl_FreeRTOS
+template <class ImplClass> class GenericThreadStackManagerImpl_FreeRTOS
 {
 protected:
-
     // ===== Methods that implement the ThreadStackManager abstract interface.
 
     WEAVE_ERROR _StartThreadTask(void);
@@ -74,10 +71,9 @@ protected:
     BaseType_t SignalThreadActivityPendingFromISR();
 
 private:
-
     // ===== Private members for use by this class only.
 
-    inline ImplClass * Impl() { return static_cast<ImplClass*>(this); }
+    inline ImplClass * Impl() { return static_cast<ImplClass *>(this); }
 
     static void ThreadTaskMain(void * arg);
 };
@@ -91,4 +87,3 @@ extern template class GenericThreadStackManagerImpl_FreeRTOS<ThreadStackManagerI
 } // namespace nl
 
 #endif // GENERIC_THREAD_STACK_MANAGER_IMPL_FREERTOS_H
-

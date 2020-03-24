@@ -34,16 +34,16 @@ namespace Test {
 namespace Resource {
 namespace TraitTestResource {
 
-
-enum {
+enum
+{
     ServiceA = 0,
     ServiceB = 0,
     ServiceC = 0,
     ServiceD = 0,
-    DeviceA = 1,
-    DeviceB = 1,
-    DeviceC = 1,
-    DeviceD = 1,
+    DeviceA  = 1,
+    DeviceB  = 1,
+    DeviceC  = 1,
+    DeviceD  = 1,
     DeviceA2 = 2,
     DeviceA3 = 3,
 };

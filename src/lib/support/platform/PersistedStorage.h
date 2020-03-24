@@ -51,7 +51,7 @@ typedef WEAVE_CONFIG_PERSISTED_STORAGE_KEY_TYPE Key;
  *          WEAVE_ERROR_PERSISTED_STORAGE_VALUE_NOT_FOUND if aKey does not exist
  *          WEAVE_NO_ERROR otherwise
  */
-WEAVE_ERROR Read(Key aKey, uint32_t &aValue);
+WEAVE_ERROR Read(Key aKey, uint32_t & aValue);
 
 /**
  *  @brief
@@ -70,9 +70,9 @@ WEAVE_ERROR Read(Key aKey, uint32_t &aValue);
  */
 WEAVE_ERROR Write(Key aKey, uint32_t aValue);
 
-} // PersistedStorage
-} // Platform
-} // Weave
-} // nl
+} // namespace PersistedStorage
+} // namespace Platform
+} // namespace Weave
+} // namespace nl
 
 #endif // PERSISTED_STORAGE_H

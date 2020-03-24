@@ -27,26 +27,20 @@
 #ifndef _WEAVE_TRAIT_POWER__POWER_SOURCE_CAPABILITIES_TRAIT_C_H_
 #define _WEAVE_TRAIT_POWER__POWER_SOURCE_CAPABILITIES_TRAIT_C_H_
 
+//
+// Enums
+//
 
-
-
-    //
-    // Enums
-    //
-
-    // PowerSourceType
-    typedef enum
-    {
+// PowerSourceType
+typedef enum
+{
     POWER_SOURCE_TYPE_BATTERY = 1,
-    } schema_weave_power_power_source_capabilities_trait_power_source_type_t;
-    // PowerSourceCurrentType
-    typedef enum
-    {
+} schema_weave_power_power_source_capabilities_trait_power_source_type_t;
+// PowerSourceCurrentType
+typedef enum
+{
     POWER_SOURCE_CURRENT_TYPE_DC = 1,
     POWER_SOURCE_CURRENT_TYPE_AC = 2,
-    } schema_weave_power_power_source_capabilities_trait_power_source_current_type_t;
-
-
-
+} schema_weave_power_power_source_capabilities_trait_power_source_current_type_t;
 
 #endif // _WEAVE_TRAIT_POWER__POWER_SOURCE_CAPABILITIES_TRAIT_C_H_

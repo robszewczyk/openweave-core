@@ -67,7 +67,8 @@ using namespace nl::Weave::Crypto;
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR LoadAccessTokenCerts(const uint8_t *accessToken, uint32_t accessTokenLen, WeaveCertificateSet& certSet, uint16_t decodeFlags, WeaveCertificateData *& accessTokenCert)
+WEAVE_ERROR LoadAccessTokenCerts(const uint8_t * accessToken, uint32_t accessTokenLen, WeaveCertificateSet & certSet,
+                                 uint16_t decodeFlags, WeaveCertificateData *& accessTokenCert)
 {
     TLVReader reader;
     reader.Init(accessToken, accessTokenLen);
@@ -98,7 +99,8 @@ WEAVE_ERROR LoadAccessTokenCerts(const uint8_t *accessToken, uint32_t accessToke
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR LoadAccessTokenCerts(TLVReader& reader, WeaveCertificateSet& certSet, uint16_t decodeFlags, WeaveCertificateData *& accessTokenCert)
+WEAVE_ERROR LoadAccessTokenCerts(TLVReader & reader, WeaveCertificateSet & certSet, uint16_t decodeFlags,
+                                 WeaveCertificateData *& accessTokenCert)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType tokenContainer;
@@ -128,13 +130,15 @@ WEAVE_ERROR LoadAccessTokenCerts(TLVReader& reader, WeaveCertificateSet& certSet
 
     // Advance to the related certificates field.  If the field is present...
     err = reader.Next(kTLVType_Structure, ContextTag(kTag_AccessToken_RelatedCertificates));
-    if (err == WEAVE_NO_ERROR) {
+    if (err == WEAVE_NO_ERROR)
+    {
 
         // Load the related certificates into the certificate set.
         err = certSet.LoadCerts(reader, decodeFlags);
         SuccessOrExit(err);
     }
-    else {
+    else
+    {
         if (err == WEAVE_END_OF_TLV)
             err = WEAVE_NO_ERROR;
         SuccessOrExit(err);
@@ -178,7 +182,8 @@ exit:
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR CASECertInfoFromAccessToken(const uint8_t *accessToken, uint32_t accessTokenLen, uint8_t *certInfoBuf, uint16_t certInfoBufSize, uint16_t& certInfoLen)
+WEAVE_ERROR CASECertInfoFromAccessToken(const uint8_t * accessToken, uint32_t accessTokenLen, uint8_t * certInfoBuf,
+                                        uint16_t certInfoBufSize, uint16_t & certInfoLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
@@ -222,7 +227,7 @@ exit:
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR CASECertInfoFromAccessToken(TLVReader& reader, TLVWriter& writer)
+WEAVE_ERROR CASECertInfoFromAccessToken(TLVReader & reader, TLVWriter & writer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType tokenContainer;
@@ -243,7 +248,8 @@ WEAVE_ERROR CASECertInfoFromAccessToken(TLVReader& reader, TLVWriter& writer)
     SuccessOrExit(err);
 
     // Write the start of the CASE cert info structure to the writer
-    err = writer.StartContainer(ProfileTag(kWeaveProfile_Security, kTag_WeaveCASECertificateInformation), kTLVType_Structure, certInfoContainer);
+    err = writer.StartContainer(ProfileTag(kWeaveProfile_Security, kTag_WeaveCASECertificateInformation), kTLVType_Structure,
+                                certInfoContainer);
     SuccessOrExit(err);
 
     // Copy the access token certificate into the cert info structure, using the EntityCertificate tag.
@@ -256,13 +262,15 @@ WEAVE_ERROR CASECertInfoFromAccessToken(TLVReader& reader, TLVWriter& writer)
 
     // Advance the reader to the related certificates field.  If the field is present...
     err = reader.Next(kTLVType_Structure, ContextTag(kTag_AccessToken_RelatedCertificates));
-    if (err == WEAVE_NO_ERROR) {
+    if (err == WEAVE_NO_ERROR)
+    {
 
         // Copy the related certificates collection into the cert info structure, using the EntityCertificate tag.
         err = writer.CopyContainer(ContextTag(kTag_CASECertificateInfo_RelatedCertificates), reader);
         SuccessOrExit(err);
     }
-    else {
+    else
+    {
         if (err == WEAVE_END_OF_TLV)
             err = WEAVE_NO_ERROR;
         SuccessOrExit(err);
@@ -304,7 +312,7 @@ exit:
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR ExtractCertFromAccessToken(TLVReader& reader, TLVWriter& writer, uint64_t tag)
+WEAVE_ERROR ExtractCertFromAccessToken(TLVReader & reader, TLVWriter & writer, uint64_t tag)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType tokenContainer;
@@ -357,7 +365,8 @@ exit:
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR ExtractPrivateKeyFromAccessToken(const uint8_t *accessToken, uint32_t accessTokenLen, uint8_t *privKeyBuf, uint16_t privKeyBufSize, uint16_t& privKeyLen)
+WEAVE_ERROR ExtractPrivateKeyFromAccessToken(const uint8_t * accessToken, uint32_t accessTokenLen, uint8_t * privKeyBuf,
+                                             uint16_t privKeyBufSize, uint16_t & privKeyLen)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVReader reader;
@@ -396,7 +405,7 @@ exit:
  * @retval cert-errors                      Weave errors related to decoding Weave certificates.
  * @retval platform-errors                  Other platform-specific errors.
  */
-WEAVE_ERROR ExtractPrivateKeyFromAccessToken(TLVReader& reader, TLVWriter& writer)
+WEAVE_ERROR ExtractPrivateKeyFromAccessToken(TLVReader & reader, TLVWriter & writer)
 {
     WEAVE_ERROR err = WEAVE_NO_ERROR;
     TLVType tokenContainer;
@@ -430,8 +439,6 @@ WEAVE_ERROR ExtractPrivateKeyFromAccessToken(TLVReader& reader, TLVWriter& write
 exit:
     return err;
 }
-
-
 
 } // namespace Security
 } // namespace Profiles

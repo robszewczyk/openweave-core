@@ -45,13 +45,13 @@ struct TestVerifyOrDieContext
 
 static struct TestVerifyOrDieContext sContext;
 
-static void CheckMin(nlTestSuite *inSuite, void *inContext)
+static void CheckMin(nlTestSuite * inSuite, void * inContext)
 {
-    int8_t   s8result;
-    int16_t  s16result;
-    int32_t  s32result;
-    int64_t  s64result;
-    uint8_t  u8result;
+    int8_t s8result;
+    int16_t s16result;
+    int32_t s32result;
+    int64_t s64result;
+    uint8_t u8result;
     uint16_t u16result;
     uint32_t u32result;
     uint64_t u64result;
@@ -229,13 +229,13 @@ static void CheckMin(nlTestSuite *inSuite, void *inContext)
     NL_TEST_ASSERT(inSuite, u64result == static_cast<uint64_t>(0));
 }
 
-static void CheckMax(nlTestSuite *inSuite, void *inContext)
+static void CheckMax(nlTestSuite * inSuite, void * inContext)
 {
-    int8_t   s8result;
-    int16_t  s16result;
-    int32_t  s32result;
-    int64_t  s64result;
-    uint8_t  u8result;
+    int8_t s8result;
+    int16_t s16result;
+    int32_t s32result;
+    int64_t s64result;
+    uint8_t u8result;
     uint16_t u16result;
     uint32_t u32result;
     uint64_t u64result;
@@ -418,69 +418,69 @@ static WEAVE_ERROR GetStatus(bool inFailure)
     return ((inFailure) ? -1 : WEAVE_NO_ERROR);
 }
 
-static void CheckSuccessOrExitFailure(nlTestSuite *inSuite, void *inContext)
+static void CheckSuccessOrExitFailure(nlTestSuite * inSuite, void * inContext)
 {
     const bool failure = true;
-    int        status;
-    bool       sentinel;
+    int status;
+    bool sentinel;
 
-    status = GetStatus(failure);
+    status   = GetStatus(failure);
     sentinel = false;
 
     SuccessOrExit(status);
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == false);
 }
 
-static void CheckSuccessOrExitSuccess(nlTestSuite *inSuite, void *inContext)
+static void CheckSuccessOrExitSuccess(nlTestSuite * inSuite, void * inContext)
 {
     const bool failure = true;
-    int        status;
-    bool       sentinel;
+    int status;
+    bool sentinel;
 
-    status = GetStatus(!failure);
+    status   = GetStatus(!failure);
     sentinel = false;
 
     SuccessOrExit(status);
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == true);
 }
 
-static void CheckSuccessOrExitAssignmentFailure(nlTestSuite *inSuite, void *inContext)
+static void CheckSuccessOrExitAssignmentFailure(nlTestSuite * inSuite, void * inContext)
 {
     const bool failure = true;
-    int        status;
-    bool       sentinel;
+    int status;
+    bool sentinel;
 
     sentinel = false;
 
     SuccessOrExit(status = GetStatus(failure));
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == false);
 }
 
-static void CheckSuccessOrExitAssignmentSuccess(nlTestSuite *inSuite, void *inContext)
+static void CheckSuccessOrExitAssignmentSuccess(nlTestSuite * inSuite, void * inContext)
 {
     const bool failure = true;
-    int        status;
-    bool       sentinel;
+    int status;
+    bool sentinel;
 
     sentinel = false;
 
     SuccessOrExit(status = GetStatus(!failure));
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == true);
 }
 
-static void CheckSuccessOrExit(nlTestSuite *inSuite, void *inContext)
+static void CheckSuccessOrExit(nlTestSuite * inSuite, void * inContext)
 {
     CheckSuccessOrExitFailure(inSuite, inContext);
     CheckSuccessOrExitSuccess(inSuite, inContext);
@@ -488,60 +488,60 @@ static void CheckSuccessOrExit(nlTestSuite *inSuite, void *inContext)
     CheckSuccessOrExitAssignmentSuccess(inSuite, inContext);
 }
 
-static void CheckVerifyOrExitFailure(nlTestSuite *inSuite, void *inContext)
+static void CheckVerifyOrExitFailure(nlTestSuite * inSuite, void * inContext)
 {
     bool status;
     bool sentinel;
     bool action;
 
-    status = false;
+    status   = false;
     sentinel = false;
-    action = false;
+    action   = false;
 
     VerifyOrExit(status, action = true);
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == false);
     NL_TEST_ASSERT(inSuite, action == true);
 }
 
-static void CheckVerifyOrExitSuccess(nlTestSuite *inSuite, void *inContext)
+static void CheckVerifyOrExitSuccess(nlTestSuite * inSuite, void * inContext)
 {
     bool status;
     bool sentinel;
     bool action;
 
-    status = true;
+    status   = true;
     sentinel = false;
-    action = false;
+    action   = false;
 
     VerifyOrExit(status, action = true);
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == true);
     NL_TEST_ASSERT(inSuite, action == false);
 }
 
-static void CheckVerifyOrExit(nlTestSuite *inSuite, void *inContext)
+static void CheckVerifyOrExit(nlTestSuite * inSuite, void * inContext)
 {
     CheckVerifyOrExitFailure(inSuite, inContext);
     CheckVerifyOrExitSuccess(inSuite, inContext);
 }
 
-static void CheckExitNow(nlTestSuite *inSuite, void *inContext)
+static void CheckExitNow(nlTestSuite * inSuite, void * inContext)
 {
     bool action;
     bool sentinel;
 
     sentinel = false;
-    action = false;
+    action   = false;
 
     ExitNow(action = true);
     sentinel = true;
 
- exit:
+exit:
     NL_TEST_ASSERT(inSuite, sentinel == false);
     NL_TEST_ASSERT(inSuite, action == true);
 }
@@ -551,64 +551,56 @@ static void TestWeaveDie(void)
     sContext.mDidDie = true;
 }
 
-static void CheckVerifyOrDieFailure(nlTestSuite *inSuite, void *inContext)
+static void CheckVerifyOrDieFailure(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestVerifyOrDieContext *theContext = static_cast<struct TestVerifyOrDieContext *>(inContext);
+    struct TestVerifyOrDieContext * theContext = static_cast<struct TestVerifyOrDieContext *>(inContext);
     bool status;
 
     status = false;
 
     theContext->mShouldDie = true;
-    theContext->mDidDie = false;
+    theContext->mDidDie    = false;
 
     VerifyOrDie(status);
 
     NL_TEST_ASSERT(inSuite, theContext->mShouldDie == theContext->mDidDie);
 }
 
-static void CheckVerifyOrDieSuccess(nlTestSuite *inSuite, void *inContext)
+static void CheckVerifyOrDieSuccess(nlTestSuite * inSuite, void * inContext)
 {
-    struct TestVerifyOrDieContext *theContext = static_cast<struct TestVerifyOrDieContext *>(inContext);
+    struct TestVerifyOrDieContext * theContext = static_cast<struct TestVerifyOrDieContext *>(inContext);
     bool status;
 
     status = true;
 
     theContext->mShouldDie = false;
-    theContext->mDidDie = false;
+    theContext->mDidDie    = false;
 
     VerifyOrDie(status);
 
     NL_TEST_ASSERT(inSuite, theContext->mShouldDie == theContext->mDidDie);
 }
 
-static void CheckVerifyOrDie(nlTestSuite *inSuite, void *inContext)
+static void CheckVerifyOrDie(nlTestSuite * inSuite, void * inContext)
 {
     CheckVerifyOrDieFailure(inSuite, inContext);
     CheckVerifyOrDieSuccess(inSuite, inContext);
 }
 
-static void CheckLogFileLineFunc(nlTestSuite *inSuite, void *inContext)
-{
+static void CheckLogFileLineFunc(nlTestSuite * inSuite, void * inContext) { }
 
-}
-
-static const nlTest sTests[] = {
-    NL_TEST_DEF("min",                CheckMin),
-    NL_TEST_DEF("max",                CheckMax),
-    NL_TEST_DEF("success-or-exit",    CheckSuccessOrExit),
-    NL_TEST_DEF("verify-or-exit",     CheckVerifyOrExit),
-    NL_TEST_DEF("exit-now",           CheckExitNow),
-    NL_TEST_DEF("verify-or-die",      CheckVerifyOrDie),
-    NL_TEST_DEF("log-file-line-func", CheckLogFileLineFunc),
-    NL_TEST_SENTINEL()
-};
+static const nlTest sTests[] = { NL_TEST_DEF("min", CheckMin),
+                                 NL_TEST_DEF("max", CheckMax),
+                                 NL_TEST_DEF("success-or-exit", CheckSuccessOrExit),
+                                 NL_TEST_DEF("verify-or-exit", CheckVerifyOrExit),
+                                 NL_TEST_DEF("exit-now", CheckExitNow),
+                                 NL_TEST_DEF("verify-or-die", CheckVerifyOrDie),
+                                 NL_TEST_DEF("log-file-line-func", CheckLogFileLineFunc),
+                                 NL_TEST_SENTINEL() };
 
 int main(void)
 {
-    nlTestSuite theSuite = {
-        "weave-code-utils",
-        &sTests[0]
-    };
+    nlTestSuite theSuite = { "weave-code-utils", &sTests[0] };
 
     nl_test_set_output_style(OUTPUT_CSV);
 

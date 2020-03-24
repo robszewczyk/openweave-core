@@ -45,7 +45,6 @@ namespace Weave {
 namespace Profiles {
 namespace TokenPairing {
 
-
 /**
  * Message Types for the Token Pairing Profile.
  */
@@ -107,35 +106,35 @@ class NL_DLL_EXPORT TokenPairingServer : public WeaveServerBase
 public:
     TokenPairingServer(void);
 
-    WEAVE_ERROR Init(WeaveExchangeManager *exchangeMgr);
+    WEAVE_ERROR Init(WeaveExchangeManager * exchangeMgr);
     WEAVE_ERROR Shutdown(void);
 
-    void SetDelegate(TokenPairingDelegate *delegate);
+    void SetDelegate(TokenPairingDelegate * delegate);
 
     virtual WEAVE_ERROR SendStatusReport(uint32_t statusProfileId, uint16_t statusCode, WEAVE_ERROR sysError = WEAVE_NO_ERROR);
 
-    WEAVE_ERROR SendTokenCertificateResponse(PacketBuffer *certificate);
-    WEAVE_ERROR SendTokenPairedResponse(PacketBuffer *tokenBundle);
+    WEAVE_ERROR SendTokenCertificateResponse(PacketBuffer * certificate);
+    WEAVE_ERROR SendTokenPairedResponse(PacketBuffer * tokenBundle);
 
 protected:
-    ExchangeContext *mCurClientOp;
-    TokenPairingDelegate *mDelegate;
+    ExchangeContext * mCurClientOp;
+    TokenPairingDelegate * mDelegate;
     bool mCertificateSent;
 
 private:
     void CloseClientOp(void);
-    static void HandleClientRequest(ExchangeContext *ec, const IPPacketInfo *pktInfo,
-            const WeaveMessageInfo *msgInfo, uint32_t profileId, uint8_t msgType, PacketBuffer *payload);
+    static void HandleClientRequest(ExchangeContext * ec, const IPPacketInfo * pktInfo, const WeaveMessageInfo * msgInfo,
+                                    uint32_t profileId, uint8_t msgType, PacketBuffer * payload);
 
-    TokenPairingServer(const TokenPairingServer&);   // not defined
+    TokenPairingServer(const TokenPairingServer &); // not defined
 };
 
 // Abstract delegate class for implementing incoming Token Pairing operations on the server device.
 class TokenPairingDelegate : public WeaveServerDelegateBase
 {
 public:
-    virtual WEAVE_ERROR OnPairTokenRequest(TokenPairingServer *server, uint8_t *pairingToken, uint32_t pairTokenLength) = 0;
-    virtual WEAVE_ERROR OnUnpairTokenRequest(TokenPairingServer *server) = 0;
+    virtual WEAVE_ERROR OnPairTokenRequest(TokenPairingServer * server, uint8_t * pairingToken, uint32_t pairTokenLength) = 0;
+    virtual WEAVE_ERROR OnUnpairTokenRequest(TokenPairingServer * server)                                                 = 0;
 
     /**
      * Enforce message-level access control for an incoming Token Pairing request message.
@@ -150,8 +149,8 @@ public:
      *                          is expected to represent the final assessment of access control policy for the
      *                          message.
      */
-    virtual void EnforceAccessControl(ExchangeContext *ec, uint32_t msgProfileId, uint8_t msgType,
-                const WeaveMessageInfo *msgInfo, AccessControlResult& result);
+    virtual void EnforceAccessControl(ExchangeContext * ec, uint32_t msgProfileId, uint8_t msgType,
+                                      const WeaveMessageInfo * msgInfo, AccessControlResult & result);
 };
 
 } // namespace TokenPairing

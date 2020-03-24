@@ -21,4 +21,4 @@
 
 extern std::map<std::string, std::string> sPersistentStore;
 
-extern FILE *sPersistentStoreFile;
+extern FILE * sPersistentStoreFile;
